@@ -22,6 +22,11 @@ app.use('/api', require('./routes/auth.routes'));
 app.use('/api/task', require('./routes/task.routes'));
 app.use('/api/pretask', require('./routes/pretask.routes'));
 
+// check server status
+app.get('/', (req, res) => {
+    res.send('Server is running');
+});
+
 // STARTING THE SERVER
 app.listen(app.get('port'), async() => {
     try{
