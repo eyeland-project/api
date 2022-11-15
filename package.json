@@ -14,7 +14,6 @@
     "EPICs"
   ],
   "author": "Leolizc",
-  "license": "MIT",
   "devDependencies": {
     "nodemon": "^2.0.20"
   },
