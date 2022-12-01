@@ -13,7 +13,8 @@ if(process.env.DB_URL){
                     require: true,
                     rejectUnauthorized: false
                 }
-            }
+            },
+            logging: false,
         });
 
 } else {

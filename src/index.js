@@ -21,6 +21,7 @@ app.use(express.json());
 app.use('/api', require('./routes/auth.routes'));
 app.use('/api/task', require('./routes/task.routes'));
 app.use('/api/pretask', require('./routes/pretask.routes'));
+app.use('/api/pregunta', require('./routes/pregunta.routes'));
 
 // check server status
 app.get('/', (req, res) => {
@@ -28,11 +29,15 @@ app.get('/', (req, res) => {
 });
 
 // STARTING THE SERVER
-app.listen(app.get('port'), async() => {
+app.listen(app.get('port'), async () => {
     try{
-        await sequelize.authenticate();
-        console.log('Database is connected');
-        sequelize.sync();
+        sequelize.authenticate().then(() => {
+            console.log('Connection has been established successfully.');
+            console.log('Database is connected');
+            sequelize.sync();
+        }).catch(err => {
+            console.error('Unable to connect to the database:', err);
+        });
     }catch(error){
         console.log('database Error: ', error);
     }
