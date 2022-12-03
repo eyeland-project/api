@@ -71,7 +71,7 @@ const getTaskLinks = async (req, res) => {
 
 // obtener una pregunta basada en el id_task y el orden
 const getTaskPregunta = (req, res) => {
-    Pregunta.findOne({where: { id_task: parseInt(req.params.id_task), orden: parseInt(req.params.orden) }})
+    Pregunta.findOne({where: { id_task: parseInt(req.params.id), orden: parseInt(req.params.orden) }})
         .then((pregunta) => {
             if (!pregunta) {
                 return res.status(404).send({
