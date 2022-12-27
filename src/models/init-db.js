@@ -1,5 +1,11 @@
-require("./Links");
 require("./Tasks");
+require("./Links");
 require("./Preguntas");
 require("./Respuestas");
+require("./Admins");
+require("./Instituciones");
+require("./Profesores");
+require("./Cursos");
+require("./Estudiantes");
+require("./Grupos");
 console.log('Initializing database...');

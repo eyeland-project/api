@@ -28,6 +28,12 @@ app.get('/', (req, res) => {
     res.send('Server is running');
 });
 
+app.get('/test', async (req, res) => {
+    const resp = await sequelize.query("Select * from information_schema.columns where table_name = 'links';");
+    res.send(resp[0].map((item) => [item.column_name, item.data_type]));
+    // const resp = await sequelize.query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';");
+    // res.send(resp[0].map((item) => item.table_name));
+});
 // STARTING THE SERVER
 app.listen(app.get('port'), async () => {
     try{

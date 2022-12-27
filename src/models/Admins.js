@@ -1,43 +1,37 @@
-// creating the model for the tasks table
 // imports
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database');
 
 // model definition
-const Tasks = sequelize.define('tasks', {
-    id_task: {
+const Admins = sequelize.define('admins', {
+    id_admin: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    nombre:{
+    nombre: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    descripcion:{
+    apellido: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false
     },
-    orden:{
-        type: DataTypes.INTEGER,
+    email: {
+        type: DataTypes.STRING,
         unique: true,
         allowNull: false
     },
-    mensajepretask:{
+    username: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
     },
-    mensajeintask:{
+    password: {
         type: DataTypes.STRING,
-        allowNull: true
-    },
-    mensajepostask:{
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-},
-{
+        allowNull: false
+    }
+}, {
     timestamps: false
 });
 
-module.exports = Tasks;
+module.exports = Admins;

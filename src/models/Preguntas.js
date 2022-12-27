@@ -59,14 +59,23 @@ const Preguntas = sequelize.define('preguntas', {
         allowNull: false
     }
 }, {
-    timestamps: false
+    timestamps: false,
+    indexes: [
+        {
+        unique: true,
+        fields: ['id_task', 'orden']
+        }
+    ]
 });
 
 Tasks.hasMany(Preguntas, {
     foreignKey: 'id_task'
-    });
+});
 Preguntas.belongsTo(Tasks, {
     foreignKey: 'id_task'
-    });
+});
+
+module.exports = Preguntas;
+  
 
 module.exports = Preguntas;
