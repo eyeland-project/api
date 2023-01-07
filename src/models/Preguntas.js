@@ -76,6 +76,5 @@ Preguntas.belongsTo(Tasks, {
 });
 
 module.exports = Preguntas;
-  
 
 module.exports = Preguntas;

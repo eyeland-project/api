@@ -13,7 +13,7 @@ const Links = sequelize.define('links',{
     },
     tema: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
     },
     url_dir: {
         type: DataTypes.STRING,

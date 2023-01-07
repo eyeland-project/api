@@ -10,6 +10,18 @@ const Grupos = sequelize.define('grupos', {
         primaryKey: true,
         autoIncrement: true
     },
+    nombre: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    token: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    availableTasks: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
 }, {
     timestamps: false
 });
@@ -35,5 +47,8 @@ Estudiantes.hasMany(Grupos, {
 Grupos.belongsTo(Estudiantes, {
     foreignKey: 'id_estudiante3'
 });
+
+Grupos.hasOne(Estudiantes, {foreignKey: {name: "grupoactual", allowNull: true}});
+Estudiantes.belongsTo(Grupos);
 
 module.exports = Grupos;

@@ -16,7 +16,7 @@ const Tasks = sequelize.define('tasks', {
     },
     descripcion:{
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
     },
     orden:{
         type: DataTypes.INTEGER,

@@ -19,6 +19,11 @@ const Cursos = sequelize.define('cursos', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
 }, {
     timestamps: false
 });

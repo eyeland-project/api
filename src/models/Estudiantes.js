@@ -29,7 +29,11 @@ const Estudiantes = sequelize.define('estudiantes', {
     password: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+    // grupoactual: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: true
+    // },
 }, {
     timestamps: false
 });
