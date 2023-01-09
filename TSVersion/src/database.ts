@@ -1,0 +1,31 @@
+// creating a sequelize instance to postgres database
+import {Sequelize} from 'sequelize';
+// const {database_conf} = require('./config');
+let conf: any[];
+if(process.env.DB_URL){
+    conf = [process.env.DB_URL, {
+        dialect: 'postgres',
+        protocol: 'postgres',
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        },
+        logging: false,
+    }];
+
+} else {
+    conf = [process.env.DB_NAME || '', process.env.DB_USER || '', process.env.DB_PASSWORD, {
+        host: process.env['DB_HOST'],
+        dialect: 'postgres',
+        logging: false,
+        // ...database_conf
+    }]
+}
+
+const sequelize = new Sequelize(...conf);
+
+// exporting the sequelize instance
+export default sequelize;
+module.exports = sequelize;
