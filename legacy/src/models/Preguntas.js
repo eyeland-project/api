@@ -63,7 +63,7 @@ const Preguntas = sequelize.define('preguntas', {
     indexes: [
         {
         unique: true,
-        fields: ['id_task', 'orden']
+        fields: ['id_task', 'orden', 'examen']
         }
     ]
 });
