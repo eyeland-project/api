@@ -8,13 +8,19 @@ if (result.error) {
 // Express aplication
 import express from 'express';
 const app = express();
-// import cors
+// imports
 import cors from 'cors';
+import morgan from 'morgan';
 
 // Express configuration
 app.set('port', process.env.PORT || 3000);
 app.use(express.json());
 app.use(cors());
+app.use(morgan('dev'));
+
+// Routes
+import indexRoutes from './routes';
+app.use(indexRoutes);
 
 // start the server
 app.listen(app.get('port'), () => {
