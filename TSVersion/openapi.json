@@ -1,0 +1,644 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Salamanca Island Project - EPICS IEEE (STUDENTS API)",
+    "description": "This is an educational project to teach English to high school students, with a special focus on children with visual impairments. You can find out more about at [https://swagger.io](https://swagger.io). In this iteration of the project, we've switched to the design first approach!\n(Podríamos incluir donaciones <la idea me la dió la página XD>).\n\nSome useful links:\n- [Organization github](https://github.com/Proyecto-Final-EPICS)\n- [The landing-Page](https://proyecto-final-epics.github.io/EyeLand)",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io",
+      "name": "Leonardo D. Lizcano Pinto",
+      "url": "https://www.linkedin.com/in/leonardo-lizcano-pinto0220/"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "0.5.5"
+  },
+  "externalDocs": {
+    "description": "Find out more about the project at our github repository.",
+    "url": "https://github.com/Proyecto-Final-EPICS/Salamanca-Island-mobile-API"
+  },
+  "servers": [
+    {
+      "url": "https://epics-si-api.onrender.com/api/students"
+    }
+  ],
+  "tags": [
+    {
+      "name": "task",
+      "description": "Everything about the Tasks"
+    },
+    {
+      "name": "answer",
+      "description": "About send the answers"
+    },
+    {
+      "name": "user",
+      "description": "Operations about user"
+    }
+  ],
+  "paths": {
+    "/tasks": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "Get all the tasks",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/task/{taskOrder}": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the task to return",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "Get an specific task (I don't know what I mean)",
+        "deprecated": true,
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/pretask/{taskOrder}": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the task",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "description": "Get the pretask based on the number of the Task",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "preTaskMessage": {
+                      "type": "string"
+                    },
+                    "links": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "tema": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/question/{taskOrder}": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task"
+          }
+        ],
+        "description": "Get all the inTask questions (?)",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionCount"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/question/{taskOrder}/{questionOrder}": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task"
+          },
+          {
+            "name": "questionOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the question inside the task",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "description": "Get the inTask question based on the number of the Task and the number of the question inside the task",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/postask/{taskOrder}": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the task",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "description": "Get the postask audio question based on the number of the Task",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contenido": {
+                      "type": "string"
+                    },
+                    "imagenURL": {
+                      "type": "string"
+                    },
+                    "audioURL": {
+                      "type": "string"
+                    },
+                    "videoURL": {
+                      "type": "string"
+                    },
+                    "retroalimentacion": {
+                      "type": "string"
+                    },
+                    "tipo": {
+                      "type": "string"
+                    },
+                    "numOpciones": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/postasks/{taskOrder}": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task"
+          }
+        ],
+        "description": "Get all the postTask multi-option questions (?)",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionCount"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/postasks/{taskOrder}/{questionOrder}": {
+      "get": {
+        "tags": [
+          "task"
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task"
+          },
+          {
+            "name": "questionOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the question inside the task",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "description": "Get a PosTask question based on the number of the Task and the number of the question inside the task",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid number supplied"
+          },
+          "401": {
+            "description": "you are not authorized to access this content"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "description": "Url to login students",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserLogin"
+        },
+        "responses": {
+          "200": {
+            "description": "Logged successfully",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userToken": {
+                      "type": "string"
+                    },
+                    "hasGroup": {
+                      "type": "boolean"
+                    },
+                    "groupToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login-group": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "description": "Url to login a student to a group",
+        "requestBody": {
+          "required": true,
+          "description": "The token or id or idk of the group to join",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged successfully",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "groupToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Task": {
+        "type": "object",
+        "properties": {
+          "numberOfTasks": {
+            "type": "integer"
+          },
+          "availableTasks": {
+            "type": "integer"
+          }
+        }
+      },
+      "LoginForm": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Question": {
+        "type": "object",
+        "properties": {
+          "contenido": {
+            "type": "string"
+          },
+          "imagenURL": {
+            "type": "string"
+          },
+          "audioURL": {
+            "type": "string"
+          },
+          "videoURL": {
+            "type": "string"
+          },
+          "retroalimentacion": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "numOpciones": {
+            "type": "integer"
+          },
+          "opciones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "contenido": {
+                  "type": "string"
+                },
+                "correcta": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "QuestionCount": {
+        "type": "object",
+        "properties": {
+          "numberOfQuestions": {
+            "type": "integer"
+          },
+          "availableQuestions": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "UserLogin": {
+        "description": "List of user object",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LoginForm"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
