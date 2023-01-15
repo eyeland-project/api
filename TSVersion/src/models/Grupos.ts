@@ -35,17 +35,17 @@ Grupos.belongsTo(Estudiantes, {
 });
 
 Estudiantes.hasMany(Grupos, {
-    foreignKey: 'id_estudiante2'
+    foreignKey: {name: 'id_estudiante2', allowNull: true}
 });
 Grupos.belongsTo(Estudiantes, {
-    foreignKey: 'id_estudiante2'
+    foreignKey: {name: 'id_estudiante2', allowNull: true}
 });
 
 Estudiantes.hasMany(Grupos, {
-    foreignKey: 'id_estudiante3'
+    foreignKey: {name: 'id_estudiante3', allowNull: true}
 });
 Grupos.belongsTo(Estudiantes, {
-    foreignKey: 'id_estudiante3'
+    foreignKey: {name: 'id_estudiante3', allowNull: true}
 });
 
 Grupos.hasOne(Estudiantes, {foreignKey: {name: "grupoactual", allowNull: true}});

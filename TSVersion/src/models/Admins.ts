@@ -1,6 +1,8 @@
 // imports
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
+import { comparePassword, hashPassword } from '../utils';
+
 
 // model definition
 const Admins = sequelize.define('admins', {
@@ -31,8 +33,15 @@ const Admins = sequelize.define('admins', {
         allowNull: false
     }
 }, {
-    timestamps: false
+    timestamps: false,
+    hooks: {
+        beforeCreate: async (admin: any) => {
+            admin.password = hashPassword(admin.password);
+        },
+    }
 });
+
+Admins.prototype.comparePassword = comparePassword;
 
 export default Admins;
 module.exports = Admins;

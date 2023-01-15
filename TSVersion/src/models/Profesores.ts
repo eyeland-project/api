@@ -2,6 +2,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Instituciones from './Instituciones';
+import { comparePassword, hashPassword } from '../utils';
 
 // model definition
 const Profesores = sequelize.define('profesores', {
@@ -31,7 +32,12 @@ const Profesores = sequelize.define('profesores', {
         allowNull: false
     },
 }, {
-    timestamps: false
+    timestamps: false,
+    hooks: {
+        beforeCreate: async (profesor: any) => {
+            profesor.password = hashPassword(profesor.password);
+        },
+    }
 });
 
 // definir la relación entre Instituciones y Profesores
@@ -41,6 +47,8 @@ Instituciones.hasMany(Profesores, {
 Profesores.belongsTo(Instituciones, {
     foreignKey: 'id_institucion'
 });
+
+Profesores.prototype.comparePassword = comparePassword;
 
 export default Profesores;
 module.exports = Profesores;

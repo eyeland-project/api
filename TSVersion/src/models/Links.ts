@@ -26,10 +26,10 @@ const Links = sequelize.define('links',{
 
 Tasks.hasMany(Links, {
     foreignKey: 'id_task'
-  });
+});
 Links.belongsTo(Tasks, {
     foreignKey: 'id_task'
-  });
+});
 
 export default Links;
 module.exports = Links;

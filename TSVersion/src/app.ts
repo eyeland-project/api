@@ -29,7 +29,7 @@ app.use(express.json());
 
 //* Routes
 import indexRoutes from './routes';
-app.use(indexRoutes);
+app.use('/api',indexRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //* handlers
