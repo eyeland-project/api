@@ -3,9 +3,10 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Preguntas from "./Preguntas"
+import { RespuestaModel } from '../types/Respuestas.types';
 
 // model definition
-const Respuestas = sequelize.define('respuestas', {
+const Respuestas = sequelize.define<RespuestaModel>('respuestas', {
     id_respuesta: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -18,7 +19,11 @@ const Respuestas = sequelize.define('respuestas', {
     correcta: {
         type: DataTypes.BOOLEAN,
         allowNull: false
-    }
+    },
+    id_pregunta: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
 }, {
     timestamps: false
 });

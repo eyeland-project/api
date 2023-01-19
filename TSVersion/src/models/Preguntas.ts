@@ -1,26 +1,10 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Tasks from "./Tasks"
+import { PreguntaModel } from '../types/Preguntas.types';
 
-/*create table Preguntas (
-    ID_Pregunta serial not null,
-    Pregunta varchar(255) not null,
-    Imagen varchar(255),
-    Audio varchar(255),
-    Video varchar(255),
-    Retroalimentacion varchar(255),
-    Tipo varchar(255) not null,
-    Examen boolean not null,
-    ID_Task serial not null,
-    Orden integer not null,
-    -- CONSTRAINTS
-    constraint pk_pregunta primary key (ID_Pregunta)
-    constraint fk_task foreign key (ID_Task) references Tasks(ID_Task)
-    -- unique key with ID_Task and Orden
-    constraint uk_constr unique (ID_Task, Orden)
-);*/
 // model definition
-const Preguntas = sequelize.define('preguntas', {
+const Preguntas = sequelize.define<PreguntaModel>('preguntas', {
     id_pregunta: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -57,7 +41,11 @@ const Preguntas = sequelize.define('preguntas', {
     orden: {
         type: DataTypes.INTEGER,
         allowNull: false
-    }
+    },
+    id_task: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
 }, {
     timestamps: false,
     indexes: [

@@ -3,9 +3,10 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Instituciones from './Instituciones';
 import { comparePassword, hashPassword } from '../utils';
+import { ProfesorModel } from '../types/Profesores.types';
 
 // model definition
-const Profesores = sequelize.define('profesores', {
+const Profesores = sequelize.define<ProfesorModel>('profesores', {
     id_profesor: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -29,6 +30,10 @@ const Profesores = sequelize.define('profesores', {
     },
     password: {
         type: DataTypes.STRING,
+        allowNull: false
+    },
+    id_institucion: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
 }, {

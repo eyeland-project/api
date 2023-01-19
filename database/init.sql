@@ -125,7 +125,7 @@ create table Grupos (
     -- ID_Curso serial not null,
     Nombre varchar(255) not null,
     Token varchar(255) not null,
-    ID_Estudiante1 INTEGER not null,
+    ID_Estudiante1 INTEGER null,
     ID_Estudiante2 INTEGER null,
     ID_Estudiante3 INTEGER null,
     AvailableTasks INTEGER not null,

@@ -1,9 +1,10 @@
 // imports
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
+import { InstitucionModel } from '../types/Instituciones.types';
 
 // model definition
-const Instituciones = sequelize.define('instituciones', {
+const Instituciones = sequelize.define<InstitucionModel>('instituciones', {
     id_institucion: {
         type: DataTypes.INTEGER,
         primaryKey: true,

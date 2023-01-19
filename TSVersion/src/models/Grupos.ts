@@ -2,13 +2,14 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Estudiantes from './Estudiantes';
+import { GrupoModel } from '../types/Grupos.types';
 
 // model definition
-const Grupos = sequelize.define('grupos', {
+const Grupos = sequelize.define<GrupoModel>('grupos', {
     id_grupo: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER.UNSIGNED,
         primaryKey: true,
-        autoIncrement: true
+        // autoIncrement: true
     },
     nombre: {
         type: DataTypes.STRING,
@@ -22,16 +23,28 @@ const Grupos = sequelize.define('grupos', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    id_estudiante1:{
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    id_estudiante2:{
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    id_estudiante3:{
+        type: DataTypes.INTEGER,
+        allowNull: true
+    }
 }, {
     timestamps: false
 });
 
 // definir la relación entre Grupos y Estudiantes
 Estudiantes.hasMany(Grupos, {
-    foreignKey: 'id_estudiante1'
+    foreignKey: {name: 'id_estudiante1', allowNull: true}
 });
 Grupos.belongsTo(Estudiantes, {
-    foreignKey: 'id_estudiante1'
+    foreignKey: {name: 'id_estudiante1', allowNull: true}
 });
 
 Estudiantes.hasMany(Grupos, {

@@ -3,8 +3,9 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Cursos from './Cursos';
 import { comparePassword, hashPassword } from '../utils';
+import { EstudianteModel } from '../types/Estudiantes.types';
 // model definition
-const Estudiantes = sequelize.define('estudiantes', {
+const Estudiantes = sequelize.define<EstudianteModel>('estudiantes', {
     id_estudiante: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -31,10 +32,14 @@ const Estudiantes = sequelize.define('estudiantes', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    // grupoactual: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: true
-    // },
+    grupoactual: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    id_curso: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
 }, {
     timestamps: false,
     hooks: {

@@ -3,9 +3,10 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Tasks from "./Tasks"
+import { LinkModel } from '../types/Links.types';
 
 // model definition
-const Links = sequelize.define('links',{
+const Links = sequelize.define<LinkModel>('links',{
     id_link:{
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -18,7 +19,11 @@ const Links = sequelize.define('links',{
     url_dir: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
+    id_task: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
 }, 
 {
     timestamps: false

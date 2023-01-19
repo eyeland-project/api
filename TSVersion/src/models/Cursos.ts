@@ -3,9 +3,10 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import Instituciones from './Instituciones';
 import Profesores from './Profesores';
+import { CursoModel } from '../types/Cursos.types';
 
 // model definition
-const Cursos = sequelize.define('cursos', {
+const Cursos = sequelize.define<CursoModel>('cursos', {
     id_curso: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -24,6 +25,14 @@ const Cursos = sequelize.define('cursos', {
         allowNull: false,
         defaultValue: false,
     },
+    id_profesor: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    id_institucion: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    }
 }, {
     timestamps: false
 });

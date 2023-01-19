@@ -1,7 +1,6 @@
 // USING Jest and Supertest
 // testing / and /ping routes
-import supertest from 'supertest';
-import { api } from './helpers'
+import { api } from './utils'
 
 
 describe('GET /', () => {

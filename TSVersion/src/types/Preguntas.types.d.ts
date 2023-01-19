@@ -1,3 +1,6 @@
+import { type } from "os";
+import PartialBy from "./PartialBy";
+
 export interface Pregunta {
     id_pregunta: number;
     pregunta: string;
@@ -10,3 +13,7 @@ export interface Pregunta {
     id_task: number;
     orden: number;
 };
+
+export type PreguntaCreation = PartialBy<Omit<Pregunta, "id_pregunta">, 'imagen' | 'audio' | 'video' | 'retroalimentacion'>;
+
+export type PreguntaModel = Model<Pregunta, PreguntaCreation>;

@@ -8,3 +8,7 @@ export interface Institucion {
     telefono: string;
     email: string;
 }
+
+export type InstitucionCreation = Omit<Institucion, "id_institucion">;
+
+export type InstitucionModel = Model<Institucion, InstitucionCreation>;

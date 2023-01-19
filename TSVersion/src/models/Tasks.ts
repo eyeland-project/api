@@ -2,9 +2,10 @@
 // imports
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
+import { TaskModel } from '../types/Tasks.types';
 
 // model definition
-const Tasks = sequelize.define('tasks', {
+const Tasks = sequelize.define<TaskModel>('tasks', {
     id_task: {
         type: DataTypes.INTEGER,
         primaryKey: true,

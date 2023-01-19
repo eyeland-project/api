@@ -2,10 +2,11 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database';
 import { comparePassword, hashPassword } from '../utils';
+import { AdminModel } from '../types/Admins.types';
 
 
 // model definition
-const Admins = sequelize.define('admins', {
+const Admins = sequelize.define<AdminModel>('admins', {
     id_admin: {
         type: DataTypes.INTEGER,
         primaryKey: true,
