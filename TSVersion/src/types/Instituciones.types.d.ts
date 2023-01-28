@@ -1,3 +1,5 @@
+import { Model } from "sequelize";
+
 export interface Institucion {
     id_institucion: number;
     nombre: string;
@@ -11,4 +13,4 @@ export interface Institucion {
 
 export type InstitucionCreation = Omit<Institucion, "id_institucion">;
 
-export type InstitucionModel = Model<Institucion, InstitucionCreation>;
+export interface InstitucionModel extends Model<Institucion, InstitucionCreation>, Institucion{};

@@ -12,4 +12,4 @@ export interface Admin {
 
 export type AdminCreation = Omit<Admin, 'id_admin'>;
 
-export type AdminModel = Model<Admin, AdminCreation>;
+export interface AdminModel extends Model<Admin, AdminCreation>, Admin{};

@@ -1,5 +1,6 @@
 import { type } from "os";
 import PartialBy from "./PartialBy";
+import { Model } from "sequelize";
 
 export interface Pregunta {
     id_pregunta: number;
@@ -8,7 +9,7 @@ export interface Pregunta {
     audio: string | undefined | null;
     video: string | undefined | null;
     retroalimentacion: string | undefined | null;
-    tipo: string;
+    tipo: "multiple" | "audio";
     examen: boolean;
     id_task: number;
     orden: number;
@@ -16,4 +17,4 @@ export interface Pregunta {
 
 export type PreguntaCreation = PartialBy<Omit<Pregunta, "id_pregunta">, 'imagen' | 'audio' | 'video' | 'retroalimentacion'>;
 
-export type PreguntaModel = Model<Pregunta, PreguntaCreation>;
+export interface PreguntaModel extends Model<Pregunta, PreguntaCreation>, Pregunta{};

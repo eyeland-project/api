@@ -1,3 +1,5 @@
+import { Model } from "sequelize";
+
 export interface Profesor {
     id_profesor: number;
     nombre: string;
@@ -10,4 +12,4 @@ export interface Profesor {
 
 export type ProfesorCreation = Omit<Profesor, 'id_profesor'>;
 
-export type ProfesorModel = Model<Profesor, ProfesorCreation>;
+export interface ProfesorModel extends Model<Profesor, ProfesorCreation>, Profesor{};

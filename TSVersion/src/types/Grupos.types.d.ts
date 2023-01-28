@@ -13,4 +13,4 @@ export interface Grupo{
 
 export type GrupoCreation = Omit<PartialBy<Grupo, "id_estudiante1" | "id_estudiante2" | "id_estudiante3">, "id_grupo">;
 
-export type GrupoModel = Model<Grupo, GrupoCreation>;
+export interface GrupoModel extends Model<Grupo, GrupoCreation>, Grupo{};

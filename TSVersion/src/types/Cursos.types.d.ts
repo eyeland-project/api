@@ -12,4 +12,4 @@ export interface Curso {
 
 export type CursoCreation = PartialBy<Omit<Curso, 'id_curso'>, 'descripcion'>;
 
-export type CursoModel = Model<Curso, CursoCreation>;
+export interface CursoModel extends Model<Curso, CursoCreation>, Curso{};

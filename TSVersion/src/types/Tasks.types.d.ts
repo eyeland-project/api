@@ -13,4 +13,6 @@ export interface Task{
 
 export type TaskCreation = Omit<PartialBy<Task, "mensajepretask" | "mensajeintask" | "mensajepostask">, "id_task">;
 
-export type TaskModel = Model<Task, TaskCreation>;
+export interface TaskModel extends Model<Task, TaskCreation>, Task{
+    getLinks: () => Promise<any>;
+};

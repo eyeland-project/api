@@ -1,4 +1,4 @@
-import { CreationOptional } from "sequelize";
+import { CreationOptional, Model } from "sequelize";
 import PartialBy from "./PartialBy";
 
 export interface Estudiante {
@@ -14,4 +14,4 @@ export interface Estudiante {
 
 export type EstudianteCreation = PartialBy<Omit<Estudiante, 'id_estudiante'>, "grupoactual">;
 
-export type EstudianteModel = Model<Estudiante, Estudiante>;
+export interface EstudianteModel extends Model<Estudiante, Estudiante>, Estudiante{};
