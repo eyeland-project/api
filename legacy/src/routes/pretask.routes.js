@@ -5,7 +5,7 @@ const { getLinks, getLink, createLink, updateLink, deleteLink } = require('../co
 
 // setting up the authentication middleware
 const auth = passport.authenticate("jwt", { session: false });
-router.use(auth);
+// router.use(auth);
 
 // routes
 router.get("/", getLinks);
