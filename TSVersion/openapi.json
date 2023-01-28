@@ -495,9 +495,6 @@
                     },
                     "hasGroup": {
                       "type": "boolean"
-                    },
-                    "groupToken": {
-                      "type": "string"
                     }
                   }
                 }
@@ -532,7 +529,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "groupToken": {
+                    "message(?)": {
                       "type": "string"
                     }
                   }
