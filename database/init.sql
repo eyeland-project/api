@@ -1,203 +1,272 @@
 -- THIS IS A POSTGRESQL INITIALIZATION FILE
+-- TODO: check order of creation of tables to avoid errors
 DROP DATABASE IF EXISTS mydb;
 CREATE DATABASE mydb;
 \connect mydb;
 
 -- CREATING TABLES
 -- create table task
-create table Tasks (
-    ID_Task serial not null,
-    Nombre varchar(255) not null,
-    Descripcion varchar(255) not null,
-    Orden INTEGER not null,
-    MensajePreTask varchar(255),
-    MensajeInTask varchar(255),
-    MensajePosTask varchar(255),
+CREATE TABLE task (
+    id_task SMALLSERIAL NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(2000) NOT NULL,
+    task_order SMALLINT NOT NULL,
+    msg_pretask VARCHAR(1000),
+    msg_intask VARCHAR(1000),
+    msg_postask VARCHAR(1000),
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
-    constraint pk_task primary key (ID_Task),
-    -- orden as an unique key
-    constraint uk_orden unique (Orden)
+    CONSTRAINT pk_task PRIMARY KEY (id_task),
+    CONSTRAINT uk_task_order UNIQUE (task)
 );
 
 -- create table links (pre-task)
-create table Links (
-    ID_Link serial not null,
-    ID_Task INTEGER not null,
-    Tema varchar(255) not null,
-    Url_dir varchar(255) not null,
+CREATE TABLE link (
+    id_link SERIAL NOT NULL,
+    id_task SMALLSERIAL NOT NULL,
+    topic VARCHAR(100) NOT NULL,
+    url VARCHAR(2048) NOT NULL,
     -- CONSTRAINTS
-    constraint pk_link primary key (ID_Link),
-    constraint fk_task foreign key (ID_Task) references Tasks(ID_Task)
+    CONSTRAINT pk_link PRIMARY KEY (id_link)
+    CONSTRAINT fk_task FOREIGN KEY (id_task) REFERENCES task(id_task)
 );
 
 -- CREATING TABLE preguntas
-create table Preguntas (
-    ID_Pregunta serial not null,
-    Pregunta varchar(255) not null,
-    Imagen varchar(255),
-    Audio varchar(255),
-    Video varchar(255),
-    Retroalimentacion varchar(255),
-    Tipo varchar(255) not null,
-    Examen boolean not null,
-    ID_Task INTEGER not null,
-    Orden integer not null,
+CREATE TABLE question (
+    id_question SERIAL NOT NULL,
+    id_task SMALLSERIAL NOT NULL,
+    content VARCHAR(100) NOT NULL,
+    audio_url VARCHAR(2048),
+    video_url VARCHAR(2048),
+    type VARCHAR(50) NOT NULL,
+    exam BOOLEAN NOT NULL,
+    question_order SMALLINT NOT NULL,
+    img_alt VARCHAR(50),
+    img_url VARCHAR(2048),
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
-    constraint pk_pregunta primary key (ID_Pregunta),
-    constraint fk_task foreign key (ID_Task) references Tasks(ID_Task),
-    -- unique key with ID_Task and Orden
-    constraint uk_constr unique (ID_Task, Orden, Examen)
+    CONSTRAINT pk_question PRIMARY KEY (id_question),
+    CONSTRAINT fk_task FOREIGN KEY (id_task) REFERENCES task(id_task),
+    -- CONSTRAINT uk_constr UNIQUE (id_task, question_order, exam) -- should question_order be unique?
+    CONSTRAINT uk_constr UNIQUE (id_task, exam)
 );
 
 -- CREATING TABLE respuestas
-create table Respuestas (
-    ID_Respuesta serial not null,
-    Contenido varchar(255) not null,
-    Correcta boolean not null,
-    ID_Pregunta INTEGER not null,
+CREATE TABLE option (
+    id_option SERIAL NOT NULL,
+    id_question SERIAL NOT NULL,
+    feedback VARCHAR(100),
+    content VARCHAR(1000) NOT NULL,
+    correct BOOLEAN NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
-    constraint pk_respuesta primary key (ID_Respuesta),
-    constraint fk_pregunta foreign key (ID_Pregunta) references Preguntas(ID_Pregunta)
+    CONSTRAINT pk_option PRIMARY KEY (id_option),
+    CONSTRAINT fk_question FOREIGN KEY (id_question) REFERENCES question(id_question)
 );
 
 -- create table Instituciones
-create table Instituciones (
-    ID_Institucion serial not null,
-    Nombre varchar(255) not null,
-    NIT varchar(255) not null,
-    Direccion varchar(255) not null,
-    Ciudad varchar(255) not null,
-    Pais varchar(255) not null,
-    Telefono varchar(255) not null,
-    Email varchar(255) not null,
+CREATE TABLE institution (
+    id_institution SMALLSERIAL NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    nit CHAR(9) NOT NULL,
+    address VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
+    email VARCHAR(320) NOT NULL,
     -- CONSTRAINTS
-    constraint pk_institucion primary key (ID_Institucion)
+    CONSTRAINT pk_institution PRIMARY KEY (id_institution),
+    CONSTRAINT uk_nit UNIQUE (nit)
 );
+
 -- create table Profesores
-create table Profesores (
-    ID_Profesor serial not null,
-    Nombre varchar(255) not null,
-    Apellido varchar(255) not null,
-    Email varchar(255) not null,
-    Username varchar(255) not null,
-    Password varchar(255) not null,
-    ID_Institucion INTEGER not null,
+CREATE TABLE teacher (
+    id_teacher SERIAL NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    password CHAR(60) NOT NULL,
+    id_institution SMALLSERIAL NOT NULL,
     -- CONSTRAINTS
-    constraint pk_profesor primary key (ID_Profesor),
-    constraint fk_institucion_profesor foreign key (ID_Institucion) references Instituciones(ID_Institucion)
+    CONSTRAINT pk_teacher PRIMARY KEY (id_teacher),
+    CONSTRAINT fk_institution FOREIGN KEY (id_institution) REFERENCES institution(id_institution)
+    CONSTRAINT uk_email UNIQUE (email)
+    CONSTRAINT uk_username UNIQUE (username)
 );
 
 -- create table Cursos
-create table Cursos (
-    ID_Curso serial not null,
-    Nombre varchar(255) not null,
-    Descripcion varchar(255),
-    ID_Profesor INTEGER not null,
-    ID_Institucion INTEGER not null,
-    Status boolean not null default false,
+CREATE TABLE course (
+    id_course SERIAL NOT NULL,
+    id_teacher SERIAL NOT NULL,
+    id_institution SMALLSERIAL NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    description VARCHAR(1000),
+    status BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
-    constraint pk_curso primary key (ID_Curso),
-    constraint fk_profesor foreign key (ID_Profesor) references Profesores(ID_Profesor),
-    constraint fk_institucion_curso foreign key (ID_Institucion) references Instituciones(ID_Institucion)
+    CONSTRAINT pk_course PRIMARY KEY (id_course),
+    CONSTRAINT fk_teacher FOREIGN KEY (id_teacher) REFERENCES teacher(id_teacher),
+    CONSTRAINT fk_institution FOREIGN KEY (id_institution) REFERENCES institution(id_institution)
 );
 
 -- create table Estudiantes
-create table Estudiantes (
-    ID_Estudiante serial not null,
-    Nombre varchar(255) not null,
-    Apellido varchar(255) not null,
-    Email varchar(255) not null,
-    Username varchar(255) not null,
-    Password varchar(255) not null,
-    ID_Curso INTEGER not null,
+CREATE TABLE student (
+    id_student SERIAL NOT NULL,
+    id_course SERIAL NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    current_team SERIAL,
+    blindness VARCHAR(50) NOT NULL,
+    password CHAR(60) NOT NULL,
     -- CONSTRAINTS
-    constraint pk_estudiante primary key (ID_Estudiante),
-    -- email as an unique key
-    constraint uk_email_estudiantes unique (Email),
-    -- foreign key to Curso
-    constraint fk_curso foreign key (ID_Curso) references Cursos(ID_Curso)
+    CONSTRAINT pk_student PRIMARY KEY (id_student),
+    CONSTRAINT fk_course FOREIGN KEY (id_course) REFERENCES course(id_course)
+    CONSTRAINT fk_team FOREIGN KEY (current_team) REFERENCES team(id_team)
+    CONSTRAINT uk_email UNIQUE (email)
+    CONSTRAINT uk_username UNIQUE (username)
+    CONSTRAINT check_blindness CHECK (blindness IN ('total', 'partial', 'none'))
 );
 
 -- create table Grupos
--- * Every group has 3 students
-create table Grupos (
-    ID_Grupo serial not null,
-    -- ID_Curso serial not null,
-    Nombre varchar(255) not null,
-    Token varchar(255) not null,
-    ID_Estudiante1 INTEGER null,
-    ID_Estudiante2 INTEGER null,
-    ID_Estudiante3 INTEGER null,
-    AvailableTasks INTEGER not null,
+CREATE TABLE team (
+    id_team SERIAL NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    code CHAR(6) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    id_course SERIAL NOT NULL,
     -- CONSTRAINTS
-    constraint pk_grupo primary key (ID_Grupo),
-    -- constraint fk_curso foreign key (ID_Curso) references Curso(ID_Curso),
-    constraint fk_estudiante1 foreign key (ID_Estudiante1) references Estudiantes(ID_Estudiante),
-    constraint fk_estudiante2 foreign key (ID_Estudiante2) references Estudiantes(ID_Estudiante),
-    constraint fk_estudiante3 foreign key (ID_Estudiante3) references Estudiantes(ID_Estudiante),
-    foreign key (AvailableTasks) references Tasks(ID_Task)
+    CONSTRAINT pk_team PRIMARY KEY (id_team),
+    CONSTRAINT fk_course FOREIGN KEY (id_course) REFERENCES course(id_course)
 );
 
-ALTER TABLE Estudiantes ADD COLUMN GrupoActual INTEGER NULL REFERENCES Grupos(ID_Grupo);
-
-create table Admins (
-    ID_Admin serial not null,
-    Nombre varchar(255) not null,
-    Apellido varchar(255) not null,
-    Email varchar(255) not null,
-    Username varchar(255) not null,
-    Password varchar(255) not null,
+-- create table Estudiantes_Grupos
+CREATE TABLE student_team (
+    -- id_student_team SERIAL NOT NULL, -- not needed
+    power VARCHAR(20) NOT NULL,
+    id_student SERIAL NOT NULL,
+    id_team SERIAL NOT NULL,
     -- CONSTRAINTS
-    constraint pk_admin primary key (ID_Admin),
-    -- email as an unique key
-    constraint uk_email_admin unique (Email)
+    CONSTRAINT pk_student_team PRIMARY KEY (id_student_team),
+    CONSTRAINT fk_student FOREIGN KEY (id_student) REFERENCES student(id_student),
+    CONSTRAINT fk_team FOREIGN KEY (id_team) REFERENCES team(id_team)
+    CONSTRAINT check_power CHECK (power IN ('super_hearing', 'memory_pro', 'super_radar'))
+);
+
+-- create table Administradores
+CREATE TABLE admin (
+    id_admin SERIAL NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    password CHAR(60) NOT NULL,
+    -- CONSTRAINTS
+    CONSTRAINT pk_admin PRIMARY KEY (id_admin)
+    CONSTRAINT uk_email UNIQUE (email)
+    CONSTRAINT uk_username UNIQUE (username)
+);
+
+-- create table 
+CREATE TABLE task_attempt (
+    id_task_attempt SERIAL NOT NULL,
+    id_task SMALLSERIAL NOT NULL,
+    id_team SERIAL NOT NULL,
+    id_student SERIAL NOT NULL,
+    task_phase SMALLINT NOT NULL,
+    success BOOLEAN NOT NULL,
+    completed BOOLEAN NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    -- CONSTRAINTS
+    CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
+    CONSTRAINT fk_task FOREIGN KEY (id_task) REFERENCES task(id_task),
+    CONSTRAINT fk_team FOREIGN KEY (id_team) REFERENCES team(id_team),
+    CONSTRAINT fk_student FOREIGN KEY (id_student) REFERENCES student(id_student)
+);
+
+-- create table
+CREATE TABLE answer_attempt (
+    id_answer_attempt SERIAL NOT NULL,
+    id_question SERIAL NOT NULL,
+    id_option SERIAL NOT NULL,
+    id_task_attempt SERIAL NOT NULL,
+    count INTEGER NOT NULL,
+    time_stamp TIMESTAMP NOT NULL,
+    -- CONSTRAINTS
+    CONSTRAINT pk_answer_attempt PRIMARY KEY (id_answer_attempt),
+    CONSTRAINT fk_question FOREIGN KEY (id_question) REFERENCES question(id_question),
+    CONSTRAINT fk_option FOREIGN KEY (id_option) REFERENCES option(id_option),
+    CONSTRAINT fk_task_attempt FOREIGN KEY (id_task_attempt) REFERENCES task_attempt(id_task_attempt)
+);
+
+CREATE TABLE answer_attempt_audio (
+    id_answer_attempt_audio SERIAL NOT NULL,
+    id_answer_attempt SERIAL NOT NULL,
+    topic VARCHAR(100) NOT NULL,
+    url VARCHAR(2048) NOT NULL,
+    -- CONSTRAINTS
+    CONSTRAINT pk_answer_attempt_audio PRIMARY KEY (id_answer_attempt_audio),
+    CONSTRAINT fk_answer_attempt FOREIGN KEY (id_answer_attempt) REFERENCES answer_attempt(id_answer_attempt)
 );
 
 -- TODO: create table Animal
 -- TODO: create table Historial
 
 -- INSERTING DATA
--- insert into task
-insert into Tasks (Nombre, Descripcion, Orden, MensajePreTask, MensajeInTask, MensajePosTask) values ('Task 1', 'Description 1', 1, 'MensajePreTask1', 'MensajeInTask1', 'MensajePosTask1');
+-- INSERT INTO task
+INSERT INTO task (name, description, task_order, msg_pretask, msg_intask, msg_postask) VALUES ('Task 1', 'Description 1', 1, 'MensajePreTask1', 'MensajeInTask1', 'MensajePosTask1');
 
--- insert into links
-insert into Links (ID_Task, Tema, Url_dir) values (1, 'google', 'http://www.google.com');
-insert into Links (ID_Task, Tema, Url_dir) values (1, 'Generado por Copilot', 'https://www.youtube.com/watch?v=is4RZQLodKU');
+-- INSERT INTO links
+INSERT INTO link (id_task, topic, url) VALUES (1, 'google', 'http://www.google.com');
+INSERT INTO link (id_task, topic, url) VALUES (1, 'Generado por Copilot', 'https://www.youtube.com/watch?v=is4RZQLodKU');
 
--- insert into preguntas
-insert into Preguntas (Pregunta, Retroalimentacion, Tipo, Examen, ID_Task, Orden) values ('¿Cuál es el secreto de la vida?', 'Retroalimentacion1', 'multiple', false, 1, 1);
-insert into Preguntas (Pregunta, Retroalimentacion, Tipo, Examen, ID_Task, Orden) values ('¿La repuesta es sí?', 'Retroalimentacion2', 'multiple', false, 1, 2);
-insert into Preguntas (Pregunta, Retroalimentacion, Tipo, Examen, ID_Task, Orden) values ('¿La repuesta es no?', 'Retroalimentacion3', 'multiple', false, 1, 3);
-insert into Preguntas (Pregunta, Retroalimentacion, Tipo, Examen, ID_Task, Orden) values ('esto es del postask?', 'Retroalimentacion3', 'multiple', true, 1, 1);
-insert into Preguntas (Pregunta, Retroalimentacion, Tipo, Examen, ID_Task, Orden) values ('graba audio', 'Retroalimentacion4', 'audio', true, 1, 2);
+-- INSERT INTO preguntas
+INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, '¿Cuál es el secreto de la vida?', NULL, NULL, 'multiple', false, 1, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es sí?', NULL, NULL, 'multiple', false, 2, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es no?', NULL, NULL, 'multiple', false, 3, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'esto es del postask?', NULL, NULL, 'multiple', true, 1, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'graba audio', NULL, NULL, 'audio', true, 2, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'Auxilio, Camilo nos tiene esclavizados', NULL, NULL, 'video', true, 3, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'Esto no es joda', NULL, NULL, 'video', true, 4, NULL, NULL);
 
--- insert into respuestas
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('', false, 1);
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('La amista', false, 1);
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('El money', false, 1);
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('La tuya por si acaso', true, 1);
+-- INSERT INTO respuestas
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (1, 1, 'Retroalimentacion1', '', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (2, 1, 'Retroalimentacion1', 'La amista', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (3, 1, 'Retroalimentacion1', 'El money', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (4, 1, 'Retroalimentacion1', 'La tuya por si acaso', true);
 
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('sí', true, 2);
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('no', true, 2);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (5, 2, 'Retroalimentacion2', 'sí', true);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (6, 2, 'Retroalimentacion2', 'no', true);
 
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('sí', false, 3);
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('no', true, 3);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (7, 3, 'Retroalimentacion3', 'sí', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (8, 3, 'Retroalimentacion3', 'no', true);
 
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('sí', false, 4);
-insert into Respuestas (Contenido, Correcta, ID_Pregunta) values ('no', true, 4);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (9, 4, 'Retroalimentacion4', 'sí', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (10, 4, 'Retroalimentacion4', 'no', true);
+
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (11, 5, 'Retroalimentacion5', 'sí', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (12, 5, 'Retroalimentacion5', 'no', true);
+
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (13, 6, 'Retroalimentacion6', 'sí', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (14, 6, 'Retroalimentacion6', 'no', true);
+
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (15, 7, 'Retroalimentacion7', 'sí', false);
+INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (16, 7, 'Retroalimentacion7', 'no', true);
 
 -- *INSERTANDO USUARIOS E INSTITUCIONES DE PRUEBA
--- insert into Instituciones
-insert into Instituciones (Nombre, NIT, Direccion, Ciudad, Pais, Telefono, Email) values ('Institución de prueba', '123456789', 'Cra 45 # 23-67', 'Barranquilla', 'Colombia', '1234567', 'prueba@test.com');
+-- INSERT INTO Instituciones
+INSERT INTO institution (id_institution, name, nit, address, city, country, phone, email) VALUES (1, 'Institución de prueba', '123456789', 'Cra 45 # 23-67', 'Barranquilla', 'Colombia', '1234567', 'prueba@test.com');
 
--- insert into Profesores
-insert into Profesores (Nombre, Apellido, Email, Username, Password, ID_Institucion) values ('Profesor', 'Prueba', 'professor@test.com', 'professor', 'professor', 1);
+-- INSERT INTO Profesores
+INSERT INTO teacher (id_teacher, id_institution, first_name, last_name, email, username, password) VALUES (1, 1, 'Profesor', 'Prueba', 'teacher@test.com', 'teacher', 'teacher');
 
--- insert into Cursos
-insert into Cursos (Nombre, Descripcion, ID_Profesor, ID_Institucion) values ('Curso de prueba', 'Curso de prueba para la aplicación', 1, 1);
+-- INSERT INTO Cursos
+INSERT INTO course (id_course, id_institution, id_teacher, name, description) VALUES (1, 1, 1, 'Curso de prueba', 'Curso de prueba para la aplicación');
 
--- insert into Estudiantes
-insert into Estudiantes (Nombre, Apellido, Email, Username, Password, ID_Curso) values ('Estudiante', 'Prueba', 'student@test.com', 'student', 'student', 1);
+-- INSERT INTO Estudiantes
+INSERT INTO student (id_student, id_course, first_name, last_name, email, username, password, current_team, blindness) VALUES (1, 1, 'Estudiante', 'Prueba', 'student@test.com', 'student', 'student', 1, 'none');
 
--- insert into Administradores
-insert into Admins (Nombre, Apellido, Email, Username, Password) values ('Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
+-- INSERT INTO Administradores
+INSERT INTO admin (id_admin, first_name, last_name, email, username, password) VALUES (1, 'Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
