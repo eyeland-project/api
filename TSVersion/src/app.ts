@@ -2,11 +2,13 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-dotenv.config({override: true});
-const result = dotenv.config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`) });
-if (process.env.NODE_ENV && process.env.NODE_ENV!=="production" && result.error) {
-    console.log(process.env.NODE_ENV)
-    throw result.error;
+dotenv.config({ override: true });
+if (process.env.NODE_ENV) {
+    const result = dotenv.config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`) });
+    if (process.env.NODE_ENV !== "production" && result.error) {
+        console.log(process.env.NODE_ENV)
+        throw result.error;
+    }
 }
 
 //* Express aplication
@@ -23,15 +25,16 @@ const swaggerDocument = require('../openapi.json');
 
 //* Express configuration and middlewares
 app.set('port', process.env.PORT || 3000);
+app.set('json spaces', 2);
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 //* Routes
 app.use('/api-legacy', require('../../legacy/src/app')._router);
 import indexRoutes from './routes';
-app.use('/api',indexRoutes);
+app.use('/api', indexRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //* handlers
