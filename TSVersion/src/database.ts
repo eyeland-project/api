@@ -1,8 +1,8 @@
 // creating a sequelize instance to postgres database
-import {Sequelize} from 'sequelize';
+import { Sequelize } from 'sequelize';
 // const {database_conf} = require('./config');
 let conf: any[];
-if(process.env.DB_URL){
+if (process.env.DB_URL) {
     conf = [process.env.DB_URL, {
         dialect: 'postgres',
         protocol: 'postgres',

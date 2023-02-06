@@ -4,7 +4,6 @@ import sequelize from '../database';
 import { comparePassword, hashPassword } from '../utils';
 import { AdminModel } from '../types/Admins.types';
 
-
 // model definition
 const Admins = sequelize.define<AdminModel>('admins', {
     id_admin: {

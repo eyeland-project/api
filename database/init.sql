@@ -40,7 +40,6 @@ CREATE TABLE question (
     audio_url VARCHAR(2048),
     video_url VARCHAR(2048),
     type VARCHAR(50) NOT NULL,
-    -- exam BOOLEAN NOT NULL,
     question_order SMALLINT NOT NULL,
     img_alt VARCHAR(50),
     img_url VARCHAR(2048),
@@ -48,8 +47,8 @@ CREATE TABLE question (
     -- CONSTRAINTS
     CONSTRAINT pk_question PRIMARY KEY (id_question),
     CONSTRAINT fk_question_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    -- CONSTRAINT uk_question_constr UNIQUE (id_task, question_order, exam)
     CONSTRAINT uk_question_constr UNIQUE (id_task, question_order)
+    CONSTRAINT check_question_type CHECK (type IN ('select', 'audio')
 );
 
 -- CREATING TABLE respuestas
@@ -195,7 +194,8 @@ CREATE TABLE answer (
     id_option SERIAL NOT NULL,
     id_task_attempt SERIAL NOT NULL,
     count INTEGER NOT NULL,
-    time_stamp TIMESTAMP NOT NULL,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_answer PRIMARY KEY (id_answer),
     CONSTRAINT fk_answer_question FOREIGN KEY (id_question) REFERENCES question(id_question),
