@@ -11,8 +11,9 @@ CREATE TABLE task (
     name VARCHAR(100) NOT NULL,
     description VARCHAR(2000) NOT NULL,
     task_order SMALLINT NOT NULL,
+    thumbnail_url VARCHAR(2048),
     msg_pretask VARCHAR(1000),
-    msg_intask VARCHAR(1000),
+    msg_duringtask VARCHAR(1000),
     msg_postask VARCHAR(1000),
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
@@ -39,7 +40,7 @@ CREATE TABLE question (
     audio_url VARCHAR(2048),
     video_url VARCHAR(2048),
     type VARCHAR(50) NOT NULL,
-    exam BOOLEAN NOT NULL,
+    -- exam BOOLEAN NOT NULL,
     question_order SMALLINT NOT NULL,
     img_alt VARCHAR(50),
     img_url VARCHAR(2048),
@@ -47,7 +48,8 @@ CREATE TABLE question (
     -- CONSTRAINTS
     CONSTRAINT pk_question PRIMARY KEY (id_question),
     CONSTRAINT fk_question_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    CONSTRAINT uk_question_constr UNIQUE (id_task, question_order, exam)
+    -- CONSTRAINT uk_question_constr UNIQUE (id_task, question_order, exam)
+    CONSTRAINT uk_question_constr UNIQUE (id_task, question_order)
 );
 
 -- CREATING TABLE respuestas
@@ -167,22 +169,23 @@ CREATE TABLE admin (
     CONSTRAINT uk_admin_username UNIQUE (username)
 );
 
--- create table 
+-- create table
 CREATE TABLE task_attempt (
     id_task_attempt SERIAL NOT NULL,
     id_task SMALLSERIAL NOT NULL,
-    id_team SERIAL NOT NULL,
-    id_student SERIAL NOT NULL,
-    task_phase SMALLINT NOT NULL,
-    success BOOLEAN NOT NULL,
-    completed BOOLEAN NOT NULL,
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL,
+    id_team SERIAL,
+    id_student SERIAL,
+    task_phase VARCHAR(20) NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_time TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
     CONSTRAINT fk_task_attempt_task FOREIGN KEY (id_task) REFERENCES task(id_task),
     CONSTRAINT fk_task_attempt_team FOREIGN KEY (id_team) REFERENCES team(id_team),
     CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student)
+    CONSTRAINT check_task_attempt_task_phase CHECK (task_phase IN ('pretask', 'duringtask', 'postask'))
+    CONSTRAINT check_task_attempt_by CHECK (id_team IS NOT NULL OR id_student IS NOT NULL)
 );
 
 -- create table
@@ -216,20 +219,20 @@ CREATE TABLE answer_audio (
 
 -- INSERTING DATA
 -- INSERT INTO task
-INSERT INTO task (name, description, task_order, msg_pretask, msg_intask, msg_postask) VALUES ('Task 1', 'Description 1', 1, 'MensajePreTask1', 'MensajeInTask1', 'MensajePosTask1');
+INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 1', 'Description 1', 1, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
 
 -- INSERT INTO links
 INSERT INTO link (id_task, topic, url) VALUES (1, 'google', 'http://www.google.com');
 INSERT INTO link (id_task, topic, url) VALUES (1, 'Generado por Copilot', 'https://www.youtube.com/watch?v=is4RZQLodKU');
 
 -- INSERT INTO preguntas
-INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, '¿Cuál es el secreto de la vida?', NULL, NULL, 'multiple', false, 1, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es sí?', NULL, NULL, 'multiple', false, 2, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es no?', NULL, NULL, 'multiple', false, 3, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'esto es del postask?', NULL, NULL, 'multiple', true, 1, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'graba audio', NULL, NULL, 'audio', true, 2, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'Auxilio, Camilo nos tiene esclavizados', NULL, NULL, 'video', true, 3, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, exam, question_order, img_alt, img_url) VALUES (1, 'Esto no es joda', NULL, NULL, 'video', true, 4, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿Cuál es el secreto de la vida?', NULL, NULL, 'multiple', 1, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es sí?', NULL, NULL, 'multiple', 2, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es no?', NULL, NULL, 'multiple', 3, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'esto es del postask?', NULL, NULL, 'multiple', 1, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'graba audio', NULL, NULL, 'audio', 2, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'Auxilio, Camilo nos tiene esclavizados', NULL, NULL, 'video', 3, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'Esto no es joda', NULL, NULL, 'video', 4, NULL, NULL);
 
 -- INSERT INTO respuestas
 INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (1, 1, 'Retroalimentacion1', '', false);
