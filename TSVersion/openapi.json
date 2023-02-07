@@ -343,6 +343,111 @@
         }
       }
     },
+    "/tasks/{taskOrder}/pretask/links": {
+      "get": {
+        "description": "Temporal. Get the a summary of the links of the PreTask.",
+        "tags": [
+          "question"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinksCount"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid number supplied."
+          },
+          "401": {
+            "description": "You are not authorized to access this content."
+          },
+          "404": {
+            "description": "Task not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      }
+    },
+    "/tasks/{taskOrder}/pretask/links/{linkOrder}": {
+      "get": {
+        "description": "Temporal. Get the Link of the PreTask based on the number of the Task and the id of the link.",
+        "tags": [
+          "question"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task."
+          },
+          {
+            "name": "linkOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the link inside the PreTask.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkPreTask"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid number supplied."
+          },
+          "401": {
+            "description": "You are not authorized to access this content."
+          },
+          "404": {
+            "description": "Task not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      }
+    },
     "/tasks/{taskOrder}/pretask/questions": {
       "get": {
         "description": "Get the a summary of the questions of the PreTask based on the number of the Task.",
@@ -446,9 +551,7 @@
             "description": "Server Error."
           }
         }
-      }
-    },
-    "/tasks/{taskOrder}/pretask/questions/{questionOrder}/answer": {
+      },
       "post": {
         "description": "Get the PosTask question based on the number of the Task and the number of the question inside the task",
         "tags": [
@@ -589,7 +692,7 @@
             "name": "questionOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the question inside the task",
+            "description": "The number of the question inside the task.",
             "schema": {
               "type": "integer"
             }
@@ -619,9 +722,7 @@
             "description": "Server Error."
           }
         }
-      }
-    },
-    "/tasks/{taskOrder}/duringtask/questions/{questionOrder}/answer": {
+      },
       "post": {
         "description": "Get the DuringTask question based on the number of the Task and the number of the question inside the task",
         "tags": [
@@ -792,9 +893,7 @@
             "description": "Server Error."
           }
         }
-      }
-    },
-    "/tasks/{taskOrder}/postask/questions/{questionOrder}/answer": {
+      },
       "post": {
         "description": "Get the PosTask question based on the number of the Task and the number of the question inside the task",
         "tags": [
@@ -1101,6 +1200,34 @@
           "numQuestions": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "LinksCount": {
+        "type": "object",
+        "properties": {
+          "numLinks": {
+            "type": "integer"
+          },
+          "availableLinks": {
+            "type": "integer",
+            "description": "The number of questions available for the task"
+          }
+        }
+      },
+      "LinkPreTask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "topic": {
+            "type": "string",
+            "description": "A topic to describe the link"
+          },
+          "url": {
+            "type": "string"
           }
         }
       },
