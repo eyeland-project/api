@@ -928,14 +928,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/AnswerOption"
-                  },
-                  {
-                    "$ref": "#/components/schemas/AnswerAudio"
-                  }
-                ]
+                "$ref": "#/components/schemas/AnswerOption"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerAudio"
               }
             }
           }
