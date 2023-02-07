@@ -1,21 +1,23 @@
 import fs from 'fs';
 import { Router } from 'express';
-const router = Router();
-import path from 'path';
+import { join } from 'path';
 
-function chargeRoutes(dir: string): void {
+const router = Router();
+const rel = (...path: string[]) => join(__dirname, ...path);
+
+function chargeRoutes(dir: string = ''): void {
     console.log('loading routes from:', dir);
 
-    fs.readdirSync(dir).filter(file => file.match(/(.+\.)?routes\.ts$/) ||
-        fs.statSync(path.join(__dirname, file)).isDirectory()).forEach(file => {
+    fs.readdirSync(rel(dir)).filter(file => file.match(/(.+\.)?routes\.ts$/) ||
+        fs.statSync(rel(dir, file)).isDirectory()).forEach(file => {
 
-            if (fs.statSync(path.join(__dirname, file)).isDirectory()) {
+            if (fs.statSync(rel(dir, file)).isDirectory()) {
                 chargeRoutes(dir + '/' + file);
             } else {
                 console.log('loading route:', file);
                 // using dynamic imports to charge every route in the router
-                import(`./${file}`).then(route => {
-                    router.use(`/${file.replace(/\.?routes\.ts/, '')}`, route.router);
+                import(rel(dir, file)).then(({ default: subRouter }: { default: Router }) => {
+                    router.use(`${dir}/${file.replace(/\.?routes\.ts/, '')}`, subRouter);
                 }).catch(err => {
                     console.log('error reading route:', file);
                     console.log(err);
@@ -24,7 +26,7 @@ function chargeRoutes(dir: string): void {
 
         });
 }
-chargeRoutes(__dirname);
+chargeRoutes();
 
 router.get('/ping', (_, res) => {
     res.send('pong');
