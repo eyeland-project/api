@@ -8,16 +8,30 @@ const rel = (...path: string[]) => join(__dirname, ...path);
 function chargeRoutes(dir: string = ''): void {
     console.log('loading routes from:', dir);
 
-    fs.readdirSync(rel(dir)).filter(file => file.match(/(.+\.)?routes\.ts$/) ||
-        fs.statSync(rel(dir, file)).isDirectory()).forEach(file => {
+    fs.readdirSync(rel(dir))
+        .filter(file => (
+            file.match(/(.+\.)?routes\.ts$/) || fs.statSync(rel(dir, file)).isDirectory()
+        ))
+        .forEach(file => {
 
             if (fs.statSync(rel(dir, file)).isDirectory()) {
                 chargeRoutes(dir + '/' + file);
             } else {
-                console.log('loading route:', file);
-                // using dynamic imports to charge every route in the router
+                console.log('loading subRouter:', file);
+                // using dynamic imports to charge every subRouter in the router
                 import(rel(dir, file)).then(({ default: subRouter }: { default: Router }) => {
-                    router.use(`${dir}/${file.replace(/\.?routes\.ts/, '')}`, subRouter);
+                    let route = `${dir}/${file.replace(/\.?routes\.ts/, '')}`;
+
+                    // ignore files that start with _
+                    route = route.replaceAll(/\/_[^\/]+/g, "");
+                    // replace {param} with :param
+                    route = route.replaceAll(/\/\{([^\/]+)\}/g, "/:$1");
+                    // console.log('route:', route);
+                    // console.log('imported file', rel(dir, file));
+                    // console.log(subRouter.stack);
+                    
+
+                    router.use(route, subRouter);
                 }).catch(err => {
                     console.log('error reading route:', file);
                     console.log(err);
