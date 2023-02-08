@@ -24,7 +24,7 @@ CREATE TABLE task (
 -- create table links (pre-task)
 CREATE TABLE link (
     id_link SERIAL NOT NULL,
-    id_task SMALLSERIAL NOT NULL,
+    id_task SMALLINT NOT NULL,
     topic VARCHAR(100) NOT NULL,
     url VARCHAR(2048) NOT NULL,
     -- CONSTRAINTS
@@ -35,7 +35,7 @@ CREATE TABLE link (
 -- CREATING TABLE preguntas
 CREATE TABLE question (
     id_question SERIAL NOT NULL,
-    id_task SMALLSERIAL NOT NULL,
+    id_task SMALLINT NOT NULL,
     content VARCHAR(100) NOT NULL,
     audio_url VARCHAR(2048),
     video_url VARCHAR(2048),
@@ -47,14 +47,14 @@ CREATE TABLE question (
     -- CONSTRAINTS
     CONSTRAINT pk_question PRIMARY KEY (id_question),
     CONSTRAINT fk_question_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    CONSTRAINT uk_question_constr UNIQUE (id_task, question_order)
-    CONSTRAINT check_question_type CHECK (type IN ('select', 'audio')
+    CONSTRAINT uk_question_constr UNIQUE (id_task, question_order),
+    CONSTRAINT check_question_type CHECK (type IN ('select', 'audio'))
 );
 
 -- CREATING TABLE respuestas
 CREATE TABLE option (
     id_option SERIAL NOT NULL,
-    id_question SERIAL NOT NULL,
+    id_question INTEGER NOT NULL,
     feedback VARCHAR(100),
     content VARCHAR(1000) NOT NULL,
     correct BOOLEAN NOT NULL,
@@ -81,13 +81,13 @@ CREATE TABLE institution (
 
 -- create table Profesores
 CREATE TABLE teacher (
-    id_teacher SERIAL NOT NULL,
+    id_teacher SMALLSERIAL NOT NULL,
+    id_institution SMALLINT NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(320) NOT NULL,
     username VARCHAR(50) NOT NULL,
     password CHAR(60) NOT NULL,
-    id_institution SMALLSERIAL NOT NULL,
     -- CONSTRAINTS
     CONSTRAINT pk_teacher PRIMARY KEY (id_teacher),
     CONSTRAINT fk_teacher_institution FOREIGN KEY (id_institution) REFERENCES institution(id_institution),
@@ -97,9 +97,9 @@ CREATE TABLE teacher (
 
 -- create table Cursos
 CREATE TABLE course (
-    id_course SERIAL NOT NULL,
-    id_teacher SERIAL NOT NULL,
-    id_institution SMALLSERIAL NOT NULL,
+    id_course SMALLSERIAL NOT NULL,
+    id_teacher SMALLINT NOT NULL,
+    id_institution SMALLINT NOT NULL,
     name VARCHAR(50) NOT NULL,
     description VARCHAR(1000),
     status BOOLEAN NOT NULL DEFAULT FALSE,
@@ -112,7 +112,7 @@ CREATE TABLE course (
 -- create table Grupos
 CREATE TABLE team (
     id_team SERIAL NOT NULL,
-    id_course SERIAL NOT NULL,
+    id_course SMALLINT NOT NULL,
     name VARCHAR(50) NOT NULL,
     code CHAR(6),
     active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -124,7 +124,7 @@ CREATE TABLE team (
 -- create table Estudiantes
 CREATE TABLE student (
     id_student SERIAL NOT NULL,
-    id_course SERIAL NOT NULL,
+    id_course SMALLINT NOT NULL,
     current_team INTEGER,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
@@ -144,9 +144,9 @@ CREATE TABLE student (
 -- create table Estudiantes_Grupos
 CREATE TABLE student_team (
     id_student_team SERIAL NOT NULL,
+    id_student INTEGER NOT NULL,
+    id_team INTEGER NOT NULL,
     power VARCHAR(20) NOT NULL,
-    id_student SERIAL NOT NULL,
-    id_team SERIAL NOT NULL,
     -- CONSTRAINTS
     CONSTRAINT pk_student_team PRIMARY KEY (id_student_team),
     CONSTRAINT fk_student_team_student FOREIGN KEY (id_student) REFERENCES student(id_student),
@@ -156,7 +156,7 @@ CREATE TABLE student_team (
 
 -- create table Administradores
 CREATE TABLE admin (
-    id_admin SERIAL NOT NULL,
+    id_admin SMALLSERIAL NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(320) NOT NULL,
@@ -171,9 +171,9 @@ CREATE TABLE admin (
 -- create table
 CREATE TABLE task_attempt (
     id_task_attempt SERIAL NOT NULL,
-    id_task SMALLSERIAL NOT NULL,
-    id_team SERIAL,
-    id_student SERIAL,
+    id_task SMALLINT NOT NULL,
+    id_team INTEGER,
+    id_student INTEGER,
     task_phase VARCHAR(20) NOT NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -182,17 +182,17 @@ CREATE TABLE task_attempt (
     CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
     CONSTRAINT fk_task_attempt_task FOREIGN KEY (id_task) REFERENCES task(id_task),
     CONSTRAINT fk_task_attempt_team FOREIGN KEY (id_team) REFERENCES team(id_team),
-    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student)
-    CONSTRAINT check_task_attempt_task_phase CHECK (task_phase IN ('pretask', 'duringtask', 'postask'))
+    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student),
+    CONSTRAINT check_task_attempt_task_phase CHECK (task_phase IN ('pretask', 'duringtask', 'postask')),
     CONSTRAINT check_task_attempt_by CHECK (id_team IS NOT NULL OR id_student IS NOT NULL)
 );
 
 -- create table
 CREATE TABLE answer (
     id_answer SERIAL NOT NULL,
-    id_question SERIAL NOT NULL,
-    id_option SERIAL NOT NULL,
-    id_task_attempt SERIAL NOT NULL,
+    id_question INTEGER NOT NULL,
+    id_option INTEGER NOT NULL,
+    id_task_attempt INTEGER NOT NULL,
     count INTEGER NOT NULL,
     start_time TIMESTAMP,
     end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -206,7 +206,7 @@ CREATE TABLE answer (
 -- create table
 CREATE TABLE answer_audio (
     id_answer_audio SERIAL NOT NULL,
-    id_answer SERIAL NOT NULL,
+    id_answer INTEGER NOT NULL,
     topic VARCHAR(100) NOT NULL,
     url VARCHAR(2048) NOT NULL,
     -- CONSTRAINTS
@@ -220,19 +220,20 @@ CREATE TABLE answer_audio (
 -- INSERTING DATA
 -- INSERT INTO task
 INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 1', 'Description 1', 1, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
+INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 2', 'Description 1', 2, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
 
 -- INSERT INTO links
 INSERT INTO link (id_task, topic, url) VALUES (1, 'google', 'http://www.google.com');
 INSERT INTO link (id_task, topic, url) VALUES (1, 'Generado por Copilot', 'https://www.youtube.com/watch?v=is4RZQLodKU');
 
 -- INSERT INTO preguntas
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿Cuál es el secreto de la vida?', NULL, NULL, 'multiple', 1, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es sí?', NULL, NULL, 'multiple', 2, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es no?', NULL, NULL, 'multiple', 3, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'esto es del postask?', NULL, NULL, 'multiple', 1, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'graba audio', NULL, NULL, 'audio', 2, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'Auxilio, Camilo nos tiene esclavizados', NULL, NULL, 'video', 3, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, 'Esto no es joda', NULL, NULL, 'video', 4, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿Cuál es el secreto de la vida?', NULL, NULL, 'select', 1, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es sí?', NULL, NULL, 'select', 2, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es no?', NULL, NULL, 'select', 3, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'esto es del postask?', NULL, NULL, 'select', 1, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'graba audio', NULL, NULL, 'select', 2, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'Auxilio, Camilo nos tiene esclavizados', NULL, NULL, 'select', 3, NULL, NULL);
+INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'Esto no es joda', NULL, NULL, 'select', 4, NULL, NULL);
 
 -- INSERT INTO respuestas
 INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (1, 1, 'Retroalimentacion1', '', false);
