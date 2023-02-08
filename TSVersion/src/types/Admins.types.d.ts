@@ -1,10 +1,9 @@
-import { InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { Model } from "sequelize";
 
-// imports
 export interface Admin {
     id_admin: number;
-    nombre: string;
-    apellido: string;
+    first_name: string;
+    last_name: string;
     email: string;
     username: string;
     password: string;
@@ -12,4 +11,4 @@ export interface Admin {
 
 export type AdminCreation = Omit<Admin, 'id_admin'>;
 
-export interface AdminModel extends Model<Admin, AdminCreation>, Admin{};
+export interface AdminModel extends Model<Admin, AdminCreation>, Admin { };

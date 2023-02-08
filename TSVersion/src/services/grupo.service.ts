@@ -1,9 +1,9 @@
-import Grupos from "../models/Grupos";
-import { GrupoModel } from "../types/Grupos.types";
+import Team from "../models/Team";
+import { GrupoModel } from "../types/Team.types";
 import { taskCount, getTaskQuestionsByOrder } from "./task.service";
 
 export async function disponibleTasks(groupId: number): Promise<any> {
-    const group: GrupoModel | null = await Grupos.findByPk(groupId);
+    const group: GrupoModel | null = await Team.findByPk(groupId);
 
     if (!group) throw Error('Group not found')
     const numberOfTasks = await taskCount();
@@ -15,7 +15,7 @@ export async function disponibleTasks(groupId: number): Promise<any> {
 
 //! NEED TO BE FIXED WHEN HISTORIAL IS IMPLEMENTED
 export async function preguntasDisponibles(groupId: number, taskOrder: number): Promise<any> {
-    const group: GrupoModel | null = await Grupos.findByPk(groupId);
+    const group: GrupoModel | null = await Team.findByPk(groupId);
 
     if (!group) throw Error('Group not found')
     

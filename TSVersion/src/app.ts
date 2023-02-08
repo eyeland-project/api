@@ -38,6 +38,9 @@ import indexRoutes from './routes';
 
 app.use('/api', indexRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/', (_, res) => {
+    res.status(200).json({ message: 'Server is running' });
+});
 
 //* handlers
 // catch 404 and forward to error handler

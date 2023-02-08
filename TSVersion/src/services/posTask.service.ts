@@ -1,9 +1,9 @@
-import Preguntas from '../models/Preguntas';
-import { Pregunta } from '../types/Preguntas.types';
+import Question from '../models/Question';
+import { Pregunta } from '../types/Question.types';
 // import { Pregunta } from '../types/Preguntas.types';
 
 export async function getQuestionOrder(taskOrder: number, questionOrder: number): Promise<any> {
-    const pregunta = await Preguntas.findOne({
+    const pregunta = await Question.findOne({
         where: {
             orden: questionOrder,
             '$task.order$': taskOrder,
@@ -18,7 +18,7 @@ export async function getQuestionOrder(taskOrder: number, questionOrder: number)
 }
 
 export async function getAudioQuestionOrder(taskOrder: number): Promise<any> {
-    const pregunta = await Preguntas.findOne({
+    const pregunta = await Question.findOne({
         where: {
             '$task.order$': taskOrder,
             examen: true,
@@ -32,7 +32,7 @@ export async function getAudioQuestionOrder(taskOrder: number): Promise<any> {
 }
 
 export async function getQuestions(properties: Partial<Pregunta>): Promise<any> {
-    return await Preguntas.findAll({
+    return await Question.findAll({
         where: {
             ...properties,
             examen: true,

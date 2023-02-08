@@ -27,9 +27,6 @@ function chargeRoutes(dir: string = ''): void {
                     // replace {param} with :param
                     route = route.replaceAll(/\/\{([^\/]+)\}/g, "/:$1");
                     // console.log('route:', route);
-                    // console.log('imported file', rel(dir, file));
-                    // console.log(subRouter.stack);
-                    
 
                     router.use(route, subRouter);
                 }).catch(err => {
@@ -40,14 +37,15 @@ function chargeRoutes(dir: string = ''): void {
 
         });
 }
+
 chargeRoutes();
 
 router.get('/ping', (_, res) => {
-    res.send('pong');
+    res.status(200).json({ message: 'pong' });
 });
 
 router.get('/', (_, res) => {
-    res.send('Server is running');
+    res.status(200).json({ message: 'API is ready' });
 });
 
 export default router;

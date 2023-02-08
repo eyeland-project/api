@@ -14,10 +14,9 @@ if (process.env.DB_URL) {
         },
         logging: false,
     }];
-
 } else {
-    conf = [process.env.DB_NAME || '', process.env.DB_USER || '', process.env.DB_PASSWORD, {
-        host: process.env['DB_HOST'],
+    conf = [process.env.DB_NAME || 'mydb', process.env.DB_USER || 'myuser', process.env.DB_PASSWORD || 'mypass', {
+        host: process.env.DB_HOST || 'localhost',
         dialect: 'postgres',
         logging: false,
         define: {
