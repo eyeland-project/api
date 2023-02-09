@@ -1118,6 +1118,34 @@
           }
         }
       }
+    },
+    "/logout-team": {
+      "post": {
+        "description": "Logout student from current team",
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Left team successfully"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource | Team is full"
+          },
+          "409": {
+            "description": "Student doesn't belong to any team"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1206,20 +1234,9 @@
             "type": "integer",
             "format": "int64"
           },
-          "links": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "topic": {
-                  "type": "string",
-                  "description": "A topic to describe the link"
-                },
-                "url": {
-                  "type": "string"
-                }
-              }
-            }
+          "numLinks": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
