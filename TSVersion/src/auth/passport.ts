@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JWTSrategy, ExtractJwt } from 'passport-jwt';
+import Student from '../models/Student';
 
 // passport setting up
 passport.use('signup', new LocalStrategy({
@@ -9,10 +10,10 @@ passport.use('signup', new LocalStrategy({
 }, async (username, password, done) => {
     try {
         // const user = await User.create({username, password});
-        const user = { _id: 'dfsfsfsdfw2r34rq', username, password };
+        const user: any = { _id: 'dfsfsfsdfw2r34rq', username, password };
         return done(null, user);
-    } catch (error) {
-        done(error);
+    } catch (err) {
+        done(err);
     }
 }));
 
@@ -30,10 +31,27 @@ passport.use('login', new LocalStrategy({
         // if (!validate) {
         //     return done(null, false, {message: 'Wrong Password'});
         // }
-        const user = { _id: 'dfsfsfsdfw2r34rq', username, password };
-        return done(null, user, { message: 'Logged in Successfully' });
-    } catch (error) {
-        return done(error);
+        // const user = { _id: 'dfsfsfsdfw2r34rq', username, password };
+        // return done(null, user, { message: 'Logged in Successfully' });
+
+        // done(null, 1);
+        // console.log(await Student.findAll());
+        
+        const student = await Student.findOne({
+            attributes: ['id_student', 'username', 'password'],
+            where: { username }
+        });
+        if (!student) {
+            // TODO: check if it's teacher or admin
+            return done(null, false, { message: 'Student not found' });
+        }
+        if (!student.comparePassword(password)) {
+            return done(null, false, { message: 'Wrong Password' });
+        }
+
+        done(null, student.dataValues.id_student);
+    } catch (err) {
+        return done(err);
     }
 }
 ));
@@ -62,6 +80,6 @@ passport.use(new JWTSrategy(opts, async (jwt_payload, done) => {
             done(null, false);
     } catch (error) {
         // logger.error(error);
-        done(error, false);
+        done(error);
     }
 }));

@@ -48,7 +48,7 @@ export async function root(req: Request<{ taskOrder: number }>, res: Response<Pr
 
     res.status(200).json({
         message: `This is the pretask for task ${taskOrder}`,
-        numQuestions: 3,
+        numQuestions: 2,
         numLinks: 3
     });
 }
@@ -85,8 +85,8 @@ export async function getLink(req: Request<{ taskOrder: number, linkOrder: numbe
 export async function getQuestions(req: Request<{ taskOrder: number }>, res: Response<Questions>) {
     // const { taskOrder } = req.params;
     res.status(200).json({
-        numQuestions: 3,
-        availableQuestions: 3
+        numQuestions: 2,
+        availableQuestions: 2
     });
 }
 
