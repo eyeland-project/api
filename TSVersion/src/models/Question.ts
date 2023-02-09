@@ -1,10 +1,24 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import Task from "./Task"
 import { QuestionModel } from '../types/Question.types';
 
-// model definition
-const Question = sequelize.define<QuestionModel>('question', {
+// model class definition
+class Question extends Model implements QuestionModel {
+    id_question!: number;
+    id_task!: number;
+    content!: string;
+    audio_url!: string;
+    video_url!: string;
+    type!: string;
+    question_order!: number;
+    img_alt!: string;
+    img_url!: string;
+    deleted!: boolean;
+}
+
+// model initialization
+Question.init({
     id_question: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -44,6 +58,9 @@ const Question = sequelize.define<QuestionModel>('question', {
         defaultValue: false
     }
 }, {
+    sequelize,
+    modelName: 'Question',
+    tableName: 'question',
     timestamps: false,
     hooks: {
         beforeCreate: async ({ type }: QuestionModel) => {
@@ -52,12 +69,12 @@ const Question = sequelize.define<QuestionModel>('question', {
             }
         },
     },
-    indexes: [
-        {
-            unique: true,
-            fields: ['id_task', 'question_order']
-        }
-    ]
+    // indexes: [
+    //     {
+    //         unique: true,
+    //         fields: ['id_task', 'question_order']
+    //     }
+    // ]
 });
 
 Task.hasMany(Question, {

@@ -1,12 +1,25 @@
 // creating the model for the Admin table
 // imports
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import { comparePassword, hashPassword } from '../utils';
-import { Admin, AdminModel } from '../types/Admins.types';
+import { AdminModel } from '../types/Admins.types';
 
-// model definition
-const Admin = sequelize.define<AdminModel>('admin', {
+// model class definition
+class Admin extends Model implements AdminModel {
+    id_admin!: number;
+    first_name!: string;
+    last_name!: string;
+    email!: string;
+    username!: string;
+    password!: string;
+    comparePassword: ((password: string) => boolean) = password => (
+        comparePassword(password, this.password)
+    )
+}
+
+// model initialization
+Admin.init({
     id_admin: {
         type: DataTypes.SMALLINT,
         primaryKey: true,
@@ -30,32 +43,33 @@ const Admin = sequelize.define<AdminModel>('admin', {
         allowNull: false
     },
     password: {
-        type: DataTypes.STRING(60), // 60 porque se usa bcrypt
+        type: DataTypes.STRING(60), // 60 because of bcrypt
         allowNull: false,
         // set(value: string) {
         //     this.setDataValue('password', hashPassword(value));
         // }
     }
 }, {
+    sequelize,
+    modelName: 'Admin',
+    tableName: 'admin',
     timestamps: false,
     hooks: {
         beforeCreate: async (student: AdminModel) => {
             student.password = hashPassword(student.password);
         },
     },
-    indexes: [
-        {
-            unique: true,
-            fields: ['email']
-        },
-        {
-            unique: true,
-            fields: ['username']
-        }
-    ]
+    // indexes: [
+    //     {
+    //         unique: true,
+    //         fields: ['email']
+    //     },
+    //     {
+    //         unique: true,
+    //         fields: ['username']
+    //     }
+    // ]
 });
-
-Admin.prototype.comparePassword = comparePassword;
 
 export default Admin;
 module.exports = Admin;

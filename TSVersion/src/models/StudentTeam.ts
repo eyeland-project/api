@@ -1,12 +1,20 @@
 // imports
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import Team from './Team';
 import Student from './Student';
 import { StudentTeamModel } from '../types/StudentTeam.types';
 
-// model definition
-const StudentTeam = sequelize.define<StudentTeamModel>('student_team', {
+// model class definition
+class StudentTeam extends Model implements StudentTeamModel {
+    id_student_team!: number;
+    id_student!: number;
+    id_team!: number;
+    power!: 'super_hearing' | 'memory_pro' | 'super_radar';
+}
+
+// model initialization
+StudentTeam.init({
     id_student_team: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -25,6 +33,9 @@ const StudentTeam = sequelize.define<StudentTeamModel>('student_team', {
         allowNull: false
     }
 }, {
+    sequelize,
+    modelName: 'StudentTeam',
+    tableName: 'student_team',
     timestamps: false,
     hooks: {
         beforeCreate: async ({ power }: StudentTeamModel) => {

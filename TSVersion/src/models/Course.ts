@@ -1,12 +1,22 @@
 // imports
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import Institution from './Institution';
 import Teacher from './Teacher';
 import { CourseModel } from '../types/Course.types';
 
-// model definition
-const Course = sequelize.define<CourseModel>('course', {
+// model class definition
+class Course extends Model implements CourseModel {
+    id_course!: number;
+    id_teacher!: number;
+    id_institution!: number;
+    name!: string;
+    description!: string;
+    status!: boolean;
+}
+
+// model initialization
+Course.init({
     id_course: {
         type: DataTypes.SMALLINT,
         primaryKey: true,
@@ -33,6 +43,9 @@ const Course = sequelize.define<CourseModel>('course', {
         defaultValue: false
     }
 }, {
+    sequelize,
+    modelName: 'Course',
+    tableName: 'course',
     timestamps: false
 });
 

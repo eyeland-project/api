@@ -1,14 +1,25 @@
 // creating the model for the Asnwer table
 // imports
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import { AnswerModel } from '../types/Answer.types';
 import Question from './Question';
 import Option from './Option';
 import TaskAttempt from './TaskAttempt';
 
-// model definition
-const Answer = sequelize.define<AnswerModel>('answer', {
+// model class definition
+class Answer extends Model implements AnswerModel {
+    id_answer!: number;
+    id_question!: number;
+    id_option!: number;
+    id_task_attempt!: number;
+    count!: number;
+    start_time!: Date;
+    end_time!: Date;
+}
+
+// model initialization
+Answer.init({
     id_answer: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -39,6 +50,9 @@ const Answer = sequelize.define<AnswerModel>('answer', {
         defaultValue: DataTypes.NOW
     },
 }, {
+    sequelize,
+    modelName: 'Answer',
+    tableName: 'answer',
     timestamps: false,
 });
 

@@ -1,12 +1,20 @@
 // creating the model for the AnswerAudio table
 // imports
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import { AnswerAudioModel } from '../types/AnswerAudio.types';
 import Answer from './Answer';
 
-// model definition
-const AnswerAudio = sequelize.define<AnswerAudioModel>('answer_audio', {
+// model class definition
+class AnswerAudio extends Model implements AnswerAudioModel {
+    id_answer_audio!: number;
+    id_answer!: number;
+    topic!: string;
+    url!: string;
+}
+
+// model initialization
+AnswerAudio.init({
     id_answer_audio: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -25,6 +33,9 @@ const AnswerAudio = sequelize.define<AnswerAudioModel>('answer_audio', {
         allowNull: false
     }
 }, {
+    sequelize,
+    modelName: 'AnswerAudio',
+    tableName: 'answer_audio',
     timestamps: false
 });
 

@@ -1,10 +1,22 @@
 // imports
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import { InstitutionModel } from '../types/Institution.types';
 
-// model definition
-const Institution = sequelize.define<InstitutionModel>('institution', {
+// model class definition
+class Institution extends Model implements InstitutionModel {
+    id_institution!: number;
+    name!: string;
+    nit!: string;
+    address!: string;
+    city!: string;
+    country!: string;
+    phone!: string;
+    email!: string;
+}
+
+// model initialization
+Institution.init({
     id_institution: {
         type: DataTypes.SMALLINT,
         primaryKey: true,
@@ -39,13 +51,16 @@ const Institution = sequelize.define<InstitutionModel>('institution', {
         allowNull: false
     }
 }, {
+    sequelize,
+    modelName: 'Institution',
+    tableName: 'institution',
     timestamps: false,
-    indexes: [
-        {
-            unique: true,
-            fields: ['nit']
-        }
-    ]
+    // indexes: [
+    //     {
+    //         unique: true,
+    //         fields: ['nit']
+    //     }
+    // ]
 });
 
 export default Institution;

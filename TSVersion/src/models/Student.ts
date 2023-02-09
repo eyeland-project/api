@@ -1,13 +1,32 @@
 // imports
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import Course from './Course';
 import Team from './Team';
 import { comparePassword, hashPassword } from '../utils';
 import { StudentModel } from '../types/Student.types';
 
-// model definition
-const Student = sequelize.define<StudentModel>('student', {
+// model class definition
+class Student extends Model implements StudentModel {
+    id_student!: number;
+    id_course!: number;
+    current_team!: number;
+    first_name!: string;
+    last_name!: string;
+    email!: string;
+    username!: string;
+    password!: string;
+    blindness!: 'total' | 'partial' | 'none';
+    // comparePassword: ((password: string) => boolean) = (password) => (
+    //     comparePassword(password, this.password)
+    // )
+    comparePassword: ((password: string) => boolean) = (password) => (
+        password === this.dataValues.password // debuggin purposes
+    )
+}
+
+// model initialization
+Student.init({
     id_student: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -38,7 +57,7 @@ const Student = sequelize.define<StudentModel>('student', {
         allowNull: false
     },
     password: {
-        type: DataTypes.STRING(60), // 60 porque se usa bcrypt
+        type: DataTypes.STRING(60), // 60 because of bcrypt
         allowNull: false,
         // set(value: string) {
         //     this.setDataValue('password', hashPassword(value));
@@ -49,6 +68,9 @@ const Student = sequelize.define<StudentModel>('student', {
         allowNull: false
     }
 }, {
+    sequelize,
+    modelName: 'Student',
+    tableName: 'student',
     timestamps: false,
     hooks: {
         beforeCreate: async (student: StudentModel) => {
@@ -59,18 +81,18 @@ const Student = sequelize.define<StudentModel>('student', {
             student.password = hashPassword(student.password);
         },
     },
-    indexes: [
-        {
-            unique: true,
-            fields: ['email']
-        },
-        {
-            unique: true,
-            fields: ['username']
-        }
-    ]
+    // indexes: [
+    //     {
+    //         unique: true,
+    //         fields: ['email']
+    //     },
+    //     {
+    //         unique: true,
+    //         fields: ['username']
+    //     }
+    // ]
 });
-
+    
 // definir la relación entre Cursos y Estudiantes
 Course.hasMany(Student, {
     foreignKey: 'id_course'
@@ -86,8 +108,6 @@ Team.hasMany(Student, {
 Student.belongsTo(Team, {
     foreignKey: 'current_team'
 });
-
-Student.prototype.comparePassword = comparePassword;
 
 export default Student;
 module.exports = Student;
