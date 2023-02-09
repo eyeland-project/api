@@ -1186,10 +1186,6 @@
       "Attempt": {
         "type": "object",
         "properties": {
-          "idStudent": {
-            "type": "integer",
-            "format": "int64"
-          },
           "taskPhase": {
             "type": "string",
             "enum": [
