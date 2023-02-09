@@ -16,7 +16,7 @@
     "version": "0.5.5"
   },
   "externalDocs": {
-    "description": "Find out more about the project at our github repository.",
+    "description": "Find out more about the project at our github repository",
     "url": "https://github.com/Proyecto-Final-EPICS/Salamanca-Island-mobile-API"
   },
   "servers": [
@@ -45,7 +45,7 @@
   "paths": {
     "/tasks": {
       "get": {
-        "description": "Get all tasks.",
+        "description": "Get all tasks",
         "tags": [
           "task"
         ],
@@ -56,7 +56,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -68,24 +68,24 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid number supplied."
-          },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
           },
-          "404": {
-            "description": "Task not found."
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/introduction": {
       "get": {
-        "description": "Get a specific task.",
+        "description": "Get a specific task",
         "tags": [
           "task"
         ],
@@ -99,7 +99,7 @@
             "name": "taskOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the task to return.",
+            "description": "The number of the task to return",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -109,7 +109,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -119,23 +119,29 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/start": {
       "post": {
-        "description": "Start new task attempt.",
+        "description": "Start new task attempt",
         "tags": [
           "task"
         ],
@@ -149,7 +155,7 @@
             "name": "taskOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the task to return.",
+            "description": "The number of the task to return",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -162,40 +168,35 @@
         },
         "responses": {
           "201": {
-            "description": "success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "idTaskAttempt": {
-                      "type": "integer",
-                      "format": "int64",
-                      "description": "The id of the task attempt (should be used for sending answers)."
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Success. Please wait for the socket response"
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Current team not found"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "409": {
+            "description": "Task already started"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/pretask": {
       "get": {
-        "description": "Get the pretask based on the number of the Task.",
+        "description": "Get the pretask based on the number of the Task",
         "tags": [
           "task"
         ],
@@ -209,7 +210,7 @@
             "name": "taskOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the task.",
+            "description": "The number of the task",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -219,7 +220,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -229,23 +230,29 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/duringtask": {
       "get": {
-        "description": "Get the pretask based on the number of the Task.",
+        "description": "Get the pretask based on the number of the Task",
         "tags": [
           "task"
         ],
@@ -259,7 +266,7 @@
             "name": "taskOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the task.",
+            "description": "The number of the task",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -269,7 +276,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -279,23 +286,29 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/postask": {
       "get": {
-        "description": "Get the pretask based on the number of the Task.",
+        "description": "Get the pretask based on the number of the Task",
         "tags": [
           "task"
         ],
@@ -309,7 +322,7 @@
             "name": "taskOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the task.",
+            "description": "The number of the task",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -319,7 +332,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -329,23 +342,29 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/pretask/links": {
       "get": {
-        "description": "Temporal. Get the a summary of the links of the PreTask.",
+        "description": "Temporal. Get the a summary of the links of the PreTask",
         "tags": [
           "question"
         ],
@@ -362,12 +381,12 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           }
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -377,23 +396,32 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "410": {
+            "description": "Endpoint deprecated"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/pretask/links/{linkOrder}": {
       "get": {
-        "description": "Temporal. Get the Link of the PreTask based on the number of the Task and the id of the link.",
+        "description": "Temporal. Get the Link of the PreTask based on the number of the Task and the id of the link",
         "tags": [
           "question"
         ],
@@ -410,13 +438,13 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           },
           {
             "name": "linkOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the link inside the PreTask.",
+            "description": "The number of the link inside the PreTask",
             "schema": {
               "type": "integer"
             }
@@ -424,7 +452,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -434,23 +462,32 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Invalid linkOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found | Link not found"
+          },
+          "410": {
+            "description": "Endpoint deprecated"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/pretask/questions": {
       "get": {
-        "description": "Get the a summary of the questions of the PreTask based on the number of the Task.",
+        "description": "Get the a summary of the questions of the PreTask based on the number of the Task",
         "tags": [
           "question"
         ],
@@ -467,12 +504,12 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           }
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -482,16 +519,22 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
@@ -515,13 +558,13 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           },
           {
             "name": "questionOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the question inside the task.",
+            "description": "The number of the question inside the task",
             "schema": {
               "type": "integer"
             }
@@ -529,7 +572,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -539,21 +582,27 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Invalid questionOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found | Question not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       },
       "post": {
-        "description": "Get the PosTask question based on the number of the Task and the number of the question inside the task",
+        "description": "Answer the PreTask question based on the number of the Task and the number of the question inside the task",
         "tags": [
           "answer"
         ],
@@ -570,7 +619,7 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           },
           {
             "name": "questionOrder",
@@ -590,38 +639,37 @@
               }
             }
           },
-          "description": "The answer to the question.",
+          "description": "The answer for the question",
           "required": true
         },
         "responses": {
           "200": {
-            "description": "success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponse"
-                }
-              }
-            }
+            "description": "Success"
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Invalid questionOrder | Invalid body"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found | Question not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/duringtask/questions": {
       "get": {
-        "description": "Get the a summary of the questions of the DuringTask based on the number of the Task.",
+        "description": "Get the a summary of the questions of the DuringTask based on the number of the Task",
         "tags": [
           "question"
         ],
@@ -638,12 +686,12 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           }
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -653,16 +701,22 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
@@ -686,13 +740,13 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           },
           {
             "name": "questionOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the question inside the task.",
+            "description": "The number of the question inside the task",
             "schema": {
               "type": "integer"
             }
@@ -700,7 +754,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -710,21 +764,30 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Invalid questionOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found | Question not found"
+          },
+          "409": {
+            "description": "PreTask not completed"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       },
       "post": {
-        "description": "Get the DuringTask question based on the number of the Task and the number of the question inside the task",
+        "description": "Answer the DuringTask question based on the number of the Task and the number of the question inside the task",
         "tags": [
           "answer"
         ],
@@ -741,7 +804,7 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           },
           {
             "name": "questionOrder",
@@ -761,38 +824,37 @@
               }
             }
           },
-          "description": "The answer to the question.",
+          "description": "The answer for the question",
           "required": true
         },
         "responses": {
           "200": {
-            "description": "success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponse"
-                }
-              }
-            }
+            "description": "Success"
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Invalid questionOrder | Invalid body"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found | Question not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
     },
     "/tasks/{taskOrder}/postask/questions": {
       "get": {
-        "description": "Get the a summary of the questions of the pretask based on the number of the Task.",
+        "description": "Get the a summary of the questions of the pretask based on the number of the Task",
         "tags": [
           "question"
         ],
@@ -809,12 +871,12 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           }
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -824,16 +886,22 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
@@ -857,7 +925,7 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           },
           {
             "name": "questionOrder",
@@ -871,7 +939,7 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -881,21 +949,30 @@
             }
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Invalid questionOrder"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found | Question not found"
+          },
+          "409": {
+            "description": "DuringTask not completed"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       },
       "post": {
-        "description": "Get the PosTask question based on the number of the Task and the number of the question inside the task",
+        "description": "Answer the PosTask question based on the number of the Task and the number of the question inside the task",
         "tags": [
           "answer"
         ],
@@ -912,13 +989,13 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The number of the task."
+            "description": "The number of the task"
           },
           {
             "name": "questionOrder",
             "in": "path",
             "required": true,
-            "description": "The number of the question inside the task.",
+            "description": "The number of the question inside the task",
             "schema": {
               "type": "integer"
             }
@@ -940,26 +1017,25 @@
         },
         "responses": {
           "200": {
-            "description": "success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponse"
-                }
-              }
-            }
+            "description": "Success"
           },
           "400": {
-            "description": "Invalid number supplied."
+            "description": "Invalid taskOrder | Invalid questionOrder | Invalid body"
           },
           "401": {
-            "description": "You are not authorized to access this content."
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "404": {
-            "description": "Task not found."
+            "description": "Task not found | Question not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
           },
           "500": {
-            "description": "Server Error."
+            "description": "Server error"
           }
         }
       }
@@ -984,7 +1060,7 @@
                     "userToken": {
                       "type": "string"
                     },
-                    "hasGroup": {
+                    "hasTeam": {
                       "type": "boolean"
                     }
                   }
@@ -995,40 +1071,50 @@
         }
       }
     },
-    "/login-group": {
+    "/login-team": {
       "post": {
-        "description": "Login student to a group",
+        "description": "Login student to a team",
         "tags": [
           "user"
         ],
         "requestBody": {
           "required": true,
-          "description": "The 6-characters code of the group.",
+          "description": "The 6-characters code of the team",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "maxLength": 6,
-                    "minLength": 6
-                  }
-                }
+                "$ref": "#/components/schemas/LoginTeam"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Logged in successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponse"
-                }
-              }
-            }
+            "description": "Joined team successfully"
+          },
+          "400": {
+            "description": "Invalid code"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource | Team is full"
+          },
+          "404": {
+            "description": "Team not found"
+          },
+          "409": {
+            "description": "Student already has a team"
+          },
+          "410": {
+            "description": "Team is not active"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
@@ -1100,13 +1186,9 @@
       "Attempt": {
         "type": "object",
         "properties": {
-          "idTask": {
+          "idStudent": {
             "type": "integer",
             "format": "int64"
-          },
-          "startTime": {
-            "type": "string",
-            "format": "date-time"
           },
           "taskPhase": {
             "type": "string",
@@ -1117,38 +1199,6 @@
             ]
           }
         }
-      },
-      "TeamAttempt": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Attempt"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "idTeam": {
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "StudentAttempt": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Attempt"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "idStudent": {
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
       },
       "PreTask": {
         "type": "object",
@@ -1241,7 +1291,7 @@
           }
         }
       },
-      "Question": {
+      "QuestionPreTask": {
         "type": "object",
         "properties": {
           "id": {
@@ -1284,56 +1334,111 @@
           }
         }
       },
-      "QuestionPreTask": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Question"
-          },
-          {
-            "type": "object",
-            "properties": {}
-          }
-        ]
-      },
       "QuestionDuringTask": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Question"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "audioUrl": {
-                "type": "string"
-              },
-              "videoUrl": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "QuestionPosTask": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Question"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "audioUrl": {
-                "type": "string"
-              },
-              "videoUrl": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "Answer": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "imgAlt": {
+            "type": "string",
+            "description": "The message on the image"
+          },
+          "imgUrl": {
+            "type": "string"
+          },
+          "audioUrl": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "correct": {
+                  "type": "boolean"
+                },
+                "feedback": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "QuestionPosTask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "imgAlt": {
+            "type": "string",
+            "description": "The message on the image"
+          },
+          "imgUrl": {
+            "type": "string"
+          },
+          "audioUrl": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "correct": {
+                  "type": "boolean"
+                },
+                "feedback": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AnswerOption": {
+        "type": "object",
+        "properties": {
+          "idOption": {
+            "type": "integer",
+            "format": "int64"
+          },
           "idTaskAttempt": {
             "type": "integer",
             "format": "int64"
@@ -1348,39 +1453,28 @@
           }
         }
       },
-      "AnswerOption": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Answer"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "idOption": {
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
       "AnswerAudio": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Answer"
+        "type": "object",
+        "properties": {
+          "audio": {
+            "type": "string",
+            "format": "binary"
           },
-          {
-            "type": "object",
-            "properties": {
-              "audio": {
-                "type": "string",
-                "format": "binary"
-              }
-            }
+          "idTaskAttempt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
           }
-        ]
+        }
       },
-      "LoginForm": {
+      "Login": {
         "type": "object",
         "properties": {
           "username": {
@@ -1391,11 +1485,13 @@
           }
         }
       },
-      "MessageResponse": {
+      "LoginTeam": {
         "type": "object",
         "properties": {
-          "message": {
-            "type": "string"
+          "code": {
+            "type": "string",
+            "maxLength": 6,
+            "minLength": 6
           }
         }
       }
@@ -1407,40 +1503,18 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/LoginForm"
+              "$ref": "#/components/schemas/Login"
             }
           }
         }
       },
       "TaskStart": {
-        "description": "Student or Team Attempt",
+        "description": "Student Attempt",
         "required": true,
         "content": {
           "application/json": {
             "schema": {
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/StudentAttempt"
-                },
-                {
-                  "$ref": "#/components/schemas/TeamAttempt"
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "responses": {
-      "404NotFound": {
-        "description": "The specified resource was not found."
-      },
-      "Ok": {
-        "description": "Generic message.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/MessageResponse"
+              "$ref": "#/components/schemas/Attempt"
             }
           }
         }
