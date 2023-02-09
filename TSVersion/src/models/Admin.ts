@@ -8,7 +8,7 @@ import { Admin, AdminModel } from '../types/Admins.types';
 // model definition
 const Admin = sequelize.define<AdminModel>('admin', {
     id_admin: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         primaryKey: true,
         autoIncrement: true
     },

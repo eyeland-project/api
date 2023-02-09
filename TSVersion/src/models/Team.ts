@@ -6,12 +6,12 @@ import { TeamModel } from '../types/Team.types';
 // model definition
 const Team = sequelize.define<TeamModel>('team', {
     id_team: {
-        type: DataTypes.INTEGER.UNSIGNED.UNSIGNED,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
     id_course: {
-        type: DataTypes.INTEGER.UNSIGNED.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     name: {

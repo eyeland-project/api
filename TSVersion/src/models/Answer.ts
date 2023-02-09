@@ -10,24 +10,24 @@ import TaskAttempt from './TaskAttempt';
 // model definition
 const Answer = sequelize.define<AnswerModel>('answer', {
     id_answer: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
     id_question: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     id_option: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     id_task_attempt: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     count: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     start_time: {

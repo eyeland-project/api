@@ -1,8 +1,10 @@
 import { Router } from "express";
+import { login, loginTeam, logoutTeam } from '../../controllers/students/login.controller';
 
 const router: Router = Router();
 
-router.post('/login', (_, _res) => {});
-router.post('/login-group', () => {});
+router.post('/login', login);
+router.post('/login-team', loginTeam);
+router.post('/logout-team', logoutTeam);
 
 export default router;

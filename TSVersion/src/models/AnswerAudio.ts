@@ -8,12 +8,12 @@ import Answer from './Answer';
 // model definition
 const AnswerAudio = sequelize.define<AnswerAudioModel>('answer_audio', {
     id_answer_audio: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
     id_answer: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     topic: {

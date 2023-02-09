@@ -1,6 +1,7 @@
 // creating a sequelize instance to postgres database
 import { Sequelize } from 'sequelize';
 // const {database_conf} = require('./config');
+
 let conf: any[];
 if (process.env.DB_URL) {
     conf = [process.env.DB_URL, {
@@ -28,7 +29,7 @@ if (process.env.DB_URL) {
             acquire: 30000,
             idle: 10000
         }
-    }]
+    }];
 }
 
 const sequelize = new Sequelize(...conf);

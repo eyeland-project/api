@@ -9,16 +9,16 @@ import { StudentModel } from '../types/Student.types';
 // model definition
 const Student = sequelize.define<StudentModel>('student', {
     id_student: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
     id_course: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     current_team: {
-        type: DataTypes.INTEGER.UNSIGNED
+        type: DataTypes.INTEGER
     },
     first_name: {
         type: DataTypes.STRING(100),

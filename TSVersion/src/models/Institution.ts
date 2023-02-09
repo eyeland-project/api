@@ -6,7 +6,7 @@ import { InstitutionModel } from '../types/Institution.types';
 // model definition
 const Institution = sequelize.define<InstitutionModel>('institution', {
     id_institution: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         primaryKey: true,
         autoIncrement: true
     },

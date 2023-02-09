@@ -8,12 +8,12 @@ import { LinkModel } from '../types/Links.types';
 // model definition
 const Link = sequelize.define<LinkModel>('link', {
     id_link: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
     id_task: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
     topic: {

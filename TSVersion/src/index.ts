@@ -6,7 +6,7 @@ const server = app.listen(app.get('port'), () => {
     console.log('Server on port', app.get('port'));
     sequelize.authenticate().then(() => {
         console.log('Database connected');
-        sequelize.sync({force: false, alter: false}).then(() => {
+        sequelize.sync({ force: false, alter: false }).then(() => {
             console.log('Database synchronized');
         }, (err) => {
             console.log(err);

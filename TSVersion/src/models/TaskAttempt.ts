@@ -10,19 +10,19 @@ import Student from './Student';
 // model definition
 const TaskAttempt = sequelize.define<TaskAttemptModel>('task_attempt', {
     id_task_attempt: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
     id_task: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
     id_team: {
-        type: DataTypes.INTEGER.UNSIGNED
+        type: DataTypes.INTEGER
     },
     id_student: {
-        type: DataTypes.INTEGER.UNSIGNED
+        type: DataTypes.INTEGER
     },
     task_phase: {
         type: DataTypes.STRING(20),

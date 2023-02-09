@@ -8,16 +8,16 @@ import { CourseModel } from '../types/Course.types';
 // model definition
 const Course = sequelize.define<CourseModel>('course', {
     id_course: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         primaryKey: true,
         autoIncrement: true
     },
     id_teacher: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
     id_institution: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
     name: {

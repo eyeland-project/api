@@ -8,12 +8,12 @@ import { TeacherModel } from '../types/Teacher.types';
 // model definition
 const Teacher = sequelize.define<TeacherModel>('teacher', {
     id_teacher: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         primaryKey: true,
         autoIncrement: true
     },
     id_institution: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
     first_name: {

@@ -8,12 +8,12 @@ import Question from './Question';
 // model definition
 const Option = sequelize.define<OptionModel>('option', {
     id_option: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
     id_question: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     feedback: {

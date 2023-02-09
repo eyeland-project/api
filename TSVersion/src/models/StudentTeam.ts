@@ -8,16 +8,16 @@ import { StudentTeamModel } from '../types/StudentTeam.types';
 // model definition
 const StudentTeam = sequelize.define<StudentTeamModel>('student_team', {
     id_student_team: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
     id_student: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     id_team: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     power: {

@@ -7,7 +7,7 @@ import { TaskModel } from '../types/Task.types';
 // model definition
 const Task = sequelize.define<TaskModel>('task', {
     id_task: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         autoIncrement: true,
         primaryKey: true
     },
@@ -20,7 +20,7 @@ const Task = sequelize.define<TaskModel>('task', {
         allowNull: false
     },
     task_order: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     thumbnail_url: {

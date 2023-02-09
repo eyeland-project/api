@@ -6,12 +6,12 @@ import { QuestionModel } from '../types/Question.types';
 // model definition
 const Question = sequelize.define<QuestionModel>('question', {
     id_question: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
     id_task: {
-        type: DataTypes.SMALLINT.UNSIGNED,
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
     content: {
@@ -29,7 +29,7 @@ const Question = sequelize.define<QuestionModel>('question', {
         allowNull: false
     },
     question_order: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     img_alt: {
