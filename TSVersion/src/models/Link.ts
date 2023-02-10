@@ -5,35 +5,13 @@ import sequelize from '../database';
 import Task from "./Task"
 import { LinkModel } from '../types/Links.types';
 
-// model definition
-// const Link = sequelize.define<LinkModel>('link', {
-//     id_link: {
-//         type: DataTypes.INTEGER,
-//         autoIncrement: true,
-//         primaryKey: true
-//     },
-//     id_task: {
-//         type: DataTypes.SMALLINT,
-//         allowNull: false
-//     },
-//     topic: {
-//         type: DataTypes.STRING(100),
-//         allowNull: false
-//     },
-//     url: {
-//         type: DataTypes.STRING(2048),
-//         allowNull: false
-//     }
-// }, {
-//     timestamps: false,
-// });
 
 // model class definition
 class Link extends Model implements LinkModel {
-    id_link!: number;
-    id_task!: number;
-    topic!: string;
-    url!: string;
+    declare id_link: number;
+    declare id_task: number;
+    declare topic: string;
+    declare url: string;
 }
 
 // model initialization

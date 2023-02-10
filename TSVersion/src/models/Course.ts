@@ -7,12 +7,12 @@ import { CourseModel } from '../types/Course.types';
 
 // model class definition
 class Course extends Model implements CourseModel {
-    id_course!: number;
-    id_teacher!: number;
-    id_institution!: number;
-    name!: string;
-    description!: string;
-    status!: boolean;
+    declare id_course: number;
+    declare id_teacher: number;
+    declare id_institution: number;
+    declare name: string;
+    declare description: string;
+    declare status: boolean;
 }
 
 // model initialization

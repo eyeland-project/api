@@ -7,10 +7,10 @@ import Answer from './Answer';
 
 // model class definition
 class AnswerAudio extends Model implements AnswerAudioModel {
-    id_answer_audio!: number;
-    id_answer!: number;
-    topic!: string;
-    url!: string;
+    declare id_answer_audio: number;
+    declare id_answer: number;
+    declare topic: string;
+    declare url: string;
 }
 
 // model initialization

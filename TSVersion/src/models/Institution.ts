@@ -5,14 +5,14 @@ import { InstitutionModel } from '../types/Institution.types';
 
 // model class definition
 class Institution extends Model implements InstitutionModel {
-    id_institution!: number;
-    name!: string;
-    nit!: string;
-    address!: string;
-    city!: string;
-    country!: string;
-    phone!: string;
-    email!: string;
+    declare id_institution: number;
+    declare name: string;
+    declare nit: string;
+    declare address: string;
+    declare city: string;
+    declare country: string;
+    declare phone: string;
+    declare email: string;
 }
 
 // model initialization

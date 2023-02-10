@@ -5,45 +5,14 @@ import sequelize from '../database';
 import { OptionModel } from '../types/Option.types';
 import Question from './Question';
 
-// model definition
-// const Option = sequelize.define<OptionModel>('option', {
-//     id_option: {
-//         type: DataTypes.INTEGER,
-//         autoIncrement: true,
-//         primaryKey: true
-//     },
-//     id_question: {
-//         type: DataTypes.INTEGER,
-//         allowNull: false
-//     },
-//     feedback: {
-//         type: DataTypes.STRING(100)
-//     },
-//     content: {
-//         type: DataTypes.STRING(1000),
-//         allowNull: false
-//     },
-//     correct: {
-//         type: DataTypes.BOOLEAN,
-//         allowNull: false
-//     },
-//     deleted: {
-//         type: DataTypes.BOOLEAN,
-//         allowNull: false,
-//         defaultValue: false
-//     }
-// }, {
-//     timestamps: false
-// });
-
 // model class definition
 class Option extends Model implements OptionModel {
-    id_option!: number;
-    id_question!: number;
-    feedback!: string;
-    content!: string;
-    correct!: boolean;
-    deleted!: boolean;
+    declare id_option: number;
+    declare id_question: number;
+    declare feedback: string;
+    declare content: string;
+    declare correct: boolean;
+    declare deleted: boolean;
 }
 
 // model initialization

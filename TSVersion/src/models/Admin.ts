@@ -7,12 +7,12 @@ import { AdminModel } from '../types/Admins.types';
 
 // model class definition
 class Admin extends Model implements AdminModel {
-    id_admin!: number;
-    first_name!: string;
-    last_name!: string;
-    email!: string;
-    username!: string;
-    password!: string;
+    declare id_admin: number;
+    declare first_name: string;
+    declare last_name: string;
+    declare email: string;
+    declare username: string;
+    declare password: string;
     comparePassword: ((password: string) => boolean) = password => (
         comparePassword(password, this.password)
     )

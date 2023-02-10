@@ -9,13 +9,13 @@ import TaskAttempt from './TaskAttempt';
 
 // model class definition
 class Answer extends Model implements AnswerModel {
-    id_answer!: number;
-    id_question!: number;
-    id_option!: number;
-    id_task_attempt!: number;
-    count!: number;
-    start_time!: Date;
-    end_time!: Date;
+    declare id_answer: number;
+    declare id_question: number;
+    declare id_option: number;
+    declare id_task_attempt: number;
+    declare count: number;
+    declare start_time: Date;
+    declare end_time: Date;
 }
 
 // model initialization

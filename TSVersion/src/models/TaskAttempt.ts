@@ -7,64 +7,16 @@ import Task from './Task';
 import Team from './Team';
 import Student from './Student';
 
-// model definition
-// const TaskAttempt = sequelize.define<TaskAttemptModel>('task_attempt', {
-//     id_task_attempt: {
-//         type: DataTypes.INTEGER,
-//         autoIncrement: true,
-//         primaryKey: true
-//     },
-//     id_task: {
-//         type: DataTypes.SMALLINT,
-//         allowNull: false
-//     },
-//     id_team: {
-//         type: DataTypes.INTEGER
-//     },
-//     id_student: {
-//         type: DataTypes.INTEGER
-//     },
-//     task_phase: {
-//         type: DataTypes.STRING(20),
-//         allowNull: false
-//     },
-//     completed: {
-//         type: DataTypes.BOOLEAN,
-//         allowNull: false,
-//         defaultValue: false
-//     },
-//     start_time: {
-//         type: DataTypes.DATE,
-//         allowNull: false,
-//         defaultValue: DataTypes.NOW
-//     },
-//     end_time: {
-//         type: DataTypes.DATE
-//     }
-// }, {
-//     timestamps: false,
-//     hooks: {
-//         beforeCreate: async ({ task_phase, id_team, id_student }: TaskAttemptModel) => {
-//             if (task_phase !== 'pretask' && task_phase !== 'duringtask' && task_phase !== 'postask') {
-//                 throw new Error('task_phase must be one of the following values: pretask, duringtask, postask');
-//             }
-//             if (!id_student && !id_team) {
-//                 throw new Error('Either id_student or id_team must be provided');
-//             }
-//         },
-//     },
-// });
-
 // model class definition
 class TaskAttempt extends Model implements TaskAttemptModel {
-    id_task_attempt!: number;
-    id_task!: number;
-    id_team!: number;
-    id_student!: number;
-    task_phase!: string;
-    completed!: boolean;
-    start_time!: Date;
-    end_time!: Date;
+    declare id_task_attempt: number;
+    declare id_task: number;
+    declare id_team: number;
+    declare id_student: number;
+    declare task_phase: string;
+    declare completed: boolean;
+    declare start_time: Date;
+    declare end_time: Date;
 }
 
 // model initialization

@@ -5,16 +5,16 @@ import { QuestionModel } from '../types/Question.types';
 
 // model class definition
 class Question extends Model implements QuestionModel {
-    id_question!: number;
-    id_task!: number;
-    content!: string;
-    audio_url!: string;
-    video_url!: string;
-    type!: string;
-    question_order!: number;
-    img_alt!: string;
-    img_url!: string;
-    deleted!: boolean;
+    declare id_question: number;
+    declare id_task: number;
+    declare content: string;
+    declare audio_url: string;
+    declare video_url: string;
+    declare type: string;
+    declare question_order: number;
+    declare img_alt: string;
+    declare img_url: string;
+    declare deleted: boolean;
 }
 
 // model initialization

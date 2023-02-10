@@ -8,20 +8,18 @@ import { StudentModel } from '../types/Student.types';
 
 // model class definition
 class Student extends Model implements StudentModel {
-    id_student!: number;
-    id_course!: number;
-    current_team!: number;
-    first_name!: string;
-    last_name!: string;
-    email!: string;
-    username!: string;
-    password!: string;
-    blindness!: 'total' | 'partial' | 'none';
-    // comparePassword: ((password: string) => boolean) = (password) => (
-    //     comparePassword(password, this.password)
-    // )
+    declare id_student: number;
+    declare id_course: number;
+    declare current_team: number;
+    declare first_name: string;
+    declare last_name: string;
+    declare email: string;
+    declare username: string;
+    declare password: string;
+    declare blindness: 'total' | 'partial' | 'none';
     comparePassword: ((password: string) => boolean) = (password) => (
-        password === this.dataValues.password // debuggin purposes
+        // comparePassword(password, this.password)
+        password === this.dataValues.password // temporary
     )
 }
 

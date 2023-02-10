@@ -7,10 +7,10 @@ import { StudentTeamModel } from '../types/StudentTeam.types';
 
 // model class definition
 class StudentTeam extends Model implements StudentTeamModel {
-    id_student_team!: number;
-    id_student!: number;
-    id_team!: number;
-    power!: 'super_hearing' | 'memory_pro' | 'super_radar';
+    declare id_student_team: number;
+    declare id_student: number;
+    declare id_team: number;
+    declare power: 'super_hearing' | 'memory_pro' | 'super_radar';
 }
 
 // model initialization
