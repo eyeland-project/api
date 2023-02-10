@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import passport from 'passport';
-import jwt from 'jsonwebtoken';
+import StudentModel from '../../models/Student';
+import { signToken } from '../../utils';
 
 // login with passport
 export async function login(req: Request, res: Response, next: Function) {
@@ -8,14 +9,19 @@ export async function login(req: Request, res: Response, next: Function) {
         try {
             if (err || !id) {
                 console.log(err);
-                
+
                 return next(new Error('An Error occured'));
             }
+            const student = await StudentModel.findByPk(id);
+            if (!student) return next(new Error('Student not found'));
+            
             req.login(id, { session: false }, async (err) => {
                 if (err) return next(err);
-                const body = { _id: id };
-                const token = jwt.sign({ user: body }, process.env.JWT_SECRET || ' top secret ' );
-                res.status(200).json({ token });
+                const token = signToken({ id });
+                res.status(200).json({
+                    token,
+                    hasTeam: student.current_team !== null,
+                });
             });
         } catch (err) {
             console.error(err);

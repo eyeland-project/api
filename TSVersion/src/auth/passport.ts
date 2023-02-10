@@ -43,7 +43,7 @@ passport.use('login', new LocalStrategy({
         });
         if (!student) {
             // TODO: check if it's teacher or admin
-            return done(null, false, { message: 'Student not found' });
+            return done(null, false, { message: 'Student not found (passport)' });
         }
         if (!student.comparePassword(password)) {
             return done(null, false, { message: 'Wrong Password' });

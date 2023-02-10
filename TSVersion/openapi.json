@@ -1057,7 +1057,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "userToken": {
+                    "token": {
                       "type": "string"
                     },
                     "hasTeam": {
