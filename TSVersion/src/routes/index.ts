@@ -10,7 +10,7 @@ function chargeRoutes(dir: string = ''): void {
 
     fs.readdirSync(rel(dir))
         .filter(file => (
-            file.match(/(.+\.)?routes\.ts$/) || fs.statSync(rel(dir, file)).isDirectory()
+            file.match(/(.+\.)?routes\.[jt]s$/) || fs.statSync(rel(dir, file)).isDirectory()
         ))
         .forEach(file => {
 
@@ -20,12 +20,12 @@ function chargeRoutes(dir: string = ''): void {
                 console.log('loading subRouter:', file);
                 // using dynamic imports to charge every subRouter in the router
                 import(rel(dir, file)).then(({ default: subRouter }: { default: Router }) => {
-                    let route = `${dir}/${file.replace(/\.?routes\.ts/, '')}`;
+                    let route = `${dir}/${file.replace(/\.?routes\.[jt]s/, '')}`;
 
                     // ignore files that start with _
-                    route = route.replaceAll(/\/_[^\/]+/g, "");
+                    route = route.replace(/\/_[^\/]+/g, "");
                     // replace {param} with :param
-                    route = route.replaceAll(/\/\{([^\/]+)\}/g, "/:$1");
+                    route = route.replace(/\/\{([^\/]+)\}/g, "/:$1");
                     // console.log('route:', route);
 
                     router.use(route, subRouter);
