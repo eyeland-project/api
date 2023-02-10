@@ -228,10 +228,85 @@ CREATE TABLE answer_audio (
 -- TODO: create table Animal
 -- TODO: create table Historial
 
+-- FUNCTIONS
+-- INSERT INTO student_task when a new student is inserted v1 (assumes there are 5 tasks)
+-- CREATE OR REPLACE FUNCTION insert_student_task_for_new_student()
+-- RETURNS TRIGGER AS $$
+-- BEGIN
+--   -- Insert 5 records into the student_task table for the new student
+--   FOR i IN 1..5 LOOP
+--     INSERT INTO student_task (id_student, id_task)
+--     VALUES (NEW.id_student, i); -- assuming that the ids of the tasks are 1, 2, 3, 4, 5
+--   END LOOP;
+--   RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+-- INSERT INTO student_task when a new student is inserted v2 (works for any number of tasks)
+CREATE OR REPLACE FUNCTION insert_student_task_for_new_student()
+RETURNS TRIGGER AS $$
+DECLARE
+    task_count SMALLINT;
+    new_student_id INTEGER;
+    task_id SMALLINT; -- to iterate over the tasks
+BEGIN
+    -- Get the number of tasks
+    SELECT COUNT(*) INTO task_count FROM task;
+    -- Get the ID of the newly inserted student
+    new_student_id = (SELECT id_student FROM student ORDER BY id_student DESC LIMIT 1);
+    -- Insert a record into the student_task table for each task
+    --   FOR task_id IN 1..task_count LOOP -- assuming that the ids of the tasks are 1, 2, 3, ..., task_count
+    FOR task_id IN (SELECT id_task FROM task) LOOP
+        RAISE NOTICE 'Inserting student_task for student % and task %', new_student_id, task_id;
+        INSERT INTO student_task (id_student, id_task)
+        VALUES (new_student_id, task_id);
+    END LOOP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insert_student_task_for_new_task()
+RETURNS TRIGGER AS $$
+DECLARE
+    student_count INTEGER;
+    new_task_id SMALLINT;
+    student_id INTEGER; -- to iterate over the students
+BEGIN
+    -- Get the number of students
+    SELECT COUNT(*) INTO student_count FROM student;
+    -- Get the ID of the newly inserted task
+    new_task_id = (SELECT id_task FROM task ORDER BY id_task DESC LIMIT 1);
+    -- Insert a record into the student_task table for each student
+    -- FOR student_id IN 1..student_count LOOP -- assuming that the ids of the students are 1, 2, 3, ..., student_count
+    FOR student_id IN (SELECT id_student FROM student) LOOP
+        RAISE NOTICE 'Inserting student_task for student % and task %', student_id, new_task_id;
+        INSERT INTO student_task (id_student, id_task)
+        VALUES (student_id, new_task_id);
+    END LOOP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- TRIGGERS
+-- Trigger to insert records into the student_task table for each new student
+CREATE TRIGGER insert_student_task_for_new_student_trigger
+AFTER INSERT ON student
+FOR EACH ROW
+EXECUTE FUNCTION insert_student_task_for_new_student();
+
+-- Trigger to insert records into the student_task table for each new task
+CREATE TRIGGER insert_student_task_for_new_task_trigger
+AFTER INSERT ON task
+FOR EACH ROW
+EXECUTE FUNCTION insert_student_task_for_new_task();
+
 -- INSERTING DATA
 -- INSERT INTO task
-INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 1', 'Description 1', 1, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
-INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 2', 'Description 1', 2, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
+INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 1', 'Description for Task 1', 1, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
+INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 2', 'Description for Task 2', 2, 'MensajePreTask2', 'MensajeDuringTask2', 'MensajePosTask2');
+INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 3', 'Description for Task 3', 3, 'MensajePreTask3', 'MensajeDuringTask3', 'MensajePosTask3');
+INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 4', 'Description for Task 4', 4, 'MensajePreTask4', 'MensajeDuringTask4', 'MensajePosTask4');
+INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 5', 'Description for Task 5', 5, 'MensajePreTask5', 'MensajeDuringTask5', 'MensajePosTask5');
 
 -- INSERT INTO links
 INSERT INTO link (id_task, topic, url) VALUES (1, 'google', 'http://www.google.com');
