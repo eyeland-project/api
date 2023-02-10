@@ -7,6 +7,8 @@ export async function login(req: Request, res: Response, next: Function) {
     passport.authenticate('login', async (err, id, info) => {
         try {
             if (err || !id) {
+                console.log(err);
+                
                 return next(new Error('An Error occured'));
             }
             req.login(id, { session: false }, async (err) => {
@@ -16,6 +18,7 @@ export async function login(req: Request, res: Response, next: Function) {
                 res.status(200).json({ token });
             });
         } catch (err) {
+            console.error(err);
             return next(err);
         }
     })(req, res, next);

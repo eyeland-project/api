@@ -17,9 +17,9 @@ class StudentModel extends Model<Student, StudentCreation> {
     declare username: string;
     declare password: string;
     declare blindness: 'total' | 'partial' | 'none';
-    comparePassword: ((password: string) => boolean) = (password) => (
+    comparePassword = (password: string): boolean => (
         // comparePassword(password, this.password)
-        password === this.dataValues.password // temporary
+        password === this.password // temporary
     )
 }
 

@@ -86,7 +86,7 @@ CREATE TABLE admin (
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(320) NOT NULL,
     username VARCHAR(50) NOT NULL,
-    password CHAR(60) NOT NULL,
+    password VARCHAR(60) NOT NULL,
     -- CONSTRAINTS
     CONSTRAINT pk_admin PRIMARY KEY (id_admin),
     CONSTRAINT uk_admin_email UNIQUE (email),
@@ -101,7 +101,7 @@ CREATE TABLE teacher (
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(320) NOT NULL,
     username VARCHAR(50) NOT NULL,
-    password CHAR(60) NOT NULL,
+    password VARCHAR(60) NOT NULL,
     -- CONSTRAINTS
     CONSTRAINT pk_teacher PRIMARY KEY (id_teacher),
     CONSTRAINT fk_teacher_institution FOREIGN KEY (id_institution) REFERENCES institution(id_institution),
@@ -145,7 +145,7 @@ CREATE TABLE student (
     email VARCHAR(320) NOT NULL,
     username VARCHAR(50) NOT NULL,
     blindness VARCHAR(50) NOT NULL,
-    password CHAR(60) NOT NULL,
+    password VARCHAR(60) NOT NULL,
     -- CONSTRAINTS
     CONSTRAINT pk_student PRIMARY KEY (id_student),
     CONSTRAINT fk_student_course FOREIGN KEY (id_course) REFERENCES course(id_course),
