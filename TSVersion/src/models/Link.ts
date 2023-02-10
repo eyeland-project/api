@@ -3,11 +3,11 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import Task from "./Task"
-import { LinkModel } from '../types/Links.types';
+import { Link, LinkCreation } from '../types/Links.types';
 
 
 // model class definition
-class Link extends Model implements LinkModel {
+class LinkModel extends Model<Link, LinkCreation> {
     declare id_link: number;
     declare id_task: number;
     declare topic: string;
@@ -15,7 +15,7 @@ class Link extends Model implements LinkModel {
 }
 
 // model initialization
-Link.init({
+LinkModel.init({
     id_link: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -35,19 +35,17 @@ Link.init({
     }
 }, {
     sequelize,
-    modelName: 'Link',
+    modelName: 'LinkModel',
     tableName: 'link',
     timestamps: false,
 });
 
 // model associations
-Task.hasMany(Link, {
+Task.hasMany(LinkModel, {
+    foreignKey: 'id_task'
+});
+LinkModel.belongsTo(Task, {
     foreignKey: 'id_task'
 });
 
-Link.belongsTo(Task, {
-    foreignKey: 'id_task'
-});
-
-export default Link;
-module.exports = Link;
+export default LinkModel;

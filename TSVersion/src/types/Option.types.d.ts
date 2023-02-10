@@ -10,5 +10,3 @@ export interface Option {
 };
 
 export type OptionCreation = Omit<Option, 'id_option'>;
-
-export interface OptionModel extends Model<Option, OptionCreation>, Option { };

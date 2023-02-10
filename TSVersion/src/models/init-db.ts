@@ -1,15 +1,16 @@
 console.log('Initializing database...');
-require('./Task');
-require('./Link');
-require('./Question');
-require('./Option');
-require('./Institution');
-require('./Teacher');
-require('./Course');
-require('./Team');
-require('./Student');
-require('./StudentTeam');
-require('./Admin');
-require('./TaskAttempt');
-require('./Answer');
-require('./AnswerAudio');
+import TaskModel from './Task'
+import LinkModel from './Link'
+import QuestionModel from './Question'
+import OptionModel from './Option'
+import InstitutionModel from './Institution'
+import AdminModel from './Admin'
+import TeacherModel from './Teacher'
+import CourseModel from './Course'
+import TeamModel from './Team'
+import StudentModel from './Student'
+import StudentTeamModel from './StudentTeam'
+import StudentTaskModel from './StudentTask'
+import TaskAttemptModel from './TaskAttempt'
+import AnswerModel from './Answer'
+import AnswerAudioModel from './AnswerAudio'

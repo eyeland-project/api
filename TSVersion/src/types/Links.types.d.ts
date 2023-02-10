@@ -8,5 +8,3 @@ export interface Link {
 };
 
 export type LinkCreation = Omit<Link, 'id_link'>;
-
-export interface LinkModel extends Model<Link, LinkCreation>, Link{};

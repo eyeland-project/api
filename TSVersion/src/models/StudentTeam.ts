@@ -1,12 +1,12 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import Team from './Team';
-import Student from './Student';
-import { StudentTeamModel } from '../types/StudentTeam.types';
+import TeamModel from './Team';
+import StudentModel from './Student';
+import { StudentTeam, StudentTeamCreation } from '../types/StudentTeam.types';
 
 // model class definition
-class StudentTeam extends Model implements StudentTeamModel {
+class StudentTeamModel extends Model<StudentTeam, StudentTeamCreation> {
     declare id_student_team: number;
     declare id_student: number;
     declare id_team: number;
@@ -14,7 +14,7 @@ class StudentTeam extends Model implements StudentTeamModel {
 }
 
 // model initialization
-StudentTeam.init({
+StudentTeamModel.init({
     id_student_team: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -34,7 +34,7 @@ StudentTeam.init({
     }
 }, {
     sequelize,
-    modelName: 'StudentTeam',
+    modelName: 'StudentTeamModel',
     tableName: 'student_team',
     timestamps: false,
     hooks: {
@@ -47,20 +47,19 @@ StudentTeam.init({
 });
 
 // definir la relación entre StudentTeam y Student
-Student.hasOne(StudentTeam, {
+StudentModel.hasOne(StudentTeamModel, {
     foreignKey: 'id_student'
 });
-StudentTeam.hasOne(Student, {
+StudentTeamModel.belongsTo(StudentModel, {
     foreignKey: 'id_student'
 });
 
 // definir la relación entre StudentTeam y Team
-Team.hasMany(StudentTeam, {
+TeamModel.hasMany(StudentTeamModel, {
     foreignKey: 'id_team'
 });
-StudentTeam.hasOne(Team, {
+StudentTeamModel.belongsTo(TeamModel, {
     foreignKey: 'id_team'
 });
 
-export default StudentTeam;
-module.exports = StudentTeam;
+export default StudentTeamModel;

@@ -2,11 +2,11 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import { AnswerAudioModel } from '../types/AnswerAudio.types';
-import Answer from './Answer';
+import { AnswerAudio, AnswerAudioCreation } from '../types/AnswerAudio.types';
+import AnswerModel from './Answer';
 
 // model class definition
-class AnswerAudio extends Model implements AnswerAudioModel {
+class AnswerAudioModel extends Model<AnswerAudio, AnswerAudioCreation> {
     declare id_answer_audio: number;
     declare id_answer: number;
     declare topic: string;
@@ -14,7 +14,7 @@ class AnswerAudio extends Model implements AnswerAudioModel {
 }
 
 // model initialization
-AnswerAudio.init({
+AnswerAudioModel.init({
     id_answer_audio: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -34,18 +34,17 @@ AnswerAudio.init({
     }
 }, {
     sequelize,
-    modelName: 'AnswerAudio',
+    modelName: 'AnswerAudioModel',
     tableName: 'answer_audio',
     timestamps: false
 });
 
 // definir la relación entre Respuestas y Respuestas de Audio
-Answer.hasMany(AnswerAudio, {
+AnswerModel.hasMany(AnswerAudioModel, {
     foreignKey: 'id_answer'
 });
-AnswerAudio.belongsTo(Answer, {
+AnswerAudioModel.belongsTo(AnswerModel, {
     foreignKey: 'id_answer'
 });
 
-export default AnswerAudio;
-module.exports = AnswerAudio;
+export default AnswerAudioModel;

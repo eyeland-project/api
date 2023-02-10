@@ -1,10 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import Task from "./Task"
-import { QuestionModel } from '../types/Question.types';
+import { Question, QuestionCreation } from '../types/Question.types';
 
 // model class definition
-class Question extends Model implements QuestionModel {
+class QuestionModel extends Model<Question, QuestionCreation> {
     declare id_question: number;
     declare id_task: number;
     declare content: string;
@@ -18,7 +18,7 @@ class Question extends Model implements QuestionModel {
 }
 
 // model initialization
-Question.init({
+QuestionModel.init({
     id_question: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -59,7 +59,7 @@ Question.init({
     }
 }, {
     sequelize,
-    modelName: 'Question',
+    modelName: 'QuestionModel',
     tableName: 'question',
     timestamps: false,
     hooks: {
@@ -77,13 +77,11 @@ Question.init({
     // ]
 });
 
-Task.hasMany(Question, {
+Task.hasMany(QuestionModel, {
+    foreignKey: 'id_task'
+});
+QuestionModel.belongsTo(Task, {
     foreignKey: 'id_task'
 });
 
-Question.belongsTo(Task, {
-    foreignKey: 'id_task'
-});
-
-export default Question;
-module.exports = Question;
+export default QuestionModel;

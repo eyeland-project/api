@@ -3,10 +3,10 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import { comparePassword, hashPassword } from '../utils';
-import { AdminModel } from '../types/Admins.types';
+import { Admin, AdminCreation } from '../types/Admins.types';
 
 // model class definition
-class Admin extends Model implements AdminModel {
+class AdminModel extends Model<Admin, AdminCreation> {
     declare id_admin: number;
     declare first_name: string;
     declare last_name: string;
@@ -19,7 +19,7 @@ class Admin extends Model implements AdminModel {
 }
 
 // model initialization
-Admin.init({
+AdminModel.init({
     id_admin: {
         type: DataTypes.SMALLINT,
         primaryKey: true,
@@ -51,7 +51,7 @@ Admin.init({
     }
 }, {
     sequelize,
-    modelName: 'Admin',
+    modelName: 'AdminModel',
     tableName: 'admin',
     timestamps: false,
     hooks: {
@@ -71,5 +71,4 @@ Admin.init({
     // ]
 });
 
-export default Admin;
-module.exports = Admin;
+export default AdminModel;

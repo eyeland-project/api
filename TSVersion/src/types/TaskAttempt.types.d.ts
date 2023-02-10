@@ -12,5 +12,3 @@ export interface TaskAttempt {
 };
 
 export type TaskAttemptCreation = Omit<TaskAttempt, 'id_task_attempt'>;
-
-export interface TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation>, TaskAttempt{};

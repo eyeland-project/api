@@ -1,10 +1,10 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import { TeamModel } from '../types/Team.types';
+import { Team, TeamCreation } from '../types/Team.types';
 
 // model class definition
-class Team extends Model implements TeamModel {
+class TeamModel extends Model<Team, TeamCreation> {
     declare id_team: number;
     declare id_course: number;
     declare name: string;
@@ -13,7 +13,7 @@ class Team extends Model implements TeamModel {
 }
 
 // model initialization
-Team.init({
+TeamModel.init({
     id_team: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -37,7 +37,7 @@ Team.init({
     },
 }, {
     sequelize,
-    modelName: 'Team',
+    modelName: 'TeamModel',
     tableName: 'team',
     timestamps: false
 });
@@ -46,5 +46,4 @@ Team.init({
 // Team.hasOne(Student, { foreignKey: { name: "grupoactual", allowNull: true } });
 // Student.belongsTo(Team);
 
-export default Team;
-module.exports = Team;
+export default TeamModel;

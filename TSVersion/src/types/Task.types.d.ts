@@ -15,4 +15,4 @@ export interface Task {
 
 export type TaskCreation = Omit<Task, 'id_task'>;
 
-export interface TaskModel extends Model<Task, TaskCreation>, Task{};
+export interface TaskModel extends Model<Task, TaskCreation>, Task { };

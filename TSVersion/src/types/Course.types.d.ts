@@ -10,5 +10,3 @@ export interface Course {
 };
 
 export type CourseCreation = Omit<Course, 'id_course'>;
-
-export interface CourseModel extends Model<Course, CourseCreation>, Course{};

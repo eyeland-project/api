@@ -12,5 +12,3 @@ export interface Institution {
 };
 
 export type InstitutionCreation = Omit<Institution, 'id_institution'>;
-
-export interface InstitutionModel extends Model<Institution, InstitutionCreation>, Institution { };

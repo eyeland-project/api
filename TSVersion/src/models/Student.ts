@@ -1,13 +1,13 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import Course from './Course';
-import Team from './Team';
+import CourseModel from './Course';
+import TeamModel from './Team';
 import { comparePassword, hashPassword } from '../utils';
-import { StudentModel } from '../types/Student.types';
+import { Student, StudentCreation } from '../types/Student.types';
 
 // model class definition
-class Student extends Model implements StudentModel {
+class StudentModel extends Model<Student, StudentCreation> {
     declare id_student: number;
     declare id_course: number;
     declare current_team: number;
@@ -24,7 +24,7 @@ class Student extends Model implements StudentModel {
 }
 
 // model initialization
-Student.init({
+StudentModel.init({
     id_student: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -64,10 +64,13 @@ Student.init({
     blindness: {
         type: DataTypes.STRING(50),
         allowNull: false
+    },
+    comparePassword: {
+        type: DataTypes.VIRTUAL
     }
 }, {
     sequelize,
-    modelName: 'Student',
+    modelName: 'StudentModel',
     tableName: 'student',
     timestamps: false,
     hooks: {
@@ -92,20 +95,19 @@ Student.init({
 });
     
 // definir la relación entre Cursos y Estudiantes
-Course.hasMany(Student, {
+CourseModel.hasMany(StudentModel, {
     foreignKey: 'id_course'
 });
-Student.belongsTo(Course, {
+StudentModel.belongsTo(CourseModel, {
     foreignKey: 'id_course'
 });
 
 // definir la relación entre Teams y Estudiantes
-Team.hasMany(Student, {
+TeamModel.hasMany(StudentModel, {
     foreignKey: 'current_team'
 });
-Student.belongsTo(Team, {
+StudentModel.belongsTo(TeamModel, {
     foreignKey: 'current_team'
 });
 
-export default Student;
-module.exports = Student;
+export default StudentModel;

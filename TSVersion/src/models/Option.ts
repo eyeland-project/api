@@ -2,11 +2,11 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import { OptionModel } from '../types/Option.types';
-import Question from './Question';
+import { Option, OptionCreation } from '../types/Option.types';
+import QuestionModel from './Question';
 
 // model class definition
-class Option extends Model implements OptionModel {
+class OptionModel extends Model<Option, OptionCreation> {
     declare id_option: number;
     declare id_question: number;
     declare feedback: string;
@@ -16,7 +16,7 @@ class Option extends Model implements OptionModel {
 }
 
 // model initialization
-Option.init({
+OptionModel.init({
     id_option: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -44,18 +44,16 @@ Option.init({
     }
 }, {
     sequelize,
-    modelName: 'Option',
+    modelName: 'OptionModel',
     tableName: 'option',
     timestamps: false
 });
 
-Question.hasMany(Option, {
+QuestionModel.hasMany(OptionModel, {
+    foreignKey: 'id_question'
+});
+OptionModel.belongsTo(QuestionModel, {
     foreignKey: 'id_question'
 });
 
-Option.belongsTo(Question, {
-    foreignKey: 'id_question'
-});
-
-export default Option;
-module.exports = Option;
+export default OptionModel;

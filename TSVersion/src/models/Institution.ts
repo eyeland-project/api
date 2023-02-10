@@ -1,10 +1,10 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import { InstitutionModel } from '../types/Institution.types';
+import { Institution, InstitutionCreation } from '../types/Institution.types';
 
 // model class definition
-class Institution extends Model implements InstitutionModel {
+class InstitutionModel extends Model<Institution, InstitutionCreation> {
     declare id_institution: number;
     declare name: string;
     declare nit: string;
@@ -16,7 +16,7 @@ class Institution extends Model implements InstitutionModel {
 }
 
 // model initialization
-Institution.init({
+InstitutionModel.init({
     id_institution: {
         type: DataTypes.SMALLINT,
         primaryKey: true,
@@ -52,7 +52,7 @@ Institution.init({
     }
 }, {
     sequelize,
-    modelName: 'Institution',
+    modelName: 'InstitutionModel',
     tableName: 'institution',
     timestamps: false,
     // indexes: [
@@ -63,5 +63,4 @@ Institution.init({
     // ]
 });
 
-export default Institution;
-module.exports = Institution;
+export default InstitutionModel;

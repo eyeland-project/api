@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JWTSrategy, ExtractJwt } from 'passport-jwt';
-import Student from '../models/Student';
+import StudentModel from '../models/Student';
 
 // passport setting up
 passport.use('signup', new LocalStrategy({
@@ -37,7 +37,7 @@ passport.use('login', new LocalStrategy({
         // done(null, 1);
         // console.log(await Student.findAll());
         
-        const student = await Student.findOne({
+        const student = await StudentModel.findOne({
             attributes: ['id_student', 'username', 'password'],
             where: { username }
         });
@@ -61,7 +61,7 @@ const opts = {
     secretOrKey: process.env.SECRET || ' top_secret '
 };
 
-passport.use(new JWTSrategy(opts, async (jwt_payload, done) => {
+passport.use(new JWTSrategy(opts, async (jwt_payload: {user: {_id: number}}, done) => {
     try {
         // check if the token has expired
 
@@ -73,7 +73,7 @@ passport.use(new JWTSrategy(opts, async (jwt_payload, done) => {
 
         // const user = await User.findById(jwt_payload.id);
         console.log(jwt_payload);
-        const user = { _id: jwt_payload.user._id, username: jwt_payload.user.username }
+        const user = { _id: jwt_payload.user._id}
         if (user) {
             done(null, user);
         } else

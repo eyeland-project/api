@@ -14,5 +14,3 @@ export interface Question {
 };
 
 export type QuestionCreation = Omit<Question, 'id_question'>;
-
-export interface QuestionModel extends Model<Question, QuestionCreation>, Question{};

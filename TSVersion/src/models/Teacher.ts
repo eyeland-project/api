@@ -1,12 +1,12 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import Institution from './Institution';
+import InstitutionModel from './Institution';
 import { comparePassword, hashPassword } from '../utils';
-import { TeacherModel } from '../types/Teacher.types';
+import { Teacher, TeacherCreation } from '../types/Teacher.types';
 
 // model class definition
-class Teacher extends Model implements TeacherModel {
+class TeacherModel extends Model<Teacher, TeacherCreation> {
     declare id_teacher: number;
     declare id_institution: number;
     declare first_name: string;
@@ -17,7 +17,7 @@ class Teacher extends Model implements TeacherModel {
 }
 
 // model initialization
-Teacher.init({
+TeacherModel.init({
     id_teacher: {
         type: DataTypes.SMALLINT,
         primaryKey: true,
@@ -51,7 +51,7 @@ Teacher.init({
     }
 }, {
     sequelize,
-    modelName: 'Teacher',
+    modelName: 'TeacherModel',
     tableName: 'teacher',
     timestamps: false,
     hooks: {
@@ -62,12 +62,11 @@ Teacher.init({
 });
 
 // definir la relación entre Instituciones y Profesores
-Institution.hasMany(Teacher, {
+InstitutionModel.hasMany(TeacherModel, {
     foreignKey: 'id_institucion'
 });
-Teacher.belongsTo(Institution, {
+TeacherModel.belongsTo(InstitutionModel, {
     foreignKey: 'id_institucion'
 });
 
-export default Teacher;
-module.exports = Teacher;
+export default TeacherModel;

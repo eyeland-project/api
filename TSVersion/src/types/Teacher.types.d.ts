@@ -11,5 +11,3 @@ export interface Teacher {
 };
 
 export type TeacherCreation = Omit<Teacher, 'id_teacher'>;
-
-export interface TeacherModel extends Model<Teacher, TeacherCreation>, Teacher { };

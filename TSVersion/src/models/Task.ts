@@ -2,10 +2,10 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import { TaskModel } from '../types/Task.types';
+import { Task, TaskCreation } from '../types/Task.types';
 
 // model class definition
-class Task extends Model implements TaskModel {
+class TaskModel extends Model<Task, TaskCreation> {
     declare id_task: number;
     declare name: string;
     declare description: string;
@@ -18,7 +18,7 @@ class Task extends Model implements TaskModel {
 }
 
 // model initialization
-Task.init({
+TaskModel.init({
     id_task: {
         type: DataTypes.SMALLINT,
         autoIncrement: true,
@@ -55,10 +55,9 @@ Task.init({
     }
 }, {
     sequelize,
-    modelName: 'Task',
+    modelName: 'TaskModel',
     tableName: 'task',
     timestamps: false
 });
 
-export default Task;
-module.exports = Task;
+export default TaskModel;

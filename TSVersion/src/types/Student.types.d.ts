@@ -10,10 +10,7 @@ export interface Student {
     username: string;
     blindness: 'total' | 'partial' | 'none';
     password: string;
-    // comparePassword: () => void;
     comparePassword: (password: string) => boolean;
 };
 
 export type StudentCreation = Omit<Student, 'id_student'>;
-
-export interface StudentModel extends Model<Student, StudentCreation>, Student { };

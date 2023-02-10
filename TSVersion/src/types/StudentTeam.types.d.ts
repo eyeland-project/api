@@ -8,5 +8,3 @@ export interface StudentTeam {
 };
 
 export type StudentTeamCreation = Omit<StudentTeam, 'id_student_team'>;
-
-export interface StudentTeamModel extends Model<StudentTeam, StudentTeamCreation>, StudentTeam { };

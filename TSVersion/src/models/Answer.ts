@@ -2,24 +2,23 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import { AnswerModel } from '../types/Answer.types';
-import Question from './Question';
-import Option from './Option';
-import TaskAttempt from './TaskAttempt';
+import { Answer, AnswerCreation } from '../types/Answer.types';
+import QuestionModel from './Question';
+import OptionModel from './Option';
+import TaskAttemptModel from './TaskAttempt';
 
 // model class definition
-class Answer extends Model implements AnswerModel {
+class AnswerModel extends Model<Answer, AnswerCreation> {
     declare id_answer: number;
     declare id_question: number;
     declare id_option: number;
     declare id_task_attempt: number;
-    declare count: number;
     declare start_time: Date;
     declare end_time: Date;
 }
 
 // model initialization
-Answer.init({
+AnswerModel.init({
     id_answer: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -37,10 +36,6 @@ Answer.init({
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    count: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
     start_time: {
         type: DataTypes.DATE
     },
@@ -51,34 +46,33 @@ Answer.init({
     },
 }, {
     sequelize,
-    modelName: 'Answer',
+    modelName: 'AnswerModel',
     tableName: 'answer',
     timestamps: false,
 });
 
 // definir la relación entre Preguntas y Respuestas
-Question.hasMany(Answer, {
+QuestionModel.hasMany(AnswerModel, {
     foreignKey: 'id_question'
 });
-Answer.belongsTo(Question, {
+AnswerModel.belongsTo(QuestionModel, {
     foreignKey: 'id_question'
 });
 
 // definir la relación entre Opciones y Respuestas
-Option.hasMany(Answer, {
+OptionModel.hasMany(AnswerModel, {
     foreignKey: 'id_option'
 });
-Answer.belongsTo(Option, {
+AnswerModel.belongsTo(OptionModel, {
     foreignKey: 'id_option'
 });
 
 // definir la relación entre Intentos de Tareas y Respuestas
-TaskAttempt.hasMany(Answer, {
+TaskAttemptModel.hasMany(AnswerModel, {
     foreignKey: 'id_task_attempt'
 });
-Answer.belongsTo(TaskAttempt, {
+AnswerModel.belongsTo(TaskAttemptModel, {
     foreignKey: 'id_task_attempt'
 });
 
-export default Answer;
-module.exports = Answer;
+export default AnswerModel;

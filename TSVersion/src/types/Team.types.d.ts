@@ -9,5 +9,3 @@ export interface Team {
 };
 
 export type TeamCreation = Omit<Team, 'id_team'>;
-
-export interface TeamModel extends Model<Team, TeamCreation>, Team{};

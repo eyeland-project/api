@@ -5,8 +5,12 @@ import {
     getQuestions,
     root
 } from '../../../../controllers/students/postask.controller';
+import passport from "passport";
+
+const auth = passport.authenticate('jwt', { session: false });
 
 const router = Router({ mergeParams: true });
+// router.use(auth);
 
 router.get('/', root);
 router.get('/questions', getQuestions);

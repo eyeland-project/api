@@ -1,12 +1,12 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import Institution from './Institution';
-import Teacher from './Teacher';
-import { CourseModel } from '../types/Course.types';
+import InstitutionModel from './Institution';
+import TeacherModel from './Teacher';
+import { Course, CourseCreation } from '../types/Course.types';
 
 // model class definition
-class Course extends Model implements CourseModel {
+class CourseModel extends Model<Course, CourseCreation> {
     declare id_course: number;
     declare id_teacher: number;
     declare id_institution: number;
@@ -16,7 +16,7 @@ class Course extends Model implements CourseModel {
 }
 
 // model initialization
-Course.init({
+CourseModel.init({
     id_course: {
         type: DataTypes.SMALLINT,
         primaryKey: true,
@@ -44,26 +44,25 @@ Course.init({
     }
 }, {
     sequelize,
-    modelName: 'Course',
+    modelName: 'CourseModel',
     tableName: 'course',
     timestamps: false
 });
 
 // definir la relación entre Profesores y Cursos
-Teacher.hasMany(Course, {
+TeacherModel.hasMany(CourseModel, {
     foreignKey: 'id_teacher'
 });
-Course.belongsTo(Teacher, {
+CourseModel.belongsTo(TeacherModel, {
     foreignKey: 'id_teacher'
 });
 
 // definir la relación entre Instituciones y Cursos
-Institution.hasMany(Course, {
+InstitutionModel.hasMany(CourseModel, {
     foreignKey: 'id_institution'
 });
-Course.belongsTo(Institution, {
+CourseModel.belongsTo(InstitutionModel, {
     foreignKey: 'id_institution'
 });
 
-export default Course;
-module.exports = Course;
+export default CourseModel;

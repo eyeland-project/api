@@ -2,13 +2,13 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
-import { TaskAttemptModel } from '../types/TaskAttempt.types';
+import { TaskAttempt, TaskAttemptCreation } from '../types/TaskAttempt.types';
 import Task from './Task';
-import Team from './Team';
-import Student from './Student';
+import TeamModel from './Team';
+import StudentModel from './Student';
 
 // model class definition
-class TaskAttempt extends Model implements TaskAttemptModel {
+class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
     declare id_task_attempt: number;
     declare id_task: number;
     declare id_team: number;
@@ -20,7 +20,7 @@ class TaskAttempt extends Model implements TaskAttemptModel {
 }
 
 // model initialization
-TaskAttempt.init({
+TaskAttemptModel.init({
     id_task_attempt: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -55,7 +55,8 @@ TaskAttempt.init({
     }
 }, {
     sequelize,
-    modelName: 'task_attempt',
+    tableName: 'task_attempt',
+    modelName: 'TaskAttemptModel',
     timestamps: false,
     hooks: {
         beforeCreate: async ({ task_phase, id_team, id_student }: TaskAttemptModel) => {
@@ -70,28 +71,33 @@ TaskAttempt.init({
 });
 
 // definir la relación entre Tareas y Intentos de Tareas
-Task.hasMany(TaskAttempt, {
+Task.hasMany(TaskAttemptModel, {
     foreignKey: 'id_task'
 });
-TaskAttempt.belongsTo(Task, {
+TaskAttemptModel.belongsTo(Task, {
     foreignKey: 'id_task'
 });
 
 // definir la relación entre Teams y Intentos de Tareas
-Team.hasMany(TaskAttempt, {
+TeamModel.hasMany(TaskAttemptModel, {
     foreignKey: 'id_team'
 });
-TaskAttempt.belongsTo(Team, {
-    foreignKey: 'id_team'
+TaskAttemptModel.belongsTo(TeamModel, {
+    foreignKey: {
+        name: 'id_team',
+        allowNull: true
+    }
 });
 
 // definir la relación entre Estudiantes y Intentos de Tareas
-Student.hasMany(TaskAttempt, {
+StudentModel.hasMany(TaskAttemptModel, {
     foreignKey: 'id_student'
 });
-TaskAttempt.belongsTo(Student, {
-    foreignKey: 'id_student'
+TaskAttemptModel.belongsTo(StudentModel, {
+    foreignKey: {
+        name: 'id_student',
+        allowNull: true
+    }
 });
 
-export default TaskAttempt;
-module.exports = TaskAttempt;
+export default TaskAttemptModel;

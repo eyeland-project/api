@@ -5,7 +5,7 @@ CREATE DATABASE mydb;
 \connect mydb;
 
 -- CREATING TABLES
--- create table task
+-- CREATING TABLE task
 CREATE TABLE task (
     id_task SMALLSERIAL NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE task (
     CONSTRAINT uk_task_task_order UNIQUE (task_order)
 );
 
--- create table links (pre-task)
+-- CREATING TABLE links (pre-task)
 CREATE TABLE link (
     id_link SERIAL NOT NULL,
     id_task SMALLINT NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE option (
     CONSTRAINT fk_option_question FOREIGN KEY (id_question) REFERENCES question(id_question)
 );
 
--- create table Instituciones
+-- CREATING TABLE Instituciones
 CREATE TABLE institution (
     id_institution SMALLSERIAL NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -79,7 +79,21 @@ CREATE TABLE institution (
     CONSTRAINT uk_institution_nit UNIQUE (nit)
 );
 
--- create table Profesores
+-- CREATING TABLE Administradores
+CREATE TABLE admin (
+    id_admin SMALLSERIAL NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    password CHAR(60) NOT NULL,
+    -- CONSTRAINTS
+    CONSTRAINT pk_admin PRIMARY KEY (id_admin),
+    CONSTRAINT uk_admin_email UNIQUE (email),
+    CONSTRAINT uk_admin_username UNIQUE (username)
+);
+
+-- CREATING TABLE Profesores
 CREATE TABLE teacher (
     id_teacher SMALLSERIAL NOT NULL,
     id_institution SMALLINT NOT NULL,
@@ -95,7 +109,7 @@ CREATE TABLE teacher (
     CONSTRAINT uk_teacher_username UNIQUE (username)
 );
 
--- create table Cursos
+-- CREATING TABLE Cursos
 CREATE TABLE course (
     id_course SMALLSERIAL NOT NULL,
     id_teacher SMALLINT NOT NULL,
@@ -109,7 +123,7 @@ CREATE TABLE course (
     CONSTRAINT fk_course_institution FOREIGN KEY (id_institution) REFERENCES institution(id_institution)
 );
 
--- create table Grupos
+-- CREATING TABLE Grupos
 CREATE TABLE team (
     id_team SERIAL NOT NULL,
     id_course SMALLINT NOT NULL,
@@ -121,7 +135,7 @@ CREATE TABLE team (
     CONSTRAINT fk_team_course FOREIGN KEY (id_course) REFERENCES course(id_course)
 );
 
--- create table Estudiantes
+-- CREATING TABLE Estudiantes
 CREATE TABLE student (
     id_student SERIAL NOT NULL,
     id_course SMALLINT NOT NULL,
@@ -141,7 +155,7 @@ CREATE TABLE student (
     CONSTRAINT check_student_blindness CHECK (blindness IN ('total', 'partial', 'none'))
 );
 
--- create table Estudiantes_Grupos
+-- CREATING TABLE Estudiantes_Grupos
 CREATE TABLE student_team (
     id_student_team SERIAL NOT NULL,
     id_student INTEGER NOT NULL,
@@ -154,21 +168,19 @@ CREATE TABLE student_team (
     CONSTRAINT check_student_team_power CHECK (power IN ('super_hearing', 'memory_pro', 'super_radar'))
 );
 
--- create table Administradores
-CREATE TABLE admin (
-    id_admin SMALLSERIAL NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(320) NOT NULL,
-    username VARCHAR(50) NOT NULL,
-    password CHAR(60) NOT NULL,
+CREATE TABLE student_task (
+    id_student_task SERIAL NOT NULL,
+    id_student INTEGER NOT NULL,
+    id_task SMALLINT NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
-    CONSTRAINT pk_admin PRIMARY KEY (id_admin),
-    CONSTRAINT uk_admin_email UNIQUE (email),
-    CONSTRAINT uk_admin_username UNIQUE (username)
+    CONSTRAINT pk_student_task PRIMARY KEY (id_student_task),
+    CONSTRAINT fk_student_task_student FOREIGN KEY (id_student) REFERENCES student(id_student),
+    CONSTRAINT fk_student_task_task FOREIGN KEY (id_task) REFERENCES task(id_task),
+    CONSTRAINT uk_student_task UNIQUE (id_student, id_task)
 );
 
--- create table
+-- CREATING TABLE
 CREATE TABLE task_attempt (
     id_task_attempt SERIAL NOT NULL,
     id_task SMALLINT NOT NULL,
@@ -187,13 +199,12 @@ CREATE TABLE task_attempt (
     CONSTRAINT check_task_attempt_by CHECK (id_team IS NOT NULL OR id_student IS NOT NULL)
 );
 
--- create table
+-- CREATING TABLE
 CREATE TABLE answer (
     id_answer SERIAL NOT NULL,
     id_question INTEGER NOT NULL,
     id_option INTEGER NOT NULL,
     id_task_attempt INTEGER NOT NULL,
-    count INTEGER NOT NULL,
     start_time TIMESTAMP,
     end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- CONSTRAINTS
@@ -203,7 +214,7 @@ CREATE TABLE answer (
     CONSTRAINT fk_answer_task_attempt FOREIGN KEY (id_task_attempt) REFERENCES task_attempt(id_task_attempt)
 );
 
--- create table
+-- CREATING TABLE
 CREATE TABLE answer_audio (
     id_answer_audio SERIAL NOT NULL,
     id_answer INTEGER NOT NULL,
