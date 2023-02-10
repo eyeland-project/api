@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 //* Routes
-app.use('/api-legacy', require('../../legacy/src/app')._router);
+// app.use('/api-legacy', require('../../legacy/src/app')._router);
 import indexRoutes from './routes';
 // console.log(indexRoutes.stack);
 
