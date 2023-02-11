@@ -1090,18 +1090,6 @@
           }
         }
       },
-      "LinksCount": {
-        "type": "object",
-        "properties": {
-          "numLinks": {
-            "type": "integer"
-          },
-          "availableLinks": {
-            "type": "integer",
-            "description": "The number of questions available for the task"
-          }
-        }
-      },
       "LinkPreTask": {
         "type": "object",
         "properties": {
@@ -1115,18 +1103,6 @@
           },
           "url": {
             "type": "string"
-          }
-        }
-      },
-      "QuestionsCount": {
-        "type": "object",
-        "properties": {
-          "numQuestions": {
-            "type": "integer"
-          },
-          "availableQuestions": {
-            "type": "integer",
-            "description": "The number of questions available for the task"
           }
         }
       },
