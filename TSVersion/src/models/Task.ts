@@ -11,9 +11,9 @@ class TaskModel extends Model<Task, TaskCreation> {
     declare description: string;
     declare task_order: number;
     declare thumbnail_url: string;
-    declare msg_pretask: string;
-    declare msg_duringtask: string;
-    declare msg_postask: string;
+    declare pretask_msg: string;
+    declare duringtask_msg: string;
+    declare postask_msg: string;
     declare deleted: boolean;
 }
 
@@ -24,29 +24,37 @@ TaskModel.init({
         autoIncrement: true,
         primaryKey: true
     },
+    task_order: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     name: {
         type: DataTypes.STRING(100),
         allowNull: false
     },
     description: {
-        type: DataTypes.STRING(2000),
+        type: DataTypes.STRING(100),
         allowNull: false
     },
-    task_order: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+    long_description: {
+        type: DataTypes.STRING(1000)
+    },
+    keywords: {
+        type: DataTypes.ARRAY(DataTypes.STRING(50)),
+        allowNull: false,
+        defaultValue: []
+    },
+    pretask_msg: {
+        type: DataTypes.STRING(100)
+    },
+    duringtask_msg: {
+        type: DataTypes.STRING(100)
+    },
+    postask_msg: {
+        type: DataTypes.STRING(100)
     },
     thumbnail_url: {
         type: DataTypes.STRING(2048)
-    },
-    msg_pretask: {
-        type: DataTypes.STRING(1000)
-    },
-    msg_duringtask: {
-        type: DataTypes.STRING(1000)
-    },
-    msg_postask: {
-        type: DataTypes.STRING(1000)
     },
     deleted: {
         type: DataTypes.BOOLEAN,

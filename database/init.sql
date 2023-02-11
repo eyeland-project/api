@@ -8,13 +8,15 @@ CREATE DATABASE mydb;
 -- CREATING TABLE task
 CREATE TABLE task (
     id_task SMALLSERIAL NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    description VARCHAR(2000) NOT NULL,
     task_order SMALLINT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(100) NOT NULL,
+    long_description VARCHAR(1000),
+    keywords VARCHAR(50)[] NOT NULL DEFAULT '{}',
+    pretask_msg VARCHAR(100),
+    duringtask_msg VARCHAR(100),
+    postask_msg VARCHAR(100),
     thumbnail_url VARCHAR(2048),
-    msg_pretask VARCHAR(1000),
-    msg_duringtask VARCHAR(1000),
-    msg_postask VARCHAR(1000),
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_task PRIMARY KEY (id_task),
@@ -302,11 +304,11 @@ EXECUTE FUNCTION insert_student_task_for_new_task();
 
 -- INSERTING DATA
 -- INSERT INTO task
-INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 1', 'Description for Task 1', 1, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
-INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 2', 'Description for Task 2', 2, 'MensajePreTask2', 'MensajeDuringTask2', 'MensajePosTask2');
-INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 3', 'Description for Task 3', 3, 'MensajePreTask3', 'MensajeDuringTask3', 'MensajePosTask3');
-INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 4', 'Description for Task 4', 4, 'MensajePreTask4', 'MensajeDuringTask4', 'MensajePosTask4');
-INSERT INTO task (name, description, task_order, msg_pretask, msg_duringtask, msg_postask) VALUES ('Task 5', 'Description for Task 5', 5, 'MensajePreTask5', 'MensajeDuringTask5', 'MensajePosTask5');
+INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 1', 'Description for Task 1', 1, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
+INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 2', 'Description for Task 2', 2, 'MensajePreTask2', 'MensajeDuringTask2', 'MensajePosTask2');
+INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 3', 'Description for Task 3', 3, 'MensajePreTask3', 'MensajeDuringTask3', 'MensajePosTask3');
+INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 4', 'Description for Task 4', 4, 'MensajePreTask4', 'MensajeDuringTask4', 'MensajePosTask4');
+INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 5', 'Description for Task 5', 5, 'MensajePreTask5', 'MensajeDuringTask5', 'MensajePosTask5');
 
 -- INSERT INTO links
 INSERT INTO link (id_task, topic, url) VALUES (1, 'google', 'http://www.google.com');
