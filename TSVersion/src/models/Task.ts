@@ -7,9 +7,11 @@ import { Task, TaskCreation } from '../types/Task.types';
 // model class definition
 class TaskModel extends Model<Task, TaskCreation> {
     declare id_task: number;
+    declare task_order: number;
     declare name: string;
     declare description: string;
-    declare task_order: number;
+    declare long_description: string;
+    declare keywords: string[];
     declare thumbnail_url: string;
     declare pretask_msg: string;
     declare duringtask_msg: string;

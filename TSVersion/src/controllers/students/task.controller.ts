@@ -1,9 +1,10 @@
 /// <reference path="../../types/customTypes.d.ts" />
 
 import { Request, Response } from 'express';
-import { getStudentTasksOrdered } from '../../services/task.service';
+import { getStudentTasks, getTaskIntro } from '../../services/task.service';
 import { Task } from '../../types/Task.types';
-import { TaskResp } from '../../types/respSchemas/student/Task.types';
+import { TaskResp } from '../../types/respSchemas/student/TaskResp.types';
+import { IntroductionResp } from '../../types/respSchemas/student/IntroductionResp';
 
 type Introduction = {
     id: number,
@@ -17,24 +18,15 @@ type Introduction = {
 
 export async function root(req: Request, res: Response<TaskResp[]>) {
     const user = req.user as ReqUser;
-    res.status(200).json(await getStudentTasksOrdered(user.id));
+    res.status(200).json(await getStudentTasks(user.id));
 }
 
-export function getIntro(req: Request<{ taskOrder: number }>, res: Response<Introduction>) {
+export async function getIntro(req: Request<{ taskOrder: number }>, res: Response<IntroductionResp>) {
     const { taskOrder } = req.params;
-
-    res.status(200).json(Array.from({ length: 5 }, (_, i) => ({
-        id: i,
-        name: `Task ${i}`,
-        description: `This is a description for Task ${i}.`,
-        taskOrder: i + 1,
-        thumbnail: 'https://picsum.photos/200/300',
-        keywords: ['keyword1', 'keyword2', 'keyword3'],
-        longDescription: `This is a long description for Task ${i}. Like, really long. I mean, really, really long. I mean, really, really, really long. I mean, really, really, really, really long. I mean, really, really, really, really, really long. I mean, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really, really, really, really, really, really, really long. I mean, really, really, really, really, really, really, really, really, really, really, really, really, really, really, really long. I mean, really.`
-    }))[taskOrder - 1]);
+    res.status(200).json(await getTaskIntro(taskOrder));
 }
 
-export function start(req: Request<{ taskOrder: number }>, res: Response<{ message: string }>) {
+export async function start(req: Request<{ taskOrder: number }>, res: Response<{ message: string }>) {
     // const { taskOrder } = req.params;
     res.status(200).json({ message: 'Ok' });
 }

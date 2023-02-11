@@ -1,25 +1,46 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database";
 import TaskModel from "../models/Task";
-import { TaskResp } from "../types/respSchemas/student/Task.types";
-// import { getLinks } from './pretask.service'
-// import { getQuestions } from './inTask.service'
+import { IntroductionResp } from "../types/respSchemas/student/IntroductionResp";
+import { TaskResp } from "../types/respSchemas/student/TaskResp.types";
 
 export async function getTaskCount(): Promise<number> {
     return await TaskModel.count();
 }
 
-// export async function getTasksOrdered (): Promise<TaskModel[]> {
-//     return await TaskModel.findAll({ order: [['task_order', 'ASC']] });
-// }
-
-export async function getStudentTasksOrdered (idStudent: number): Promise<TaskResp[]> {
+export async function getStudentTasks(idStudent: number): Promise<TaskResp[]> {
     return await sequelize.query(`
         SELECT task.id_task as id, task.name, task.description, task.task_order as "taskOrder", task.thumbnail_url as "thumbnailUrl", student_task.completed FROM task
         LEFT JOIN student_task ON task.id_task = student_task.id_task
         WHERE student_task.id_student = ${idStudent}
         ORDER BY task_order ASC;
     `, { type: QueryTypes.SELECT });
+}
+
+export async function getTaskIntro(taskOrder: number): Promise<IntroductionResp> {
+    const tasks = (await sequelize.query(`
+        SELECT task.id_task as id, task.name, task.description, task.task_order as "taskOrder", task.thumbnail_url as "thumbnailUrl", task.keywords, task.long_description as "longDescription"
+        FROM task
+        WHERE task.task_order = ${taskOrder}
+        LIMIT 1;
+    `, { type: QueryTypes.SELECT })) as IntroductionResp[];
+    console.log(tasks);
+    return tasks[0];
+
+    // const intro = await TaskModel.findOne({
+    //     where: { task_order: taskOrder },
+    //     attributes: [['id_task', 'id'], 'name', 'description', ['task_order', 'taskOrder'], ['thumbnail_url', 'thumbnailUrl'], 'keywords', ['long_description', 'longDescription']]
+    // });
+    // if (!intro) throw new Error('Task not found');
+    // return {
+    //     id: intro.id_task,
+    //     name: intro.name,
+    //     description: intro.description,
+    //     taskOrder: intro.task_order,
+    //     thumbnailUrl: intro.thumbnail_url,
+    //     keywords: intro.keywords,
+    //     longDescription: intro.long_description
+    // };
 }
 
 // export async function getAllLinksByOrder(taskOrder: number): Promise<any> {
