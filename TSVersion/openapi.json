@@ -485,60 +485,6 @@
         }
       }
     },
-    "/tasks/{taskOrder}/pretask/questions": {
-      "get": {
-        "description": "Get the a summary of the questions of the PreTask based on the number of the Task",
-        "tags": [
-          "question"
-        ],
-        "security": [
-          {
-            "api_key": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "taskOrder",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "The number of the task"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionsCount"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid taskOrder"
-          },
-          "401": {
-            "description": "Missing authentication"
-          },
-          "403": {
-            "description": "Unauthorized to access this resource"
-          },
-          "404": {
-            "description": "Task not found"
-          },
-          "498": {
-            "description": "Token expired/invalid"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
     "/tasks/{taskOrder}/pretask/questions/{questionOrder}": {
       "get": {
         "description": "Get the PreTask question based on the number of the Task and the number of the question inside the task",
@@ -657,60 +603,6 @@
           },
           "404": {
             "description": "Task not found | Question not found"
-          },
-          "498": {
-            "description": "Token expired/invalid"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
-    "/tasks/{taskOrder}/duringtask/questions": {
-      "get": {
-        "description": "Get the a summary of the questions of the DuringTask based on the number of the Task",
-        "tags": [
-          "question"
-        ],
-        "security": [
-          {
-            "api_key": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "taskOrder",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "The number of the task"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionsCount"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid taskOrder"
-          },
-          "401": {
-            "description": "Missing authentication"
-          },
-          "403": {
-            "description": "Unauthorized to access this resource"
-          },
-          "404": {
-            "description": "Task not found"
           },
           "498": {
             "description": "Token expired/invalid"
@@ -842,60 +734,6 @@
           },
           "404": {
             "description": "Task not found | Question not found"
-          },
-          "498": {
-            "description": "Token expired/invalid"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
-    "/tasks/{taskOrder}/postask/questions": {
-      "get": {
-        "description": "Get the a summary of the questions of the pretask based on the number of the Task",
-        "tags": [
-          "question"
-        ],
-        "security": [
-          {
-            "api_key": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "taskOrder",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "The number of the task"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionsCount"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid taskOrder"
-          },
-          "401": {
-            "description": "Missing authentication"
-          },
-          "403": {
-            "description": "Unauthorized to access this resource"
-          },
-          "404": {
-            "description": "Task not found"
           },
           "498": {
             "description": "Token expired/invalid"
@@ -1227,7 +1065,22 @@
       "PreTask": {
         "type": "object",
         "properties": {
-          "message": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "longDescription": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnailUrl": {
             "type": "string"
           },
           "numQuestions": {
@@ -1243,7 +1096,22 @@
       "DuringTask": {
         "type": "object",
         "properties": {
-          "message": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "longDescription": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnailUrl": {
             "type": "string"
           },
           "numQuestions": {
@@ -1255,7 +1123,22 @@
       "PosTask": {
         "type": "object",
         "properties": {
-          "message": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "longDescription": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnailUrl": {
             "type": "string"
           },
           "numQuestions": {
