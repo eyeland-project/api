@@ -1,7 +1,10 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database";
+import LinkModel from "../models/Link";
+import QuestionModel from "../models/Question";
 import TaskModel from "../models/Task";
-import { IntroductionResp, TaskResp } from "../types/responses/students.types";
+import TaskPhaseModel from "../models/TaskPhase";
+import { IntroductionResp, PretaskResp, TaskResp } from "../types/responses/students.types";
 
 export async function getTaskCount(): Promise<number> {
     return await TaskModel.count();
@@ -40,6 +43,37 @@ export async function getTaskIntro(taskOrder: number): Promise<IntroductionResp>
     //     keywords: intro.keywords,
     //     longDescription: intro.long_description
     // };
+}
+
+export async function getPretask(taskOrder: number): Promise<PretaskResp> {
+    const task = (await TaskModel.findOne({
+        attributes: ['id_task'],
+        where: { task_order: taskOrder }
+    }));
+    if (!task) throw new Error('Task not found');
+    
+    const pretask = await TaskPhaseModel.findOne({
+        attributes: ['id_task_phase', 'name', 'description', 'long_description', 'thumbnail_url', 'keywords'],
+        where: { id_task: task.id_task, task_phase_order: 1 }
+    });
+    if (!pretask) throw new Error('Pretask not found');
+
+    const numLinks = await LinkModel.count({
+        where: { id_task: task.id_task } // all links from the task will be part of the pretask
+    });
+    const numQuestions = await QuestionModel.count({
+        where: { id_task_phase: pretask.id_task_phase }
+    });
+    
+    return {
+        name: pretask.name,
+        description: pretask.description,
+        longDescription: pretask.long_description || '',
+        keywords: pretask.keywords || '',
+        thumbnailUrl: pretask.thumbnail_url || '',
+        numLinks,
+        numQuestions
+    };
 }
 
 // export async function getAllLinksByOrder(taskOrder: number): Promise<any> {

@@ -55,10 +55,9 @@ passport.use('login', new LocalStrategy({
 }));
 
 passport.use('jwt', new JWTSrategy({
-    passReqToCallback: true,
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET || ' top secret '
-}, async (req: Request, jwt_payload: { id: number }, done: Function) => {
+}, async (jwt_payload: { id: number }, done: Function) => {
     try {
         // check if the token has expired
 

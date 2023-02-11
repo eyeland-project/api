@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getPretaskLink } from '../../services/link.service';
-import { getSummary } from '../../services/pretask.service';
+import { getPretask } from '../../services/task.service';
 import { PretaskLinkResp, PretaskResp } from '../../types/responses/students.types';
 
 type Pretask = {
@@ -48,7 +48,7 @@ type Questions = {
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<PretaskResp>) {
     const { taskOrder } = req.params;
-    res.status(200).json(await getSummary(taskOrder));
+    res.status(200).json(await getPretask(taskOrder));
 }
 
 export async function getLink(req: Request<{ taskOrder: number, linkOrder: number }>, res: Response<PretaskLinkResp>) {
