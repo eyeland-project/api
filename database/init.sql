@@ -41,11 +41,13 @@ CREATE TABLE task_phase (
 CREATE TABLE link (
     id_link SERIAL NOT NULL,
     id_task SMALLINT NOT NULL,
+    link_order SMALLINT NOT NULL,
     topic VARCHAR(100) NOT NULL,
     url VARCHAR(2048) NOT NULL,
     -- CONSTRAINTS
     CONSTRAINT pk_link PRIMARY KEY (id_link),
-    CONSTRAINT fk_link_task FOREIGN KEY (id_task) REFERENCES task(id_task)
+    CONSTRAINT fk_link_task FOREIGN KEY (id_task) REFERENCES task(id_task),
+    CONSTRAINT uk_link_constr UNIQUE (id_task, link_order)
 );
 
 -- CREATING TABLE preguntas
@@ -333,21 +335,21 @@ INSERT INTO task (task_order, name, description, long_description, keywords, thu
 INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (5, 'Task 5', 'Description for Task 5', 'Long description for Task 5', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
 
 -- INSERT INTO link
-INSERT INTO link (id_task, topic, url) VALUES (1, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
-INSERT INTO link (id_task, topic, url) VALUES (1, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
-INSERT INTO link (id_task, topic, url) VALUES (1, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
-INSERT INTO link (id_task, topic, url) VALUES (2, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
-INSERT INTO link (id_task, topic, url) VALUES (2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
-INSERT INTO link (id_task, topic, url) VALUES (2, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
-INSERT INTO link (id_task, topic, url) VALUES (3, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
-INSERT INTO link (id_task, topic, url) VALUES (3, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
-INSERT INTO link (id_task, topic, url) VALUES (3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
-INSERT INTO link (id_task, topic, url) VALUES (4, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
-INSERT INTO link (id_task, topic, url) VALUES (4, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
-INSERT INTO link (id_task, topic, url) VALUES (4, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
-INSERT INTO link (id_task, topic, url) VALUES (5, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
-INSERT INTO link (id_task, topic, url) VALUES (5, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
-INSERT INTO link (id_task, topic, url) VALUES (5, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (1, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (1, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (1, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (2, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (2, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (2, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (3, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (3, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (3, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (4, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (4, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (4, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
 
 -- INSERT INTO question
 INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');

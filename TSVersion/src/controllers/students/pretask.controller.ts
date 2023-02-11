@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+import { getPretaskLink } from '../../services/link.service';
 import { getSummary } from '../../services/pretask.service';
-import { PretaskResp } from '../../types/responses/students.types';
+import { PretaskLinkResp, PretaskResp } from '../../types/responses/students.types';
 
 type Pretask = {
     message: string,
@@ -50,41 +51,9 @@ export async function root(req: Request<{ taskOrder: number }>, res: Response<Pr
     res.status(200).json(await getSummary(taskOrder));
 }
 
-export async function getLinks(req: Request<{ taskOrder: number }>, res: Response<Links>) {
-    // const { taskOrder } = req.params;
-    res.status(200).json({
-        numLinks: 3,
-        availableLinks: 3
-    });
-}
-
-export async function getLink(req: Request<{ taskOrder: number, linkOrder: number }>, res: Response<Link>) {
+export async function getLink(req: Request<{ taskOrder: number, linkOrder: number }>, res: Response<PretaskLinkResp>) {
     const { taskOrder, linkOrder } = req.params;
-    res.status(200).json(Array.from({ length: 5 }, () => ([
-        {
-            id: 1,
-            topic: 'Topic 1',
-            url: 'https://wordwall.net/resource/36022113/task-1-vocabulary'
-        },
-        {
-            id: 2,
-            topic: 'Topic 2',
-            url: 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning'
-        },
-        {
-            id: 3,
-            topic: 'Topic 3',
-            url: 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions'
-        }
-    ]))[taskOrder - 1][linkOrder - 1]);
-}
-
-export async function getQuestions(req: Request<{ taskOrder: number }>, res: Response<Questions>) {
-    // const { taskOrder } = req.params;
-    res.status(200).json({
-        numQuestions: 2,
-        availableQuestions: 2
-    });
+    res.status(200).json(await getPretaskLink(taskOrder, linkOrder));
 }
 
 export async function getQuestion(req: Request<{ taskOrder: number, questionOrder: number }>, res: Response<Question>) {

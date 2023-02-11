@@ -5,11 +5,11 @@ import sequelize from '../database';
 import TaskModel from "./Task"
 import { Link, LinkCreation } from '../types/database/Link.types';
 
-
 // model class definition
 class LinkModel extends Model<Link, LinkCreation> {
     declare id_link: number;
     declare id_task: ForeignKey<number>;
+    declare link_order: number;
     declare topic: string;
     declare url: string;
 }
@@ -22,6 +22,10 @@ LinkModel.init({
         primaryKey: true
     },
     id_task: {
+        type: DataTypes.SMALLINT,
+        allowNull: false
+    },
+    link_order: {
         type: DataTypes.SMALLINT,
         allowNull: false
     },
