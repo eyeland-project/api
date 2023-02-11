@@ -13,14 +13,27 @@ CREATE TABLE task (
     description VARCHAR(100) NOT NULL,
     long_description VARCHAR(1000),
     keywords VARCHAR(50)[] NOT NULL DEFAULT '{}',
-    pretask_msg VARCHAR(100),
-    duringtask_msg VARCHAR(100),
-    postask_msg VARCHAR(100),
     thumbnail_url VARCHAR(2048),
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_task PRIMARY KEY (id_task),
     CONSTRAINT uk_task_task_order UNIQUE (task_order)
+);
+
+-- CREATING TABLE task
+CREATE TABLE task_phase (
+    id_task_phase SMALLSERIAL NOT NULL,
+    id_task SMALLINT NOT NULL,
+    task_phase_order SMALLINT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(100) NOT NULL,
+    long_description VARCHAR(1000),
+    keywords VARCHAR(50)[] NOT NULL DEFAULT '{}',
+    thumbnail_url VARCHAR(2048),
+    -- CONSTRAINTS
+    CONSTRAINT pk_task_phase PRIMARY KEY (id_task_phase),
+    CONSTRAINT pk_task_phase_task FOREIGN KEY (id_task) REFERENCES task(id_task),
+    CONSTRAINT uk_task_phase_constr UNIQUE (id_task, task_phase_order)
 );
 
 -- CREATING TABLE links (pre-task)
@@ -37,19 +50,19 @@ CREATE TABLE link (
 -- CREATING TABLE preguntas
 CREATE TABLE question (
     id_question SERIAL NOT NULL,
-    id_task SMALLINT NOT NULL,
+    id_task_phase SMALLINT NOT NULL,
+    question_order SMALLINT NOT NULL,
     content VARCHAR(100) NOT NULL,
     audio_url VARCHAR(2048),
     video_url VARCHAR(2048),
     type VARCHAR(50) NOT NULL,
-    question_order SMALLINT NOT NULL,
     img_alt VARCHAR(50),
     img_url VARCHAR(2048),
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_question PRIMARY KEY (id_question),
-    CONSTRAINT fk_question_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    CONSTRAINT uk_question_constr UNIQUE (id_task, question_order),
+    CONSTRAINT fk_question_task FOREIGN KEY (id_task_phase) REFERENCES task_phase(id_task_phase),
+    CONSTRAINT uk_question_constr UNIQUE (id_task_phase, question_order),
     CONSTRAINT check_question_type CHECK (type IN ('select', 'audio'))
 );
 
@@ -57,8 +70,8 @@ CREATE TABLE question (
 CREATE TABLE option (
     id_option SERIAL NOT NULL,
     id_question INTEGER NOT NULL,
-    feedback VARCHAR(100),
     content VARCHAR(1000) NOT NULL,
+    feedback VARCHAR(100),
     correct BOOLEAN NOT NULL,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
@@ -188,7 +201,7 @@ CREATE TABLE task_attempt (
     id_task SMALLINT NOT NULL,
     id_team INTEGER,
     id_student INTEGER,
-    task_phase VARCHAR(20) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     end_time TIMESTAMP,
@@ -197,7 +210,6 @@ CREATE TABLE task_attempt (
     CONSTRAINT fk_task_attempt_task FOREIGN KEY (id_task) REFERENCES task(id_task),
     CONSTRAINT fk_task_attempt_team FOREIGN KEY (id_team) REFERENCES team(id_team),
     CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student),
-    CONSTRAINT check_task_attempt_task_phase CHECK (task_phase IN ('pretask', 'duringtask', 'postask')),
     CONSTRAINT check_task_attempt_by CHECK (id_team IS NOT NULL OR id_student IS NOT NULL)
 );
 
@@ -231,33 +243,16 @@ CREATE TABLE answer_audio (
 -- TODO: create table Historial
 
 -- FUNCTIONS
--- INSERT INTO student_task when a new student is inserted v1 (assumes there are 5 tasks)
--- CREATE OR REPLACE FUNCTION insert_student_task_for_new_student()
--- RETURNS TRIGGER AS $$
--- BEGIN
---   -- Insert 5 records into the student_task table for the new student
---   FOR i IN 1..5 LOOP
---     INSERT INTO student_task (id_student, id_task)
---     VALUES (NEW.id_student, i); -- assuming that the ids of the tasks are 1, 2, 3, 4, 5
---   END LOOP;
---   RETURN NEW;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- INSERT INTO student_task when a new student is inserted v2 (works for any number of tasks)
+-- INSERT INTO student_task when a new student is inserted
 CREATE OR REPLACE FUNCTION insert_student_task_for_new_student()
 RETURNS TRIGGER AS $$
 DECLARE
-    task_count SMALLINT;
     new_student_id INTEGER;
     task_id SMALLINT; -- to iterate over the tasks
 BEGIN
-    -- Get the number of tasks
-    SELECT COUNT(*) INTO task_count FROM task;
     -- Get the ID of the newly inserted student
     new_student_id = (SELECT id_student FROM student ORDER BY id_student DESC LIMIT 1);
     -- Insert a record into the student_task table for each task
-    --   FOR task_id IN 1..task_count LOOP -- assuming that the ids of the tasks are 1, 2, 3, ..., task_count
     FOR task_id IN (SELECT id_task FROM task) LOOP
         RAISE NOTICE 'Inserting student_task for student % and task %', new_student_id, task_id;
         INSERT INTO student_task (id_student, id_task)
@@ -267,24 +262,44 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- INSERT INTO student_task when a new task is inserted
 CREATE OR REPLACE FUNCTION insert_student_task_for_new_task()
 RETURNS TRIGGER AS $$
 DECLARE
-    student_count INTEGER;
     new_task_id SMALLINT;
     student_id INTEGER; -- to iterate over the students
 BEGIN
-    -- Get the number of students
-    SELECT COUNT(*) INTO student_count FROM student;
     -- Get the ID of the newly inserted task
     new_task_id = (SELECT id_task FROM task ORDER BY id_task DESC LIMIT 1);
     -- Insert a record into the student_task table for each student
-    -- FOR student_id IN 1..student_count LOOP -- assuming that the ids of the students are 1, 2, 3, ..., student_count
     FOR student_id IN (SELECT id_student FROM student) LOOP
         RAISE NOTICE 'Inserting student_task for student % and task %', student_id, new_task_id;
         INSERT INTO student_task (id_student, id_task)
         VALUES (student_id, new_task_id);
     END LOOP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- INSERT INTO task_phase when a new task is inserted (3 phases per task)
+CREATE OR REPLACE FUNCTION insert_task_phase_for_new_task()
+RETURNS TRIGGER AS $$
+DECLARE
+    new_task_id INTEGER;
+BEGIN
+    -- Get the ID of the newly inserted task
+    new_task_id = (SELECT id_task FROM task ORDER BY id_task DESC LIMIT 1);
+    -- Insert 3 records into the task_phase table
+    -- Phase 1
+    INSERT INTO task_phase (id_task, task_phase_order, name, description)
+    VALUES (new_task_id, 1, 'Phase 1', 'Description for Phase 1');
+    -- Phase 2
+    INSERT INTO task_phase (id_task, task_phase_order, name, description)
+    VALUES (new_task_id, 2, 'Phase 2', 'Description for Phase 2');
+    -- Phase 3
+    INSERT INTO task_phase (id_task, task_phase_order, name, description)
+    VALUES (new_task_id, 3, 'Phase 3', 'Description for Phase 3');
+    RAISE NOTICE 'Inserted 3 task_phase records for task %', new_task_id;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -302,67 +317,116 @@ AFTER INSERT ON task
 FOR EACH ROW
 EXECUTE FUNCTION insert_student_task_for_new_task();
 
+-- Trigger to insert records into the task_phase table for each new task
+CREATE TRIGGER insert_task_phase_for_new_task_trigger
+AFTER INSERT ON task
+FOR EACH ROW
+EXECUTE FUNCTION insert_task_phase_for_new_task();
+
 -- INSERTING DATA
 -- INSERT INTO task
-INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 1', 'Description for Task 1', 1, 'MensajePreTask1', 'MensajeDuringTask1', 'MensajePosTask1');
-INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 2', 'Description for Task 2', 2, 'MensajePreTask2', 'MensajeDuringTask2', 'MensajePosTask2');
-INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 3', 'Description for Task 3', 3, 'MensajePreTask3', 'MensajeDuringTask3', 'MensajePosTask3');
-INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 4', 'Description for Task 4', 4, 'MensajePreTask4', 'MensajeDuringTask4', 'MensajePosTask4');
-INSERT INTO task (name, description, task_order, pretask_msg, duringtask_msg, postask_msg) VALUES ('Task 5', 'Description for Task 5', 5, 'MensajePreTask5', 'MensajeDuringTask5', 'MensajePosTask5');
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (1, 'Task 1', 'Description for Task 1', 'Long description for Task 1', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (2, 'Task 2', 'Description for Task 2', 'Long description for Task 2', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (3, 'Task 3', 'Description for Task 3', 'Long description for Task 3', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (4, 'Task 4', 'Description for Task 4', 'Long description for Task 4', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (5, 'Task 5', 'Description for Task 5', 'Long description for Task 5', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
 
--- INSERT INTO links
-INSERT INTO link (id_task, topic, url) VALUES (1, 'google', 'http://www.google.com');
-INSERT INTO link (id_task, topic, url) VALUES (1, 'Generado por Copilot', 'https://www.youtube.com/watch?v=is4RZQLodKU');
+-- INSERT INTO link
+INSERT INTO link (id_task, topic, url) VALUES (1, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, topic, url) VALUES (1, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, topic, url) VALUES (1, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, topic, url) VALUES (2, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, topic, url) VALUES (2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, topic, url) VALUES (2, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, topic, url) VALUES (3, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, topic, url) VALUES (3, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, topic, url) VALUES (3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, topic, url) VALUES (4, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, topic, url) VALUES (4, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, topic, url) VALUES (4, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
+INSERT INTO link (id_task, topic, url) VALUES (5, 'Vocabulary', 'https://wordwall.net/resource/36022113/task-1-vocabulary');
+INSERT INTO link (id_task, topic, url) VALUES (5, 'Prepositions of place meaning', 'https://wordwall.net/resource/36054813/task-1-prepositions-of-place-meaning');
+INSERT INTO link (id_task, topic, url) VALUES (5, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
 
--- INSERT INTO preguntas
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿Cuál es el secreto de la vida?', NULL, NULL, 'select', 1, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es sí?', NULL, NULL, 'select', 2, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (1, '¿La repuesta es no?', NULL, NULL, 'select', 3, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'esto es del postask?', NULL, NULL, 'select', 1, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'graba audio', NULL, NULL, 'select', 2, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'Auxilio, Camilo nos tiene esclavizados', NULL, NULL, 'select', 3, NULL, NULL);
-INSERT INTO question (id_task, content, audio_url, video_url, type, question_order, img_alt, img_url) VALUES (2, 'Esto no es joda', NULL, NULL, 'select', 4, NULL, NULL);
+-- INSERT INTO question
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 1, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (3, 1, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 1, 'Do you like coffee?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 1, 'How are you today?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (6, 1, 'What do you do for a living?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 1, 'Do you have any pets?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 1, 'What''s your favorite color?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (9, 1, 'Do you like to travel?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 1, 'What''s your favorite food?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 1, 'Do you have any hobbies?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (12, 1, 'What time is it now?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 1, 'How many siblings do you have?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 1, 'What''s the weather like today?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (15, 1, 'Do you speak any other languages besides English?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
 
--- INSERT INTO respuestas
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (1, 1, 'Retroalimentacion1', '', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (2, 1, 'Retroalimentacion1', 'La amista', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (3, 1, 'Retroalimentacion1', 'El money', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (4, 1, 'Retroalimentacion1', 'La tuya por si acaso', true);
+-- INSERT INTO option
+INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'My name is ChatGPT.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'My name is not ChatGPT.', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (5, 2, 'Retroalimentacion2', 'sí', true);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (6, 2, 'Retroalimentacion2', 'no', true);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (2, 'I am a few months old.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (2, 'I am a few decades old.', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (7, 3, 'Retroalimentacion3', 'sí', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (8, 3, 'Retroalimentacion3', 'no', true);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (3, 'I was developed by OpenAI, so you could say I am from OpenAI.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (3, 'I am from Mars.', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (9, 4, 'Retroalimentacion4', 'sí', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (10, 4, 'Retroalimentacion4', 'no', true);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (4, 'As an AI language model, I do not have personal preferences or physical abilities to consume anything, so I do not have an opinion on coffee.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (4, 'I love coffee.', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (11, 5, 'Retroalimentacion5', 'sí', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (12, 5, 'Retroalimentacion5', 'no', true);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (5, 'I am a machine learning model and do not have feelings, but I am functioning normally.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (5, 'I am feeling sad today.', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (13, 6, 'Retroalimentacion6', 'sí', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (14, 6, 'Retroalimentacion6', 'no', true);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'I am an AI language model developed by OpenAI and I assist users in generating text based on the input provided to me.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'I am a doctor.', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (15, 7, 'Retroalimentacion7', 'sí', false);
-INSERT INTO option (id_option, id_question, feedback, content, correct) VALUES (16, 7, 'Retroalimentacion7', 'no', true);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'As an AI language model, I do not have physical abilities or personal possessions, so I do not have pets.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'I have a dog.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (8, 'As an AI language model, I do not have personal preferences, so I do not have a favorite color.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (8, 'My favorite color is blue.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (9, 'As an AI language model, I do not have personal preferences or physical abilities, so I do not have an opinion on traveling.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (9, 'I love to travel.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (10, 'As an AI language model, I do not have personal preferences or physical abilities to consume anything, so I do not have a favorite food.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (10, 'My favorite food is pizza.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (11, 'As an AI language model, I do not have personal preferences or physical abilities, so I do not have hobbies.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (11, 'My hobby is playing video games.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (12, 'I am an AI language model and do not have access to real-time information.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (12, 'It is currently 2 PM.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (13, 'As an AI language model, I do not have siblings.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (13, 'I have 3 siblings.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'I am an AI language model and do not have access to real-time information.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'The weather today is sunny and warm.', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Yes, I have been trained on a diverse range of languages and can respond in multiple languages including English.', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'No, I only speak English.', 'Incorrect!', FALSE);
 
 -- *INSERTANDO USUARIOS E INSTITUCIONES DE PRUEBA
--- INSERT INTO Instituciones
+-- INSERT INTO institution
 INSERT INTO institution (id_institution, name, nit, address, city, country, phone, email) VALUES (1, 'Institución de prueba', '123456789', 'Cra 45 # 23-67', 'Barranquilla', 'Colombia', '1234567', 'prueba@test.com');
 
--- INSERT INTO Profesores
+-- INSERT INTO teacher
 INSERT INTO teacher (id_teacher, id_institution, first_name, last_name, email, username, password) VALUES (1, 1, 'Profesor', 'Prueba', 'teacher@test.com', 'teacher', 'teacher');
 
--- INSERT INTO Cursos
+-- INSERT INTO course
 INSERT INTO course (id_course, id_institution, id_teacher, name, description) VALUES (1, 1, 1, 'Curso de prueba', 'Curso de prueba para la aplicación');
 
--- INSERT INTO Equipos
+-- INSERT INTO team
 INSERT INTO team (id_team, id_course, name) VALUES (1, 1, 'Equipo de prueba');
 
--- INSERT INTO Estudiantes
+-- INSERT INTO student
 INSERT INTO student (id_student, id_course, first_name, last_name, email, username, current_team, blindness, password) VALUES (1, 1, 'Estudiante', 'Prueba', 'student@test.com', 'student', 1, 'none', 'pass123');
 INSERT INTO student (id_student, id_course, first_name, last_name, email, username, current_team, blindness, password) VALUES (2, 1, 'Estudiante', 'Prueba', 'student2@test.com', 'student2', NULL, 'none', 'pass123');
 
--- INSERT INTO Administradores
+-- INSERT INTO admin
 INSERT INTO admin (id_admin, first_name, last_name, email, username, password) VALUES (1, 'Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
