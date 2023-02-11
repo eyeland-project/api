@@ -1,10 +1,13 @@
 import { Router } from "express";
+import passport from "passport";
 import { login, loginTeam, logoutTeam } from '../../controllers/students/auth.controller';
 
-const router: Router = Router();
+const auth = passport.authenticate('jwt', { session: false });
+
+const router = Router({ mergeParams: true });
 
 router.post('/login', login);
-router.post('/login-team', loginTeam);
-router.post('/logout-team', logoutTeam);
+router.post('/login-team', auth, loginTeam);
+router.post('/logout-team', auth, logoutTeam);
 
 export default router;

@@ -1,15 +1,9 @@
-import { Request, Response } from 'express';
-import { getTasksOrdered } from '../../services/task.service';
-import { TaskModel } from '../../types/Task.types';
+/// <reference path="../../types/customTypes.d.ts" />
 
-type Task = {
-    id: number,
-    name: string,
-    description: string,
-    taskOrder: number,
-    completed: boolean,
-    thumbnail: string
-};
+import { Request, Response } from 'express';
+import { getStudentTasksOrdered } from '../../services/task.service';
+import { Task } from '../../types/Task.types';
+import { TaskResp } from '../../types/respSchemas/student/Task.types';
 
 type Introduction = {
     id: number,
@@ -21,17 +15,9 @@ type Introduction = {
     longDescription: string
 }
 
-export async function root(req: Request, res: Response<Task[]>) {
-    // const tasks: TaskModel[] = await getTasksOrdered();
-    // res.status(200).json(tasks.map(({ id_task, name, description, task_order, thumbnail_url }: TaskModel) => {}));
-    res.status(200).json(Array.from({ length: 5 }, (_, i) => ({
-        id: i,
-        name: `Task ${i}`,
-        description: `This is a description for Task ${i}.`,
-        taskOrder: i + 1,
-        completed: Math.random() > 0.9,
-        thumbnail: 'https://picsum.photos/200/300'
-    })));
+export async function root(req: Request, res: Response<TaskResp[]>) {
+    const user = req.user as ReqUser;
+    res.status(200).json(await getStudentTasksOrdered(user.id));
 }
 
 export function getIntro(req: Request<{ taskOrder: number }>, res: Response<Introduction>) {

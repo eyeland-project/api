@@ -1172,7 +1172,7 @@
             "type": "boolean",
             "description": "If the task was completed successfully"
           },
-          "thumbnail": {
+          "thumbnailUrl": {
             "type": "string",
             "description": "The url of the thumbnail of the task"
           }
@@ -1196,7 +1196,7 @@
             "format": "int64",
             "description": "The number of the task (1, 2, 3, 4, 5)"
           },
-          "thumbnail": {
+          "thumbnailUrl": {
             "type": "string",
             "description": "The url of the thumbnail of the task"
           },

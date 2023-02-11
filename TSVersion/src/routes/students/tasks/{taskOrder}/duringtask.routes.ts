@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "passport";
 import {
     answer,
     getQuestion,
@@ -6,7 +7,10 @@ import {
     root
 } from '../../../../controllers/students/duringtask.controller';
 
+const auth = passport.authenticate('jwt', { session: false });
+
 const router = Router({ mergeParams: true });
+router.use(auth);
 
 router.get('/', root);
 router.get('/questions', getQuestions);

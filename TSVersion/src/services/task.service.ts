@@ -1,17 +1,26 @@
-import Task from "../models/Task";
-import { TaskModel } from "../types/Task.types";
+import { QueryTypes } from "sequelize";
+import sequelize from "../database";
+import TaskModel from "../models/Task";
+import { TaskResp } from "../types/respSchemas/student/Task.types";
 // import { getLinks } from './pretask.service'
 // import { getQuestions } from './inTask.service'
 
 export async function getTaskCount(): Promise<number> {
-    return await Task.count();
+    return await TaskModel.count();
 }
 
-export async function getTasksOrdered (): Promise<TaskModel[]> {
-    return await Task.findAll({ order: [['orden', 'ASC']] });
-}
+// export async function getTasksOrdered (): Promise<TaskModel[]> {
+//     return await TaskModel.findAll({ order: [['task_order', 'ASC']] });
+// }
 
-// export async function tas
+export async function getStudentTasksOrdered (idStudent: number): Promise<TaskResp[]> {
+    return await sequelize.query(`
+        SELECT task.id_task as id, task.name, task.description, task.task_order as "taskOrder", task.thumbnail_url as "thumbnailUrl", student_task.completed FROM task
+        LEFT JOIN student_task ON task.id_task = student_task.id_task
+        WHERE student_task.id_student = ${idStudent}
+        ORDER BY task_order ASC;
+    `, { type: QueryTypes.SELECT });
+}
 
 // export async function getAllLinksByOrder(taskOrder: number): Promise<any> {
 //     // throw new Error("Method not implemented.");

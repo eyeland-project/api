@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JWTSrategy, ExtractJwt } from 'passport-jwt';
 import StudentModel from '../models/Student';
+import { Request } from 'express';
 
 // passport setting up
 passport.use('signup', new LocalStrategy({
@@ -19,9 +20,8 @@ passport.use('signup', new LocalStrategy({
 
 passport.use('login', new LocalStrategy({
     usernameField: 'username',
-    passwordField: 'password',
-    passReqToCallback: true
-}, async (_req, username, password, done) => {
+    passwordField: 'password'
+}, async (username, password, done) => {
     try {
         // const user = await User.findOne({email});
         // if (!user) {
@@ -36,7 +36,7 @@ passport.use('login', new LocalStrategy({
 
         // done(null, 1);
         // console.log(await Student.findAll());
-        
+
         const student = await StudentModel.findOne({
             attributes: ['id_student', 'username', 'password'],
             where: { username }
@@ -52,15 +52,13 @@ passport.use('login', new LocalStrategy({
     } catch (err) {
         return done(err);
     }
-}
-));
+}));
 
-const opts = {
+passport.use('jwt', new JWTSrategy({
+    passReqToCallback: true,
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.SECRET || ' top_secret '
-};
-
-passport.use(new JWTSrategy(opts, async (jwt_payload: {user: {_id: number}}, done) => {
+    secretOrKey: process.env.JWT_SECRET || ' top secret '
+}, async (req: Request, jwt_payload: { id: number }, done: Function) => {
     try {
         // check if the token has expired
 
@@ -69,14 +67,10 @@ passport.use(new JWTSrategy(opts, async (jwt_payload: {user: {_id: number}}, don
         //     return done(null, false);
         // }
 
+        const user = await StudentModel.findByPk(jwt_payload.id);
+        if (!user) return done(null, false);
 
-        // const user = await User.findById(jwt_payload.id);
-        console.log(jwt_payload);
-        const user = { _id: jwt_payload.user._id}
-        if (user) {
-            done(null, user);
-        } else
-            done(null, false);
+        done(null, jwt_payload.id ? jwt_payload : false);
     } catch (error) {
         // logger.error(error);
         done(error);
