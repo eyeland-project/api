@@ -59,12 +59,14 @@ export interface DuringtaskResp {
     numQuestions: number
 }
 
-export interface DuringQuestionResp {
+export interface DuringtaskQuestionResp {
     id: number,
     content: string,
     type: string,
     imgAlt: string,
     imgUrl: string,
+    audioUrl: string,
+    videoUrl: string,
     options: {
         id: number,
         content: string,
