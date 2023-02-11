@@ -1,8 +1,7 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database";
 import TaskModel from "../models/Task";
-import { IntroductionResp } from "../types/respSchemas/student/IntroductionResp";
-import { TaskResp } from "../types/respSchemas/student/TaskResp.types";
+import { IntroductionResp, TaskResp } from "../types/responses/students.types";
 
 export async function getTaskCount(): Promise<number> {
     return await TaskModel.count();
@@ -24,7 +23,7 @@ export async function getTaskIntro(taskOrder: number): Promise<IntroductionResp>
         WHERE task.task_order = ${taskOrder}
         LIMIT 1;
     `, { type: QueryTypes.SELECT })) as IntroductionResp[];
-    console.log(tasks);
+    if (!tasks.length) throw new Error('Task not found');
     return tasks[0];
 
     // const intro = await TaskModel.findOne({

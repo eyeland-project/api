@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { getSummary } from '../../services/pretask.service';
+import { PretaskResp } from '../../types/responses/students.types';
 
 type Pretask = {
     message: string,
@@ -43,14 +45,9 @@ type Questions = {
     availableQuestions: number
 };
 
-export async function root(req: Request<{ taskOrder: number }>, res: Response<Pretask>) {
+export async function root(req: Request<{ taskOrder: number }>, res: Response<PretaskResp>) {
     const { taskOrder } = req.params;
-
-    res.status(200).json({
-        message: `This is the pretask for task ${taskOrder}`,
-        numQuestions: 2,
-        numLinks: 3
-    });
+    res.status(200).json(await getSummary(taskOrder));
 }
 
 export async function getLinks(req: Request<{ taskOrder: number }>, res: Response<Links>) {

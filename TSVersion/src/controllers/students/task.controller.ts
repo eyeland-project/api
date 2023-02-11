@@ -2,19 +2,8 @@
 
 import { Request, Response } from 'express';
 import { getStudentTasks, getTaskIntro } from '../../services/task.service';
-import { Task } from '../../types/Task.types';
-import { TaskResp } from '../../types/respSchemas/student/TaskResp.types';
-import { IntroductionResp } from '../../types/respSchemas/student/IntroductionResp';
-
-type Introduction = {
-    id: number,
-    name: string,
-    description: string,
-    taskOrder: number,
-    thumbnail: string,
-    keywords: string[],
-    longDescription: string
-}
+import { Task } from '../../types/database/Task.types';
+import { TaskResp, IntroductionResp } from '../../types/responses/students.types';
 
 export async function root(req: Request, res: Response<TaskResp[]>) {
     const user = req.user as ReqUser;
