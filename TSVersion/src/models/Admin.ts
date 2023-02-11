@@ -3,7 +3,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 import { comparePassword, hashPassword } from '../utils';
-import { Admin, AdminCreation } from '../types/Admins.types';
+import { Admin, AdminCreation } from '../types/database/Admin.types';
 
 // model class definition
 class AdminModel extends Model<Admin, AdminCreation> {

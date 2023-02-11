@@ -5,7 +5,7 @@ export interface Answer {
     id_question: ForeignKey<number>;
     id_option: ForeignKey<number>;
     id_task_attempt: ForeignKey<number>;
-    start_time: Date;
+    start_time?: Date;
     end_time: Date;
 };
 

@@ -1,17 +1,17 @@
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
 import InstitutionModel from './Institution';
 import TeacherModel from './Teacher';
-import { Course, CourseCreation } from '../types/Course.types';
+import { Course, CourseCreation } from '../types/database/Course.types';
 
 // model class definition
 class CourseModel extends Model<Course, CourseCreation> {
     declare id_course: number;
-    declare id_teacher: number;
-    declare id_institution: number;
+    declare id_teacher: ForeignKey<number>;
+    declare id_institution: ForeignKey<number>;
     declare name: string;
-    declare description: string;
+    declare description?: string;
     declare status: boolean;
 }
 
@@ -49,7 +49,8 @@ CourseModel.init({
     timestamps: false
 });
 
-// definir la relación entre Profesores y Cursos
+// model associations
+// course and teacher
 TeacherModel.hasMany(CourseModel, {
     foreignKey: 'id_teacher'
 });
@@ -57,7 +58,7 @@ CourseModel.belongsTo(TeacherModel, {
     foreignKey: 'id_teacher'
 });
 
-// definir la relación entre Instituciones y Cursos
+// course and institution
 InstitutionModel.hasMany(CourseModel, {
     foreignKey: 'id_institution'
 });

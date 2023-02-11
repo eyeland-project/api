@@ -1,14 +1,14 @@
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
 import InstitutionModel from './Institution';
 import { comparePassword, hashPassword } from '../utils';
-import { Teacher, TeacherCreation } from '../types/Teacher.types';
+import { Teacher, TeacherCreation } from '../types/database/Teacher.types';
 
 // model class definition
 class TeacherModel extends Model<Teacher, TeacherCreation> {
     declare id_teacher: number;
-    declare id_institution: number;
+    declare id_institution: ForeignKey<number>;
     declare first_name: string;
     declare last_name: string;
     declare email: string;
@@ -61,7 +61,8 @@ TeacherModel.init({
     }
 });
 
-// definir la relación entre Instituciones y Profesores
+// model associations
+// teacher and institution
 InstitutionModel.hasMany(TeacherModel, {
     foreignKey: 'id_institucion'
 });

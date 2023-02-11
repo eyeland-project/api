@@ -1,15 +1,15 @@
 // creating the model for the Link table
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import Task from "./Task"
-import { Link, LinkCreation } from '../types/Links.types';
+import TaskModel from "./Task"
+import { Link, LinkCreation } from '../types/database/Link.types';
 
 
 // model class definition
 class LinkModel extends Model<Link, LinkCreation> {
     declare id_link: number;
-    declare id_task: number;
+    declare id_task: ForeignKey<number>;
     declare topic: string;
     declare url: string;
 }
@@ -41,10 +41,11 @@ LinkModel.init({
 });
 
 // model associations
-Task.hasMany(LinkModel, {
+// link and task
+TaskModel.hasMany(LinkModel, {
     foreignKey: 'id_task'
 });
-LinkModel.belongsTo(Task, {
+LinkModel.belongsTo(TaskModel, {
     foreignKey: 'id_task'
 });
 

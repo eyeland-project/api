@@ -1,19 +1,19 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import Task from "./Task"
-import { Question, QuestionCreation } from '../types/Question.types';
+import TaskPhaseModel from "./TaskPhase"
+import { Question, QuestionCreation } from '../types/database/Question.types';
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {
     declare id_question: number;
-    declare id_task: number;
-    declare content: string;
-    declare audio_url: string;
-    declare video_url: string;
-    declare type: string;
+    declare id_task_phase: ForeignKey<number>;
     declare question_order: number;
-    declare img_alt: string;
-    declare img_url: string;
+    declare content: string;
+    declare audio_url?: string;
+    declare video_url?: string;
+    declare type: string;
+    declare img_alt?: string;
+    declare img_url?: string;
     declare deleted: boolean;
 }
 
@@ -24,8 +24,8 @@ QuestionModel.init({
         autoIncrement: true,
         primaryKey: true
     },
-    id_task: {
-        type: DataTypes.SMALLINT,
+    id_task_phase: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     content: {
@@ -77,11 +77,13 @@ QuestionModel.init({
     // ]
 });
 
-Task.hasMany(QuestionModel, {
-    foreignKey: 'id_task'
+// model associations
+// question and task phase
+TaskPhaseModel.hasMany(QuestionModel, {
+    foreignKey: 'id_task_phase'
 });
-QuestionModel.belongsTo(Task, {
-    foreignKey: 'id_task'
+QuestionModel.belongsTo(TaskPhaseModel, {
+    foreignKey: 'id_task_phase'
 });
 
 export default QuestionModel;

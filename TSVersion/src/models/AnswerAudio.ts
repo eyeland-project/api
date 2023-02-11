@@ -1,14 +1,14 @@
 // creating the model for the AnswerAudio table
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import { AnswerAudio, AnswerAudioCreation } from '../types/AnswerAudio.types';
+import { AnswerAudio, AnswerAudioCreation } from '../types/database/AnswerAudio.types';
 import AnswerModel from './Answer';
 
 // model class definition
 class AnswerAudioModel extends Model<AnswerAudio, AnswerAudioCreation> {
     declare id_answer_audio: number;
-    declare id_answer: number;
+    declare id_answer: ForeignKey<number>;
     declare topic: string;
     declare url: string;
 }
@@ -39,7 +39,8 @@ AnswerAudioModel.init({
     timestamps: false
 });
 
-// definir la relación entre Respuestas y Respuestas de Audio
+// model associations
+// answer and answer audio
 AnswerModel.hasMany(AnswerAudioModel, {
     foreignKey: 'id_answer'
 });

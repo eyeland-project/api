@@ -1,15 +1,15 @@
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
 import TaskModel from './Task';
 import StudentModel from './Student';
-import { StudentTask, StudentTaskCreation } from '../types/StudentTask.types';
+import { StudentTask, StudentTaskCreation } from '../types/database/StudentTask.types';
 
 // model class definition
 class StudentTaskModel extends Model<StudentTask, StudentTaskCreation> {
     declare id_student_task: number;
-    declare id_student: number;
-    declare id_task: number;
+    declare id_student: ForeignKey<number>;
+    declare id_task: ForeignKey<number>;
     declare completed: boolean;
 }
 
@@ -39,7 +39,8 @@ StudentTaskModel.init({
     timestamps: false,
 });
 
-// definir la relación entre StudentTask y Student
+// model associations
+// student task and student
 StudentModel.hasMany(StudentTaskModel, {
     foreignKey: 'id_student'
 });
@@ -47,7 +48,7 @@ StudentTaskModel.belongsTo(StudentModel, {
     foreignKey: 'id_student'
 });
 
-// definir la relación entre StudentTask y Team
+// student task and task
 TaskModel.hasMany(StudentTaskModel, {
     foreignKey: 'id_team'
 });

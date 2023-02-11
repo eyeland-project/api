@@ -1,15 +1,15 @@
 // creating the model for the Option table
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import { Option, OptionCreation } from '../types/Option.types';
+import { Option, OptionCreation } from '../types/database/Option.types';
 import QuestionModel from './Question';
 
 // model class definition
 class OptionModel extends Model<Option, OptionCreation> {
     declare id_option: number;
-    declare id_question: number;
-    declare feedback: string;
+    declare id_question: ForeignKey<number>;
+    declare feedback?: string;
     declare content: string;
     declare correct: boolean;
     declare deleted: boolean;
@@ -49,6 +49,8 @@ OptionModel.init({
     timestamps: false
 });
 
+// model associations
+// option and question
 QuestionModel.hasMany(OptionModel, {
     foreignKey: 'id_question'
 });

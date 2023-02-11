@@ -1,29 +1,34 @@
 // creating the model for the Task table
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import { Task, TaskCreation } from '../types/database/Task.types';
+import { TaskPhase, TaskPhaseCreation } from '../types/database/TaskPhase.types';
+import TaskModel from './Task';
 
 // model class definition
-class TaskModel extends Model<Task, TaskCreation> {
-    declare id_task: number;
-    declare task_order: number;
+class TaskPhaseModel extends Model<TaskPhase, TaskPhaseCreation> {
+    declare id_task_phase: number;
+    declare id_task: ForeignKey<number>;
+    declare task_phase_order: number;
     declare name: string;
     declare description: string;
     declare long_description?: string;
     declare keywords: string[];
     declare thumbnail_url?: string;
-    declare deleted: boolean;
 }
 
 // model initialization
-TaskModel.init({
-    id_task: {
+TaskPhaseModel.init({
+    id_task_phase: {
         type: DataTypes.SMALLINT,
         autoIncrement: true,
         primaryKey: true
     },
-    task_order: {
+    id_task: {
+        type: DataTypes.SMALLINT,
+        allowNull: false
+    },
+    task_phase_order: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
@@ -45,17 +50,21 @@ TaskModel.init({
     },
     thumbnail_url: {
         type: DataTypes.STRING(2048)
-    },
-    deleted: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
     }
 }, {
     sequelize,
-    modelName: 'TaskModel',
-    tableName: 'task',
+    modelName: 'TaskPhaseModel',
+    tableName: 'task_phase',
     timestamps: false
 });
 
-export default TaskModel;
+// model associations
+// task phase and task
+TaskModel.hasMany(TaskPhaseModel, {
+    foreignKey: 'id_task'
+});
+TaskPhaseModel.belongsTo(TaskModel, {
+    foreignKey: 'id_task'
+});
+
+export default TaskPhaseModel;

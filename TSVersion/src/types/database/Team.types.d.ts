@@ -4,7 +4,7 @@ export interface Team {
     id_team: number;
     id_course: ForeignKey<number>;
     name: string;
-    code: string;
+    code?: string;
     active: boolean;
 };
 

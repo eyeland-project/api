@@ -1,9 +1,9 @@
-import { Model } from "sequelize";
+import { ForeignKey, Model } from "sequelize";
 
 export interface StudentTask {
     id_student_task: number;
-    id_student: number;
-    id_task: number;
+    id_student: ForeignKey<number>;
+    id_task: ForeignKey<number>;
     completed: boolean;
 };
 

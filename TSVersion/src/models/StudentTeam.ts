@@ -1,15 +1,15 @@
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
 import TeamModel from './Team';
 import StudentModel from './Student';
-import { StudentTeam, StudentTeamCreation } from '../types/StudentTeam.types';
+import { StudentTeam, StudentTeamCreation } from '../types/database/StudentTeam.types';
 
 // model class definition
 class StudentTeamModel extends Model<StudentTeam, StudentTeamCreation> {
     declare id_student_team: number;
-    declare id_student: number;
-    declare id_team: number;
+    declare id_student: ForeignKey<number>;
+    declare id_team: ForeignKey<number>;
     declare power: 'super_hearing' | 'memory_pro' | 'super_radar';
 }
 
@@ -46,7 +46,8 @@ StudentTeamModel.init({
     }
 });
 
-// definir la relación entre StudentTeam y Student
+// model associations
+// student team and student
 StudentModel.hasOne(StudentTeamModel, {
     foreignKey: 'id_student'
 });
@@ -54,7 +55,7 @@ StudentTeamModel.belongsTo(StudentModel, {
     foreignKey: 'id_student'
 });
 
-// definir la relación entre StudentTeam y Team
+// student team and team
 TeamModel.hasMany(StudentTeamModel, {
     foreignKey: 'id_team'
 });

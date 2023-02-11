@@ -5,7 +5,7 @@ export interface TaskAttempt {
     id_task: ForeignKey<number>;
     id_team: ForeignKey<number>;
     id_student: ForeignKey<number>;
-    task_phase: string;
+    active: boolean;
     completed: boolean;
     start_time: Date;
     end_time?: Date;

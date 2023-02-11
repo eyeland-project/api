@@ -1,14 +1,14 @@
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import { Team, TeamCreation } from '../types/Team.types';
+import { Team, TeamCreation } from '../types/database/Team.types';
 
 // model class definition
 class TeamModel extends Model<Team, TeamCreation> {
     declare id_team: number;
-    declare id_course: number;
+    declare id_course: ForeignKey<number>;
     declare name: string;
-    declare code: string;
+    declare code?: string;
     declare active: boolean;
 }
 

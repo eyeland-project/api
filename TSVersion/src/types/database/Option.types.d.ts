@@ -3,7 +3,7 @@ import { Model, ForeignKey } from "sequelize";
 export interface Option {
     id_option: number;
     id_question: ForeignKey<number>;
-    feedback: string | null;
+    feedback?: string | null;
     content: string;
     correct: boolean;
     deleted: boolean;

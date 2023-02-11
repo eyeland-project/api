@@ -1,16 +1,16 @@
 // imports
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
 import CourseModel from './Course';
 import TeamModel from './Team';
 import { comparePassword, hashPassword } from '../utils';
-import { Student, StudentCreation } from '../types/Student.types';
+import { Student, StudentCreation } from '../types/database/Student.types';
 
 // model class definition
 class StudentModel extends Model<Student, StudentCreation> {
     declare id_student: number;
-    declare id_course: number;
-    declare current_team: number;
+    declare id_course: ForeignKey<number>;
+    declare current_team?: ForeignKey<number>;
     declare first_name: string;
     declare last_name: string;
     declare email: string;
@@ -93,8 +93,9 @@ StudentModel.init({
     //     }
     // ]
 });
-    
-// definir la relación entre Cursos y Estudiantes
+
+// model associations
+// student and course
 CourseModel.hasMany(StudentModel, {
     foreignKey: 'id_course'
 });
@@ -102,7 +103,7 @@ StudentModel.belongsTo(CourseModel, {
     foreignKey: 'id_course'
 });
 
-// definir la relación entre Teams y Estudiantes
+// student and team
 TeamModel.hasMany(StudentModel, {
     foreignKey: 'current_team'
 });
