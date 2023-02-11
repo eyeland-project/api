@@ -33,7 +33,8 @@ CREATE TABLE task_phase (
     -- CONSTRAINTS
     CONSTRAINT pk_task_phase PRIMARY KEY (id_task_phase),
     CONSTRAINT pk_task_phase_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    CONSTRAINT uk_task_phase_constr UNIQUE (id_task, task_phase_order)
+    CONSTRAINT uk_task_phase_constr UNIQUE (id_task, task_phase_order),
+    CONSTRAINT check_task_phase_order CHECK (task_phase_order IN (1, 2, 3)) -- 1: pretask, 2: duringtask, 3: posttask
 );
 
 -- CREATING TABLE links (pre-task)
