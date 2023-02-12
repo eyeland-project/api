@@ -995,7 +995,7 @@
       "Attempt": {
         "type": "object",
         "properties": {
-          "taskPhase": {
+          "taskStage": {
             "type": "string",
             "enum": [
               "pretask",
@@ -1008,13 +1008,7 @@
       "PreTask": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
-          },
           "description": {
-            "type": "string"
-          },
-          "longDescription": {
             "type": "string"
           },
           "keywords": {
@@ -1022,9 +1016,6 @@
             "items": {
               "type": "string"
             }
-          },
-          "thumbnailUrl": {
-            "type": "string"
           },
           "numQuestions": {
             "type": "integer",
@@ -1039,13 +1030,7 @@
       "DuringTask": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
-          },
           "description": {
-            "type": "string"
-          },
-          "longDescription": {
             "type": "string"
           },
           "keywords": {
@@ -1053,9 +1038,6 @@
             "items": {
               "type": "string"
             }
-          },
-          "thumbnailUrl": {
-            "type": "string"
           },
           "numQuestions": {
             "type": "integer",
@@ -1066,13 +1048,7 @@
       "PosTask": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
-          },
           "description": {
-            "type": "string"
-          },
-          "longDescription": {
             "type": "string"
           },
           "keywords": {
@@ -1080,9 +1056,6 @@
             "items": {
               "type": "string"
             }
-          },
-          "thumbnailUrl": {
-            "type": "string"
           },
           "numQuestions": {
             "type": "integer",

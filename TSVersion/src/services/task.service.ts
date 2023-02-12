@@ -3,7 +3,7 @@ import sequelize from "../database";
 import LinkModel from "../models/Link";
 import QuestionModel from "../models/Question";
 import TaskModel from "../models/Task";
-import TaskPhaseModel from "../models/TaskPhase";
+import TaskStageModel from "../models/TaskStage";
 import { DuringtaskResp, IntroductionResp, PostaskResp, PretaskResp, TaskResp } from "../types/responses/students.types";
 
 export async function getTaskCount(): Promise<number> {
@@ -52,9 +52,9 @@ export async function getPretask(taskOrder: number): Promise<PretaskResp> {
     }));
     if (!task) throw new Error('Task not found');
     
-    const pretask = await TaskPhaseModel.findOne({
-        attributes: ['id_task_phase', 'name', 'description', 'long_description', 'thumbnail_url', 'keywords'],
-        where: { id_task: task.id_task, task_phase_order: 1 }
+    const pretask = await TaskStageModel.findOne({
+        attributes: ['id_task_stage', 'description', 'keywords'],
+        where: { id_task: task.id_task, task_stage_order: 1 }
     });
     if (!pretask) throw new Error('Pretask not found');
 
@@ -62,15 +62,12 @@ export async function getPretask(taskOrder: number): Promise<PretaskResp> {
         where: { id_task: task.id_task } // all links from the task will be part of the pretask
     });
     const numQuestions = await QuestionModel.count({
-        where: { id_task_phase: pretask.id_task_phase }
+        where: { id_task_stage: pretask.id_task_stage }
     });
     
     return {
-        name: pretask.name,
         description: pretask.description,
-        longDescription: pretask.long_description || '',
         keywords: pretask.keywords || '',
-        thumbnailUrl: pretask.thumbnail_url || '',
         numLinks,
         numQuestions
     };
@@ -83,21 +80,18 @@ export async function getDuringtask(taskOrder: number): Promise<DuringtaskResp> 
     }));
     if (!task) throw new Error('Task not found');
     
-    const pretask = await TaskPhaseModel.findOne({
-        attributes: ['id_task_phase', 'name', 'description', 'long_description', 'thumbnail_url', 'keywords'],
-        where: { id_task: task.id_task, task_phase_order: 2 }
+    const pretask = await TaskStageModel.findOne({
+        attributes: ['id_task_stage', 'description', 'keywords'],
+        where: { id_task: task.id_task, task_stage_order: 2 }
     });
     if (!pretask) throw new Error('Pretask not found');
     const numQuestions = await QuestionModel.count({
-        where: { id_task_phase: pretask.id_task_phase }
+        where: { id_task_stage: pretask.id_task_stage }
     });
     
     return {
-        name: pretask.name,
         description: pretask.description,
-        longDescription: pretask.long_description || '',
         keywords: pretask.keywords || '',
-        thumbnailUrl: pretask.thumbnail_url || '',
         numQuestions
     };
 }
@@ -109,21 +103,18 @@ export async function getPostask(taskOrder: number): Promise<PostaskResp> {
     }));
     if (!task) throw new Error('Task not found');
     
-    const pretask = await TaskPhaseModel.findOne({
-        attributes: ['id_task_phase', 'name', 'description', 'long_description', 'thumbnail_url', 'keywords'],
-        where: { id_task: task.id_task, task_phase_order: 3 }
+    const pretask = await TaskStageModel.findOne({
+        attributes: ['id_task_stage', 'description', 'keywords'],
+        where: { id_task: task.id_task, task_stage_order: 3 }
     });
     if (!pretask) throw new Error('Pretask not found');
     const numQuestions = await QuestionModel.count({
-        where: { id_task_phase: pretask.id_task_phase }
+        where: { id_task_stage: pretask.id_task_stage }
     });
     
     return {
-        name: pretask.name,
         description: pretask.description,
-        longDescription: pretask.long_description || '',
         keywords: pretask.keywords || '',
-        thumbnailUrl: pretask.thumbnail_url || '',
         numQuestions
     };
 }

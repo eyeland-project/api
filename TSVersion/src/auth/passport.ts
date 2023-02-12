@@ -23,20 +23,6 @@ passport.use('login', new LocalStrategy({
     passwordField: 'password'
 }, async (username, password, done) => {
     try {
-        // const user = await User.findOne({email});
-        // if (!user) {
-        //     return done(null, false, {message: 'User not found'});
-        // }
-        // const validate = await user.isValidPassword(password);
-        // if (!validate) {
-        //     return done(null, false, {message: 'Wrong Password'});
-        // }
-        // const user = { _id: 'dfsfsfsdfw2r34rq', username, password };
-        // return done(null, user, { message: 'Logged in Successfully' });
-
-        // done(null, 1);
-        // console.log(await Student.findAll());
-
         const student = await StudentModel.findOne({
             attributes: ['id_student', 'username', 'password'],
             where: { username }

@@ -22,13 +22,3 @@ export async function login(req: Request, res: Response, next: Function) {
         }
     })(req, res, next);
 }
-
-export async function loginTeam(req: Request, res: Response) {
-    res.status(200).json({ message: 'Login Team' });
-
-}
-
-export async function logoutTeam(req: Request, res: Response) {
-    res.status(200).json({ message: 'Logout Team' });
-
-}

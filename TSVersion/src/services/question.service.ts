@@ -1,7 +1,7 @@
 import OptionModel from "../models/Option";
 import QuestionModel from "../models/Question";
 import TaskModel from "../models/Task";
-import TaskPhaseModel from "../models/TaskPhase";
+import TaskStageModel from "../models/TaskStage";
 import { DuringtaskQuestionResp, PostaskQuestionResp, PretaskQuestionResp } from "../types/responses/students.types";
 
 export async function getPretaskQuestion(taskOrder: number, questionOrder: number): Promise<PretaskQuestionResp> {
@@ -11,15 +11,15 @@ export async function getPretaskQuestion(taskOrder: number, questionOrder: numbe
     });
     if (!task) throw new Error('Task not found');
     
-    const pretask = await TaskPhaseModel.findOne({
-        attributes: ['id_task_phase'],
-        where: { id_task: task.id_task, task_phase_order: 1 }
+    const pretask = await TaskStageModel.findOne({
+        attributes: ['id_task_stage'],
+        where: { id_task: task.id_task, task_stage_order: 1 }
     });
     if (!pretask) throw new Error('Pretask not found');
     
     const question = await QuestionModel.findOne({
         attributes: ['id_question', 'content', 'type', 'img_alt', 'img_url'],
-        where: { id_task_phase: pretask.id_task_phase, question_order: questionOrder }
+        where: { id_task_stage: pretask.id_task_stage, question_order: questionOrder }
     });
     if (!question) throw new Error('Question not found');
 
@@ -50,15 +50,15 @@ export async function getDuringtaskQuestion(taskOrder: number, questionOrder: nu
     });
     if (!task) throw new Error('Task not found');
     
-    const duringtask = await TaskPhaseModel.findOne({
-        attributes: ['id_task_phase'],
-        where: { id_task: task.id_task, task_phase_order: 2 }
+    const duringtask = await TaskStageModel.findOne({
+        attributes: ['id_task_stage'],
+        where: { id_task: task.id_task, task_stage_order: 2 }
     });
     if (!duringtask) throw new Error('Pretask not found');
     
     const question = await QuestionModel.findOne({
         attributes: ['id_question', 'content', 'type', 'img_alt', 'img_url', 'audio_url', 'video_url'],
-        where: { id_task_phase: duringtask.id_task_phase, question_order: questionOrder }
+        where: { id_task_stage: duringtask.id_task_stage, question_order: questionOrder }
     });
     if (!question) throw new Error('Question not found');
 
@@ -91,15 +91,15 @@ export async function getPostaskQuestion(taskOrder: number, questionOrder: numbe
     });
     if (!task) throw new Error('Task not found');
     
-    const duringtask = await TaskPhaseModel.findOne({
-        attributes: ['id_task_phase'],
-        where: { id_task: task.id_task, task_phase_order: 3 }
+    const duringtask = await TaskStageModel.findOne({
+        attributes: ['id_task_stage'],
+        where: { id_task: task.id_task, task_stage_order: 3 }
     });
     if (!duringtask) throw new Error('Pretask not found');
     
     const question = await QuestionModel.findOne({
         attributes: ['id_question', 'content', 'type', 'img_alt', 'img_url', 'audio_url', 'video_url'],
-        where: { id_task_phase: duringtask.id_task_phase, question_order: questionOrder }
+        where: { id_task_stage: duringtask.id_task_stage, question_order: questionOrder }
     });
     if (!question) throw new Error('Question not found');
 
