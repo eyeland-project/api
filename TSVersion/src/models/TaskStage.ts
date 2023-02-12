@@ -2,24 +2,21 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import { TaskPhase, TaskPhaseCreation } from '../types/database/TaskPhase.types';
+import { TaskStage, TaskStageCreation } from '../types/database/TaskStage.types';
 import TaskModel from './Task';
 
 // model class definition
-class TaskPhaseModel extends Model<TaskPhase, TaskPhaseCreation> {
-    declare id_task_phase: number;
+class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
+    declare id_task_stage: number;
     declare id_task: ForeignKey<number>;
-    declare task_phase_order: number;
-    declare name: string;
+    declare task_stage_order: number;
     declare description: string;
-    declare long_description?: string;
     declare keywords: string[];
-    declare thumbnail_url?: string;
 }
 
 // model initialization
-TaskPhaseModel.init({
-    id_task_phase: {
+TaskStageModel.init({
+    id_task_stage: {
         type: DataTypes.SMALLINT,
         autoIncrement: true,
         primaryKey: true
@@ -28,43 +25,33 @@ TaskPhaseModel.init({
         type: DataTypes.SMALLINT,
         allowNull: false
     },
-    task_phase_order: {
+    task_stage_order: {
         type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    name: {
-        type: DataTypes.STRING(100),
         allowNull: false
     },
     description: {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    long_description: {
-        type: DataTypes.STRING(1000)
-    },
     keywords: {
         type: DataTypes.ARRAY(DataTypes.STRING(50)),
         allowNull: false,
         defaultValue: []
-    },
-    thumbnail_url: {
-        type: DataTypes.STRING(2048)
     }
 }, {
     sequelize,
-    modelName: 'TaskPhaseModel',
-    tableName: 'task_phase',
+    modelName: 'TaskStageModel',
+    tableName: 'task_stage',
     timestamps: false
 });
 
 // model associations
-// task phase and task
-TaskModel.hasMany(TaskPhaseModel, {
+// task stage and task
+TaskModel.hasMany(TaskStageModel, {
     foreignKey: 'id_task'
 });
-TaskPhaseModel.belongsTo(TaskModel, {
+TaskStageModel.belongsTo(TaskModel, {
     foreignKey: 'id_task'
 });
 
-export default TaskPhaseModel;
+export default TaskStageModel;

@@ -6,7 +6,7 @@ export interface Course {
     id_institution: ForeignKey<number>;
     name: string;
     description?: string;
-    status: boolean;
+    session: boolean;
 };
 
 export type CourseCreation = Omit<Course, 'id_course'>;

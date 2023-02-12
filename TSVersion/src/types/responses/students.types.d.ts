@@ -20,11 +20,8 @@ export interface IntroductionResp {
 
 // pretasks
 export interface PretaskResp {
-    name: string,
     description: string,
-    longDescription: string,
     keywords: string[],
-    thumbnailUrl: string,
     numQuestions: number,
     numLinks: number
 }
@@ -51,11 +48,8 @@ export interface PretaskQuestionResp {
 
 // duringtasks
 export interface DuringtaskResp {
-    name: string,
     description: string,
-    longDescription: string,
     keywords: string[],
-    thumbnailUrl: string,
     numQuestions: number
 }
 
@@ -77,11 +71,8 @@ export interface DuringtaskQuestionResp {
 
 // postasks
 export interface PostaskResp {
-    name: string,
     description: string,
-    longDescription: string,
     keywords: string[],
-    thumbnailUrl: string,
     numQuestions: number
 }
 

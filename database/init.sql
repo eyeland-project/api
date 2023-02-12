@@ -21,20 +21,17 @@ CREATE TABLE task (
 );
 
 -- CREATING TABLE task
-CREATE TABLE task_phase (
-    id_task_phase SMALLSERIAL NOT NULL,
+CREATE TABLE task_stage (
+    id_task_stage SMALLSERIAL NOT NULL,
     id_task SMALLINT NOT NULL,
-    task_phase_order SMALLINT NOT NULL,
-    name VARCHAR(100) NOT NULL,
+    task_stage_order SMALLINT NOT NULL,
     description VARCHAR(100) NOT NULL,
-    long_description VARCHAR(1000),
     keywords VARCHAR(50)[] NOT NULL DEFAULT '{}',
-    thumbnail_url VARCHAR(2048),
     -- CONSTRAINTS
-    CONSTRAINT pk_task_phase PRIMARY KEY (id_task_phase),
-    CONSTRAINT pk_task_phase_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    CONSTRAINT uk_task_phase_constr UNIQUE (id_task, task_phase_order),
-    CONSTRAINT check_task_phase_order CHECK (task_phase_order IN (1, 2, 3)) -- 1: pretask, 2: duringtask, 3: posttask
+    CONSTRAINT pk_task_stage PRIMARY KEY (id_task_stage),
+    CONSTRAINT pk_task_stage_task FOREIGN KEY (id_task) REFERENCES task(id_task),
+    CONSTRAINT uk_task_stage_constr UNIQUE (id_task, task_stage_order),
+    CONSTRAINT check_task_stage_order CHECK (task_stage_order IN (1, 2, 3)) -- 1: pretask, 2: duringtask, 3: posttask
 );
 
 -- CREATING TABLE links (pre-task)
@@ -53,7 +50,7 @@ CREATE TABLE link (
 -- CREATING TABLE preguntas
 CREATE TABLE question (
     id_question SERIAL NOT NULL,
-    id_task_phase SMALLINT NOT NULL,
+    id_task_stage SMALLINT NOT NULL,
     question_order SMALLINT NOT NULL,
     content VARCHAR(100) NOT NULL,
     audio_url VARCHAR(2048),
@@ -64,8 +61,8 @@ CREATE TABLE question (
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_question PRIMARY KEY (id_question),
-    CONSTRAINT fk_question_task FOREIGN KEY (id_task_phase) REFERENCES task_phase(id_task_phase),
-    CONSTRAINT uk_question_constr UNIQUE (id_task_phase, question_order),
+    CONSTRAINT fk_question_task FOREIGN KEY (id_task_stage) REFERENCES task_stage(id_task_stage),
+    CONSTRAINT uk_question_constr UNIQUE (id_task_stage, question_order),
     CONSTRAINT check_question_type CHECK (type IN ('select', 'audio'))
 );
 
@@ -134,7 +131,7 @@ CREATE TABLE course (
     id_institution SMALLINT NOT NULL,
     name VARCHAR(50) NOT NULL,
     description VARCHAR(1000),
-    status BOOLEAN NOT NULL DEFAULT FALSE,
+    session BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_course PRIMARY KEY (id_course),
     CONSTRAINT fk_course_teacher FOREIGN KEY (id_teacher) REFERENCES teacher(id_teacher),
@@ -144,20 +141,17 @@ CREATE TABLE course (
 -- CREATING TABLE Grupos
 CREATE TABLE team (
     id_team SERIAL NOT NULL,
-    id_course SMALLINT NOT NULL,
     name VARCHAR(50) NOT NULL,
     code CHAR(6),
     active BOOLEAN NOT NULL DEFAULT TRUE,
     -- CONSTRAINTS
-    CONSTRAINT pk_team PRIMARY KEY (id_team),
-    CONSTRAINT fk_team_course FOREIGN KEY (id_course) REFERENCES course(id_course)
+    CONSTRAINT pk_team PRIMARY KEY (id_team)
 );
 
 -- CREATING TABLE Estudiantes
 CREATE TABLE student (
     id_student SERIAL NOT NULL,
     id_course SMALLINT NOT NULL,
-    current_team INTEGER,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(320) NOT NULL,
@@ -167,23 +161,9 @@ CREATE TABLE student (
     -- CONSTRAINTS
     CONSTRAINT pk_student PRIMARY KEY (id_student),
     CONSTRAINT fk_student_course FOREIGN KEY (id_course) REFERENCES course(id_course),
-    CONSTRAINT fk_student_team FOREIGN KEY (current_team) REFERENCES team(id_team),
     CONSTRAINT uk_student_email UNIQUE (email),
     CONSTRAINT uk_student_username UNIQUE (username),
     CONSTRAINT check_student_blindness CHECK (blindness IN ('total', 'partial', 'none'))
-);
-
--- CREATING TABLE Estudiantes_Grupos
-CREATE TABLE student_team (
-    id_student_team SERIAL NOT NULL,
-    id_student INTEGER NOT NULL,
-    id_team INTEGER NOT NULL,
-    power VARCHAR(20) NOT NULL,
-    -- CONSTRAINTS
-    CONSTRAINT pk_student_team PRIMARY KEY (id_student_team),
-    CONSTRAINT fk_student_team_student FOREIGN KEY (id_student) REFERENCES student(id_student),
-    CONSTRAINT fk_student_team_team FOREIGN KEY (id_team) REFERENCES team(id_team),
-    CONSTRAINT check_student_team_power CHECK (power IN ('super_hearing', 'memory_pro', 'super_radar'))
 );
 
 CREATE TABLE student_task (
@@ -203,17 +183,15 @@ CREATE TABLE task_attempt (
     id_task_attempt SERIAL NOT NULL,
     id_task SMALLINT NOT NULL,
     id_team INTEGER,
-    id_student INTEGER,
-    active BOOLEAN NOT NULL DEFAULT TRUE,
-    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    id_student INTEGER NOT NULL,
+    power VARCHAR(20),
     start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     end_time TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
     CONSTRAINT fk_task_attempt_task FOREIGN KEY (id_task) REFERENCES task(id_task),
     CONSTRAINT fk_task_attempt_team FOREIGN KEY (id_team) REFERENCES team(id_team),
-    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student),
-    CONSTRAINT check_task_attempt_by CHECK (id_team IS NOT NULL OR id_student IS NOT NULL)
+    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student)
 );
 
 -- CREATING TABLE
@@ -222,19 +200,22 @@ CREATE TABLE answer (
     id_question INTEGER NOT NULL,
     id_option INTEGER NOT NULL,
     id_task_attempt INTEGER NOT NULL,
+    id_team INTEGER NOT NULL,
     start_time TIMESTAMP,
     end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_answer PRIMARY KEY (id_answer),
     CONSTRAINT fk_answer_question FOREIGN KEY (id_question) REFERENCES question(id_question),
     CONSTRAINT fk_answer_option FOREIGN KEY (id_option) REFERENCES option(id_option),
-    CONSTRAINT fk_answer_task_attempt FOREIGN KEY (id_task_attempt) REFERENCES task_attempt(id_task_attempt)
+    CONSTRAINT fk_answer_task_attempt FOREIGN KEY (id_task_attempt) REFERENCES task_attempt(id_task_attempt),
+    CONSTRAINT fk_answer_team FOREIGN KEY (id_team) REFERENCES team(id_team)
 );
 
 -- CREATING TABLE
 CREATE TABLE answer_audio (
     id_answer_audio SERIAL NOT NULL,
     id_answer INTEGER NOT NULL,
+    id_team INTEGER,
     topic VARCHAR(100) NOT NULL,
     url VARCHAR(2048) NOT NULL,
     -- CONSTRAINTS
@@ -284,25 +265,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- INSERT INTO task_phase when a new task is inserted (3 phases per task)
-CREATE OR REPLACE FUNCTION insert_task_phase_for_new_task()
+-- INSERT INTO task_stage when a new task is inserted (3 stages per task)
+CREATE OR REPLACE FUNCTION insert_task_stage_for_new_task()
 RETURNS TRIGGER AS $$
 DECLARE
     new_task_id INTEGER;
 BEGIN
     -- Get the ID of the newly inserted task
     new_task_id = (SELECT id_task FROM task ORDER BY id_task DESC LIMIT 1);
-    -- Insert 3 records into the task_phase table
-    -- Phase 1
-    INSERT INTO task_phase (id_task, task_phase_order, name, description)
-    VALUES (new_task_id, 1, 'Phase 1', 'Description for Phase 1');
-    -- Phase 2
-    INSERT INTO task_phase (id_task, task_phase_order, name, description)
-    VALUES (new_task_id, 2, 'Phase 2', 'Description for Phase 2');
-    -- Phase 3
-    INSERT INTO task_phase (id_task, task_phase_order, name, description)
-    VALUES (new_task_id, 3, 'Phase 3', 'Description for Phase 3');
-    RAISE NOTICE 'Inserted 3 task_phase records for task %', new_task_id;
+    -- Insert 3 records into the task_stage table
+    -- Stage 1
+    INSERT INTO task_stage (id_task, task_stage_order, description)
+    VALUES (new_task_id, 1, 'Description for Stage 1');
+    -- Stage 2
+    INSERT INTO task_stage (id_task, task_stage_order, description)
+    VALUES (new_task_id, 2, 'Description for Stage 2');
+    -- Stage 3
+    INSERT INTO task_stage (id_task, task_stage_order, description)
+    VALUES (new_task_id, 3, 'Description for Stage 3');
+    RAISE NOTICE 'Inserted 3 task_stage records for task %', new_task_id;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -320,11 +301,11 @@ AFTER INSERT ON task
 FOR EACH ROW
 EXECUTE FUNCTION insert_student_task_for_new_task();
 
--- Trigger to insert records into the task_phase table for each new task
-CREATE TRIGGER insert_task_phase_for_new_task_trigger
+-- Trigger to insert records into the task_stage table for each new task
+CREATE TRIGGER insert_task_stage_for_new_task_trigger
 AFTER INSERT ON task
 FOR EACH ROW
-EXECUTE FUNCTION insert_task_phase_for_new_task();
+EXECUTE FUNCTION insert_task_stage_for_new_task();
 
 -- INSERTING DATA
 -- INSERT INTO task
@@ -352,21 +333,21 @@ INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 2, 'Prepositions o
 INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36022540/task-1-prepositions-of-place-questions');
 
 -- INSERT INTO question
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 1, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (3, 1, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 1, 'Do you like coffee?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 1, 'How are you today?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (6, 1, 'What do you do for a living?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 1, 'Do you have any pets?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 1, 'What''s your favorite color?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (9, 1, 'Do you like to travel?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 1, 'What''s your favorite food?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 1, 'Do you have any hobbies?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (12, 1, 'What time is it now?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 1, 'How many siblings do you have?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 1, 'What''s the weather like today?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_phase, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (15, 1, 'Do you speak any other languages besides English?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 1, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (3, 1, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 1, 'Do you like coffee?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 1, 'How are you today?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (6, 1, 'What do you do for a living?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 1, 'Do you have any pets?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 1, 'What''s your favorite color?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (9, 1, 'Do you like to travel?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 1, 'What''s your favorite food?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 1, 'Do you have any hobbies?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (12, 1, 'What time is it now?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 1, 'How many siblings do you have?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 1, 'What''s the weather like today?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (15, 1, 'Do you speak any other languages besides English?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
 
 -- INSERT INTO option
 INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'My name is ChatGPT.', 'Correct!', TRUE);
@@ -424,12 +405,9 @@ INSERT INTO teacher (id_teacher, id_institution, first_name, last_name, email, u
 -- INSERT INTO course
 INSERT INTO course (id_course, id_institution, id_teacher, name, description) VALUES (1, 1, 1, 'Curso de prueba', 'Curso de prueba para la aplicación');
 
--- INSERT INTO team
-INSERT INTO team (id_team, id_course, name) VALUES (1, 1, 'Equipo de prueba');
-
 -- INSERT INTO student
-INSERT INTO student (id_student, id_course, first_name, last_name, email, username, current_team, blindness, password) VALUES (1, 1, 'Estudiante', 'Prueba', 'student@test.com', 'student', 1, 'none', 'pass123');
-INSERT INTO student (id_student, id_course, first_name, last_name, email, username, current_team, blindness, password) VALUES (2, 1, 'Estudiante', 'Prueba', 'student2@test.com', 'student2', NULL, 'none', 'pass123');
+INSERT INTO student (id_student, id_course, first_name, last_name, email, username, blindness, password) VALUES (1, 1, 'Estudiante', 'Prueba', 'student@test.com', 'student', 'none', 'pass123');
+INSERT INTO student (id_student, id_course, first_name, last_name, email, username, blindness, password) VALUES (2, 1, 'Estudiante', 'Prueba', 'student2@test.com', 'student2', 'none', 'pass123');
 
 -- INSERT INTO admin
 INSERT INTO admin (id_admin, first_name, last_name, email, username, password) VALUES (1, 'Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');

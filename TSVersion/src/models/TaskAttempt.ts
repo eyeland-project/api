@@ -12,9 +12,9 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
     declare id_task_attempt: number;
     declare id_task: ForeignKey<number>;
     declare id_team?: ForeignKey<number>;
-    declare id_student?: ForeignKey<number>;
+    declare id_student: ForeignKey<number>;
     declare active: boolean;
-    declare completed: boolean;
+    declare power?: string;
     declare start_time: Date;
     declare end_time?: Date;
 }
@@ -36,15 +36,13 @@ TaskAttemptModel.init({
     id_student: {
         type: DataTypes.INTEGER
     },
-    completed: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-    },
     active: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
+    },
+    power: {
+        type: DataTypes.STRING(20)
     },
     start_time: {
         type: DataTypes.DATE,
@@ -60,12 +58,12 @@ TaskAttemptModel.init({
     modelName: 'TaskAttemptModel',
     timestamps: false,
     hooks: {
-        beforeCreate: async ({ id_team, id_student }: TaskAttemptModel) => {
-            if (!id_student && !id_team) {
-                throw new Error('Either id_student or id_team must be provided');
+        beforeCreate: async ({ power }: TaskAttemptModel) => {
+            if (power !== 'super_hearing' && power !== 'memory_pro' && power !== 'super_radar') {
+                throw new Error('power must be one of the following values: super_hearing, memory_pro, super_radar');
             }
         },
-    },
+    }
 });
 
 // model associations
@@ -93,10 +91,7 @@ StudentModel.hasMany(TaskAttemptModel, {
     foreignKey: 'id_student'
 });
 TaskAttemptModel.belongsTo(StudentModel, {
-    foreignKey: {
-        name: 'id_student',
-        allowNull: true
-    }
+    foreignKey: 'id_student'
 });
 
 export default TaskAttemptModel;

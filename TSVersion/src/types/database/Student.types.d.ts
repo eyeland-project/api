@@ -3,7 +3,6 @@ import { Model, ForeignKey } from "sequelize";
 export interface Student {
     id_student: number;
     id_course: ForeignKey<number>;
-    current_team?: ForeignKey<number>;
     first_name: string;
     last_name: string;
     email: string;

@@ -1,12 +1,12 @@
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database';
-import TaskPhaseModel from "./TaskPhase"
+import TaskStageModel from "./TaskStage"
 import { Question, QuestionCreation } from '../types/database/Question.types';
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {
     declare id_question: number;
-    declare id_task_phase: ForeignKey<number>;
+    declare id_task_stage: ForeignKey<number>;
     declare question_order: number;
     declare content: string;
     declare audio_url?: string;
@@ -24,7 +24,7 @@ QuestionModel.init({
         autoIncrement: true,
         primaryKey: true
     },
-    id_task_phase: {
+    id_task_stage: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
@@ -78,12 +78,12 @@ QuestionModel.init({
 });
 
 // model associations
-// question and task phase
-TaskPhaseModel.hasMany(QuestionModel, {
-    foreignKey: 'id_task_phase'
+// question and task stage
+TaskStageModel.hasMany(QuestionModel, {
+    foreignKey: 'id_task_stage'
 });
-QuestionModel.belongsTo(TaskPhaseModel, {
-    foreignKey: 'id_task_phase'
+QuestionModel.belongsTo(TaskStageModel, {
+    foreignKey: 'id_task_stage'
 });
 
 export default QuestionModel;

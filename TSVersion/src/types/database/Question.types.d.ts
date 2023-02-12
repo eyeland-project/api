@@ -2,7 +2,7 @@ import { Model, ForeignKey } from "sequelize";
 
 export interface Question {
     id_question: number;
-    id_task_phase: ForeignKey<number>;
+    id_task_stage: ForeignKey<number>;
     question_order: number;
     content: string;
     audio_url?: string;

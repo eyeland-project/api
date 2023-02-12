@@ -4,6 +4,7 @@ export interface Answer {
     id_answer: number;
     id_question: ForeignKey<number>;
     id_option: ForeignKey<number>;
+    id_team?: ForeignKey<number>;
     id_task_attempt: ForeignKey<number>;
     start_time?: Date;
     end_time: Date;

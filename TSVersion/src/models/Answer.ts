@@ -6,6 +6,7 @@ import { Answer, AnswerCreation } from '../types/database/Answer.types';
 import QuestionModel from './Question';
 import OptionModel from './Option';
 import TaskAttemptModel from './TaskAttempt';
+import TeamModel from './Team';
 
 // model class definition
 class AnswerModel extends Model<Answer, AnswerCreation> {
@@ -13,6 +14,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
     declare id_question: ForeignKey<number>;
     declare id_option: ForeignKey<number>;
     declare id_task_attempt: ForeignKey<number>;
+    declare id_team?: ForeignKey<number>;
     declare start_time?: Date;
     declare end_time: Date;
 }
@@ -35,6 +37,9 @@ AnswerModel.init({
     id_task_attempt: {
         type: DataTypes.INTEGER,
         allowNull: false,
+    },
+    id_team: {
+        type: DataTypes.INTEGER
     },
     start_time: {
         type: DataTypes.DATE
@@ -74,6 +79,17 @@ TaskAttemptModel.hasMany(AnswerModel, {
 });
 AnswerModel.belongsTo(TaskAttemptModel, {
     foreignKey: 'id_task_attempt'
+});
+
+// answer and team
+TeamModel.hasMany(AnswerModel, {
+    foreignKey: 'id_team'
+});
+AnswerModel.belongsTo(TeamModel, {
+    foreignKey: {
+        name: 'id_team',
+        allowNull: true
+    }
 });
 
 export default AnswerModel;

@@ -12,7 +12,7 @@ class CourseModel extends Model<Course, CourseCreation> {
     declare id_institution: ForeignKey<number>;
     declare name: string;
     declare description?: string;
-    declare status: boolean;
+    declare session: boolean;
 }
 
 // model initialization
@@ -37,7 +37,7 @@ CourseModel.init({
     description: {
         type: DataTypes.STRING(1000)
     },
-    status: {
+    session: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
