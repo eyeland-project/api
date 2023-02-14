@@ -1,6 +1,6 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import InstitutionModel from './Institution';
 import { comparePassword, hashPassword } from '../utils';
 import { Teacher, TeacherCreation } from '../types/database/Teacher.types';

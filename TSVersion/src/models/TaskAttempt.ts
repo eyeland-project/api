@@ -1,7 +1,7 @@
 // creating the model for the TaskAttempt table
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import { TaskAttempt, TaskAttemptCreation } from '../types/database/TaskAttempt.types';
 import Task from './Task';
 import TeamModel from './Team';

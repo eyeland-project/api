@@ -1,6 +1,6 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import TaskModel from './Task';
 import StudentModel from './Student';
 import { StudentTask, StudentTaskCreation } from '../types/database/StudentTask.types';

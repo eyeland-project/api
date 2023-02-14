@@ -17,9 +17,9 @@ const app = express();
 // imports
 import cors from 'cors';
 import morgan from 'morgan';
-require('./database');
-require('./models/init-db');
-require('./auth/passport');
+require('./database/db');
+require('./database/init-db');
+require('./config/passport');
 import swaggerUi from 'swagger-ui-express';
 const swaggerDocument = require('../openapi.json');
 

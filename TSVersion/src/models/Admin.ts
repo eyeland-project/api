@@ -1,7 +1,7 @@
 // creating the model for the Admin table
 // imports
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import { comparePassword, hashPassword } from '../utils';
 import { Admin, AdminCreation } from '../types/database/Admin.types';
 

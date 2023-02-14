@@ -1,7 +1,7 @@
 // creating the model for the Link table
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import TaskModel from "./Task"
 import { Link, LinkCreation } from '../types/database/Link.types';
 

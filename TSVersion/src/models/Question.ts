@@ -1,5 +1,5 @@
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import TaskStageModel from "./TaskStage"
 import { Question, QuestionCreation } from '../types/database/Question.types';
 

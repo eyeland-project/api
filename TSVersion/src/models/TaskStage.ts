@@ -1,7 +1,7 @@
 // creating the model for the Task table
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import { TaskStage, TaskStageCreation } from '../types/database/TaskStage.types';
 import TaskModel from './Task';
 

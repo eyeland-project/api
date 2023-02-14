@@ -1,7 +1,7 @@
 // creating the model for the AnswerAudio table
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import { AnswerAudio, AnswerAudioCreation } from '../types/database/AnswerAudio.types';
 import AnswerModel from './Answer';
 

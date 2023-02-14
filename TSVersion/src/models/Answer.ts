@@ -1,7 +1,7 @@
 // creating the model for the Asnwer table
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/db';
 import { Answer, AnswerCreation } from '../types/database/Answer.types';
 import QuestionModel from './Question';
 import OptionModel from './Option';

@@ -1,5 +1,5 @@
 import app from './app';
-import sequelize from './database';
+import sequelize from './database/db';
 
 //* start the server
 const server = app.listen(app.get('port'), () => {

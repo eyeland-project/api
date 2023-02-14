@@ -1,5 +1,5 @@
 import { QueryTypes } from "sequelize";
-import sequelize from "../database";
+import sequelize from "../database/db";
 import LinkModel from "../models/Link";
 import QuestionModel from "../models/Question";
 import TaskModel from "../models/Task";
