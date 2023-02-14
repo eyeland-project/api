@@ -14,12 +14,15 @@ if (process.env.NODE_ENV) {
 //* Express aplication
 import express from 'express';
 const app = express();
+
 // imports
 import cors from 'cors';
 import morgan from 'morgan';
 require('./database/db');
-require('./database/init-db');
+require('./models');
 require('./config/passport');
+
+// docs
 import swaggerUi from 'swagger-ui-express';
 const swaggerDocument = require('../openapi.json');
 

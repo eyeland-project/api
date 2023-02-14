@@ -1,0 +1,16 @@
+console.log('Initializing database...');
+export * from './Task';
+export * from './TaskStage';
+export * from './Link';
+export * from './Question';
+export * from './Option';
+export * from './Institution';
+export * from './Admin';
+export * from './Teacher';
+export * from './Course';
+export * from './Team';
+export * from './Student';
+export * from './StudentTask';
+export * from './TaskAttempt';
+export * from './Answer';
+export * from './AnswerAudio';
