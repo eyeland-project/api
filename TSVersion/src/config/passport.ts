@@ -1,8 +1,7 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JWTSrategy, ExtractJwt } from 'passport-jwt';
-import StudentModel from '../models/Student';
-import { Request } from 'express';
+import { StudentModel } from '../models';
 
 // passport setting up
 passport.use('signup', new LocalStrategy({

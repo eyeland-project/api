@@ -1,6 +1,6 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
-import StudentModel from "../models/Student";
+import { StudentModel } from "../models";
 
 // export async function hasTeam(student: StudentModel): Promise<boolean> {
 //     const team = await sequelize.query(`

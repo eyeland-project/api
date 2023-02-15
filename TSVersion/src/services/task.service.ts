@@ -1,9 +1,6 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
-import LinkModel from "../models/Link";
-import QuestionModel from "../models/Question";
-import TaskModel from "../models/Task";
-import TaskStageModel from "../models/TaskStage";
+import { LinkModel, QuestionModel, TaskModel, TaskStageModel } from '../models'
 import { DuringtaskResp, IntroductionResp, PostaskResp, PretaskResp, TaskResp } from "../types/responses/students.types";
 
 export async function getTaskCount(): Promise<number> {

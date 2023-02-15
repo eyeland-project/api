@@ -1,5 +1,4 @@
-import LinkModel from "../models/Link";
-import TaskModel from "../models/Task";
+import { LinkModel, TaskModel } from "../models";
 import { PretaskLinkResp } from "../types/responses/students.types";
 
 export async function getPretaskLink(taskOrder: number, linkOrder: number): Promise<PretaskLinkResp> {

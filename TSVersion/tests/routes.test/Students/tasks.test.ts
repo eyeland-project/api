@@ -1,6 +1,6 @@
 import { api } from '../utils';
 import { initialTasks } from '../../mocks';
-import Tasks from '../../../src/models/Tasks';
+import { TaskModel } from '../../../src/models';
 
 // beforeEach(async () => {
 //     // limpiamos la database

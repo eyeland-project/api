@@ -1,7 +1,4 @@
-import OptionModel from "../models/Option";
-import QuestionModel from "../models/Question";
-import TaskModel from "../models/Task";
-import TaskStageModel from "../models/TaskStage";
+import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "../models";
 import { DuringtaskQuestionResp, PostaskQuestionResp, PretaskQuestionResp } from "../types/responses/students.types";
 
 export async function getPretaskQuestion(taskOrder: number, questionOrder: number): Promise<PretaskQuestionResp> {
