@@ -185,13 +185,15 @@ CREATE TABLE task_attempt (
     id_team INTEGER,
     id_student INTEGER NOT NULL,
     power VARCHAR(20),
-    start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    start_time TIMESTAMP,
     end_time TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
     CONSTRAINT fk_task_attempt_task FOREIGN KEY (id_task) REFERENCES task(id_task),
     CONSTRAINT fk_task_attempt_team FOREIGN KEY (id_team) REFERENCES team(id_team),
-    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student)
+    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student),
+    CONSTRAINT check_task_attempt_power CHECK (power IN ('super_hearing', 'memory_pro', 'super_radar'))
 );
 
 -- CREATING TABLE

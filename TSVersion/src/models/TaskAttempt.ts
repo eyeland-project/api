@@ -13,9 +13,9 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
     declare id_task: ForeignKey<number>;
     declare id_team?: ForeignKey<number>;
     declare id_student: ForeignKey<number>;
-    declare active: boolean;
     declare power?: string;
-    declare start_time: Date;
+    declare active: boolean;
+    declare start_time?: Date;
     declare end_time?: Date;
 }
 
@@ -36,18 +36,16 @@ TaskAttemptModel.init({
     id_student: {
         type: DataTypes.INTEGER
     },
-    active: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-    },
     power: {
         type: DataTypes.STRING(20)
     },
+    active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
+    },
     start_time: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
+        type: DataTypes.DATE
     },
     end_time: {
         type: DataTypes.DATE
@@ -58,13 +56,16 @@ TaskAttemptModel.init({
     modelName: 'TaskAttemptModel',
     timestamps: false,
     hooks: {
-        beforeCreate: async ({ power }: TaskAttemptModel) => {
-            if (power !== 'super_hearing' && power !== 'memory_pro' && power !== 'super_radar') {
-                throw new Error('power must be one of the following values: super_hearing, memory_pro, super_radar');
-            }
-        },
+        beforeUpdate: checkPower,
+        beforeCreate: checkPower
     }
 });
+
+function checkPower({ power }: TaskAttemptModel) {
+    if (power !== undefined && power !== 'super_hearing' && power !== 'memory_pro' && power !== 'super_radar') {
+        throw new Error('power must be one of the following values: super_hearing, memory_pro, super_radar');
+    }
+}
 
 // model associations
 // task attempt and task
