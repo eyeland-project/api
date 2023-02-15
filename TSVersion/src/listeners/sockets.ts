@@ -10,13 +10,18 @@ export default function sockets(app: Express) {
             methods: ['GET', 'POST']
         }
     });
-
-    io.on('connection', (socket: Socket) => {
-        console.log('a user connected');
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
-        });
-    });
-
+    io.on('connection', onConnection);
+    io.on('error', onError);
     return server;
+}
+
+function onConnection(socket: Socket) {
+    console.log('Socket: New connection', socket.id);
+    socket.on('disconnect', () => {
+        console.log('Socket: user disconnected');
+    });
+}
+
+function onError(error: Error) {
+    console.log('Socket: Error', error);
 }
