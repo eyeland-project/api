@@ -1,8 +1,9 @@
 /// <reference path="../../types/customTypes.d.ts" />
 
 import { Request, Response } from 'express';
-import { getStudentTasks, getTaskIntro } from '../../services/task.service';
+import { getStudentTasks, getTaskByOrder, getTaskIntro } from '../../services/task.service';
 import { TaskResp, IntroductionResp } from '../../types/responses/students.types';
+import { createTaskAttempt } from '../../services/taskAttempt.service';
 
 export async function root(req: Request, res: Response<TaskResp[]>) {
     const user = req.user as ReqUser;
@@ -15,6 +16,9 @@ export async function getIntro(req: Request<{ taskOrder: number }>, res: Respons
 }
 
 export async function start(req: Request<{ taskOrder: number }>, res: Response<{ message: string }>) {
-    // const { taskOrder } = req.params;
+    const { id: idStudent } = req.user as ReqUser;
+    const { taskOrder } = req.params;
+    const { id_task: idTask } = await getTaskByOrder(taskOrder);
+    await createTaskAttempt(idStudent, idTask);
     res.status(200).json({ message: 'Ok' });
 }

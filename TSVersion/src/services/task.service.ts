@@ -2,9 +2,20 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { LinkModel, QuestionModel, TaskModel, TaskStageModel } from '../models'
 import { DuringtaskResp, IntroductionResp, PostaskResp, PretaskResp, TaskResp } from "../types/responses/students.types";
+import { Task } from "../types/database/Task.types";
 
 export async function getTaskCount(): Promise<number> {
     return await TaskModel.count();
+}
+
+export async function getTaskByOrder(taskOrder: number): Promise<Task> {
+    // const tasks = (await sequelize.query(`SELECT id_task as id, name, description, task_order as "taskOrder", thumbnail_url as "thumbnailUrl" FROM task WHERE task_order = ${taskOrder} LIMIT 1;`, { type: QueryTypes.SELECT })) as TaskResp[];
+    // if (!tasks.length) throw new Error('Task not found');
+    // return tasks[0];
+
+    const task = await TaskModel.findOne({ where: { task_order: taskOrder } });
+    if (!task) throw new Error('Task not found');
+    return task;
 }
 
 export async function getStudentTasks(idStudent: number): Promise<TaskResp[]> {
@@ -115,6 +126,8 @@ export async function getPostask(taskOrder: number): Promise<PostaskResp> {
         numQuestions
     };
 }
+
+
 
 // export async function getAllLinksByOrder(taskOrder: number): Promise<any> {
 //     // throw new Error("Method not implemented.");
