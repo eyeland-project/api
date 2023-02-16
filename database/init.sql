@@ -198,28 +198,18 @@ CREATE TABLE task_attempt (
 CREATE TABLE answer (
     id_answer SERIAL NOT NULL,
     id_question INTEGER NOT NULL,
-    id_option INTEGER NOT NULL,
+    id_option INTEGER,
     id_task_attempt INTEGER NOT NULL,
     id_team INTEGER NOT NULL,
     answer_seconds INTEGER NOT NULL,
+    audio1_url VARCHAR(2048),
+    audio2_url VARCHAR(2048),
     -- CONSTRAINTS
     CONSTRAINT pk_answer PRIMARY KEY (id_answer),
     CONSTRAINT fk_answer_question FOREIGN KEY (id_question) REFERENCES question(id_question),
     CONSTRAINT fk_answer_option FOREIGN KEY (id_option) REFERENCES option(id_option),
     CONSTRAINT fk_answer_task_attempt FOREIGN KEY (id_task_attempt) REFERENCES task_attempt(id_task_attempt),
     CONSTRAINT fk_answer_team FOREIGN KEY (id_team) REFERENCES team(id_team)
-);
-
--- CREATING TABLE
-CREATE TABLE answer_audio (
-    id_answer_audio SERIAL NOT NULL,
-    id_answer INTEGER NOT NULL,
-    id_team INTEGER,
-    topic VARCHAR(100) NOT NULL,
-    url VARCHAR(2048) NOT NULL,
-    -- CONSTRAINTS
-    CONSTRAINT pk_answer_audio PRIMARY KEY (id_answer_audio),
-    CONSTRAINT fk_answer_audio_answer FOREIGN KEY (id_answer) REFERENCES answer(id_answer)
 );
 
 -- TODO: create table Animal

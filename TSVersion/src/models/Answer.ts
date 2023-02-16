@@ -12,10 +12,12 @@ import TeamModel from './Team';
 class AnswerModel extends Model<Answer, AnswerCreation> {
     declare id_answer: number;
     declare id_question: ForeignKey<number>;
-    declare id_option: ForeignKey<number>;
+    declare id_option?: ForeignKey<number>;
     declare id_task_attempt: ForeignKey<number>;
     declare id_team?: ForeignKey<number>;
     declare answer_seconds: number;
+    declare audio1_url?: string;
+    declare audio2_url?: string;
 }
 
 // model initialization
@@ -44,6 +46,12 @@ AnswerModel.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    audio1_url: {
+        type: DataTypes.STRING(2048)
+    },
+    audio2_url: {
+        type: DataTypes.STRING(2048)
+    }
 }, {
     sequelize,
     modelName: 'AnswerModel',

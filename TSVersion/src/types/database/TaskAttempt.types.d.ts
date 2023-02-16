@@ -9,4 +9,4 @@ export interface TaskAttempt {
     time_stamp: Date;
 };
 
-export type TaskAttemptCreation = Omit<TaskAttempt, 'id_task_attempt'>;
+export type TaskAttemptCreation = Omit<TaskAttempt, 'id_task_attempt' | 'time_stamp'>;
