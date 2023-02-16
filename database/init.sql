@@ -185,9 +185,7 @@ CREATE TABLE task_attempt (
     id_team INTEGER,
     id_student INTEGER NOT NULL,
     power VARCHAR(20),
-    active BOOLEAN NOT NULL DEFAULT TRUE,
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
+    time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
     CONSTRAINT fk_task_attempt_task FOREIGN KEY (id_task) REFERENCES task(id_task),
@@ -203,8 +201,7 @@ CREATE TABLE answer (
     id_option INTEGER NOT NULL,
     id_task_attempt INTEGER NOT NULL,
     id_team INTEGER NOT NULL,
-    start_time TIMESTAMP,
-    end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    answer_seconds INTEGER NOT NULL,
     -- CONSTRAINTS
     CONSTRAINT pk_answer PRIMARY KEY (id_answer),
     CONSTRAINT fk_answer_question FOREIGN KEY (id_question) REFERENCES question(id_question),

@@ -14,9 +14,7 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
     declare id_team?: ForeignKey<number>;
     declare id_student: ForeignKey<number>;
     declare power?: string;
-    declare active: boolean;
-    declare start_time?: Date;
-    declare end_time?: Date;
+    declare time_stamp: Date;
 }
 
 // model initialization
@@ -39,17 +37,11 @@ TaskAttemptModel.init({
     power: {
         type: DataTypes.STRING(20)
     },
-    active: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-        allowNull: false
+    time_stamp: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
     },
-    start_time: {
-        type: DataTypes.DATE
-    },
-    end_time: {
-        type: DataTypes.DATE
-    }
 }, {
     sequelize,
     tableName: 'task_attempt',

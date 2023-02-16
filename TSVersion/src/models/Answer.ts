@@ -15,8 +15,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
     declare id_option: ForeignKey<number>;
     declare id_task_attempt: ForeignKey<number>;
     declare id_team?: ForeignKey<number>;
-    declare start_time?: Date;
-    declare end_time: Date;
+    declare answer_seconds: number;
 }
 
 // model initialization
@@ -41,13 +40,9 @@ AnswerModel.init({
     id_team: {
         type: DataTypes.INTEGER
     },
-    start_time: {
-        type: DataTypes.DATE
-    },
-    end_time: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
+    answer_seconds: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
 }, {
     sequelize,

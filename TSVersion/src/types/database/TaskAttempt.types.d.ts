@@ -6,9 +6,7 @@ export interface TaskAttempt {
     id_team?: ForeignKey<number>;
     id_student: ForeignKey<number>;
     power?: string;
-    active: boolean;
-    start_time?: Date;
-    end_time?: Date;
+    time_stamp: Date;
 };
 
-export type TaskAttemptCreation = Omit<TaskAttempt, 'id_task_attempt' | 'active'>;
+export type TaskAttemptCreation = Omit<TaskAttempt, 'id_task_attempt'>;

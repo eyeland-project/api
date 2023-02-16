@@ -6,8 +6,7 @@ export interface Answer {
     id_option: ForeignKey<number>;
     id_team?: ForeignKey<number>;
     id_task_attempt: ForeignKey<number>;
-    start_time?: Date;
-    end_time: Date;
+    answer_seconds: number;
 };
 
 export type AnswerCreation = Omit<Answer, 'id_answer'>;
