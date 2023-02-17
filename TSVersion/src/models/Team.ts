@@ -2,10 +2,12 @@
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
 import { Team, TeamCreation } from '../types/database/Team.types';
+import CourseModel from './Course';
 
 // model class definition
 class TeamModel extends Model<Team, TeamCreation> {
     declare id_team: number;
+    declare id_course: number;
     declare name: string;
     declare code?: string;
     declare active: boolean;
@@ -17,6 +19,14 @@ TeamModel.init({
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
+    },
+    id_course: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        // references: {
+        //     model: 'course',
+        //     key: 'id_course'
+        // }
     },
     name: {
         type: DataTypes.STRING(50),
@@ -37,8 +47,13 @@ TeamModel.init({
     timestamps: false
 });
 
-// definir la relación entre Grupos y Estudiantes
-// Team.hasOne(Student, { foreignKey: { name: "grupoactual", allowNull: true } });
-// Student.belongsTo(Team);
+// associations
+// team and course
+CourseModel.hasMany(TeamModel, {
+    foreignKey: 'id_course'
+});
+TeamModel.belongsTo(CourseModel, {
+    foreignKey: 'id_course'
+});
 
 export default TeamModel;

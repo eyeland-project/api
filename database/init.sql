@@ -141,12 +141,15 @@ CREATE TABLE course (
 -- CREATING TABLE Grupos
 CREATE TABLE team (
     id_team SERIAL NOT NULL,
+    id_course SMALLINT NOT NULL,
     name VARCHAR(50) NOT NULL,
     code CHAR(6),
     active BOOLEAN NOT NULL DEFAULT TRUE,
     -- CONSTRAINTS
-    CONSTRAINT pk_team PRIMARY KEY (id_team)
+    CONSTRAINT pk_team PRIMARY KEY (id_team),
+    CONSTRAINT fk_team_course FOREIGN KEY (id_course) REFERENCES course(id_course)
 );
+CREATE UNIQUE INDEX idx_team_active_code ON team (code) WHERE active; -- code is unique only if the team is active
 
 -- CREATING TABLE Estudiantes
 CREATE TABLE student (
@@ -201,7 +204,7 @@ CREATE TABLE answer (
     id_question INTEGER NOT NULL,
     id_option INTEGER,
     id_task_attempt INTEGER NOT NULL,
-    id_team INTEGER NOT NULL,
+    id_team INTEGER,
     answer_seconds INTEGER NOT NULL,
     audio1_url VARCHAR(2048),
     audio2_url VARCHAR(2048),
@@ -398,6 +401,10 @@ INSERT INTO course (id_course, id_institution, id_teacher, name, description) VA
 -- INSERT INTO student
 INSERT INTO student (id_student, id_course, first_name, last_name, email, username, blindness, password) VALUES (1, 1, 'Estudiante', 'Prueba', 'student@test.com', 'student', 'none', 'pass123');
 INSERT INTO student (id_student, id_course, first_name, last_name, email, username, blindness, password) VALUES (2, 1, 'Estudiante', 'Prueba', 'student2@test.com', 'student2', 'none', 'pass123');
+
+-- INSERT INTO team
+INSERT INTO team (id_team, id_course, name, code) VALUES (1, 1, 'Equipo de prueba', '123456');
+INSERT INTO team (id_team, id_course, name, code) VALUES (2, 1, 'Equipo 7', '012345');
 
 -- INSERT INTO admin
 INSERT INTO admin (id_admin, first_name, last_name, email, username, password) VALUES (1, 'Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
