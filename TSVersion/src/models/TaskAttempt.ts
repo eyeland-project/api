@@ -14,6 +14,7 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
     declare id_team?: ForeignKey<number>;
     declare id_student: ForeignKey<number>;
     declare power?: string;
+    declare active: boolean;
     declare time_stamp: Date;
 }
 
@@ -36,6 +37,11 @@ TaskAttemptModel.init({
     },
     power: {
         type: DataTypes.STRING(20)
+    },
+    active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
     },
     time_stamp: {
         type: DataTypes.DATE,

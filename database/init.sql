@@ -185,6 +185,7 @@ CREATE TABLE task_attempt (
     id_team INTEGER,
     id_student INTEGER NOT NULL,
     power VARCHAR(20),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
