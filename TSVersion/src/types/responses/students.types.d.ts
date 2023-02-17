@@ -29,8 +29,7 @@ export interface PretaskResp {
 export interface PretaskLinkResp {
     id: number,
     topic: string,
-    url: string,
-    idTaskAttempt: number
+    url: string
 }
 
 export interface PretaskQuestionResp {
@@ -44,8 +43,7 @@ export interface PretaskQuestionResp {
         content: string,
         correct: boolean,
         feedback: string
-    }[],
-    idTaskAttempt: number
+    }[]
 }
 
 // duringtasks
@@ -68,8 +66,7 @@ export interface DuringtaskQuestionResp {
         content: string,
         correct: boolean,
         feedback: string
-    }[],
-    idTaskAttempt: number
+    }[]
 }
 
 // postasks
@@ -92,6 +89,5 @@ export interface PostaskQuestionResp {
         content: string,
         correct: boolean,
         feedback: string
-    }[],
-    idTaskAttempt: number
+    }[]
 }

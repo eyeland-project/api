@@ -139,61 +139,6 @@
         }
       }
     },
-    "/tasks/{taskOrder}/start": {
-      "post": {
-        "description": "Start new task attempt",
-        "tags": [
-          "task"
-        ],
-        "security": [
-          {
-            "api_key": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "taskOrder",
-            "in": "path",
-            "required": true,
-            "description": "The number of the task to return",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 5
-            }
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/TaskStart"
-        },
-        "responses": {
-          "201": {
-            "description": "Success. Please wait for the socket response"
-          },
-          "400": {
-            "description": "Invalid taskOrder | Current team not found"
-          },
-          "401": {
-            "description": "Missing authentication"
-          },
-          "403": {
-            "description": "Unauthorized to access this resource"
-          },
-          "404": {
-            "description": "Task not found"
-          },
-          "409": {
-            "description": "Task already started"
-          },
-          "498": {
-            "description": "Token expired/invalid"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
     "/tasks/{taskOrder}/pretask": {
       "get": {
         "description": "Get the pretask based on the number of the Task",
@@ -784,14 +729,14 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnswerOption"
-              }
-            },
             "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/AnswerAudio"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerOption"
               }
             }
           }
@@ -840,9 +785,6 @@
                   "properties": {
                     "token": {
                       "type": "string"
-                    },
-                    "hasTeam": {
-                      "type": "boolean"
                     }
                   }
                 }
@@ -1225,40 +1167,29 @@
         "properties": {
           "idOption": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "The id of the option selected if the question is multiple choice"
           },
-          "idTaskAttempt": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "startTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "endTime": {
-            "type": "string",
-            "format": "date-time"
-          }
+          "answerSeconds": {
+            "type": "number"
+          }  
         }
       },
       "AnswerAudio": {
         "type": "object",
         "properties": {
-          "audio": {
-            "type": "string",
-            "format": "binary"
+          "answerSeconds": {
+            "type": "number"
           },
-          "idTaskAttempt": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "startTime": {
+          "audio1": {
             "type": "string",
-            "format": "date-time"
+            "format": "binary",
+            "description": "The first audio (reading question) file if the question is audio"
           },
-          "endTime": {
+          "audio2": {
             "type": "string",
-            "format": "date-time"
+            "format": "binary",
+            "description": "The second audio (reading answer) file if the question is audio"
           }
         }
       },
