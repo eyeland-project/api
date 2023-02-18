@@ -1,6 +1,10 @@
+import { QueryTypes } from "sequelize";
+import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import { StudentModel } from "../models";
 import { Student } from "../types/database/Student.types";
+import { getStudentCurrTaskAttempt, updateStudentCurrTaskAttempt } from "./taskAttempt.service";
+import { getTeamByCode, getTeamFromStudent } from "./team.service";
 
 export async function getStudentById(id: number): Promise<Student> {
     const student = await StudentModel.findByPk(id);
@@ -8,11 +12,46 @@ export async function getStudentById(id: number): Promise<Student> {
     return student;
 }
 
-// export async function hasTeam(student: StudentModel): Promise<boolean> {
-//     const team = await sequelize.query(`
+export async function hasTeam(idStudent: number): Promise<boolean> {
+    return (await getStudentCurrTaskAttempt(idStudent)).id_team !== null;
+}
 
-//     `, {
-//         type: QueryTypes.SELECT,
-//     });
-//     return !!team; // if team is not null, then the student has a team
-// }
+export async function joinTeam(idStudent: number, code: string) {
+    const { id_course: studentCourse } = await getStudentById(idStudent);
+    const { id_team, active: teamActive, id_course: teamCourse } = await getTeamByCode(code);
+
+    if (studentCourse !== teamCourse) throw new ApiError('Student and team are not in the same course', 400);
+    if (!teamActive) throw new ApiError('Team is not active', 400);
+    
+    let prevTeam;
+    try {
+        prevTeam = await getTeamFromStudent(idStudent);
+    } catch (err) {} // no team found for student (expected)
+    if (prevTeam) {
+        console.log('Student has a team, leaving it...');
+        await leaveTeam(idStudent);
+        console.log('Student left previous team');
+    }
+
+    if ((await getStudentsFromTeam(id_team)).length >= 3) throw new ApiError('Team is full', 400);
+    
+    // const taskAttempt = await getStudentCurrTaskAttempt(idStudent);
+    // await taskAttempt.update({ id_team });
+    await updateStudentCurrTaskAttempt(idStudent, { id_team });
+}
+
+export async function leaveTeam(idStudent: number) {
+    await getTeamFromStudent(idStudent); // check if student has a team
+    await updateStudentCurrTaskAttempt(idStudent, { id_team: null });
+}
+
+export async function getStudentsFromTeam(idTeam: number): Promise<Student[]> {
+    const students = await sequelize.query(`
+        SELECT s.* FROM student s
+        JOIN task_attempt ta ON ta.id_student = s.id_student
+        JOIN team t ON t.id_team = ta.id_team
+        WHERE t.id_team = ${idTeam};
+    `, { type: QueryTypes.SELECT }) as Student[];
+    console.log(students);
+    return students;
+}
