@@ -4,6 +4,7 @@ import sequelize from '../database/db';
 import CourseModel from './Course';
 import { comparePassword, hashPassword } from '../utils';
 import { Student, StudentCreation } from '../types/database/Student.types';
+import { ApiError } from '../middlewares/handleErrors';
 
 // model class definition
 class StudentModel extends Model<Student, StudentCreation> {
@@ -72,7 +73,7 @@ StudentModel.init({
         beforeCreate: async (student: StudentModel) => {
             const { blindness } = student;
             if (blindness !== 'total' && blindness !== 'partial' && blindness !== 'none') {
-                throw new Error('blindness must be one of the following values: total, partial, none');
+                throw new ApiError('Blindness must be one of the following values: total, partial, none', 400);
             }
             student.password = hashPassword(student.password);
         },

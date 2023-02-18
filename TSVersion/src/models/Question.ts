@@ -2,6 +2,7 @@ import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
 import TaskStageModel from "./TaskStage"
 import { Question, QuestionCreation } from '../types/database/Question.types';
+import { ApiError } from '../middlewares/handleErrors';
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {
@@ -65,7 +66,7 @@ QuestionModel.init({
     hooks: {
         beforeCreate: async ({ type }: QuestionModel) => {
             if (type !== 'select' && type !== 'audio') {
-                throw new Error('type must be one of the following values: select, audio');
+                throw new ApiError('Type must be one of the following values: select, audio', 400);
             }
         },
     },

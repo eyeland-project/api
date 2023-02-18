@@ -1,15 +1,17 @@
+/// <reference path="../../types/customTypes.d.ts" />
+
 import { Request, Response } from 'express';
 import passport from 'passport';
 import { signToken } from '../../utils';
+import { joinTeam, leaveTeam } from '../../services/team.service';
+import { ApiError } from '../../middlewares/handleErrors';
 
 // login with passport
 export async function login(req: Request, res: Response, next: Function) {
     passport.authenticate('login', async (err, id, info) => {
         try {
             if (err || !id) {
-                console.log(err);
-
-                return next(new Error('An Error occured'));
+                return next(new ApiError('Internal server error'));
             }
             req.login(id, { session: false }, async (err) => {
                 if (err) return next(err);
@@ -23,12 +25,23 @@ export async function login(req: Request, res: Response, next: Function) {
     })(req, res, next);
 }
 
-export async function loginTeam(req: Request, res: Response) {
-    res.status(200).json({ message: 'Login Team' });
-
+export async function loginTeam(req: Request<{ code: string }>, res: Response, next: Function) {
+    try {
+        const { id: idUser } = req.user as ReqUser;
+        const { code } = req.body as { code: string };
+        await joinTeam(idUser, code);
+        res.status(200).json({ message: 'Login Team' });
+    } catch (err) {
+        next(err);
+    }
 }
 
-export async function logoutTeam(req: Request, res: Response) {
-    res.status(200).json({ message: 'Logout Team' });
-
+export async function logoutTeam(req: Request, res: Response, next: Function) {
+    try {
+        const { id: idUser } = req.user as ReqUser;
+        await leaveTeam(idUser);
+        res.status(200).json({ message: 'Logout Team' });
+    } catch (err) {
+        next(err);
+    }
 }

@@ -6,6 +6,7 @@ import { TaskAttempt, TaskAttemptCreation } from '../types/database/TaskAttempt.
 import Task from './Task';
 import TeamModel from './Team';
 import StudentModel from './Student';
+import { ApiError } from '../middlewares/handleErrors';
 
 // model class definition
 class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
@@ -61,7 +62,7 @@ TaskAttemptModel.init({
 
 function checkPower({ power }: TaskAttemptModel) {
     if (power !== undefined && power !== 'super_hearing' && power !== 'memory_pro' && power !== 'super_radar') {
-        throw new Error('power must be one of the following values: super_hearing, memory_pro, super_radar');
+        throw new ApiError('Power must be one of the following values: super_hearing, memory_pro, super_radar', 400);
     }
 }
 
