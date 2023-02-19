@@ -30,7 +30,7 @@ export async function updateStudentCurrTaskAttempt(idStudent: number, values: an
 
 export async function finishStudentPrevTaskAttempts(idStudent: number) {
     await TaskAttemptModel.update(
-        { active: false, id_team: null },
+        { active: false },
         { where: { id_student: idStudent, active: true } }
     );
 }

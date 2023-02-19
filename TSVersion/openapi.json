@@ -368,6 +368,36 @@
         }
       }
     },
+    "/tasks/{taskOrder}/attempt": {
+      "delete": {
+        "description": "Finish current Task Attempt",
+        "tags": [
+          "task"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/tasks/{taskOrder}/pretask/links/{linkOrder}": {
       "get": {
         "description": "Temporal. Get the Link of the PreTask based on the number of the Task and the id of the link",

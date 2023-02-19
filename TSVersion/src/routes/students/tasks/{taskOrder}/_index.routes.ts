@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { getIntro, getProgress } from '../../../../controllers/students/task.controller';
+import { getIntro, getProgress, finishAttempt } from '../../../../controllers/students/task.controller';
 
 const auth = passport.authenticate('jwt', { session: false });
 
@@ -9,5 +9,6 @@ router.use(auth);
 
 router.get('/introduction', getIntro);
 router.get('/progress', getProgress);
+router.delete('/attempt', finishAttempt);
 
 export default router;
