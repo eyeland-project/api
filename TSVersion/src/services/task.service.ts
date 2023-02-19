@@ -15,7 +15,7 @@ export async function getTaskByOrder(taskOrder: number): Promise<Task> {
     return task;
 }
 
-export async function getStudentTasks(idStudent: number): Promise<TaskResp[]> {
+export async function getTasksFromStudentWithCompleted(idStudent: number): Promise<TaskResp[]> {
     interface TaskWithHighestStage extends Task {
         highest_stage: number;
     }

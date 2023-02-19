@@ -8,7 +8,7 @@ export interface TaskResp {
     thumbnail: string
 }
 
-export interface IntroductionResp {
+export interface TaskIntroResp {
     id: number,
     name: string,
     description: string,
@@ -16,6 +16,11 @@ export interface IntroductionResp {
     thumbnailUrl: string,
     keywords: string[],
     longDescription: string
+}
+
+export interface TaskProgressResp {
+    completed: boolean,
+    blocked: boolean
 }
 
 // pretasks

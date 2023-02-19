@@ -139,6 +139,67 @@
         }
       }
     },
+    "/tasks/{taskOrder}/progress": {
+      "get": {
+        "description": "Get a summary of the progress of a specific task",
+        "tags": [
+          "task"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the task to return",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TaskProgress"
+                  },
+                  "type": "array",
+                  "maxLength": 3,
+                  "minLength": 3
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid taskOrder"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/tasks/{taskOrder}/pretask": {
       "get": {
         "description": "Get the pretask based on the number of the Task",
@@ -931,6 +992,19 @@
           },
           "longDescription": {
             "type": "string"
+          }
+        }
+      },
+      "TaskProgress": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "boolean",
+            "description": "If the task was completed successfully"
+          },
+          "blocked": {
+            "type": "boolean",
+            "description": "If the task is blocked"
           }
         }
       },
