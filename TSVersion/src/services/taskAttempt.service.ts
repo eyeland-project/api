@@ -23,6 +23,14 @@ export async function updateStudentCurrTaskAttempt(idStudent: number, values: an
 
     const result = await TaskAttemptModel.update(
         values,
-        { where: { id_student: idStudent, active: true } });
-    if (!result[0]) throw new ApiError("TaskAttempt not found", 404);
+        { where: { id_student: idStudent, active: true } }
+    );
+    if (!result[0]) throw new ApiError("Task Attempt not found", 404);
+}
+
+export async function finishStudentPrevTaskAttempts(idStudent: number) {
+    await TaskAttemptModel.update(
+        { active: false, id_team: null },
+        { where: { id_student: idStudent, active: true } }
+    );
 }

@@ -1172,7 +1172,12 @@
           },
           "answerSeconds": {
             "type": "number"
-          }  
+          },
+          "newAttempt": {
+            "type": "boolean",
+            "description": "To ensure finish previous attempt before starting a new one",
+            "default": false
+          }
         }
       },
       "AnswerAudio": {

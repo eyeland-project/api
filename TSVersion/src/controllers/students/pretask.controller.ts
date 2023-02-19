@@ -6,6 +6,7 @@ import { getQuestionOptions } from '../../services/option.service';
 import { AnswerOptionReq } from '../../types/requests/students.types';
 import { createAnswer } from '../../services/answer.service';
 import { getTaskStageByOrder } from '../../services/taskStage.service';
+import { finishStudentPrevTaskAttempts } from '../../services/taskAttempt.service';
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<PretaskResp>, next: Function) {
     try {
@@ -60,9 +61,10 @@ export async function answer(req: Request<{ taskOrder: number, questionOrder: nu
     try {
         const { id: idUser } = req.user as ReqUser;
         const { taskOrder, questionOrder } = req.params;
-        const { idOption, answerSeconds } = req.body as AnswerOptionReq;
+        const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
         if (!idOption) return res.status(400).json({ message: 'Missing idOption' });
         
+        if (newAttempt) await finishStudentPrevTaskAttempts(idUser);
         await createAnswer(idUser, taskOrder, 1, questionOrder, idOption, answerSeconds);
         res.status(200).json({ message: `Answered question ${questionOrder} of task ${taskOrder}` });
     } catch (err) {

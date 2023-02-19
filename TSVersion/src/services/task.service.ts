@@ -16,13 +16,25 @@ export async function getTaskByOrder(taskOrder: number): Promise<Task> {
 }
 
 export async function getStudentTasks(idStudent: number): Promise<TaskResp[]> {
-    return await sequelize.query(`
-        SELECT t.*, st.completed
+    interface TaskWithHighestStage extends Task {
+        highest_stage: number;
+    }
+    const tasks = await sequelize.query(`
+        SELECT t.*, st.highest_stage
         FROM task t
         LEFT JOIN student_task st ON t.id_task = st.id_task
         WHERE st.id_student = ${idStudent}
         ORDER BY task_order ASC;
-    `, { type: QueryTypes.SELECT });
+    `, { type: QueryTypes.SELECT }) as TaskWithHighestStage[];
+
+    return tasks.map(({ id_task, name, description, task_order, highest_stage, thumbnail_url }) => ({
+        id: id_task,
+        name,
+        description,
+        taskOrder: task_order,
+        completed: highest_stage === 3, // 3 is the highest stage
+        thumbnail: thumbnail_url
+    } as TaskResp));
 }
 
 // export async function getAllLinksByOrder(taskOrder: number): Promise<any> {
