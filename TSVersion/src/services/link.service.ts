@@ -1,20 +1,18 @@
+import { QueryTypes } from "sequelize";
+import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import { LinkModel, TaskModel } from "../models";
 import { Link } from "../types/database/Link.types";
 
 export async function getLinkByOrder(taskOrder: number, linkOrder: number): Promise<Link> {
-    const task = await TaskModel.findOne({
-        attributes: ['id_task'],
-        where: { task_order: taskOrder }
-    });
-    if (!task) throw new ApiError('Task not found', 404);
-    const link = await LinkModel.findOne({
-        // attributes: ['id_link', 'topic', 'url'],
-        where: { id_task: task.id_task, link_order: linkOrder }
-    });
-    if (!link) throw new ApiError('Link not found', 404);
-
-    return link;
+    const links = await sequelize.query(`
+        SELECT l.* FROM link l
+        JOIN task t ON l.id_task = t.id_task
+        WHERE t.task_order = ${taskOrder} AND l.link_order = ${linkOrder}
+        LIMIT 1;
+    `, { type: QueryTypes.SELECT }) as Link[];
+    if (!links.length) throw new ApiError('Link not found', 404);
+    return links[0];
 }
 
 export async function getTaskLinksCount(idTask: number): Promise<number> {
