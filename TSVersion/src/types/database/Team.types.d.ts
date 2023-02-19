@@ -4,7 +4,7 @@ export interface Team {
     id_team: number;
     id_course: number;
     name: string;
-    code?: string;
+    code?: string | null;
     active: boolean;
 };
 

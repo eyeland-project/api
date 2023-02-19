@@ -5,11 +5,11 @@ export interface Question {
     id_task_stage: ForeignKey<number>;
     question_order: number;
     content: string;
-    audio_url?: string;
-    video_url?: string;
+    audio_url?: string | null;
+    video_url?: string | null;
     type: string;
-    img_alt?: string;
-    img_url?: string;
+    img_alt?: string | null;
+    img_url?: string | null;
     deleted: boolean;
 };
 

@@ -12,9 +12,9 @@ import { ApiError } from '../middlewares/handleErrors';
 class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
     declare id_task_attempt: number;
     declare id_task: ForeignKey<number>;
-    declare id_team?: ForeignKey<number>;
+    declare id_team?: ForeignKey<number> | null;
     declare id_student: ForeignKey<number>;
-    declare power?: string;
+    declare power?: string | null;
     declare active: boolean;
     declare time_stamp: Date;
 }

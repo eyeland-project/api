@@ -10,11 +10,11 @@ class QuestionModel extends Model<Question, QuestionCreation> {
     declare id_task_stage: ForeignKey<number>;
     declare question_order: number;
     declare content: string;
-    declare audio_url?: string;
-    declare video_url?: string;
+    declare audio_url?: string | null;
+    declare video_url?: string | null;
     declare type: string;
-    declare img_alt?: string;
-    declare img_url?: string;
+    declare img_alt?: string | null;
+    declare img_url?: string | null;
     declare deleted: boolean;
 }
 

@@ -9,7 +9,7 @@ class TeamModel extends Model<Team, TeamCreation> {
     declare id_team: number;
     declare id_course: number;
     declare name: string;
-    declare code?: string;
+    declare code?: string | null;
     declare active: boolean;
 }
 

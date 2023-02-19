@@ -4,7 +4,7 @@ export interface StudentTask {
     id_student_task: number;
     id_student: ForeignKey<number>;
     id_task: ForeignKey<number>;
-    completed: boolean;
+    highest_stage: number;
 };
 
 export type StudentTaskCreation = Omit<StudentTask, 'id_student_task'>;

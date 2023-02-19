@@ -10,9 +10,9 @@ class TaskModel extends Model<Task, TaskCreation> {
     declare task_order: number;
     declare name: string;
     declare description: string;
-    declare long_description?: string;
+    declare long_description?: string | null;
     declare keywords: string[];
-    declare thumbnail_url?: string;
+    declare thumbnail_url?: string | null;
     declare deleted: boolean;
 }
 

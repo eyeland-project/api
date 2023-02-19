@@ -9,7 +9,7 @@ import QuestionModel from './Question';
 class OptionModel extends Model<Option, OptionCreation> {
     declare id_option: number;
     declare id_question: ForeignKey<number>;
-    declare feedback?: string;
+    declare feedback?: string | null;
     declare content: string;
     declare correct: boolean;
     declare deleted: boolean;

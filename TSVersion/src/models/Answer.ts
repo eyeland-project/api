@@ -12,12 +12,12 @@ import TeamModel from './Team';
 class AnswerModel extends Model<Answer, AnswerCreation> {
     declare id_answer: number;
     declare id_question: ForeignKey<number>;
-    declare id_option?: ForeignKey<number>;
+    declare id_option?: ForeignKey<number> | null;
     declare id_task_attempt: ForeignKey<number>;
-    declare id_team?: ForeignKey<number>;
+    declare id_team?: ForeignKey<number> | null;
     declare answer_seconds: number;
-    declare audio1_url?: string;
-    declare audio2_url?: string;
+    declare audio1_url?: string | null;
+    declare audio2_url?: string | null;
 }
 
 // model initialization

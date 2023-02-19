@@ -173,12 +173,13 @@ CREATE TABLE student_task (
     id_student_task SERIAL NOT NULL,
     id_student INTEGER NOT NULL,
     id_task SMALLINT NOT NULL,
-    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    highest_stage SMALLINT NOT NULL DEFAULT 0, -- 0: not started, 1: pretask, 2: duringtask, 3: postask
     -- CONSTRAINTS
     CONSTRAINT pk_student_task PRIMARY KEY (id_student_task),
     CONSTRAINT fk_student_task_student FOREIGN KEY (id_student) REFERENCES student(id_student),
     CONSTRAINT fk_student_task_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    CONSTRAINT uk_student_task UNIQUE (id_student, id_task)
+    CONSTRAINT uk_student_task UNIQUE (id_student, id_task),
+    CONSTRAINT check_student_task_highest_stage CHECK (highest_stage >= 0 AND highest_stage <= 3)
 );
 
 -- CREATING TABLE

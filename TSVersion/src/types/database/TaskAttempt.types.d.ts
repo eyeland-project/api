@@ -3,9 +3,9 @@ import { Model, ForeignKey } from "sequelize";
 export interface TaskAttempt {
     id_task_attempt: number;
     id_task: ForeignKey<number>;
-    id_team?: ForeignKey<number>;
+    id_team?: ForeignKey<number> | null;
     id_student: ForeignKey<number>;
-    power?: string;
+    power?: string | null;
     active: boolean;
     time_stamp: Date;
 };

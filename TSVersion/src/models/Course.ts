@@ -11,7 +11,7 @@ class CourseModel extends Model<Course, CourseCreation> {
     declare id_teacher: ForeignKey<number>;
     declare id_institution: ForeignKey<number>;
     declare name: string;
-    declare description?: string;
+    declare description?: string | null;
     declare session: boolean;
 }
 
