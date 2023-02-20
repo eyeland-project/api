@@ -369,7 +369,7 @@
       }
     },
     "/tasks/{taskOrder}/attempt": {
-      "delete": {
+      "put": {
         "description": "Finish current Task Attempt",
         "tags": [
           "task"
@@ -823,11 +823,6 @@
             "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/AnswerAudio"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnswerOption"
               }
             }
           }
@@ -1299,6 +1294,11 @@
             "type": "string",
             "format": "binary",
             "description": "The second audio (reading answer) file if the question is audio"
+          },
+          "newAttempt": {
+            "type": "boolean",
+            "description": "To ensure finish previous attempt before starting a new one",
+            "default": false
           }
         }
       },
@@ -1320,6 +1320,10 @@
             "type": "string",
             "maxLength": 6,
             "minLength": 6
+          },
+          "taskOrder": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       }

@@ -4,9 +4,10 @@ import { getQuestionByOrder, getTaskStageQuestionsCount } from '../../services/q
 import { PretaskLinkResp, PretaskQuestionResp, PretaskResp } from '../../types/responses/students.types';
 import { getQuestionOptions } from '../../services/option.service';
 import { AnswerOptionReq } from '../../types/requests/students.types';
-import { createAnswer } from '../../services/answer.service';
+import { createAnswerOption } from '../../services/answer.service';
 import { getTaskStageByOrder } from '../../services/taskStage.service';
-import { finishStudentPrevTaskAttempts } from '../../services/taskAttempt.service';
+import { createTaskAttempt, finishStudentPrevTaskAttempts, getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
+import { getTaskByOrder } from '../../services/task.service';
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<PretaskResp>, next: Function) {
     try {
@@ -62,10 +63,17 @@ export async function answer(req: Request<{ taskOrder: number, questionOrder: nu
         const { id: idUser } = req.user as ReqUser;
         const { taskOrder, questionOrder } = req.params;
         const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
-        if (!idOption) return res.status(400).json({ message: 'Missing idOption' });
         
-        if (newAttempt) await finishStudentPrevTaskAttempts(idUser);
-        await createAnswer(idUser, taskOrder, 1, questionOrder, idOption, answerSeconds);
+        if (!idOption) return res.status(400).json({ message: 'Missing idOption' });
+        let idTaskAttempt;
+        if (newAttempt) {
+            await finishStudentPrevTaskAttempts(idUser);
+            const { id_task } = await getTaskByOrder(taskOrder);
+            idTaskAttempt = (await createTaskAttempt(idUser, id_task, null)).id_task_attempt;
+        } else {
+            idTaskAttempt = (await getStudentCurrTaskAttempt(idUser)).id_task_attempt;
+        }
+        await createAnswerOption(taskOrder, 1, questionOrder, idOption, answerSeconds, idTaskAttempt);
         res.status(200).json({ message: `Answered question ${questionOrder} of task ${taskOrder}` });
     } catch (err) {
         next(err);
