@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import { getQuestionByOrder, getTaskStageQuestionsCount } from '../../services/question.service';
 import { DuringtaskQuestionResp, DuringtaskResp } from '../../types/responses/students.types';
 import { getQuestionOptions } from '../../services/option.service';
-import { getTaskStageByOrder } from '../../services/taskStage.service';
+import { duringtaskAvailable, getTaskStageByOrder } from '../../services/taskStage.service';
+import { ApiError } from '../../middlewares/handleErrors';
+import { createTaskAttempt, getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<DuringtaskResp>, next: Function) {
     try {
@@ -20,6 +22,8 @@ export async function root(req: Request<{ taskOrder: number }>, res: Response<Du
 
 export async function getQuestion(req: Request<{ taskOrder: number, questionOrder: number }>, res: Response<DuringtaskQuestionResp>, next: Function) {
     try {
+        const { id: idUser } = req.user as ReqUser;
+        if (!await duringtaskAvailable(idUser)) throw new ApiError('DuringTask is not available', 400);
         const { taskOrder, questionOrder } = req.params;
         
         const { id_question, content, type, img_alt, img_url, audio_url, video_url } = await getQuestionByOrder(taskOrder, 2, questionOrder);

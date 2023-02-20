@@ -2,10 +2,11 @@ import { ApiError } from "../middlewares/handleErrors";
 import { TaskAttemptModel } from "../models";
 import { TaskAttempt } from "../types/database/TaskAttempt.types";
 
-export async function createTaskAttempt(idStudent: number, idTask: number): Promise<TaskAttempt> {
+export async function createTaskAttempt(idStudent: number, idTask: number, idTeam: number | null): Promise<TaskAttempt> {
     const taskAttempt = await TaskAttemptModel.create({
         id_student: idStudent,
-        id_task: idTask
+        id_task: idTask,
+        id_team: idTeam,
     });
     return taskAttempt;
 }
@@ -30,7 +31,7 @@ export async function updateStudentCurrTaskAttempt(idStudent: number, values: an
 
 export async function finishStudentPrevTaskAttempts(idStudent: number) {
     await TaskAttemptModel.update(
-        { active: false, id_team: null },
+        { active: false },
         { where: { id_student: idStudent, active: true } }
     );
 }

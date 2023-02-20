@@ -18,25 +18,6 @@ export async function getQuestionByOrder(
     `, { type: QueryTypes.SELECT }) as Question[];
     if (!questions.length) throw new ApiError('Question not found', 404);
     return questions[0];
-    
-    // const question = await QuestionModel.findOne({
-    //     attributes: ['*'],
-    //     include: [{
-    //       model: TaskStageModel,
-    //       attributes: [],
-    //       where: { task_stage_order: taskStageOrder },
-    //       include: [{
-    //         model: TaskModel,
-    //         attributes: [],
-    //         where: { task_order: taskOrder }
-    //       }]
-    //     }],
-    //     where: { question_order: questionOrder }
-    //   });
-    // if (!question) throw new Error('Question not found');
-    // console.log(question);
-    // console.log(question.save);
-    // return question;
 }
 
 export async function getTaskStageQuestionsCount(idTaskStage: number): Promise<number> {

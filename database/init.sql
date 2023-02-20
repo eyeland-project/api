@@ -198,6 +198,7 @@ CREATE TABLE task_attempt (
     CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student),
     CONSTRAINT check_task_attempt_power CHECK (power IN ('super_hearing', 'memory_pro', 'super_radar'))
 );
+CREATE UNIQUE INDEX idx_task_attempt_active_id_student ON task_attempt (id_student) WHERE active; -- id_student is unique only if the task_attempt is active
 
 -- CREATING TABLE
 CREATE TABLE answer (
@@ -397,7 +398,7 @@ INSERT INTO institution (id_institution, name, nit, address, city, country, phon
 INSERT INTO teacher (id_teacher, id_institution, first_name, last_name, email, username, password) VALUES (1, 1, 'Profesor', 'Prueba', 'teacher@test.com', 'teacher', 'teacher');
 
 -- INSERT INTO course
-INSERT INTO course (id_course, id_institution, id_teacher, name, description) VALUES (1, 1, 1, 'Curso de prueba', 'Curso de prueba para la aplicación');
+INSERT INTO course (id_course, id_institution, id_teacher, name, description, session) VALUES (1, 1, 1, 'Curso de prueba', 'Curso de prueba para la aplicación', TRUE);
 
 -- INSERT INTO student
 INSERT INTO student (id_student, id_course, first_name, last_name, email, username, blindness, password) VALUES (1, 1, 'Estudiante', 'Prueba', 'student@test.com', 'student', 'none', 'pass123');
