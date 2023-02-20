@@ -32,7 +32,7 @@ export async function getIntro(req: Request<{ taskOrder: number }>, res: Respons
     }
 }
 
-export async function getProgress(req: Request<{ taskOrder: number }>, res: Response<TaskProgressResp[]>, next: Function) {
+export async function getProgress(req: Request<{ taskOrder: number }>, res: Response<TaskProgressResp>, next: Function) {
     try {
         const { id: idUser } = req.user as ReqUser;
         const { taskOrder } = req.params;

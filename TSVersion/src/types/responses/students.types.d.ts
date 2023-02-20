@@ -18,9 +18,15 @@ export interface TaskIntroResp {
     longDescription: string
 }
 
-export interface TaskProgressResp {
+interface ProgressBody {
     completed: boolean,
     blocked: boolean
+}
+
+export interface TaskProgressResp {
+    pretask: ProgressBody,
+    duringtask: ProgressBody,
+    quiz: ProgressBody
 }
 
 // pretasks

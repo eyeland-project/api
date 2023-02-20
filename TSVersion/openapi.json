@@ -169,12 +169,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/TaskProgress"
-                  },
-                  "type": "array",
-                  "maxLength": 3,
-                  "minLength": 3
+                  "$ref": "#/components/schemas/TaskProgressResponse"
                 }
               }
             }
@@ -1005,6 +1000,20 @@
           "blocked": {
             "type": "boolean",
             "description": "If the task is blocked"
+          }
+        }
+      },
+      "TaskProgressResponse": {
+        "type": "object",
+        "properties": {
+          "pretask": {
+            "$ref": "#/components/schemas/TaskProgress"
+          },
+          "duringtask": {
+            "$ref": "#/components/schemas/TaskProgress"
+          },
+          "quiz": {
+            "$ref": "#/components/schemas/TaskProgress"
           }
         }
       },
