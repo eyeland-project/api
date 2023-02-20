@@ -5,7 +5,7 @@ export interface TaskResp {
     description: string,
     taskOrder: number,
     completed: boolean,
-    thumbnail: string
+    thumbnailUrl: string
 }
 
 export interface TaskIntroResp {
