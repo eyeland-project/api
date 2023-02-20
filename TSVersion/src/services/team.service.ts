@@ -20,3 +20,7 @@ export async function getTeamFromStudent(idStudent: number): Promise<Team> {
     if (!team.length) throw new ApiError("Team not found", 400);
     return team[0];
 }
+
+export async function getTeamsFromCourse(idCourse: number): Promise<Team[]> {
+    return await TeamModel.findAll({ where: { id_course: idCourse } });
+}

@@ -96,3 +96,10 @@ export interface PostaskQuestionResp {
         feedback: string
     }[]
 }
+
+// teams
+export interface TeamResp {
+    id: number,
+    code: string,
+    name: string
+}

@@ -880,19 +880,63 @@
         }
       }
     },
-    "/login-team": {
-      "post": {
-        "description": "Login student to a team",
+    "/teams": {
+      "get": {
+        "description": "Get teams from student's course",
         "tags": [
-          "user"
+          "team"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Team"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid code"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource | Team is full"
+          },
+          "404": {
+            "description": "Team not found"
+          },
+          "409": {
+            "description": "Student already has a team"
+          },
+          "410": {
+            "description": "Team is not active"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "description": "Join team",
+        "tags": [
+          "team"
         ],
         "requestBody": {
           "required": true,
-          "description": "The 6-characters code of the team",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginTeam"
+                "$ref": "#/components/schemas/JoinTeam"
               }
             }
           }
@@ -926,13 +970,11 @@
             "description": "Server error"
           }
         }
-      }
-    },
-    "/logout-team": {
-      "post": {
-        "description": "Logout student from current team",
+      },
+      "put": {
+        "description": "Leave current team",
         "tags": [
-          "user"
+          "team"
         ],
         "responses": {
           "200": {
@@ -1313,7 +1355,24 @@
           }
         }
       },
-      "LoginTeam": {
+      "Team": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 6,
+            "minLength": 6
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "JoinTeam": {
         "type": "object",
         "properties": {
           "code": {
