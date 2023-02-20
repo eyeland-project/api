@@ -12,6 +12,9 @@ function chargeRoutes(dir: string = ''): void {
         .filter(file => (
             file.match(/(.+\.)?routes\.[jt]s$/) || fs.statSync(rel(dir, file)).isDirectory()
         ))
+        .sort((a)=>{
+            return a.match(/(.+\.)?routes\.[jt]s$/) ? 1 : -1;
+        })
         .forEach(file => {
 
             if (fs.statSync(rel(dir, file)).isDirectory()) {
