@@ -70,7 +70,7 @@ export async function answer(req: Request<{ taskOrder: number, questionOrder: nu
             }
             await createAnswerOption(taskOrder, 3, questionOrder, idOption, answerSeconds, idTaskAttempt);
         } else if (questionType === 'audio') {
-            // const { answerSeconds, audio1, audio2 } = req.body as AnswerAudioReq;
+            // const { answerSeconds, audio } = req.body as AnswerAudioReq;
             // const storage = multer.memoryStorage();
             // const upload = multer({ storage });
             // const file = req.file;
