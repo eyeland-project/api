@@ -7,8 +7,7 @@ export interface Answer {
     id_team?: ForeignKey<number> | null;
     id_task_attempt: ForeignKey<number>;
     answer_seconds: number;
-    audio1_url?: string | null;
-    audio2_url?: string | null;
+    audio_url?: string | null;
 };
 
 export type AnswerCreation = Omit<Answer, 'id_answer'>;

@@ -13,7 +13,6 @@ export interface AnswerOptionReq {
 
 export interface AnswerAudioReq {
     answerSeconds: number,
-    audio1: string,
-    audio2?: string | null
+    audio: string,
     newAttempt?: boolean | null
 }

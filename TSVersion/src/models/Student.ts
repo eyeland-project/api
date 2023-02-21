@@ -5,17 +5,18 @@ import CourseModel from './Course';
 import { comparePassword, hashPassword } from '../utils';
 import { Student, StudentCreation } from '../types/database/Student.types';
 import { ApiError } from '../middlewares/handleErrors';
+import BlindnessAcuityModel from './BlindnessAcuity';
 
 // model class definition
 class StudentModel extends Model<Student, StudentCreation> {
     declare id_student: number;
     declare id_course: ForeignKey<number>;
+    declare id_blindness_acuity: ForeignKey<number>;
     declare first_name: string;
     declare last_name: string;
     declare email: string;
     declare username: string;
     declare password: string;
-    declare blindness: 'total' | 'partial' | 'none';
     comparePassword = (password: string): boolean => (
         // comparePassword(password, this.password)
         password === this.password // temporary
@@ -30,6 +31,10 @@ StudentModel.init({
         autoIncrement: true
     },
     id_course: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    id_blindness_acuity: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
@@ -57,10 +62,6 @@ StudentModel.init({
         //     this.setDataValue('password', hashPassword(value));
         // }
     },
-    blindness: {
-        type: DataTypes.STRING(50),
-        allowNull: false
-    },
     comparePassword: {
         type: DataTypes.VIRTUAL
     }
@@ -71,10 +72,6 @@ StudentModel.init({
     timestamps: false,
     hooks: {
         beforeCreate: async (student: StudentModel) => {
-            const { blindness } = student;
-            if (blindness !== 'total' && blindness !== 'partial' && blindness !== 'none') {
-                throw new ApiError('Blindness must be one of the following values: total, partial, none', 400);
-            }
             student.password = hashPassword(student.password);
         },
     },
@@ -97,6 +94,14 @@ CourseModel.hasMany(StudentModel, {
 });
 StudentModel.belongsTo(CourseModel, {
     foreignKey: 'id_course'
+});
+
+// student and blindness_acuity
+BlindnessAcuityModel.hasMany(StudentModel, {
+    foreignKey: 'id_blindness_acuity'
+});
+StudentModel.belongsTo(BlindnessAcuityModel, {
+    foreignKey: 'id_blindness_acuity'
 });
 
 export default StudentModel;

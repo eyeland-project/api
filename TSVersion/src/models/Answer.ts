@@ -16,8 +16,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
     declare id_task_attempt: ForeignKey<number>;
     declare id_team?: ForeignKey<number> | null;
     declare answer_seconds: number;
-    declare audio1_url?: string | null;
-    declare audio2_url?: string | null;
+    declare audio_url?: string | null;
 }
 
 // model initialization
@@ -46,10 +45,7 @@ AnswerModel.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    audio1_url: {
-        type: DataTypes.STRING(2048)
-    },
-    audio2_url: {
+    audio_url: {
         type: DataTypes.STRING(2048)
     }
 }, {

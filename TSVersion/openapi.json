@@ -1327,15 +1327,10 @@
           "answerSeconds": {
             "type": "number"
           },
-          "audio1": {
+          "audio": {
             "type": "string",
             "format": "binary",
             "description": "The first audio (reading question) file if the question is audio"
-          },
-          "audio2": {
-            "type": "string",
-            "format": "binary",
-            "description": "The second audio (reading answer) file if the question is audio"
           },
           "newAttempt": {
             "type": "boolean",
