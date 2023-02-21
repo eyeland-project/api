@@ -33,7 +33,7 @@ export async function getTasksFromStudentWithCompleted(idStudent: number): Promi
         description,
         taskOrder: task_order,
         completed: highest_stage === 3, // 3 is the highest stage
-        thumbnail: thumbnail_url
+        thumbnailUrl: thumbnail_url
     } as TaskResp));
 }
 
