@@ -33,7 +33,7 @@ passport.use('login', new LocalStrategy({
         if (!student.comparePassword(password)) {
             return done(null, false, { message: 'Wrong Password' });
         }
-        done(null, student.id_student);
+        done(null, {id: student.id_student});
     } catch (err) {
         return done(err);
     }
