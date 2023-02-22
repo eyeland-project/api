@@ -25,7 +25,8 @@ require('./config/passport');
 
 // docs
 import swaggerUi from 'swagger-ui-express';
-const swaggerDocument = require('../openapi.json');
+const docsStudents = require('../openapi-students.json');
+const docsTeachers = require('../openapi-teachers.json');
 
 //* Express configuration and middlewares
 app.set('port', process.env.PORT || 3000);
@@ -36,12 +37,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 //* Routes
-// app.use('/api-legacy', require('../../legacy/src/app')._router);
 import indexRoutes from './routes';
 // console.log(indexRoutes.stack);
 
 app.use('/api', indexRoutes);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs/teachers', swaggerUi.serve, swaggerUi.setup(docsTeachers));
+app.use('/api-docs/students', swaggerUi.serve, swaggerUi.setup(docsStudents));
+app.use('/api-docs', (_, res) => res.redirect('/api-docs/students'));
 app.get('/', (_, res) => {
     res.status(200).json({ message: 'Server is running' });
 });

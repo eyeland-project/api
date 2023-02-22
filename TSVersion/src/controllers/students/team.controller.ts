@@ -6,7 +6,7 @@ import { addStudentToTeam, getTeamMembers, removeStudentFromTeam } from '../../s
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/team.service';
-import { TeamResp } from '../../types/responses/students.types';
+import { TeamMemberSocket, TeamResp } from '../../types/responses/students.types';
 import { getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
@@ -45,11 +45,13 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
         if (prevTeam) {
             // TODO: send notification to old team
         }
-        // const members: TeamMemberSocket[] = (await getTeamMembers(code)).map(({
-        //     id_student: id, first_name, last_name, task_attempt: { power }
-        // }) => ({
-        //     id, first_name, last_name, power
-        // }));
+        const members: TeamMemberSocket[] = (await getTeamMembers(code)).map(({
+            id_student: id, first_name, last_name, username, task_attempt: { power }
+        }) => ({
+            id, first_name, last_name, username, power
+        }));
+        console.log('members', members);
+        
         // TODO: send notification to new team
     } catch (err) {
         console.log(err);

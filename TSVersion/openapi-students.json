@@ -38,6 +38,10 @@
       "description": "About sending Answers"
     },
     {
+      "name": "team",
+      "description": "Operations about the Teams"
+    },
+    {
       "name": "user",
       "description": "Operations about the Users"
     }
@@ -169,7 +173,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TaskProgressResponse"
+                  "$ref": "#/components/schemas/TaskProgress"
                 }
               }
             }
@@ -374,6 +378,19 @@
             "api_key": []
           }
         ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the task",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -552,15 +569,7 @@
           }
         ],
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnswerOption"
-              }
-            }
-          },
-          "description": "The answer for the question",
-          "required": true
+          "$ref": "#/components/requestBodies/AnswerOption"
         },
         "responses": {
           "200": {
@@ -683,15 +692,7 @@
           }
         ],
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnswerOption"
-              }
-            }
-          },
-          "description": "The answer for the question",
-          "required": true
+          "$ref": "#/components/requestBodies/AnswerOption"
         },
         "responses": {
           "200": {
@@ -814,13 +815,7 @@
           }
         ],
         "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/AnswerAudio"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/AnswerAudio"
         },
         "responses": {
           "200": {
@@ -847,36 +842,9 @@
         }
       }
     },
-    "/login": {
-      "post": {
-        "description": "Login student",
-        "tags": [
-          "user"
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/UserLogin"
-        },
-        "responses": {
-          "200": {
-            "description": "Logged successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/teams": {
       "get": {
+        "deprecated": true,
         "description": "Get teams from student's course",
         "tags": [
           "team"
@@ -889,29 +857,20 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Team"
+                    "$ref": "#/components/schemas/TeamSumm"
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid code"
+            "description": "Bad request"
           },
           "401": {
             "description": "Missing authentication"
           },
           "403": {
-            "description": "Unauthorized to access this resource | Team is full"
-          },
-          "404": {
-            "description": "Team not found"
-          },
-          "409": {
-            "description": "Student already has a team"
-          },
-          "410": {
-            "description": "Team is not active"
+            "description": "Unauthorized to access this resource"
           },
           "498": {
             "description": "Token expired/invalid"
@@ -927,21 +886,14 @@
           "team"
         ],
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JoinTeam"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/JoinTeam"
         },
         "responses": {
           "200": {
             "description": "Joined team successfully"
           },
           "400": {
-            "description": "Invalid code"
+            "description": "Invalid body"
           },
           "401": {
             "description": "Missing authentication"
@@ -989,6 +941,73 @@
           },
           "500": {
             "description": "Server error"
+          }
+        }
+      }
+    },
+    "/teams/current": {
+      "get": {
+        "deprecated": true,
+        "description": "Get current team",
+        "tags": [
+          "team"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Team"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Student doesn't belong to any team"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "Login student",
+        "tags": [
+          "user"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Login"
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1060,40 +1079,41 @@
       "TaskProgress": {
         "type": "object",
         "properties": {
-          "completed": {
-            "type": "boolean",
-            "description": "If the task was completed successfully"
-          },
-          "blocked": {
-            "type": "boolean",
-            "description": "If the task is blocked"
-          }
-        }
-      },
-      "TaskProgressResponse": {
-        "type": "object",
-        "properties": {
           "pretask": {
-            "$ref": "#/components/schemas/TaskProgress"
+            "properties": {
+              "completed": {
+                "type": "boolean",
+                "description": "If the task was completed successfully"
+              },
+              "blocked": {
+                "type": "boolean",
+                "description": "If the task is blocked"
+              }
+            }
           },
           "duringtask": {
-            "$ref": "#/components/schemas/TaskProgress"
+            "properties": {
+              "completed": {
+                "type": "boolean",
+                "description": "If the task was completed successfully"
+              },
+              "blocked": {
+                "type": "boolean",
+                "description": "If the task is blocked"
+              }
+            }
           },
           "quiz": {
-            "$ref": "#/components/schemas/TaskProgress"
-          }
-        }
-      },
-      "Attempt": {
-        "type": "object",
-        "properties": {
-          "taskStage": {
-            "type": "string",
-            "enum": [
-              "pretask",
-              "duringtask",
-              "postask"
-            ]
+            "properties": {
+              "completed": {
+                "type": "boolean",
+                "description": "If the task was completed successfully"
+              },
+              "blocked": {
+                "type": "boolean",
+                "description": "If the task is blocked"
+              }
+            }
           }
         }
       },
@@ -1348,6 +1368,98 @@
           }
         }
       },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "format": "int64"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "power": {
+                  "type": "string",
+                  "enum": [
+                    "super_hearing",
+                    "memory_pro",
+                    "super_radar"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "TeamSumm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "format": "int64"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "JoinTeam": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "taskOrder": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "Login": {
         "type": "object",
         "properties": {
@@ -1358,41 +1470,10 @@
             "type": "string"
           }
         }
-      },
-      "Team": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "format": "int64"
-          },
-          "code": {
-            "type": "string",
-            "maxLength": 6,
-            "minLength": 6
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "JoinTeam": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "maxLength": 6,
-            "minLength": 6
-          },
-          "taskOrder": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
       }
     },
     "requestBodies": {
-      "UserLogin": {
+      "Login": {
         "description": "User credentials",
         "required": true,
         "content": {
@@ -1403,13 +1484,35 @@
           }
         }
       },
-      "TaskStart": {
-        "description": "Student Attempt",
+      "AnswerOption": {
+        "description": "The answer for the question",
         "required": true,
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Attempt"
+              "$ref": "#/components/schemas/AnswerOption"
+            }
+          }
+        }
+      },
+      "AnswerAudio": {
+        "description": "The answer with audio for the question",
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "$ref": "#/components/schemas/AnswerAudio"
+            }
+          }
+        }
+      },
+      "JoinTeam": {
+        "description": "The team code and the task order",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/JoinTeam"
             }
           }
         }

@@ -6,6 +6,11 @@ let io: Server;
 
 export const directory = new Map<number, Socket>();
 
+export const NAMESPACES = {
+    students: '/students',
+    teachers: '/teachers'
+}
+
 export default function sockets(app: Express) {
     const server = createServer(app);
     io = new Server(server, {
