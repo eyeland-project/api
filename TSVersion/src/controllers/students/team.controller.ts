@@ -1,12 +1,13 @@
 
 
 import { Request, Response } from 'express';
-import { getStudentById, getTeamFromStudent } from '../../services/student.service';
+import { assignPowerToStudent, getStudentById, getTeamFromStudent } from '../../services/student.service';
 import { addStudentToTeam, getTeamMembers, removeStudentFromTeam } from '../../services/team.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/team.service';
-import { TeamMemberSocket, TeamResp } from '../../types/responses/students.types';
+import { TeamResp } from '../../types/responses/students.types';
+import { getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     try {
@@ -56,11 +57,37 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
 }
 
 export async function leaveTeam(req: Request, res: Response, next: Function) {
+    const { id: idUser } = req.user as ReqUser;
+
+    let code;
     try {
-        const { id: idUser } = req.user as ReqUser;
+        code = (await getTeamFromStudent(idUser)).code; // check if student is in a team; if not, throw error
+    } catch (err) { }
+    
+    try {
         await removeStudentFromTeam(idUser);
         res.status(200).json({ message: 'Done' });
     } catch (err) {
         next(err);
+    }
+    
+    if (!code) return;
+    try {
+        // check if this student had super_hearing to assign it to another student
+        const { power } = await getStudentCurrTaskAttempt(idUser);
+        if (power !== 'super_hearing') return; // student doesn't have super_hearing
+        
+        const teammates = (await getTeamMembers(code)).filter(({ id_student }) => id_student !== idUser);
+        if (!teammates.length) return; // no teammates left
+        
+        const blindnessLevels = teammates.map(({ blindness_acuity: { level } }) => level);
+        const maxBlindnessLevel = Math.max(...blindnessLevels);
+        if (maxBlindnessLevel === 0) return; // no teammates with blindness
+
+        const withMaxBlindnessIdx = blindnessLevels.indexOf(maxBlindnessLevel);
+        const { id_student: idStudent } = teammates[withMaxBlindnessIdx];
+        assignPowerToStudent(idStudent, 'super_hearing', teammates.filter(({ id_student }) => id_student !== idStudent));
+    } catch (err) {
+        console.log(err);
     }
 }

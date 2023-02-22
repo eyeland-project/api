@@ -22,7 +22,6 @@ export async function createTaskAttempt(idStudent: number, idTask: number, idTea
 
 export async function updateStudentCurrTaskAttempt(idStudent: number, values: Partial<TaskAttempt>) {
     if (!Object.keys(values).length) throw new ApiError("No values to update TaskAttempt", 400);
-
     const result = await TaskAttemptModel.update(
         values,
         { where: { id_student: idStudent, active: true } }
