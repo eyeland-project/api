@@ -1,6 +1,6 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
-import { BlindnessAcuity } from "../types/database/BlindnessAcuity.types";
+import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 
 // export async function getBlindnessAcuityFromStudent(idStudent: number): Promise<BlindnessAcuity> {
 //     await sequelize.query<BlindnessAcuity>(`

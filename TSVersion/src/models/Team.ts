@@ -1,7 +1,7 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
-import { Team, TeamCreation } from '../types/database/Team.types';
+import { Team, TeamCreation } from '../types/Team.types';
 import CourseModel from './Course';
 
 // model class definition

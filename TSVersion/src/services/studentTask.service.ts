@@ -1,7 +1,7 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TaskProgressResp } from "../types/responses/students.types";
-import { StudentTask } from "../types/database/StudentTask.types";
+import { StudentTask } from "../types/StudentTask.types";
 
 export async function getStudentTaskProgressByOrder(taskOrder: number, idStudent: number): Promise<TaskProgressResp> {
     const studentTasks = await sequelize.query<StudentTask>(`

@@ -2,7 +2,7 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
-import { Power, TaskAttempt, TaskAttemptCreation } from '../types/database/TaskAttempt.types';
+import { Power, TaskAttempt, TaskAttemptCreation } from '../types/TaskAttempt.types';
 import Task from './Task';
 import TeamModel from './Team';
 import StudentModel from './Student';

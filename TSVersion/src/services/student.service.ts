@@ -2,10 +2,10 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import { StudentModel } from "../models";
-import { Student, TeamMember } from "../types/database/Student.types";
-import { Team } from "../types/database/Team.types";
-import { BlindnessAcuity } from "../types/database/BlindnessAcuity.types";
-import { Power, TaskAttempt } from "../types/database/TaskAttempt.types";
+import { Student, TeamMember } from "../types/Student.types";
+import { Team } from "../types/Team.types";
+import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
+import { Power, TaskAttempt } from "../types/TaskAttempt.types";
 import { updateStudentCurrTaskAttempt } from "./taskAttempt.service";
 
 export async function getStudentById(id: number): Promise<Student> {

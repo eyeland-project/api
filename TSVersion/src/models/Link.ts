@@ -3,7 +3,7 @@
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
 import TaskModel from "./Task"
-import { Link, LinkCreation } from '../types/database/Link.types';
+import { Link, LinkCreation } from '../types/Link.types';
 
 // model class definition
 class LinkModel extends Model<Link, LinkCreation> {

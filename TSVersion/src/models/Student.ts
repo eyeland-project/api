@@ -3,7 +3,7 @@ import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
 import CourseModel from './Course';
 import { comparePassword, hashPassword } from '../utils';
-import { Student, StudentCreation } from '../types/database/Student.types';
+import { Student, StudentCreation } from '../types/Student.types';
 import { ApiError } from '../middlewares/handleErrors';
 import BlindnessAcuityModel from './BlindnessAcuity';
 

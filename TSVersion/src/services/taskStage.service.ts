@@ -1,7 +1,7 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TaskModel, TaskStageModel } from "../models";
-import { TaskStage } from "../types/database/TaskStage.types";
+import { TaskStage } from "../types/TaskStage.types";
 import { ApiError } from "../middlewares/handleErrors";
 
 export async function getTaskStageByOrder(taskOrder: number, taskStageOrder: number): Promise<TaskStage> {

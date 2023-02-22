@@ -1,7 +1,7 @@
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
 import TaskStageModel from "./TaskStage"
-import { Question, QuestionCreation } from '../types/database/Question.types';
+import { Question, QuestionCreation } from '../types/Question.types';
 import { ApiError } from '../middlewares/handleErrors';
 
 // model class definition

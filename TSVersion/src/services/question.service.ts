@@ -1,7 +1,7 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { QuestionModel } from "../models";
-import { Question } from "../types/database/Question.types";
+import { Question } from "../types/Question.types";
 import { ApiError } from "../middlewares/handleErrors";
 
 export async function getQuestionByOrder(

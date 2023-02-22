@@ -1,8 +1,8 @@
 import { Transaction } from "sequelize";
 import { ApiError } from "../middlewares/handleErrors";
 import { TaskAttemptModel } from "../models";
-import { Task } from "../types/database/Task.types";
-import { Power, TaskAttempt } from "../types/database/TaskAttempt.types";
+import { Task } from "../types/Task.types";
+import { Power, TaskAttempt } from "../types/TaskAttempt.types";
 
 export async function getStudentCurrTaskAttempt(idStudent: number): Promise<TaskAttempt> {
     const taskAttempt = await TaskAttemptModel.findOne({
