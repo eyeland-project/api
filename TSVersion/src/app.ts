@@ -1,3 +1,4 @@
+/// <reference path="./types/custom/customTypes.d.ts" />
 //* Charge environmental variables
 import * as dotenv from 'dotenv';
 import * as path from 'path';

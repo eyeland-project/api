@@ -1,4 +1,3 @@
-/// <reference path="../../types/customTypes.d.ts" />
 
 import { Request, Response } from 'express';
 import { getTasksFromStudentWithCompleted, getTaskByOrder } from '../../services/task.service';
@@ -6,9 +5,19 @@ import { TaskResp, TaskIntroResp, TaskProgressResp } from '../../types/responses
 import { getStudentTaskProgressByOrder } from '../../services/studentTask.service';
 import { finishStudentPrevTaskAttempts } from '../../services/taskAttempt.service';
 
+// interface UserWithId{
+//     id: number;
+// }
+
+// declare global {
+//     namespace Express {
+//         interface User extends UserWithId {}
+//     }
+// }
+
 export async function root(req: Request, res: Response<TaskResp[]>, next: Function) {
     try {
-        const { id: idUser } = req.user as ReqUser;
+        const {id: idUser} = req.user!;
         res.status(200).json(await getTasksFromStudentWithCompleted(idUser));
     } catch (err) {
         next(err);
@@ -17,7 +26,7 @@ export async function root(req: Request, res: Response<TaskResp[]>, next: Functi
 
 export async function getIntro(req: Request<{ taskOrder: number }>, res: Response<TaskIntroResp>, next: Function) {
     try {
-        const { id: idUser } = req.user as ReqUser;
+        const { id: idUser } = req.user!;
         const { taskOrder } = req.params;
         
         try {
@@ -43,7 +52,7 @@ export async function getIntro(req: Request<{ taskOrder: number }>, res: Respons
 
 export async function getProgress(req: Request<{ taskOrder: number }>, res: Response<TaskProgressResp>, next: Function) {
     try {
-        const { id: idUser } = req.user as ReqUser;
+        const { id: idUser } = req.user!;
         const { taskOrder } = req.params;
         res.status(200).json(await getStudentTaskProgressByOrder(taskOrder, idUser));
     } catch (err) {
@@ -53,7 +62,7 @@ export async function getProgress(req: Request<{ taskOrder: number }>, res: Resp
 
 export async function finishAttempt(req: Request<{ taskOrder: number }>, res: Response, next: Function) {
     try {
-        const { id: idUser } = req.user as ReqUser;
+        const { id: idUser } = req.user!;
         await finishStudentPrevTaskAttempts(idUser);
         res.status(200).json({ message: 'OK' });
     } catch (err) {

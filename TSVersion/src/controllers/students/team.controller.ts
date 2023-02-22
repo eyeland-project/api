@@ -1,4 +1,4 @@
-/// <reference path="../../types/customTypes.d.ts" />
+
 
 import { Request, Response } from 'express';
 import { getStudentById, getTeamFromStudent } from '../../services/student.service';
@@ -10,7 +10,7 @@ import { TeamMemberSocket, TeamResp } from '../../types/responses/students.types
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     try {
-        const { id: idUser } = req.user as ReqUser;
+        const {id: idUser} = req.user!;
         const { id_course } = await getStudentById(idUser);
         const teams = await getTeamsFromCourse(id_course);
         res.status(200).json(teams.filter(t => t.active).map(({ name, code, id_team: id }) => ({

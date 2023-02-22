@@ -22,7 +22,7 @@ export async function root(req: Request<{ taskOrder: number }>, res: Response<Du
 
 export async function getQuestion(req: Request<{ taskOrder: number, questionOrder: number }>, res: Response<DuringtaskQuestionResp>, next: Function) {
     try {
-        const { id: idUser } = req.user as ReqUser;
+        const { id: idUser } = req.user!;
         if (!await duringtaskAvailable(idUser)) throw new ApiError('DuringTask is not available', 400);
         const { taskOrder, questionOrder } = req.params;
         

@@ -51,7 +51,7 @@ export async function getQuestion(req: Request<{ taskOrder: number, questionOrde
 
 export async function answer(req: Request<{ taskOrder: number, questionOrder: number }>, res: Response, next: Function) {
     try {
-        const { id: idUser } = req.user as ReqUser;
+        const { id: idUser } = req.user!;
         const { taskOrder, questionOrder } = req.params;
 
         const { type: questionType } = await getQuestionByOrder(taskOrder, 2, questionOrder);
