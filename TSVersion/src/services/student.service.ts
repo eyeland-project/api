@@ -5,7 +5,7 @@ import { StudentModel } from "../models";
 import { Student, TeamMember } from "../types/database/Student.types";
 import { Team } from "../types/database/Team.types";
 import { BlindnessAcuity } from "../types/database/BlindnessAcuity.types";
-import { Power } from "../types/database/TaskAttempt.types";
+import { Power, TaskAttempt } from "../types/database/TaskAttempt.types";
 import { updateStudentCurrTaskAttempt } from "./taskAttempt.service";
 
 export async function getStudentById(id: number): Promise<Student> {
@@ -47,36 +47,41 @@ export async function assignPowerToStudent(idStudent: number, power: Power | 'au
         const powers: Power[] = ['memory_pro', 'super_radar', 'super_hearing'];
         return powers.filter(power => !currPowers.includes(power));
     };
+    const updateStudentCurrTaskAttemptTC = (idStudent: number, values: Partial<TaskAttempt>) => { // prevent errors when updating teammate
+        try {
+            updateStudentCurrTaskAttempt(idStudent, values);
+        } catch (err) {}
+    }
 
     if (power === 'memory_pro' || power === 'super_radar') {
-        updateStudentCurrTaskAttempt(idStudent, { power });
+        updateStudentCurrTaskAttemptTC(idStudent, { power });
         if (currPowers.includes(power)) {
-            updateStudentCurrTaskAttempt(ids[currPowers.indexOf(power)], { power: getFreePowers()[0] }); // assign free power to teammate with power
+            updateStudentCurrTaskAttemptTC(ids[currPowers.indexOf(power)], { power: getFreePowers()[0] }); // assign free power to teammate with power
         }
     } else if (power === 'super_hearing') {
         const withSuperHearingIdx = currPowers.indexOf('super_hearing');
-        if (withSuperHearingIdx === -1) updateStudentCurrTaskAttempt(idStudent, { power });
+        if (withSuperHearingIdx === -1) updateStudentCurrTaskAttemptTC(idStudent, { power });
         else {
             if (blindnessLevel >= currBlindnessLevels[withSuperHearingIdx]) {
-                updateStudentCurrTaskAttempt(ids[withSuperHearingIdx], { power: getFreePowers()[0] }); // assign free power to teammate with super_hearing
-                updateStudentCurrTaskAttempt(idStudent, { power });
+                updateStudentCurrTaskAttemptTC(ids[withSuperHearingIdx], { power: getFreePowers()[0] }); // assign free power to teammate with super_hearing
+                updateStudentCurrTaskAttemptTC(idStudent, { power });
             } else throw new ApiError("Super-hearing blocked", 400);
         }
     } else if (power === 'auto') {
         const randomPowerBetween = (powers: Power[]) => powers[Math.floor(Math.random() * powers.length)];
         if (blindnessLevel !== 0) {
             const withSuperHearingIdx = currPowers.indexOf('super_hearing');
-            if (withSuperHearingIdx === -1) updateStudentCurrTaskAttempt(idStudent, { power: 'super_hearing' });
+            if (withSuperHearingIdx === -1) updateStudentCurrTaskAttemptTC(idStudent, { power: 'super_hearing' });
             else {
                 if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
-                    updateStudentCurrTaskAttempt(ids[withSuperHearingIdx], { power: getFreePowers()[0] }); // assign free power to teammate with super_hearing
-                    updateStudentCurrTaskAttempt(idStudent, { power: 'super_hearing' });
+                    updateStudentCurrTaskAttemptTC(ids[withSuperHearingIdx], { power: getFreePowers()[0] }); // assign free power to teammate with super_hearing
+                    updateStudentCurrTaskAttemptTC(idStudent, { power: 'super_hearing' });
                 } else {
-                    updateStudentCurrTaskAttempt(idStudent, { power: randomPowerBetween(getFreePowers()) }); // assign free power to student
+                    updateStudentCurrTaskAttemptTC(idStudent, { power: randomPowerBetween(getFreePowers()) }); // assign free power to student
                 }
             }
         } else {
-            updateStudentCurrTaskAttempt(idStudent, { power: randomPowerBetween(getFreePowers()) });
+            updateStudentCurrTaskAttemptTC(idStudent, { power: randomPowerBetween(getFreePowers()) });
         }
     }
 }
