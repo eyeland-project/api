@@ -13,4 +13,4 @@ export { default as StudentModel } from './Student';
 export { default as StudentTaskModel } from './StudentTask';
 export { default as TaskAttemptModel } from './TaskAttempt';
 export { default as AnswerModel } from './Answer';
-export { default as BlindnessAcuity } from './BlindnessAcuity';
+export { default as BlindnessAcuityModel } from './BlindnessAcuity';

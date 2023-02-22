@@ -1,0 +1,1100 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Salamanca Island Project - EPICS IEEE (TEACHERS API)",
+    "description": "This is an educational project to teach English to high school students, with a special focus on children with visual impairments. You can find out more about at [https://swagger.io](https://swagger.io). In this iteration of the project, we've switched to the design first approach!\n(Podríamos incluir donaciones <la idea me la dió la página XD>).\n\nSome useful links:\n- [Organization github](https://github.com/Proyecto-Final-EPICS)\n- [The landing-Page](https://proyecto-final-epics.github.io/EyeLand)",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io",
+      "name": "Leonardo D. Lizcano Pinto",
+      "url": "https://www.linkedin.com/in/leonardo-lizcano-pinto0220/"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "0.5.5"
+  },
+  "externalDocs": {
+    "description": "Find out more about the project at our github repository",
+    "url": "https://github.com/Proyecto-Final-EPICS/Salamanca-Island-mobile-API"
+  },
+  "servers": [
+    {
+      "url": "https://epics-si-api.onrender.com/api/teachers"
+    }
+  ],
+  "tags": [
+    {
+      "name": "task",
+      "description": "Everything about the Tasks"
+    },
+    {
+      "name": "course",
+      "description": "Everything about the Courses"
+    },
+    {
+      "name": "session",
+      "description": "Everything about the Sessions"
+    },
+    {
+      "name": "student",
+      "description": "Everything about the Students"
+    },
+    {
+      "name": "team",
+      "description": "Everything about the Teams"
+    },
+    {
+      "name": "user",
+      "description": "Operations about the Users"
+    }
+  ],
+  "paths": {
+    "/tasks": {
+      "get": {
+        "description": "Get all tasks",
+        "tags": [
+          "task"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses": {
+      "get": {
+        "description": "Get all courses",
+        "tags": [
+          "course"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CourseSumm"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new course",
+        "tags": [
+          "course"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/AddCourse"
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid body"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}": {
+      "get": {
+        "description": "Get course by id",
+        "tags": [
+          "course"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "description": "Update a course",
+        "tags": [
+          "course"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateCourse"
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid idCourse | Invalid body"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a course",
+        "tags": [
+          "course"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid idCourse"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}/session/start": {
+      "post": {
+        "deprecated": true,
+        "description": "Start current session",
+        "tags": [
+          "session"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid idCourse"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Course not found"
+          },
+          "409": {
+            "description": "No session active"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}/teams": {
+      "get": {
+        "description": "Get teams from course id",
+        "tags": [
+          "team"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "Course id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "active",
+            "in": "query",
+            "description": "Whether to get active teams or not",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TeamSumm"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid idCourse | Invalid active query param"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create team",
+        "tags": [
+          "team"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/AddTeam"
+        },
+        "responses": {
+          "200": {
+            "description": "Team created successfully"
+          },
+          "400": {
+            "description": "Invalid idCourse | Invalid body"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}/teams/{idTeam}": {
+      "get": {
+        "description": "Get team from course id and team id",
+        "tags": [
+          "team"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "Course id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "idTeam",
+            "in": "path",
+            "description": "Team id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Team"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid idCourse | Invalid idTeam"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Team not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "description": "Update team",
+        "tags": [
+          "team"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "idTeam",
+            "in": "path",
+            "description": "Team id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateTeam"
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid idCourse | Invalid idTeam | Invalid body"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete team (make unactive)",
+        "tags": [
+          "team"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "idTeam",
+            "in": "path",
+            "description": "Team id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid idCourse | Invalid idTeam"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}/students": {
+      "get": {
+        "description": "Get students from course id",
+        "tags": [
+          "student"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "Course id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StudentSumm"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid idCourse"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}/students/{idStudent}": {
+      "get": {
+        "description": "Get student from course id and student id",
+        "tags": [
+          "student"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "Course id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "idStudent",
+            "in": "path",
+            "description": "Student id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Student"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid idCourse"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "Login student",
+        "tags": [
+          "user"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Login"
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "longDescription": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "string"
+          },
+          "taskOrder": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The number of the task (1, 2, 3, 4, 5)"
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "description": "The url of the thumbnail of the task"
+          }
+        }
+      },
+      "CourseSumm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "session": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AddCourse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateCourse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "session": {
+            "type": "boolean",
+            "description": "If true, create session; if false, finish the current session"
+          }
+        }
+      },
+      "TeamSumm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "numStudents": {
+            "type": "number",
+            "format": "int64"
+          }
+        }
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "format": "int64"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "power": {
+                  "type": "string",
+                  "enum": [
+                    "super_hearing",
+                    "memory_pro",
+                    "super_radar"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "AddTeam": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateTeam": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "AddStudentToTeam": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 6,
+            "minLength": 6
+          },
+          "taskOrder": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "RemoveStudentFromTeam": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 6,
+            "minLength": 6
+          },
+          "taskOrder": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "StudentSumm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "Student": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "blindness": {
+            "type": "object",
+            "properties": {
+              "acuity": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number",
+                    "format": "int64"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "Login": {
+        "description": "User credentials",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Login"
+            }
+          }
+        }
+      },
+      "AddCourse": {
+        "description": "Add course",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AddCourse"
+            }
+          }
+        }
+      },
+      "UpdateCourse": {
+        "description": "Update course",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateCourse"
+            }
+          }
+        }
+      },
+      "AddTeam": {
+        "description": "Add team",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AddTeam"
+            }
+          }
+        }
+      },
+      "AddStudentToTeam": {
+        "description": "Add student to team",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AddStudentToTeam"
+            }
+          }
+        }
+      },
+      "RemoveStudentFromTeam": {
+        "description": "Remove student from team",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RemoveStudentFromTeam"
+            }
+          }
+        }
+      },
+      "UpdateTeam": {
+        "description": "Update team",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateTeam"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

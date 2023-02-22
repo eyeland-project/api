@@ -192,23 +192,26 @@ CREATE TABLE student_task (
     CONSTRAINT check_student_task_highest_stage CHECK (highest_stage >= 0 AND highest_stage <= 3)
 );
 
+CREATE TYPE valid_power AS ENUM ('super_hearing', 'memory_pro', 'super_radar');
+
 -- CREATING TABLE
 CREATE TABLE task_attempt (
     id_task_attempt SERIAL NOT NULL,
     id_task SMALLINT NOT NULL,
     id_team INTEGER,
     id_student INTEGER NOT NULL,
-    power VARCHAR(20),
+    power VALID_POWER,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- CONSTRAINTS
     CONSTRAINT pk_task_attempt PRIMARY KEY (id_task_attempt),
     CONSTRAINT fk_task_attempt_task FOREIGN KEY (id_task) REFERENCES task(id_task),
     CONSTRAINT fk_task_attempt_team FOREIGN KEY (id_team) REFERENCES team(id_team),
-    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student),
-    CONSTRAINT check_task_attempt_power CHECK (power IN ('super_hearing', 'memory_pro', 'super_radar'))
+    CONSTRAINT fk_task_attempt_student FOREIGN KEY (id_student) REFERENCES student(id_student)
+    -- CONSTRAINT check_task_attempt_power_not_null CHECK (id_team IS NULL OR power IS NOT NULL)
 );
-CREATE UNIQUE INDEX idx_task_attempt_active_id_student ON task_attempt (id_student) WHERE active; -- id_student is unique only if the task_attempt is active
+CREATE UNIQUE INDEX idx_task_attempt_active_id_student ON task_attempt (id_student) WHERE active; -- id_student is unique if the task_attempt is active
+-- CREATE UNIQUE INDEX idx_task_attempt_active_power_id_team ON task_attempt (power, id_team) WHERE active; -- power and id_team are unique if the task_attempt is active
 
 -- CREATING TABLE
 CREATE TABLE answer (
@@ -726,7 +729,7 @@ INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, emai
 INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, email, username, password) VALUES (1, 4, 'Estudiante4', 'Prueba', 'student4@test.com', 'student4', 'pass123');
 INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, email, username, password) VALUES (1, 5, 'Estudiante5', 'Prueba', 'student5@test.com', 'student5', 'pass123');
 INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, email, username, password) VALUES (1, 6, 'Estudiante6', 'Prueba', 'student6@test.com', 'student6', 'pass123');
-
+INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, email, username, password) VALUES (1, 7, 'Estudiante7', 'Prueba', 'student7@test.com', 'student7', 'pass123');
 
 -- INSERT INTO team
 INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 1', '123456');

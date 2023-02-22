@@ -6,6 +6,11 @@ let io: Server;
 
 export const directory = new Map<number, Socket>();
 
+export const NAMESPACES = {
+    students: '/students',
+    teachers: '/teachers'
+}
+
 export default function sockets(app: Express) {
     const server = createServer(app);
     io = new Server(server, {
@@ -13,7 +18,7 @@ export default function sockets(app: Express) {
             origin: '*',
             methods: ['GET', 'POST']
         }
-    }) as Server;
+    });
     io.on('connection', onConnection);
     io.on('error', onError);
     return server;

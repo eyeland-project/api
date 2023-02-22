@@ -2,7 +2,7 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
-import { TaskAttempt, TaskAttemptCreation } from '../types/database/TaskAttempt.types';
+import { Power, TaskAttempt, TaskAttemptCreation } from '../types/database/TaskAttempt.types';
 import Task from './Task';
 import TeamModel from './Team';
 import StudentModel from './Student';
@@ -14,7 +14,7 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
     declare id_task: ForeignKey<number>;
     declare id_team?: ForeignKey<number> | null;
     declare id_student: ForeignKey<number>;
-    declare power?: string | null;
+    declare power?: Power | null;
     declare active: boolean;
     declare time_stamp: Date;
 }
@@ -61,8 +61,9 @@ TaskAttemptModel.init({
 });
 
 function checkPower({ power }: TaskAttemptModel) {
-    if (power !== undefined && power !== 'super_hearing' && power !== 'memory_pro' && power !== 'super_radar') {
-        throw new ApiError('Power must be one of the following values: super_hearing, memory_pro, super_radar', 400);
+    if (power !== undefined && power !== null) {
+        const validPowers: Power[] = ['super_hearing', 'memory_pro', 'super_radar'];
+        if (!validPowers.includes(power)) throw new ApiError('Power must be one of the following values: super_hearing, memory_pro, super_radar', 400);
     }
 }
 
