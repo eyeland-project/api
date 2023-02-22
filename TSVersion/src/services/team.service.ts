@@ -5,11 +5,9 @@ import { Team } from "../types/database/Team.types";
 import { createTaskAttempt, updateStudentCurrTaskAttempt } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
-import { getStudentById } from "./student.service";
+import { assignPowerToStudent, getStudentById } from "./student.service";
 import { Student, TeamMember } from "../types/database/Student.types";
-import { BlindnessAcuity } from "../types/database/BlindnessAcuity.types";
 import { Power } from "../types/database/TaskAttempt.types";
-import { TeamMemberSocket } from "../types/responses/students.types";
 
 export async function getTeamByCode(code: string): Promise<Team> {
     const team = await TeamModel.findOne({ where: { code } });
@@ -67,93 +65,73 @@ export async function addStudentToTeam(idStudent: number, code: string, taskOrde
         await createTaskAttempt(idStudent, id_task, id_team);
         console.log('Task attempt created');
     }
+    assignPowerToStudent(idStudent, 'auto', teammates);
 }
 
 export async function removeStudentFromTeam(idStudent: number) {
     await updateStudentCurrTaskAttempt(idStudent, { id_team: null });
 }
 
-export async function assignPowersAuto(code: string)/*: Promise<TeamMemberSocket[]> */ {
-    const memoryProOrSuperRadar = () => Math.random() < 0.5 ? 'memory_pro' : 'super_radar';
+// export async function assignPowersAuto(code: string)/*: Promise<TeamMemberSocket[]> */ {
+//     const randomPowerBetween = (...powers: Power[]) => powers[Math.floor(Math.random() * powers.length)];
 
-    const teamMembers = await getTeamMembers(code);
-    if (teamMembers.length === 1) {
-        
-        // const currPower = teamMembers[0].task_attempt.power;
-        // if (teamMembers[0].blindness_acuity.level === 0) { // no blindness
-        //     if (!currPower || currPower === 'super_hearing') { // no power or super hearing
-        //         updateStudentCurrTaskAttempt(teamMembers[0].id_student, { power: memoryProOrSuperRadar() });
-        //     }
-        // } else { // has some blindness level
-        //     if (currPower !== 'super_hearing') { // no super hearing
-        //         updateStudentCurrTaskAttempt(teamMembers[0].id_student, { power: 'super_hearing' });
-        //     }
-        // }
-    } else {
-        const currPowers = teamMembers.map(member => member.task_attempt.power);
-        const ids = teamMembers.map(member => member.id_student);
-        const blindnessLevels = teamMembers.map(member => member.blindness_acuity.level);
-        const maxBlindnessLevel = Math.max(...blindnessLevels);
-    
-        if (teamMembers.length === 2) {
-            // version 1
-            // const firstWithSuperHearingIdx = currPowers.indexOf('super_hearing');
-            // if (firstWithSuperHearingIdx !== -1) { // super hearing is already assigned
-            //     const notFirstWithSuperHearingIdx = (firstWithSuperHearingIdx + 1) % 2;
-    
-            //     if (maxBlindnessLevel > 0) { // some member has some blindness level
-            //         const withMaxBlindnessIdx = blindnessLevels.indexOf(maxBlindnessLevel);
-            //         if (withMaxBlindnessIdx !== firstWithSuperHearingIdx) { // the member with max blindness is not the one with super hearing
-            //             updateStudentCurrTaskAttempt(ids[firstWithSuperHearingIdx], { power: memoryProOrSuperRadar() });
-            //             if (currPowers[withMaxBlindnessIdx] !== 'super_hearing') { // the member with max blindness doesn't have super hearing
-            //                 updateStudentCurrTaskAttempt(ids[withMaxBlindnessIdx], { power: 'super_hearing' });
-            //             }
-            //         } else {
-            //             if (!currPowers[notFirstWithSuperHearingIdx] || currPowers[notFirstWithSuperHearingIdx] === 'super_hearing') { // the other member has no power or has super hearing too
-            //                 updateStudentCurrTaskAttempt(ids[notFirstWithSuperHearingIdx], { power: memoryProOrSuperRadar() });
-            //             }
-            //         }
-            //     } else { // no member has blindness
-            //         const power1 = memoryProOrSuperRadar();
-            //         const power2 = power1 === 'memory_pro' ? 'super_radar' : 'memory_pro';
-            //         updateStudentCurrTaskAttempt(ids[firstWithSuperHearingIdx], { power: power1 });
-            //         if (currPowers[notFirstWithSuperHearingIdx] !== power2) { // the other member has super_hearing or null
-            //             updateStudentCurrTaskAttempt(ids[notFirstWithSuperHearingIdx], { power: power2 });
-            //         }
-            //     }
-            // } else { // no member has super hearing
-            //     if (maxBlindnessLevel > 0) { // some member has some blindness level
-            //         const withMaxBlindnessIdx = blindnessLevels.indexOf(maxBlindnessLevel);
-            //         updateStudentCurrTaskAttempt(ids[withMaxBlindnessIdx], { power: 'super_hearing' });
-            //         const notWithMaxBlindnessIdx = (withMaxBlindnessIdx + 1) % 2;
-            //         if (!currPowers[notWithMaxBlindnessIdx]) { // the other member has no power
-            //             updateStudentCurrTaskAttempt(ids[notWithMaxBlindnessIdx], { power: memoryProOrSuperRadar() });
-            //         }
-            //     } else { // no member has blindness
-            //         const power1 = memoryProOrSuperRadar();
-            //         const power2 = power1 === 'memory_pro' ? 'super_radar' : 'memory_pro';
-            //         if (!currPowers[0]) { // member 1 has no power
-            //             updateStudentCurrTaskAttempt(ids[0], { power: power1 });
-            //         }
-            //         if (!currPowers[1]) { // member 2 has no power
-            //             updateStudentCurrTaskAttempt(ids[1], { power: power2 });
-            //         }
-            //     }
-            // }
-    
-            // version 2
+//     const teamMembers = await getTeamMembers(code);
 
-            
-    
-        } else if (teamMembers.length === 3) {
-            // const maxBlindnessLevel = Math.max(...blindnessLevels);
-            // if (maxBlindnessLevel > 0) { // some member has some blindness level
-            //     const withMaxBlindnessIdx = blindnessLevels.indexOf(maxBlindnessLevel);
-            //     if (currPowers[withMaxBlindnessIdx] !== 'super_hearing') { // the member with max blindness doesn't have super hearing
-            //         updateStudentCurrTaskAttempt(ids[withMaxBlindnessIdx], { power: 'super_hearing' });
-            //     }
-            // }
-    
-        }
-    }
-}
+//     const currPowers = teamMembers.map(member => member.task_attempt.power);
+//     const ids = teamMembers.map(member => member.id_student);
+//     const blindnessLevels = teamMembers.map(member => member.blindness_acuity.level);
+
+//     const maxBlindnessLevel = Math.max(...blindnessLevels);
+
+//     if (teamMembers.length === 1) { // If there is only one member in the team
+//         if (blindnessLevels[0] !== 0) { // If has blindness
+//             if (currPowers[0] !== 'super_hearing') { // If has not super_hearing power
+//                 updateStudentCurrTaskAttempt(ids[0], { power: 'super_hearing' });
+//             }
+//         } else { // If has no blindness
+//             if (!currPowers[0]) { // If has not any power
+//                 updateStudentCurrTaskAttempt(ids[0], { power: randomPowerBetween('super_hearing', 'memory_pro', 'super_radar') });
+//             }
+//         }
+//     } else if (teamMembers.length === 2) { // If there are two members in the team
+//         if (maxBlindnessLevel > 0) { // If there is one member with blindness
+//             const blindestIdx = blindnessLevels.indexOf(maxBlindnessLevel);
+//             if (currPowers[blindestIdx] !== 'super_hearing') { // If the blindest member has not super_hearing power
+//                 if (currPowers.at(blindestIdx - 1) === 'super_hearing') { // if the other member has super_hearing power
+//                     await updateStudentCurrTaskAttempt( // await because the other member has to be updated before the blindest member
+//                         ids.at(blindestIdx - 1) as number,
+//                         { power: randomPowerBetween('memory_pro', 'super_radar') }
+//                     );
+//                 } else if (!currPowers.at(blindestIdx - 1)) { // if the other member has no power
+//                     updateStudentCurrTaskAttempt(
+//                         ids.at(blindestIdx - 1) as number,
+//                         { power: randomPowerBetween('memory_pro', 'super_radar') }
+//                     );
+//                 }
+//                 updateStudentCurrTaskAttempt(ids[blindestIdx], { power: 'super_hearing' });
+//             } else if (!currPowers.at(blindestIdx - 1)) { // if the blindest member has super_hearing power and the other member has no power
+//                 updateStudentCurrTaskAttempt(
+//                     (ids.at(blindestIdx - 1) as number),
+//                     { power: randomPowerBetween('super_radar', 'memory_pro') }
+//                 );
+//             }
+//         } else { // If there are no members with blindness
+//             if (!currPowers[0] && !currPowers[1]) {
+//                 const powers: Power[] = ['super_hearing', 'memory_pro', 'super_radar'];
+//                 const power1 = randomPowerBetween(...powers);
+//                 const power2 = randomPowerBetween(...powers.filter(power => power !== power1));
+//                 updateStudentCurrTaskAttempt(ids[0], { power: power1 });
+//                 updateStudentCurrTaskAttempt(ids[1], { power: power2 });
+//             } else if (!currPowers[0]) {
+//                 const powers: Power[] = ['super_hearing', 'memory_pro', 'super_radar'];
+//                 const power = randomPowerBetween(...powers.filter(power => power !== currPowers[1]));
+//                 updateStudentCurrTaskAttempt(ids[0], { power: power });
+//             } else if (!currPowers[1]) {
+//                 const powers: Power[] = ['super_hearing', 'memory_pro', 'super_radar'];
+//                 const power = randomPowerBetween(...powers.filter(power => power !== currPowers[0]));
+//                 updateStudentCurrTaskAttempt(ids[1], { power: power });
+//             }
+//         }
+//     } else if (teamMembers.length === 3) {
+//     }
+// }

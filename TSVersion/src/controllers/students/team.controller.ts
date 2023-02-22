@@ -2,11 +2,11 @@
 
 import { Request, Response } from 'express';
 import { getStudentById, getTeamFromStudent } from '../../services/student.service';
-import { addStudentToTeam, assignPowersAuto, removeStudentFromTeam } from '../../services/team.service';
+import { addStudentToTeam, getTeamMembers, removeStudentFromTeam } from '../../services/team.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/team.service';
-import { TeamResp } from '../../types/responses/students.types';
+import { TeamMemberSocket, TeamResp } from '../../types/responses/students.types';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     try {
@@ -27,25 +27,28 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
     const { id: idUser } = req.user as ReqUser;
     const { code, taskOrder } = req.body as LoginTeamReq;
 
+    if (!code || !taskOrder) return next(new ApiError('Missing code or taskOrder', 400));
     let prevTeam;
     try {
-        if (!code || !taskOrder) throw new ApiError('Missing code or taskOrder', 400);
-        try {
-            prevTeam = await getTeamFromStudent(idUser); // check if student is already in a team; if not, throw error
-        } catch (err) { } // no team found for student (expected)
+        prevTeam = await getTeamFromStudent(idUser); // check if student is already in a team; if not, throw error
+    } catch (err) { } // no team found for student (expected)
 
+    try {
         await addStudentToTeam(idUser, code, taskOrder);
         res.status(200).json({ message: 'Done' });
     } catch (err) {
         next(err);
     }
+
     try {
         if (prevTeam) {
             // TODO: send notification to old team
         }
-        await assignPowersAuto(code);
-        console.log('Powers assigned');
-        
+        // const members: TeamMemberSocket[] = (await getTeamMembers(code)).map(({
+        //     id_student: id, first_name, last_name, task_attempt: { power }
+        // }) => ({
+        //     id, first_name, last_name, power
+        // }));
         // TODO: send notification to new team
     } catch (err) {
         console.log(err);

@@ -2,9 +2,11 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import { StudentModel } from "../models";
-import { Student } from "../types/database/Student.types";
+import { Student, TeamMember } from "../types/database/Student.types";
 import { Team } from "../types/database/Team.types";
 import { BlindnessAcuity } from "../types/database/BlindnessAcuity.types";
+import { Power } from "../types/database/TaskAttempt.types";
+import { updateStudentCurrTaskAttempt } from "./taskAttempt.service";
 
 export async function getStudentById(id: number): Promise<Student> {
     const student = await StudentModel.findByPk(id);
@@ -31,4 +33,50 @@ export async function getBlindnessAcFromStudent(idStudent: number): Promise<Blin
     `, { type: QueryTypes.SELECT });
     if (!blindness.length) throw new ApiError("Blindness not found", 400);
     return blindness[0];
+}
+
+export async function assignPowerToStudent(idStudent: number, power: Power | 'auto', teammates: TeamMember[]) {
+    if (teammates.length > 2) throw new ApiError("Team is full", 400);
+
+    const { level: blindnessLevel } = await getBlindnessAcFromStudent(idStudent);
+    const ids = teammates.map(member => member.id_student);
+    const currPowers = teammates.map(member => member.task_attempt.power);
+    const currBlindnessLevels = teammates.map(member => member.blindness_acuity.level);
+
+    const getFreePowers = () => {
+        const powers: Power[] = ['memory_pro', 'super_radar', 'super_hearing'];
+        return powers.filter(power => !currPowers.includes(power));
+    };
+
+    if (power === 'memory_pro' || power === 'super_radar') {
+        updateStudentCurrTaskAttempt(idStudent, { power });
+        if (currPowers.includes(power)) {
+            updateStudentCurrTaskAttempt(ids[currPowers.indexOf(power)], { power: getFreePowers()[0] }); // assign free power to teammate with power
+        }
+    } else if (power === 'super_hearing') {
+        const withSuperHearingIdx = currPowers.indexOf('super_hearing');
+        if (withSuperHearingIdx === -1) updateStudentCurrTaskAttempt(idStudent, { power });
+        else {
+            if (blindnessLevel >= currBlindnessLevels[withSuperHearingIdx]) {
+                updateStudentCurrTaskAttempt(ids[withSuperHearingIdx], { power: getFreePowers()[0] }); // assign free power to teammate with super_hearing
+                updateStudentCurrTaskAttempt(idStudent, { power });
+            } else throw new ApiError("Super-hearing blocked", 400);
+        }
+    } else if (power === 'auto') {
+        const randomPowerBetween = (powers: Power[]) => powers[Math.floor(Math.random() * powers.length)];
+        if (blindnessLevel !== 0) {
+            const withSuperHearingIdx = currPowers.indexOf('super_hearing');
+            if (withSuperHearingIdx === -1) updateStudentCurrTaskAttempt(idStudent, { power: 'super_hearing' });
+            else {
+                if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
+                    updateStudentCurrTaskAttempt(ids[withSuperHearingIdx], { power: getFreePowers()[0] }); // assign free power to teammate with super_hearing
+                    updateStudentCurrTaskAttempt(idStudent, { power: 'super_hearing' });
+                } else {
+                    updateStudentCurrTaskAttempt(idStudent, { power: randomPowerBetween(getFreePowers()) }); // assign free power to student
+                }
+            }
+        } else {
+            updateStudentCurrTaskAttempt(idStudent, { power: randomPowerBetween(getFreePowers()) });
+        }
+    }
 }
