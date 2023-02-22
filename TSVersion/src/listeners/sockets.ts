@@ -18,7 +18,7 @@ export default function sockets(app: Express) {
             origin: '*',
             methods: ['GET', 'POST']
         }
-    }) as Server;
+    });
     io.on('connection', onConnection);
     io.on('error', onError);
     return server;

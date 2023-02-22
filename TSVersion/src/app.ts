@@ -41,8 +41,8 @@ import indexRoutes from './routes';
 // console.log(indexRoutes.stack);
 
 app.use('/api', indexRoutes);
-app.use('/api-docs/teachers', swaggerUi.serve, swaggerUi.setup(docsTeachers));
-app.use('/api-docs/students', swaggerUi.serve, swaggerUi.setup(docsStudents));
+app.use('/api-docs/teachers', swaggerUi.serveFiles(docsTeachers), swaggerUi.setup(docsTeachers));
+app.use('/api-docs/students', swaggerUi.serveFiles(docsStudents), swaggerUi.setup(docsStudents));
 app.use('/api-docs', (_, res) => res.redirect('/api-docs/students'));
 app.get('/', (_, res) => {
     res.status(200).json({ message: 'Server is running' });
