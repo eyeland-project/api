@@ -1,7 +1,8 @@
 /// <reference path="../../types/customTypes.d.ts" />
 
 import { Request, Response } from 'express';
-import { getStudentById, joinTeam as joinT, leaveTeam as leaveT } from '../../services/student.service';
+import { getStudentById, getTeamFromStudent } from '../../services/student.service';
+import { addStudentToTeam, assignPowersAuto, removeStudentFromTeam } from '../../services/team.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/team.service';
@@ -23,21 +24,38 @@ export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Fu
 }
 
 export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: Function) {
+    const { id: idUser } = req.user as ReqUser;
+    const { code, taskOrder } = req.body as LoginTeamReq;
+
+    let prevTeam;
     try {
-        const { id: idUser } = req.user as ReqUser;
-        const { code, taskOrder } = req.body as LoginTeamReq;
         if (!code || !taskOrder) throw new ApiError('Missing code or taskOrder', 400);
-        await joinT(idUser, code, taskOrder);
+        try {
+            prevTeam = await getTeamFromStudent(idUser); // check if student is already in a team; if not, throw error
+        } catch (err) { } // no team found for student (expected)
+
+        await addStudentToTeam(idUser, code, taskOrder);
         res.status(200).json({ message: 'Done' });
     } catch (err) {
         next(err);
+    }
+    try {
+        if (prevTeam) {
+            // TODO: send notification to old team
+        }
+        await assignPowersAuto(code);
+        console.log('Powers assigned');
+        
+        // TODO: send notification to new team
+    } catch (err) {
+        console.log(err);
     }
 }
 
 export async function leaveTeam(req: Request, res: Response, next: Function) {
     try {
         const { id: idUser } = req.user as ReqUser;
-        await leaveT(idUser);
+        await removeStudentFromTeam(idUser);
         res.status(200).json({ message: 'Done' });
     } catch (err) {
         next(err);

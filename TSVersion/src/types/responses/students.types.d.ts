@@ -1,3 +1,4 @@
+// API
 // tasks
 export interface TaskResp {
     id: number,
@@ -108,4 +109,12 @@ export interface TeamResp {
     id: number,
     code: string,
     name: string
+}
+
+// SOCKETS
+export interface TeamMemberSocket {
+    id: number,
+    first_name: string,
+    last_name: string,
+    power: Power
 }
