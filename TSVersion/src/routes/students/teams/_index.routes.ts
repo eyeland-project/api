@@ -2,7 +2,7 @@ import { Router } from "express";
 import passport from "passport";
 import { getTeams, joinTeam, leaveTeam } from '../../../controllers/students/team.controller';
 
-const auth = passport.authenticate('jwt', { session: false });
+const auth = passport.authenticate('jwt-student', { session: false });
 
 const router = Router();
 router.use(auth);
