@@ -1,10 +1,12 @@
 import app from './app';
-import sockets from './listeners/sockets';
+import initSocket from './listeners/sockets';
 import sequelize from './database/db';
 
 //* start the server
-const server = sockets(app).listen(app.get('port'), () => {
+const server = app.listen(app.get('port'), () => {
     console.log('Server on port', app.get('port'));
+    initSocket(server);
+
     sequelize.authenticate().then(() => {
         console.log('Database connected');
         sequelize.sync({ force: false, alter: false }).then(() => {
