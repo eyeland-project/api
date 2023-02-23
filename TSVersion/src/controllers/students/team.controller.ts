@@ -5,7 +5,7 @@ import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/course.service';
 import { TeamMemberSocket, TeamResp } from '../../types/responses/students.types';
-import { getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
+import { getStudCurrTaskAttempt } from '../../services/taskAttempt.service';
 import { Power } from '../../types/enums';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
@@ -75,7 +75,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
     if (!code) return;
     try {
         // check if this student had super_hearing to assign it to another student
-        const { power } = await getStudentCurrTaskAttempt(idStudent);
+        const { power } = await getStudCurrTaskAttempt(idStudent);
         if (power !== Power.SuperHearing) return; // student doesn't have super_hearing
         
         const teammates = (await getStudentsFromTeam({ code })).filter(({ id_student }) => id_student !== idStudent);

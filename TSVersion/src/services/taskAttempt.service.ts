@@ -1,9 +1,10 @@
-import { Transaction } from "sequelize";
+import { QueryTypes, Transaction } from "sequelize";
 import { ApiError } from "../middlewares/handleErrors";
 import { TaskAttemptModel } from "../models";
 import { TaskAttempt } from "../types/TaskAttempt.types";
+import sequelize from "../database/db";
 
-export async function getStudentCurrTaskAttempt(idStudent: number): Promise<TaskAttempt> {
+export async function getStudCurrTaskAttempt(idStudent: number): Promise<TaskAttempt> {
     const taskAttempt = await TaskAttemptModel.findOne({
         where: { id_student: idStudent, active: true }
     });
@@ -20,7 +21,7 @@ export async function createTaskAttempt(idStudent: number, idTask: number, idTea
     return taskAttempt;
 }
 
-export async function updateStudentCurrTaskAttempt(idStudent: number, values: Partial<TaskAttempt>, opts: { transaction?: Transaction } = {}) {
+export async function updateStudCurrTaskAttempt(idStudent: number, values: Partial<TaskAttempt>, opts: { transaction?: Transaction } = {}) {
     if (!Object.keys(values).length) throw new ApiError("No values to update TaskAttempt", 400);
     const result = await TaskAttemptModel.update(
         values,
@@ -29,7 +30,7 @@ export async function updateStudentCurrTaskAttempt(idStudent: number, values: Pa
     if (!result[0]) throw new ApiError("Task Attempt not found", 404);
 }
 
-export async function finishStudentPrevTaskAttempts(idStudent: number) {
+export async function finishStudTaskAttempts(idStudent: number) {
     await TaskAttemptModel.update(
         { active: false },
         { where: { id_student: idStudent, active: true } }

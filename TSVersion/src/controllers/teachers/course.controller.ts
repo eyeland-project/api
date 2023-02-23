@@ -54,17 +54,15 @@ export async function updateCourse(req: Request<{ idCourse: number }>, res: Resp
     const { idCourse } = req.params;
     const fields = req.body as Partial<CourseUpdateReq>;
     try {
+        await updateCourseServ(idCourse, fields);
+        res.status(200).json({ message: 'Course updated successfully' });
         if (fields.session !== undefined) {
             if (fields.session) {
                 // await startCourseSession(idCourse);
             } else {
                 // await endCourseSession(idCourse);
             }
-            await updateCourseServ(idCourse, fields); // TODO: use transaction
-        } else {
-            await updateCourseServ(idCourse, fields);
         }
-        res.status(200).json({ message: 'Course updated successfully' });
     } catch (err) {
         next(err);
     }

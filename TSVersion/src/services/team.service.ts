@@ -2,7 +2,7 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TeamModel } from "../models";
 import { Team } from "../types/Team.types";
-import { createTaskAttempt, updateStudentCurrTaskAttempt } from "./taskAttempt.service";
+import { createTaskAttempt, updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
 import { assignPowerToStudent, getStudentById, getTeamFromStudent } from "./student.service";
@@ -78,7 +78,7 @@ export async function addStudentToTeam(idStudent: number, code: string, taskOrde
     if (teammates.length >= 3) throw new ApiError('Team is full', 400);
 
     try {
-        await updateStudentCurrTaskAttempt(idStudent, { id_team });
+        await updateStudCurrTaskAttempt(idStudent, { id_team });
     } catch (err) {
         console.log(err);
 
@@ -91,5 +91,5 @@ export async function addStudentToTeam(idStudent: number, code: string, taskOrde
 }
 
 export async function removeStudentFromTeam(idStudent: number) {
-    await updateStudentCurrTaskAttempt(idStudent, { id_team: null });
+    await updateStudCurrTaskAttempt(idStudent, { id_team: null });
 }

@@ -6,7 +6,7 @@ import { Student, TeamMember } from "../types/Student.types";
 import { Team } from "../types/Team.types";
 import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import { TaskAttempt } from "../types/TaskAttempt.types";
-import { updateStudentCurrTaskAttempt } from "./taskAttempt.service";
+import { updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { Power } from "../types/enums";
 
 export async function getStudentById(id: number): Promise<Student> {
@@ -51,7 +51,7 @@ export async function assignPowerToStudent(idStudent: number, power: Power | 'au
     };
     const updateStudentCurrTaskAttemptTC = (idStudent: number, values: Partial<TaskAttempt>) => { // prevent errors when updating teammate
         try {
-            updateStudentCurrTaskAttempt(idStudent, values);
+            updateStudCurrTaskAttempt(idStudent, values);
         } catch (err) {}
     }
 

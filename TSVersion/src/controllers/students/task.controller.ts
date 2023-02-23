@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { getTasksFromStudentWithCompleted, getTaskByOrder } from '../../services/task.service';
 import { TaskResp, TaskIntroResp, TaskProgressResp } from '../../types/responses/students.types';
 import { getStudentTaskProgressByOrder } from '../../services/studentTask.service';
-import { finishStudentPrevTaskAttempts } from '../../services/taskAttempt.service';
+import { finishStudTaskAttempts } from '../../services/taskAttempt.service';
 
 // interface UserWithId{
 //     id: number;
@@ -30,7 +30,7 @@ export async function getIntro(req: Request<{ taskOrder: number }>, res: Respons
         const { taskOrder } = req.params;
         
         try {
-            await finishStudentPrevTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
+            await finishStudTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
         } catch (err) {
             console.error(err);
         }
@@ -63,7 +63,7 @@ export async function getProgress(req: Request<{ taskOrder: number }>, res: Resp
 export async function finishAttempt(req: Request<{ taskOrder: number }>, res: Response, next: Function) {
     try {
         const { id: idStudent } = req.user!;
-        await finishStudentPrevTaskAttempts(idStudent);
+        await finishStudTaskAttempts(idStudent);
         res.status(200).json({ message: 'OK' });
     } catch (err) {
         next(err);

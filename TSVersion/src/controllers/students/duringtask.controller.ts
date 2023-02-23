@@ -4,7 +4,7 @@ import { DuringtaskQuestionResp, DuringtaskResp } from '../../types/responses/st
 import { getQuestionOptions } from '../../services/option.service';
 import { duringtaskAvailable, getTaskStageByOrder } from '../../services/taskStage.service';
 import { ApiError } from '../../middlewares/handleErrors';
-import { createTaskAttempt, getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
+import { createTaskAttempt, getStudCurrTaskAttempt } from '../../services/taskAttempt.service';
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<DuringtaskResp>, next: Function) {
     try {

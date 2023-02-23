@@ -6,7 +6,7 @@ import { getQuestionOptions } from '../../services/option.service';
 import { createAnswerOption } from '../../services/answer.service';
 import { AnswerAudioReq, AnswerOptionReq } from '../../types/requests/students.types';
 import { getTaskStageByOrder } from '../../services/taskStage.service';
-import { createTaskAttempt, finishStudentPrevTaskAttempts, getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
+import { createTaskAttempt, finishStudTaskAttempts, getStudCurrTaskAttempt } from '../../services/taskAttempt.service';
 import { getTaskByOrder } from '../../services/task.service';
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<PostaskResp>, next: Function) {
@@ -62,11 +62,11 @@ export async function answer(req: Request<{ taskOrder: number, questionOrder: nu
 
             let idTaskAttempt;
             if (newAttempt) {
-                await finishStudentPrevTaskAttempts(idStudent);
+                await finishStudTaskAttempts(idStudent);
                 const { id_task } = await getTaskByOrder(taskOrder);
                 idTaskAttempt = (await createTaskAttempt(idStudent, id_task, null)).id_task_attempt;
             } else {
-                idTaskAttempt = (await getStudentCurrTaskAttempt(idStudent)).id_task_attempt;
+                idTaskAttempt = (await getStudCurrTaskAttempt(idStudent)).id_task_attempt;
             }
             await createAnswerOption(taskOrder, 3, questionOrder, idOption, answerSeconds, idTaskAttempt);
         } else if (questionType === 'audio') {
