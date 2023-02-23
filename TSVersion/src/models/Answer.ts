@@ -2,7 +2,7 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
-import { Answer, AnswerCreation } from '../types/database/Answer.types';
+import { Answer, AnswerCreation } from '../types/Answer.types';
 import QuestionModel from './Question';
 import OptionModel from './Option';
 import TaskAttemptModel from './TaskAttempt';

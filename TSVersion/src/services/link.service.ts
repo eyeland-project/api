@@ -2,7 +2,7 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import { LinkModel, TaskModel } from "../models";
-import { Link } from "../types/database/Link.types";
+import { Link } from "../types/Link.types";
 
 export async function getLinkByOrder(taskOrder: number, linkOrder: number): Promise<Link> {
     const links = await sequelize.query(`

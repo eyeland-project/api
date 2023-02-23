@@ -1,13 +1,13 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TeamModel } from "../models";
-import { Team } from "../types/database/Team.types";
+import { Team } from "../types/Team.types";
 import { createTaskAttempt, updateStudentCurrTaskAttempt } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
 import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent } from "./student.service";
-import { Student, TeamMember } from "../types/database/Student.types";
-import { Power } from "../types/database/TaskAttempt.types";
+import { Student, TeamMember } from "../types/Student.types";
+import { Power } from "../types/enums";
 
 export async function getTeamByCode(code: string): Promise<Team> {
     const team = await TeamModel.findOne({ where: { code } });

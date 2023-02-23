@@ -2,7 +2,7 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/db';
-import { BlindnessAcuity, BlindnessAcuityCreation } from '../types/database/BlindnessAcuity.types';
+import { BlindnessAcuity, BlindnessAcuityCreation } from '../types/BlindnessAcuity.types';
 
 class BlindnessAcuityModel extends Model<BlindnessAcuity, BlindnessAcuityCreation> {
     declare id_blindness_acuity: number;

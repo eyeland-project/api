@@ -2,7 +2,7 @@
 // imports
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/db';
-import { Task, TaskCreation } from '../types/database/Task.types';
+import { Task, TaskCreation } from '../types/Task.types';
 
 // model class definition
 class TaskModel extends Model<Task, TaskCreation> {

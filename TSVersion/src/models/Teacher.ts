@@ -3,7 +3,7 @@ import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
 import InstitutionModel from './Institution';
 import { comparePassword, hashPassword } from '../utils';
-import { Teacher, TeacherCreation } from '../types/database/Teacher.types';
+import { Teacher, TeacherCreation } from '../types/Teacher.types';
 
 // model class definition
 class TeacherModel extends Model<Teacher, TeacherCreation> {

@@ -2,7 +2,7 @@
 // imports
 import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
-import { Option, OptionCreation } from '../types/database/Option.types';
+import { Option, OptionCreation } from '../types/Option.types';
 import QuestionModel from './Question';
 
 // model class definition

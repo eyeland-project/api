@@ -1,5 +1,5 @@
 import { AnswerModel } from "../models";
-import { Answer } from "../types/database/Answer.types";
+import { Answer } from "../types/Answer.types";
 import { getQuestionByOrder } from "./question.service";
 
 export async function createAnswerOption(

@@ -1,4 +1,5 @@
 import { Model, ForeignKey } from "sequelize";
+import { Power } from "./enums";
 
 export interface TaskAttempt {
     id_task_attempt: number;
@@ -9,7 +10,5 @@ export interface TaskAttempt {
     active: boolean;
     time_stamp: Date;
 };
-
-export type Power = 'super_hearing' | 'memory_pro' | 'super_radar';
 
 export type TaskAttemptCreation = Omit<TaskAttempt, 'id_task_attempt' | 'time_stamp' | 'active'>;

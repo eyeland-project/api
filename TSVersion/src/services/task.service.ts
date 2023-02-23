@@ -2,7 +2,7 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TaskModel } from '../models'
 import { TaskResp } from "../types/responses/students.types";
-import { Task } from "../types/database/Task.types";
+import { Task } from "../types/Task.types";
 import { ApiError } from "../middlewares/handleErrors";
 
 export async function getTaskCount(): Promise<number> {

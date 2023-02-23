@@ -2,11 +2,12 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import { StudentModel } from "../models";
-import { Student, TeamMember } from "../types/database/Student.types";
-import { Team } from "../types/database/Team.types";
-import { BlindnessAcuity } from "../types/database/BlindnessAcuity.types";
-import { Power, TaskAttempt } from "../types/database/TaskAttempt.types";
+import { Student, TeamMember } from "../types/Student.types";
+import { Team } from "../types/Team.types";
+import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
+import { TaskAttempt } from "../types/TaskAttempt.types";
 import { updateStudentCurrTaskAttempt } from "./taskAttempt.service";
+import { Power } from "../types/enums";
 
 export async function getStudentById(id: number): Promise<Student> {
     const student = await StudentModel.findByPk(id);
@@ -44,8 +45,9 @@ export async function assignPowerToStudent(idStudent: number, power: Power | 'au
     const currBlindnessLevels = teammates.map(member => member.blindness_acuity.level);
 
     const getFreePowers = () => {
-        const powers: Power[] = ['memory_pro', 'super_radar', 'super_hearing'];
+        const powers: Power[] = [Power.MemoryPro, Power.SuperRadar, Power.SuperHearing];
         return powers.filter(power => !currPowers.includes(power));
+        // return [Power.memory_pro, Power.super_radar, Power.super_hearing].filter(power => !currPowers.includes(power));
     };
     const updateStudentCurrTaskAttemptTC = (idStudent: number, values: Partial<TaskAttempt>) => { // prevent errors when updating teammate
         try {
@@ -53,13 +55,13 @@ export async function assignPowerToStudent(idStudent: number, power: Power | 'au
         } catch (err) {}
     }
 
-    if (power === 'memory_pro' || power === 'super_radar') {
+    if (power === Power.MemoryPro || power === Power.SuperRadar) {
         updateStudentCurrTaskAttemptTC(idStudent, { power });
         if (currPowers.includes(power)) {
             updateStudentCurrTaskAttemptTC(ids[currPowers.indexOf(power)], { power: getFreePowers()[0] }); // assign free power to teammate with power
         }
-    } else if (power === 'super_hearing') {
-        const withSuperHearingIdx = currPowers.indexOf('super_hearing');
+    } else if (power === Power.SuperHearing) {
+        const withSuperHearingIdx = currPowers.indexOf(Power.SuperHearing);
         if (withSuperHearingIdx === -1) updateStudentCurrTaskAttemptTC(idStudent, { power });
         else {
             if (blindnessLevel >= currBlindnessLevels[withSuperHearingIdx]) {
@@ -70,12 +72,12 @@ export async function assignPowerToStudent(idStudent: number, power: Power | 'au
     } else if (power === 'auto') {
         const randomPowerBetween = (powers: Power[]) => powers[Math.floor(Math.random() * powers.length)];
         if (blindnessLevel !== 0) {
-            const withSuperHearingIdx = currPowers.indexOf('super_hearing');
-            if (withSuperHearingIdx === -1) updateStudentCurrTaskAttemptTC(idStudent, { power: 'super_hearing' });
+            const withSuperHearingIdx = currPowers.indexOf(Power.SuperHearing);
+            if (withSuperHearingIdx === -1) updateStudentCurrTaskAttemptTC(idStudent, { power: Power.SuperHearing });
             else {
                 if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
                     updateStudentCurrTaskAttemptTC(ids[withSuperHearingIdx], { power: getFreePowers()[0] }); // assign free power to teammate with super_hearing
-                    updateStudentCurrTaskAttemptTC(idStudent, { power: 'super_hearing' });
+                    updateStudentCurrTaskAttemptTC(idStudent, { power: Power.SuperHearing });
                 } else {
                     updateStudentCurrTaskAttemptTC(idStudent, { power: randomPowerBetween(getFreePowers()) }); // assign free power to student
                 }
