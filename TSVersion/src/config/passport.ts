@@ -102,11 +102,11 @@ passport.use('jwt-student', new JWTSrategy({
         //     return done(null, false);
         // }
 
-        passport.authenticate('jwt-admin', { session: false }, (err, user, _info) => {
-            if (err) return done(err);
-            if (!user) return done(null, false);
-            done(null, jwt_payload.id ? jwt_payload : false);
-        });
+        // passport.authenticate('jwt-admin', { session: false }, (err, user, _info) => {
+        //     if (err) return done(err);
+        //     if (!user) return done(null, false);
+        //     done(null, jwt_payload.id ? jwt_payload : false);
+        // });
 
         const user = await StudentModel.findByPk(jwt_payload.id);
         if (!user) return done(null, false);
