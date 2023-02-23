@@ -5,7 +5,7 @@ import { Team } from "../types/Team.types";
 import { createTaskAttempt, updateStudentCurrTaskAttempt } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
-import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent } from "./student.service";
+import { assignPowerToStudent, getStudentById, getTeamFromStudent } from "./student.service";
 import { Student, TeamMember } from "../types/Student.types";
 import { Power } from "../types/enums";
 
@@ -15,7 +15,10 @@ export async function getTeamByCode(code: string): Promise<Team> {
     return team;
 }
 
-export async function getTeamMembers(code: string): Promise<TeamMember[]> {
+export async function getStudentsFromTeam(teamInfo: { idTeam?: number, code?: string }): Promise<TeamMember[]> {
+    const { idTeam, code } = teamInfo;
+    if (!idTeam && !code) throw new ApiError('Must provide either idTeam or code', 400);
+    
     interface TeamMemberRaw extends Student {
         blindness_acuity_name: string;
         blindness_acuity_level: number;
@@ -28,7 +31,7 @@ export async function getTeamMembers(code: string): Promise<TeamMember[]> {
         JOIN task_attempt ta ON ta.id_student = s.id_student
         JOIN team t ON t.id_team = ta.id_team
         JOIN blindness_acuity ba ON ba.id_blindness_acuity = s.id_blindness_acuity
-        WHERE t.code = '${code}'
+        WHERE ${idTeam ? `t.id_team = ${idTeam}` : `t.code = '${code}'`}
     `, { type: QueryTypes.SELECT });
     return teamMembers.map(({ blindness_acuity_level, blindness_acuity_name, id_task_attempt, power, ...studentFields }) => ({
         ...studentFields,
@@ -43,8 +46,19 @@ export async function getTeamMembers(code: string): Promise<TeamMember[]> {
     }));
 }
 
-export async function getTeamsFromCourse(idCourse: number): Promise<Team[]> {
-    return await TeamModel.findAll({ where: { id_course: idCourse } });
+export async function getTeamById(idTeam: number): Promise<Team> {
+    const team = await TeamModel.findOne({ where: { id_team: idTeam } });
+    if (!team) throw new ApiError("Team not found", 404);
+    return team;
+}
+
+export async function createTeam(name: string, idCourse: number): Promise<Team> {
+    return await TeamModel.create({ name, id_course: idCourse }); // code is auto-generated; TODO: create again if code already exists?
+}
+
+export async function updateTeam(idTeam: number, fields: Partial<Team>) {
+    if (fields.active === true) throw new ApiError('Cannot re-activate team', 400);
+    await TeamModel.update(fields, { where: { id_team: idTeam } });
 }
 
 export async function addStudentToTeam(idStudent: number, code: string, taskOrder: number) {
@@ -60,7 +74,7 @@ export async function addStudentToTeam(idStudent: number, code: string, taskOrde
     } catch (err) { }
     if (code === codePrevTeam) throw new ApiError('Student is already in this team', 400);
 
-    const teammates = await getTeamMembers(code);
+    const teammates = await getStudentsFromTeam({ code });
     if (teammates.length >= 3) throw new ApiError('Team is full', 400);
 
     try {

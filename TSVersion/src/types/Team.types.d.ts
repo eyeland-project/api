@@ -8,4 +8,4 @@ export interface Team {
     active: boolean;
 };
 
-export type TeamCreation = Omit<Team, 'id_team'>;
+export type TeamCreation = Omit<Team, 'id_team' | 'active'>;

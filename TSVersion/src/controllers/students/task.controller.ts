@@ -26,11 +26,11 @@ export async function root(req: Request, res: Response<TaskResp[]>, next: Functi
 
 export async function getIntro(req: Request<{ taskOrder: number }>, res: Response<TaskIntroResp>, next: Function) {
     try {
-        const { id: idUser } = req.user!;
+        const { id: idStudent } = req.user!;
         const { taskOrder } = req.params;
         
         try {
-            await finishStudentPrevTaskAttempts(idUser); // Finish all previous task attempts (await may not be necessary)
+            await finishStudentPrevTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
         } catch (err) {
             console.error(err);
         }
@@ -52,9 +52,9 @@ export async function getIntro(req: Request<{ taskOrder: number }>, res: Respons
 
 export async function getProgress(req: Request<{ taskOrder: number }>, res: Response<TaskProgressResp>, next: Function) {
     try {
-        const { id: idUser } = req.user!;
+        const { id: idStudent } = req.user!;
         const { taskOrder } = req.params;
-        res.status(200).json(await getStudentTaskProgressByOrder(taskOrder, idUser));
+        res.status(200).json(await getStudentTaskProgressByOrder(taskOrder, idStudent));
     } catch (err) {
         next(err);
     }
@@ -62,8 +62,8 @@ export async function getProgress(req: Request<{ taskOrder: number }>, res: Resp
 
 export async function finishAttempt(req: Request<{ taskOrder: number }>, res: Response, next: Function) {
     try {
-        const { id: idUser } = req.user!;
-        await finishStudentPrevTaskAttempts(idUser);
+        const { id: idStudent } = req.user!;
+        await finishStudentPrevTaskAttempts(idStudent);
         res.status(200).json({ message: 'OK' });
     } catch (err) {
         next(err);

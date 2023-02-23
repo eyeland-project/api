@@ -3,6 +3,7 @@ import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../database/db';
 import { Team, TeamCreation } from '../types/Team.types';
 import CourseModel from './Course';
+import { genTeamCode } from '../utils';
 
 // model class definition
 class TeamModel extends Model<Team, TeamCreation> {
@@ -44,7 +45,12 @@ TeamModel.init({
     sequelize,
     modelName: 'TeamModel',
     tableName: 'team',
-    timestamps: false
+    timestamps: false,
+    hooks: {
+        beforeCreate: async (team: TeamModel) => {
+            team.code = genTeamCode();
+        }
+    },
 });
 
 // associations

@@ -1,4 +1,9 @@
 // API
+// auth
+export interface LoginResp {
+    token: string
+}
+
 // tasks
 export interface TaskResp {
     id: number,

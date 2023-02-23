@@ -9,4 +9,4 @@ export interface Course {
     session: boolean;
 };
 
-export type CourseCreation = Omit<Course, 'id_course'>;
+export type CourseCreation = Omit<Course, 'id_course' | 'session'>;

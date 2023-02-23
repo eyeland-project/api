@@ -51,7 +51,7 @@ export async function getQuestion(req: Request<{ taskOrder: number, questionOrde
 
 export async function answer(req: Request<{ taskOrder: number, questionOrder: number }>, res: Response, next: Function) {
     try {
-        const { id: idUser } = req.user!;
+        const { id: idStudent } = req.user!;
         const { taskOrder, questionOrder } = req.params;
 
         const { type: questionType } = await getQuestionByOrder(taskOrder, 2, questionOrder);
@@ -62,11 +62,11 @@ export async function answer(req: Request<{ taskOrder: number, questionOrder: nu
 
             let idTaskAttempt;
             if (newAttempt) {
-                await finishStudentPrevTaskAttempts(idUser);
+                await finishStudentPrevTaskAttempts(idStudent);
                 const { id_task } = await getTaskByOrder(taskOrder);
-                idTaskAttempt = (await createTaskAttempt(idUser, id_task, null)).id_task_attempt;
+                idTaskAttempt = (await createTaskAttempt(idStudent, id_task, null)).id_task_attempt;
             } else {
-                idTaskAttempt = (await getStudentCurrTaskAttempt(idUser)).id_task_attempt;
+                idTaskAttempt = (await getStudentCurrTaskAttempt(idStudent)).id_task_attempt;
             }
             await createAnswerOption(taskOrder, 3, questionOrder, idOption, answerSeconds, idTaskAttempt);
         } else if (questionType === 'audio') {

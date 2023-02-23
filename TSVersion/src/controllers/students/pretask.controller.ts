@@ -60,18 +60,18 @@ export async function getQuestion(req: Request<{ taskOrder: number, questionOrde
 
 export async function answer(req: Request<{ taskOrder: number, questionOrder: number }>, res: Response, next: Function) {
     try {
-        const { id: idUser } = req.user!;
+        const { id: idStudent } = req.user!;
         const { taskOrder, questionOrder } = req.params;
         const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
         
         if (!idOption) return res.status(400).json({ message: 'Missing idOption' });
         let idTaskAttempt;
         if (newAttempt) {
-            await finishStudentPrevTaskAttempts(idUser);
+            await finishStudentPrevTaskAttempts(idStudent);
             const { id_task } = await getTaskByOrder(taskOrder);
-            idTaskAttempt = (await createTaskAttempt(idUser, id_task, null)).id_task_attempt;
+            idTaskAttempt = (await createTaskAttempt(idStudent, id_task, null)).id_task_attempt;
         } else {
-            idTaskAttempt = (await getStudentCurrTaskAttempt(idUser)).id_task_attempt;
+            idTaskAttempt = (await getStudentCurrTaskAttempt(idStudent)).id_task_attempt;
         }
         await createAnswerOption(taskOrder, 1, questionOrder, idOption, answerSeconds, idTaskAttempt);
         res.status(200).json({ message: `Answered question ${questionOrder} of task ${taskOrder}` });

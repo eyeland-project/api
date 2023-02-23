@@ -1,7 +1,7 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TaskModel } from '../models'
-import { TaskResp } from "../types/responses/students.types";
+import { TaskResp as TaskRespStudent } from "../types/responses/students.types";
 import { Task } from "../types/Task.types";
 import { ApiError } from "../middlewares/handleErrors";
 
@@ -15,7 +15,17 @@ export async function getTaskByOrder(taskOrder: number): Promise<Task> {
     return task;
 }
 
-export async function getTasksFromStudentWithCompleted(idStudent: number): Promise<TaskResp[]> {
+export async function getTasks(): Promise<Task[]> {
+    return await TaskModel.findAll({ order: [['task_order', 'ASC']] });
+}
+
+export async function getTaskById(idTask: number): Promise<Task> {
+    const task = await TaskModel.findOne({ where: { id_task: idTask } });
+    if (!task) throw new ApiError('Task not found', 404);
+    return task;
+}
+
+export async function getTasksFromStudentWithCompleted(idStudent: number): Promise<TaskRespStudent[]> {
     interface TaskWithHighestStage extends Task {
         highest_stage: number;
     }
@@ -34,7 +44,7 @@ export async function getTasksFromStudentWithCompleted(idStudent: number): Promi
         taskOrder: task_order,
         completed: highest_stage === 3, // 3 is the highest stage
         thumbnailUrl: thumbnail_url
-    } as TaskResp));
+    } as TaskRespStudent));
 }
 
 // export async function getAllLinksByOrder(taskOrder: number): Promise<any> {
