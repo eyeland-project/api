@@ -7,7 +7,7 @@ import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
 import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent } from "./student.service";
 import { Student, TeamMember } from "../types/Student.types";
-import { Power } from "../types/TaskAttempt.types";
+import { Power } from "../types/enums";
 
 export async function getTeamByCode(code: string): Promise<Team> {
     const team = await TeamModel.findOne({ where: { code } });

@@ -1,5 +1,3 @@
-
-
 import { Request, Response } from 'express';
 import { assignPowerToStudent, getStudentById, getTeamFromStudent } from '../../services/student.service';
 import { addStudentToTeam, getTeamMembers, removeStudentFromTeam } from '../../services/team.service';
@@ -8,6 +6,7 @@ import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/team.service';
 import { TeamMemberSocket, TeamResp } from '../../types/responses/students.types';
 import { getStudentCurrTaskAttempt } from '../../services/taskAttempt.service';
+import { Power } from '../../types/enums';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     try {
@@ -77,7 +76,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
     try {
         // check if this student had super_hearing to assign it to another student
         const { power } = await getStudentCurrTaskAttempt(idUser);
-        if (power !== 'super_hearing') return; // student doesn't have super_hearing
+        if (power !== Power.SuperHearing) return; // student doesn't have super_hearing
         
         const teammates = (await getTeamMembers(code)).filter(({ id_student }) => id_student !== idUser);
         if (!teammates.length) return; // no teammates left
@@ -88,7 +87,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
 
         const withMaxBlindnessIdx = blindnessLevels.indexOf(maxBlindnessLevel);
         const { id_student: idStudent } = teammates[withMaxBlindnessIdx];
-        assignPowerToStudent(idStudent, 'super_hearing', teammates.filter(({ id_student }) => id_student !== idStudent));
+        assignPowerToStudent(idStudent, Power.SuperHearing, teammates.filter(({ id_student }) => id_student !== idStudent));
     } catch (err) {
         console.log(err);
     }
