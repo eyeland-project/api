@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JWTSrategy, ExtractJwt } from 'passport-jwt';
-import { StudentModel } from '../models';
+import { AdminModel, StudentModel, TeacherModel } from '../models';
 
 // passport setting up
 passport.use('signup', new LocalStrategy({
@@ -39,7 +39,7 @@ passport.use('login', new LocalStrategy({
     }
 }));
 
-passport.use('jwt', new JWTSrategy({
+passport.use('jwt-admin', new JWTSrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET || ' top secret '
 }, async (jwt_payload: { id: number }, done: Function) => {
@@ -50,6 +50,63 @@ passport.use('jwt', new JWTSrategy({
         // if (expirationDate < new Date()) {
         //     return done(null, false);
         // }
+
+        const user = await AdminModel.findByPk(jwt_payload.id);
+        if (!user) return done(null, false);
+
+        done(null, jwt_payload.id ? jwt_payload : false);
+    } catch (error) {
+        // logger.error(error);
+        done(error);
+    }
+}));
+
+passport.use('jwt-professor', new JWTSrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET || ' top secret '
+}, async (jwt_payload: { id: number }, done: Function) => {
+    try {
+        // check if the token has expired
+
+        // const expirationDate = new Date(jwt_payload.exp * 1000);
+        // if (expirationDate < new Date()) {
+        //     return done(null, false);
+        // }
+        
+        passport.authenticate('jwt-admin', { session: false }, (err, user, _info) => {
+            if (err) return done(err);
+            if (!user) return done(null, false);
+            done(null, jwt_payload.id ? jwt_payload : false);
+        });
+
+
+        const user = await TeacherModel.findByPk(jwt_payload.id);
+        if (!user) return done(null, false);
+
+        done(null, jwt_payload.id ? jwt_payload : false);
+    } catch (error) {
+        // logger.error(error);
+        done(error);
+    }
+}));
+
+passport.use('jwt-student', new JWTSrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET || ' top secret '
+}, async (jwt_payload: { id: number }, done: Function) => {
+    try {
+        // check if the token has expired
+
+        // const expirationDate = new Date(jwt_payload.exp * 1000);
+        // if (expirationDate < new Date()) {
+        //     return done(null, false);
+        // }
+
+        // passport.authenticate('jwt-admin', { session: false }, (err, user, _info) => {
+        //     if (err) return done(err);
+        //     if (!user) return done(null, false);
+        //     done(null, jwt_payload.id ? jwt_payload : false);
+        // });
 
         const user = await StudentModel.findByPk(jwt_payload.id);
         if (!user) return done(null, false);

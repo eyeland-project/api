@@ -1,8 +1,9 @@
 import { Express } from 'express';
-import { Socket, Server } from 'socket.io';
+import { Socket, Server as IO } from 'socket.io';
 import { createServer } from 'http';
+import { Server } from 'http';
 
-let io: Server;
+let io: IO;
 
 export const directory = new Map<number, Socket>();
 
@@ -11,9 +12,8 @@ export const NAMESPACES = {
     teachers: '/teachers'
 }
 
-export default function sockets(app: Express) {
-    const server = createServer(app);
-    io = new Server(server, {
+export default function initSocket(server: Server): Server {
+    io = new IO(server, {
         cors: {
             origin: '*',
             methods: ['GET', 'POST']
