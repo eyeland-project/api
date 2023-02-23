@@ -69,7 +69,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/Task"
+                    "$ref": "#/components/schemas/TaskSumm"
                   },
                   "type": "array"
                 }
@@ -81,6 +81,49 @@
           },
           "403": {
             "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/tasks/{idTask}": {
+      "get": {
+        "description": "Get task by id",
+        "tags": [
+          "task"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid idTask"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Task not found"
           },
           "498": {
             "description": "Token expired/invalid"
@@ -145,7 +188,19 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the course created"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid body"
@@ -425,7 +480,19 @@
         },
         "responses": {
           "200": {
-            "description": "Team created successfully"
+            "description": "Team created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the team created"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid idCourse | Invalid body"
@@ -536,52 +603,6 @@
           },
           "400": {
             "description": "Invalid idCourse | Invalid idTeam | Invalid body"
-          },
-          "401": {
-            "description": "Missing authentication"
-          },
-          "403": {
-            "description": "Unauthorized to access this resource"
-          },
-          "498": {
-            "description": "Token expired/invalid"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      },
-      "delete": {
-        "description": "Delete team (make unactive)",
-        "tags": [
-          "team"
-        ],
-        "parameters": [
-          {
-            "name": "idCourse",
-            "in": "path",
-            "description": "ID of the course to return",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "idTeam",
-            "in": "path",
-            "description": "Team id",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "Invalid idCourse | Invalid idTeam"
           },
           "401": {
             "description": "Missing authentication"
@@ -743,6 +764,30 @@
   },
   "components": {
     "schemas": {
+      "TaskSumm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "taskOrder": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The number of the task (1, 2, 3, 4, 5)"
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "description": "The url of the thumbnail of the task"
+          }
+        }
+      },
       "Task": {
         "type": "object",
         "properties": {
@@ -911,6 +956,11 @@
         "properties": {
           "name": {
             "type": "string"
+          },
+          "active": {
+            "type": "boolean",
+            "enum": [false],
+            "description": "Deactivate the team; cannot be set to true"
           }
         }
       },
