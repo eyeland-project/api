@@ -4,7 +4,10 @@ import {
     getCourses as getCoursesServ,
     createCourse as createCourseServ,
     updateCourse as updateCourseServ,
-    deleteCourse as deleteCourseServ
+    deleteCourse as deleteCourseServ,
+    createCourseSession,
+    endCourseSession,
+    startCourseSession
 } from "../../services/course.service";
 import { CourseResp, CourseSummResp, ElementCreatedResp } from "../../types/responses/teachers.types";
 import { CourseCreateReq, CourseUpdateReq } from "../../types/requests/teachers.types";
@@ -53,18 +56,34 @@ export async function createCourse(req: Request, res: Response<ElementCreatedRes
 export async function updateCourse(req: Request<{ idCourse: number }>, res: Response, next: Function) {
     const { idCourse } = req.params;
     const fields = req.body as Partial<CourseUpdateReq>;
-    try {
-        await updateCourseServ(idCourse, fields);
+    const { session } = fields;
+    if (session !== undefined) delete (fields.session);
+    
+    if (Object.keys(fields).length) { // if there are fields to update after deleting session
+        try {
+            await updateCourseServ(idCourse, fields);
+            res.status(200).json({ message: 'Course updated successfully' });
+        } catch (err) {
+            next(err);
+        }
+    } else {
         res.status(200).json({ message: 'Course updated successfully' });
-        if (fields.session !== undefined) {
-            if (fields.session) {
-                // await startCourseSession(idCourse);
-            } else {
-                // await endCourseSession(idCourse);
+    }
+    
+    if (session !== undefined) { // if there is a session to update
+        if (session) {
+            try {
+                await createCourseSession(idCourse);
+            } catch (err) {
+                console.log('Error creating course session', err);
+            }
+        } else {
+            try {
+                await endCourseSession(idCourse);
+            } catch (err) {
+                console.log('Error ending course session', err);
             }
         }
-    } catch (err) {
-        next(err);
     }
 }
 
@@ -73,6 +92,16 @@ export async function deleteCourse(req: Request<{ idCourse: number }>, res: Resp
     try {
         await deleteCourseServ(idCourse);
         res.status(200).json({ message: 'Course deleted successfully' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function startSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
+    const { idCourse } = req.params;
+    try {
+        await startCourseSession(idCourse);
+        res.status(200).json({ message: 'Session started successfully' });
     } catch (err) {
         next(err);
     }

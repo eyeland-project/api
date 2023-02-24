@@ -355,7 +355,7 @@
         }
       }
     },
-    "/courses/{idCourse}/session/start": {
+    "/courses/{idCourse}/startSession": {
       "post": {
         "deprecated": true,
         "description": "Start current session",
