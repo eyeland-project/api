@@ -14,6 +14,10 @@ class TeacherModel extends Model<Teacher, TeacherCreation> {
     declare email: string;
     declare username: string;
     declare password: string;
+    comparePassword = (password: string): boolean => (
+        // comparePassword(password, this.password)
+        password === this.password // temporary
+    )
 }
 
 // model initialization
@@ -48,6 +52,9 @@ TeacherModel.init({
     password: {
         type: DataTypes.CHAR(60),
         allowNull: false
+    },
+    comparePassword: {
+        type: DataTypes.VIRTUAL
     }
 }, {
     sequelize,
@@ -64,10 +71,10 @@ TeacherModel.init({
 // model associations
 // teacher and institution
 InstitutionModel.hasMany(TeacherModel, {
-    foreignKey: 'id_institucion'
+    foreignKey: 'id_institution'
 });
 TeacherModel.belongsTo(InstitutionModel, {
-    foreignKey: 'id_institucion'
+    foreignKey: 'id_institution'
 });
 
 export default TeacherModel;

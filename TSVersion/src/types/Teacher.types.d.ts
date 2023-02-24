@@ -8,6 +8,7 @@ export interface Teacher {
     email: string;
     username: string;
     password: string;
+    comparePassword: (password: string) => boolean;
 };
 
 export type TeacherCreation = Omit<Teacher, 'id_teacher'>;

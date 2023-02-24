@@ -13,8 +13,9 @@ class AdminModel extends Model<Admin, AdminCreation> {
     declare email: string;
     declare username: string;
     declare password: string;
-    comparePassword: ((password: string) => boolean) = password => (
-        comparePassword(password, this.password)
+    comparePassword = (password: string): boolean => (
+        // comparePassword(password, this.password)
+        password === this.password // temporary
     )
 }
 
@@ -48,6 +49,9 @@ AdminModel.init({
         // set(value: string) {
         //     this.setDataValue('password', hashPassword(value));
         // }
+    },
+    comparePassword: {
+        type: DataTypes.VIRTUAL
     }
 }, {
     sequelize,

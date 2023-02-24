@@ -1,10 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import {
-    answer,
-    getQuestion,
-    root
-} from '../../../../controllers/students/duringtask.controller';
+import { answer, getQuestion, root } from '../../../../controllers/students/duringtask.controller';
 
 const auth = passport.authenticate('jwt-student', { session: false });
 

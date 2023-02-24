@@ -1,11 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import {
-    root,
-    getQuestion,
-    answer,
-    getLink,
-} from '../../../../controllers/students/pretask.controller';
+import { root, getQuestion, answer, getLink } from '../../../../controllers/students/pretask.controller';
 
 const auth = passport.authenticate('jwt-student', { session: false });
 

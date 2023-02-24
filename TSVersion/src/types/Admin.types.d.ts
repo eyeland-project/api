@@ -7,6 +7,7 @@ export interface Admin {
     email: string;
     username: string;
     password: string;
+    comparePassword: (password: string) => boolean;
 };
 
 export type AdminCreation = Omit<Admin, 'id_admin'>;

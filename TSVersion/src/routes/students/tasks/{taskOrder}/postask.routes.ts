@@ -1,9 +1,5 @@
 import { RequestHandler, Router } from "express";
-import {
-    answer,
-    getQuestion,
-    root
-} from '../../../../controllers/students/postask.controller';
+import { answer, getQuestion, root } from '../../../../controllers/students/postask.controller';
 import passport from "passport";
 
 const auth: RequestHandler = passport.authenticate('jwt-student', { session: false });
