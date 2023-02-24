@@ -7,8 +7,8 @@ const auth = passport.authenticate('jwt-teacher', { session: false });
 const router = Router({ mergeParams: true });
 router.use(auth);
 
-router.get('/:idCourse', getCourse);
-router.put('/:idCourse', updateCourse);
-router.delete('/:idCourse', deleteCourse);
+router.get('/', getCourse);
+router.put('/', updateCourse);
+router.delete('/', deleteCourse);
 
 export default router;
