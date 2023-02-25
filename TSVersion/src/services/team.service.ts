@@ -5,7 +5,7 @@ import { Team } from "../types/Team.types";
 import { createTaskAttempt, updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
-import { assignPowerToStudent, getStudentById, getTeamFromStudent } from "./student.service";
+import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent } from "./student.service";
 import { Student, TeamMember } from "../types/Student.types";
 import { Power } from "../types/enums";
 
@@ -80,14 +80,13 @@ export async function addStudentToTeam(idStudent: number, code: string, taskOrde
     try {
         await updateStudCurrTaskAttempt(idStudent, { id_team });
     } catch (err) {
-        console.log(err);
-
         console.log('Student has no task attempt, creating one...');
         const { id_task } = await getTaskByOrder(taskOrder);
         await createTaskAttempt(idStudent, id_task, id_team);
         console.log('Task attempt created');
     }
-    assignPowerToStudent(idStudent, 'auto', teammates);
+    const blindnessLevel = (await getBlindnessAcFromStudent(idStudent)).level;
+    if (blindnessLevel !== 0) assignPowerToStudent(idStudent, 'auto', teammates, blindnessLevel, false); // only allow conflicts if student requests for a power
 }
 
 export async function removeStudentFromTeam(idStudent: number) {

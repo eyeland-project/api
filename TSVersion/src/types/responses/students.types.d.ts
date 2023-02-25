@@ -1,4 +1,3 @@
-// API
 // auth
 export interface LoginResp {
     token: string
@@ -113,14 +112,12 @@ export interface PostaskQuestionResp {
 export interface TeamResp {
     id: number,
     code: string,
-    name: string
-}
-
-// SOCKETS
-export interface TeamMemberSocket {
-    id: number,
-    first_name: string,
-    last_name: string,
-    username: string,
-    power: Power
+    name: string,
+    students: {
+        id: number,
+        first_name: string,
+        last_name: string,
+        username: string,
+        power: Power        
+    }[]
 }

@@ -8,7 +8,6 @@ import {
 } from "../../services/team.service";
 import { TeamResp, TeamSummResp, ElementCreatedResp } from "../../types/responses/teachers.types";
 import { TeamCreateReq, TeamUpdateReq } from "../../types/requests/teachers.types";
-import { getTeacherById } from "../../services/teacher.service";
 import { TeamMember } from "../../types/Student.types";
 
 export async function getTeams(req: Request<{ idCourse: number }>, res: Response<TeamSummResp[]>, next: Function) {

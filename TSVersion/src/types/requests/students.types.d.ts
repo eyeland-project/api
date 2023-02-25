@@ -1,7 +1,14 @@
+import { Power } from "../enums"
+
 // auth
 export interface LoginTeamReq {
     code: string,
     taskOrder: number
+}
+
+// teams
+export interface PowerReq {
+    power: Power
 }
 
 // answers
