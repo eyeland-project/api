@@ -32,7 +32,7 @@ interface ProgressBody {
 export interface TaskProgressResp {
     pretask: ProgressBody,
     duringtask: ProgressBody,
-    quiz: ProgressBody
+    postask: ProgressBody
 }
 
 // pretasks

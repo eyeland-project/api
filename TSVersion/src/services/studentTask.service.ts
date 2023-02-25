@@ -22,7 +22,7 @@ export async function getStudentTaskProgressByOrder(taskOrder: number, idStudent
             completed: highestStage >= 2,
             blocked: highestStage < 1
         },
-        quiz: {
+        postask: {
             completed: highestStage >= 3,
             blocked: highestStage < 2
         }
