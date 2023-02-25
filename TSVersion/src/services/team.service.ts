@@ -75,24 +75,3 @@ export async function addStudentToTeam(idStudent: number, idTeam: number, taskOr
 export async function removeStudFromTeam(idStudent: number) {
     await updateStudCurrTaskAttempt(idStudent, { id_team: null });
 }
-
-export async function notifyStudLeftTeam(idStudent: number, idTeam: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    nsp.to('t' + idTeam).emit('session:student:left', idStudent);
-}
-
-export async function notifyStudJoinedTeam(student: Student, power: Power | null, idTeam: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    const { id_student, first_name, last_name, username } = student;
-    nsp.to('t' + idTeam).emit('session:student:joined', {
-        id: id_student,
-        first_name,
-        last_name,
-        username,
-        power
-    });
-}

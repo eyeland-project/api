@@ -1,3 +1,4 @@
+// API
 // auth
 export interface LoginResp {
     token: string
@@ -115,9 +116,23 @@ export interface TeamResp {
     name: string,
     students: {
         id: number,
-        first_name: string,
-        last_name: string,
+        firstName: string,
+        lastName: string,
         username: string,
-        power: Power        
+        power: Power
     }[]
+}
+
+// SOCKETS
+export interface StudentSocket {
+    id: number,
+    firstName: string,
+    lastName: string,
+    username: string,
+    power: Power
+}
+
+export interface TeamSocket {
+    id: number,
+    students: StudentSocket[]
 }

@@ -844,7 +844,6 @@
     },
     "/teams": {
       "get": {
-        "deprecated": true,
         "description": "Get teams from student's course",
         "tags": [
           "team"
@@ -947,7 +946,6 @@
     },
     "/teams/current": {
       "get": {
-        "deprecated": true,
         "description": "Get current team",
         "tags": [
           "team"
