@@ -357,7 +357,6 @@
     },
     "/courses/{idCourse}/startSession": {
       "post": {
-        "deprecated": true,
         "description": "Start current session",
         "tags": [
           "session"

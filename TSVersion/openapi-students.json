@@ -857,7 +857,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/TeamSumm"
+                    "$ref": "#/components/schemas/Team"
                   }
                 }
               }
@@ -935,6 +935,37 @@
           },
           "409": {
             "description": "Student doesn't belong to any team"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/teams/power": {
+      "post": {
+        "description": "Request power in current team",
+        "tags": [
+          "team"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/RequestPower"
+        },
+        "responses": {
+          "200": {
+            "description": "Power assigned successfully"
+          },
+          "400": {
+            "description": "Invalid body | Student doesn't belong to any team"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
           },
           "498": {
             "description": "Token expired/invalid"
@@ -1412,42 +1443,6 @@
           }
         }
       },
-      "TeamSumm": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "format": "int64"
-          },
-          "code": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "students": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "number",
-                  "format": "int64"
-                },
-                "firstName": {
-                  "type": "string"
-                },
-                "lastName": {
-                  "type": "string"
-                },
-                "username": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
       "JoinTeam": {
         "type": "object",
         "properties": {
@@ -1457,6 +1452,19 @@
           "taskOrder": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "RequestPower": {
+        "type": "object",
+        "properties": {
+          "power": {
+            "type": "string",
+            "enum": [
+              "super_hearing",
+              "memory_pro",
+              "super_radar"
+            ]
           }
         }
       },
@@ -1513,6 +1521,17 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/JoinTeam"
+            }
+          }
+        }
+      },
+      "RequestPower": {
+        "description": "The power to request",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RequestPower"
             }
           }
         }
