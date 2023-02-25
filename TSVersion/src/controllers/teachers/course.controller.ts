@@ -56,34 +56,13 @@ export async function createCourse(req: Request, res: Response<ElementCreatedRes
 export async function updateCourse(req: Request<{ idCourse: number }>, res: Response, next: Function) {
     const { idCourse } = req.params;
     const fields = req.body as Partial<CourseUpdateReq>;
-    const { session } = fields;
-    if (session !== undefined) delete (fields.session);
-    
-    if (Object.keys(fields).length) { // if there are fields to update after deleting session
-        try {
-            await updateCourseServ(idCourse, fields);
-            res.status(200).json({ message: 'Course updated successfully' });
-        } catch (err) {
-            next(err);
-        }
-    } else {
+
+    if (!Object.keys(fields).length) return res.status(400).json({ message: 'No fields to update' });
+    try {
+        await updateCourseServ(idCourse, fields);
         res.status(200).json({ message: 'Course updated successfully' });
-    }
-    
-    if (session !== undefined) { // if there is a session to update
-        if (session) {
-            try {
-                await createCourseSession(idCourse);
-            } catch (err) {
-                console.log('Error creating course session', err);
-            }
-        } else {
-            try {
-                await endCourseSession(idCourse);
-            } catch (err) {
-                console.log('Error ending course session', err);
-            }
-        }
+    } catch (err) {
+        next(err);
     }
 }
 
@@ -102,6 +81,26 @@ export async function startSession(req: Request<{ idCourse: number }>, res: Resp
     try {
         await startCourseSession(idCourse);
         res.status(200).json({ message: 'Session started successfully' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function createSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
+    const { idCourse } = req.params;
+    try {
+        await createCourseSession(idCourse);
+        res.status(201).json({ message: 'Session created successfully' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function endSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
+    const { idCourse } = req.params;
+    try {
+        await endCourseSession(idCourse);
+        res.status(200).json({ message: 'Session ended successfully' });
     } catch (err) {
         next(err);
     }

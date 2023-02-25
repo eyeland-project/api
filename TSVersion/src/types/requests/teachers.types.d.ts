@@ -6,8 +6,7 @@ export interface CourseCreateReq {
 
 export interface CourseUpdateReq {
     name: string,
-    description: string,
-    session: boolean
+    description: string
 }
 
 // teams

@@ -5,8 +5,7 @@ import { CourseModel, TeamModel } from "../models";
 import { Course } from "../types/Course.types";
 import { Team } from "../types/Team.types";
 import { TeamSummResp } from "../types/responses/teachers.types";
-import { of } from "../listeners/sockets";
-import { Namespace } from "../listeners/state";
+import { Namespace, of } from "../listeners/sockets";
 
 // COURSE CRUD
 // get many
@@ -53,30 +52,33 @@ export async function getTeamsFromCourseWithNumStud(idCourse: number, active: bo
 }
 
 export async function createCourseSession(idCourse: number) {
-    const { session } = await getCourseById(idCourse);
-    if (session) throw new ApiError("Course already has an active session", 400);
-    await updateCourse(idCourse, { session: true });
-    
     const nsp = of(Namespace.STUDENTS);
     if (!nsp) throw new ApiError("Namespace not found", 500);
-    nsp.emit('session:teacher:create');
+    
+    const { session, id_course } = await getCourseById(idCourse);
+    if (session) throw new ApiError("Course already has an active session", 400);
+    
+    await updateCourse(idCourse, { session: true });
+    nsp.to('c' + id_course).emit('session:teacher:create');
 }
 
 export async function endCourseSession(idCourse: number) {
-    const { session } = await getCourseById(idCourse);
-    if (!session) throw new ApiError("Course has no active session", 400);
-    await updateCourse(idCourse, { session: false });
-    
     const nsp = of(Namespace.STUDENTS);
     if (!nsp) throw new ApiError("Namespace not found", 500);
-    nsp.emit('session:teacher:end');
+    
+    const { session, id_course } = await getCourseById(idCourse);
+    if (!session) throw new ApiError("Course has no active session", 400);
+    
+    await updateCourse(idCourse, { session: false });
+    nsp.to('c' + id_course).emit('session:teacher:end');
 }
 
 export async function startCourseSession(idCourse: number) {
-    const { session } = await getCourseById(idCourse);
-    if (!session) throw new ApiError("Course has no active session", 400);
-    
     const nsp = of(Namespace.STUDENTS);
     if (!nsp) throw new ApiError("Namespace not found", 500);
-    nsp.emit('session:teacher:start');
+
+    const { session, id_course } = await getCourseById(idCourse);
+    if (!session) throw new ApiError("Course has no active session", 400);
+    
+    nsp.to('c' + id_course).emit('session:teacher:start');
 }

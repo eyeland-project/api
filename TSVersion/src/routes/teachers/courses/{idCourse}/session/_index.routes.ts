@@ -1,14 +1,14 @@
 import { Router } from "express";
 import passport from "passport";
-import { deleteCourse, getCourse, updateCourse } from "../../../../controllers/teachers/course.controller";
+import { createSession, startSession, endSession } from "../../../../../controllers/teachers/course.controller";
 
 const auth = passport.authenticate('jwt-teacher', { session: false });
 
 const router = Router({ mergeParams: true });
 router.use(auth);
 
-router.get('/', getCourse);
-router.put('/', updateCourse);
-router.delete('/', deleteCourse);
+router.post('/', createSession);
+router.post('/start', startSession);
+router.put('/end', endSession);
 
 export default router;

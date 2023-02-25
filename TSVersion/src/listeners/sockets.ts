@@ -1,10 +1,14 @@
 import { Server as IO } from 'socket.io';
 import { Server } from 'http';
-import { onStudentConnection } from './namespaces/students';
-import { onTeacherConnection } from './namespaces/teachers';
-import { Namespace } from './state';
+import { onConnection as onStudentConnection } from './namespaces/students';
+import { onConnection as onTeacherConnection } from './namespaces/teachers';
 
 let io: IO;
+
+export enum Namespace {
+    STUDENTS = '/students',
+    TEACHERS = '/teachers'
+}
 
 export default function initSocket(server: Server): Server {
     io = new IO(server, {

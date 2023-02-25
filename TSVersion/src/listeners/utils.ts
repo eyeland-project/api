@@ -25,7 +25,3 @@ export function deleteSocket(socket: Socket, directory: Map<number, Socket>): bo
     }
     return false;
 }
-
-export function validConnection(id: number, directory: Map<number, Socket>): boolean {
-    return !directory.has(id);
-}

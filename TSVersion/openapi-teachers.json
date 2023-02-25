@@ -355,7 +355,49 @@
         }
       }
     },
-    "/courses/{idCourse}/startSession": {
+    "/courses/{idCourse}/session": {
+      "post": {
+        "description": "Create session",
+        "tags": [
+          "session"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid idCourse | Session already active"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Course not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}/session/start": {
       "post": {
         "description": "Start current session",
         "tags": [
@@ -377,7 +419,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "Invalid idCourse"
+            "description": "Invalid idCourse | No session active"
           },
           "401": {
             "description": "Missing authentication"
@@ -388,8 +430,47 @@
           "404": {
             "description": "Course not found"
           },
-          "409": {
-            "description": "No session active"
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/courses/{idCourse}/session/end": {
+      "put": {
+        "description": "End current session",
+        "tags": [
+          "session"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid idCourse | No session active"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Course not found"
           },
           "498": {
             "description": "Token expired/invalid"
@@ -866,10 +947,6 @@
           },
           "description": {
             "type": "string"
-          },
-          "session": {
-            "type": "boolean",
-            "description": "If true, create session; if false, finish the current session"
           }
         }
       },

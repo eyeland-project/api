@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { assignPowerToStudent, getStudentById, getTeamFromStudent, getTeammates } from '../../services/student.service';
-import { addStudentToTeam, getMembersFromTeam, removeStudentFromTeam } from '../../services/team.service';
+import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent, getTeammates } from '../../services/student.service';
+import { addStudentToTeam, getMembersFromTeam, getTeamByCode, removeStudFromTeam, notifyStudLeftTeam, notifyStudJoinedTeam } from '../../services/team.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/course.service';
@@ -11,7 +11,7 @@ import { PowerReq } from "../../types/requests/students.types";
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     try {
-        const {id: idUser} = req.user!;
+        const { id: idUser } = req.user!;
         const { id_course } = await getStudentById(idUser);
         const teams = await getTeamsFromCourse(id_course);
         res.status(200).json([]);
@@ -32,30 +32,40 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
     if (!code || !taskOrder) return next(new ApiError('Missing code or taskOrder', 400));
     let prevTeam;
     try {
-        prevTeam = await getTeamFromStudent(idStudent); // check if student is already in a team; if not, throw error
+        prevTeam = await getTeamFromStudent(idStudent); // check if student is already in a team
     } catch (err) { } // no team found for student (expected)
 
     try {
-        await addStudentToTeam(idStudent, code, taskOrder);
+        const { id_team: idTeam, active: teamActive, id_course: teamCourse } = await getTeamByCode(code);
+        if (idTeam === prevTeam?.id_team) throw new ApiError('Student is already in this team', 400);
+
+        const student = await getStudentById(idStudent);
+        if (student.id_course !== teamCourse) throw new ApiError('Student and team are not in the same course', 400);
+        if (!teamActive) throw new ApiError('Team is not active', 400);
+
+        const teammates = await getMembersFromTeam({ idTeam });
+        if (teammates.length >= 3) throw new ApiError('Team is full', 400);
+
+        await addStudentToTeam(idStudent, idTeam, taskOrder);
         res.status(200).json({ message: 'Done' });
+
+        try {
+            getBlindnessAcFromStudent(idStudent).then(async ({ level }) => {
+                const power = level !== 0
+                    ? await assignPowerToStudent(idStudent, "auto", teammates, level, false)  // only allow conflicts if student requests for a power
+                    : null;
+                // 
+                notifyStudJoinedTeam(student, power, idTeam).catch(err => console.log(err));
+            }).catch(err => console.log(err));
+
+            if (prevTeam) { // notify previous team that student left
+                notifyStudLeftTeam(idStudent, prevTeam.id_team).catch(err => console.log(err));
+            }
+        } catch (err) {
+            console.log(err);
+        }
     } catch (err) {
         next(err);
-    }
-
-    try {
-        if (prevTeam) {
-            // TODO: send notification to old team
-        }
-        const members = (await getMembersFromTeam({ code })).map(({
-            id_student: id, first_name, last_name, username, task_attempt: { power }
-        }) => ({
-            id, first_name, last_name, username, power
-        }));
-        // console.log('members', members);
-        
-        // TODO: send notification to new team
-    } catch (err) {
-        console.log(err);
     }
 }
 
@@ -66,23 +76,23 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
     try {
         idTeam = (await getTeamFromStudent(idStudent)).id_team; // check if student is already in a team
     } catch (err) { }
-    
+
     try {
-        await removeStudentFromTeam(idStudent);
+        await removeStudFromTeam(idStudent);
         res.status(200).json({ message: 'Done' });
     } catch (err) {
         next(err);
     }
-    
+
     if (!idTeam) return;
     try {
         // check if this student had super_hearing to assign it to another student
         const { power } = await getStudCurrTaskAttempt(idStudent);
         if (power !== Power.SuperHearing) return; // student doesn't have super_hearing
-        
+
         const teammates = await getTeammates(idStudent);
         if (!teammates.length) return; // no teammates left
-        
+
         const blindnessLevels = teammates.map(({ blindness_acuity: { level } }) => level);
         const maxBlindnessLevel = Math.max(...blindnessLevels);
         if (maxBlindnessLevel === 0) return; // no teammates with blindness

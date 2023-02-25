@@ -5,9 +5,9 @@ import { Team } from "../types/Team.types";
 import { createTaskAttempt, updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
-import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent } from "./student.service";
 import { Student, TeamMember } from "../types/Student.types";
 import { Power } from "../types/enums";
+import { Namespace, of } from "../listeners/sockets";
 
 export async function getTeamByCode(code: string): Promise<Team> {
     const team = await TeamModel.findOne({ where: { code } });
@@ -61,34 +61,38 @@ export async function updateTeam(idTeam: number, fields: Partial<Team>) {
     await TeamModel.update(fields, { where: { id_team: idTeam } });
 }
 
-export async function addStudentToTeam(idStudent: number, code: string, taskOrder: number) {
-    const { id_course: studentCourse } = await getStudentById(idStudent);
-    const { id_team, active: teamActive, id_course: teamCourse } = await getTeamByCode(code);
-
-    if (studentCourse !== teamCourse) throw new ApiError('Student and team are not in the same course', 400);
-    if (!teamActive) throw new ApiError('Team is not active', 400);
-
-    let codePrevTeam;
+export async function addStudentToTeam(idStudent: number, idTeam: number, taskOrder: number) {
     try {
-        codePrevTeam = (await getTeamFromStudent(idStudent)).code;
-    } catch (err) { }
-    if (code === codePrevTeam) throw new ApiError('Student is already in this team', 400);
-
-    const teammates = await getMembersFromTeam({ code });
-    if (teammates.length >= 3) throw new ApiError('Team is full', 400);
-
-    try {
-        await updateStudCurrTaskAttempt(idStudent, { id_team });
+        await updateStudCurrTaskAttempt(idStudent, { id_team: idTeam });
     } catch (err) {
         console.log('Student has no task attempt, creating one...');
         const { id_task } = await getTaskByOrder(taskOrder);
-        await createTaskAttempt(idStudent, id_task, id_team);
+        await createTaskAttempt(idStudent, id_task, idTeam);
         console.log('Task attempt created');
     }
-    const blindnessLevel = (await getBlindnessAcFromStudent(idStudent)).level;
-    if (blindnessLevel !== 0) assignPowerToStudent(idStudent, 'auto', teammates, blindnessLevel, false); // only allow conflicts if student requests for a power
 }
 
-export async function removeStudentFromTeam(idStudent: number) {
+export async function removeStudFromTeam(idStudent: number) {
     await updateStudCurrTaskAttempt(idStudent, { id_team: null });
+}
+
+export async function notifyStudLeftTeam(idStudent: number, idTeam: number) {
+    const nsp = of(Namespace.STUDENTS);
+    if (!nsp) throw new ApiError("Namespace not found", 500);
+
+    nsp.to('t' + idTeam).emit('session:student:left', idStudent);
+}
+
+export async function notifyStudJoinedTeam(student: Student, power: Power | null, idTeam: number) {
+    const nsp = of(Namespace.STUDENTS);
+    if (!nsp) throw new ApiError("Namespace not found", 500);
+
+    const { id_student, first_name, last_name, username } = student;
+    nsp.to('t' + idTeam).emit('session:student:joined', {
+        id: id_student,
+        first_name,
+        last_name,
+        username,
+        power
+    });
 }

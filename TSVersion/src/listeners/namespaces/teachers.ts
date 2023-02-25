@@ -1,8 +1,9 @@
 import { Socket } from "socket.io";
-import { deleteSocket, printDirectory, validConnection } from "../utils";
-import { dirTeachers } from "../state";
+import { deleteSocket, printDirectory } from "../utils";
 
-export function onTeacherConnection(socket: Socket) {
+export const directory = new Map<number, Socket>();
+
+export function onConnection(socket: Socket) {
     console.log('S: New teacher connection', socket.id);
 
     // EVENTS
@@ -12,22 +13,26 @@ export function onTeacherConnection(socket: Socket) {
     // FUNCTIONS
     function onId(id: number) {
         console.log('S: teacher id', id);
-        if (!validConnection(id, dirTeachers)) {
+        if (!validConnection(id)) {
             console.log('S: teacher invalid connection', socket.id);
             socket.disconnect();
             return;
         }
-        dirTeachers.set(id, socket);
+        directory.set(id, socket);
         printTeachersDir();
     }
 
     function onDisconnect() {
         console.log('S: teacher disconnected', socket.id);
-        deleteSocket(socket, dirTeachers);
+        deleteSocket(socket, directory);
         printTeachersDir();
     }
 }
 
 function printTeachersDir() {
-    printDirectory(dirTeachers, 'teachers');
+    printDirectory(directory, 'teachers');
+}
+
+function validConnection(id: number): boolean {
+    return !directory.has(id);
 }
