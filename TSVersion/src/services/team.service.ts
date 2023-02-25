@@ -15,7 +15,7 @@ export async function getTeamByCode(code: string): Promise<Team> {
     return team;
 }
 
-export async function getStudentsFromTeam(teamInfo: { idTeam?: number, code?: string }): Promise<TeamMember[]> {
+export async function getMembersFromTeam(teamInfo: { idTeam?: number, code?: string }): Promise<TeamMember[]> {
     const { idTeam, code } = teamInfo;
     if (!idTeam && !code) throw new ApiError('Must provide either idTeam or code', 400);
     
@@ -74,7 +74,7 @@ export async function addStudentToTeam(idStudent: number, code: string, taskOrde
     } catch (err) { }
     if (code === codePrevTeam) throw new ApiError('Student is already in this team', 400);
 
-    const teammates = await getStudentsFromTeam({ code });
+    const teammates = await getMembersFromTeam({ code });
     if (teammates.length >= 3) throw new ApiError('Team is full', 400);
 
     try {

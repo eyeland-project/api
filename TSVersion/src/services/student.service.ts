@@ -8,7 +8,7 @@ import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import { TaskAttempt } from "../types/TaskAttempt.types";
 import { updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { Power } from "../types/enums";
-import { getStudentsFromTeam } from "./team.service";
+import { getMembersFromTeam } from "./team.service";
 
 export async function getStudentById(id: number): Promise<Student> {
     const student = await StudentModel.findByPk(id);
@@ -105,5 +105,5 @@ export async function getTeammates(idStudent: number, teamInfo?: { idTeam?: numb
         const { id_team: idTeam } = await getTeamFromStudent(idStudent);
         teamInfo = { idTeam };
     }
-    return (await getStudentsFromTeam(teamInfo)).filter(({ id_student }) => id_student !== idStudent);
+    return (await getMembersFromTeam(teamInfo)).filter(({ id_student }) => id_student !== idStudent);
 }

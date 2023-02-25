@@ -3,7 +3,7 @@ import { getTeamsFromCourseWithNumStud } from "../../services/course.service";
 import {
     createTeam as createTeamServ,
     getTeamById,
-    getStudentsFromTeam,
+    getMembersFromTeam,
     updateTeam as updateTeamServ
 } from "../../services/team.service";
 import { TeamResp, TeamSummResp, ElementCreatedResp } from "../../types/responses/teachers.types";
@@ -28,7 +28,7 @@ export async function getTeam(req: Request<{ idTeam: number }>, res: Response<Te
         const { id_team, name, active, code } = team;
         let students: TeamMember[];
         try {
-            students = await getStudentsFromTeam({ idTeam: id_team });
+            students = await getMembersFromTeam({ idTeam: id_team });
         } catch (err) {
             console.log(err);
             students = [];

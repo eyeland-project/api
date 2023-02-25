@@ -720,7 +720,7 @@ INSERT INTO institution (id_institution, name, nit, address, city, country, phon
 INSERT INTO teacher (id_teacher, id_institution, first_name, last_name, email, username, password) VALUES (1, 1, 'Profesor', 'Prueba', 'teacher@test.com', 'teacher', 'teacher');
 
 -- INSERT INTO course
-INSERT INTO course (id_course, id_institution, id_teacher, name, description, session) VALUES (1, 1, 1, 'Curso de prueba', 'Curso de prueba para la aplicación', TRUE);
+INSERT INTO course (id_course, id_institution, id_teacher, name, description, session) VALUES (1, 1, 1, 'Curso de prueba', 'Curso de prueba para la aplicación', FALSE);
 
 -- INSERT INTO student
 INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, email, username, password) VALUES (1, 1, 'Estudiante1', 'Prueba', 'student1@test.com', 'student1', 'pass123');

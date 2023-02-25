@@ -945,7 +945,46 @@
         }
       }
     },
-    "/teams/power": {
+    "/teams/current": {
+      "get": {
+        "deprecated": true,
+        "description": "Get current team",
+        "tags": [
+          "team"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Team"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Student doesn't belong to any team"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/teams/current/req-power": {
       "post": {
         "description": "Request power in current team",
         "tags": [
@@ -976,35 +1015,24 @@
         }
       }
     },
-    "/teams/current": {
-      "get": {
-        "deprecated": true,
-        "description": "Get current team",
+    "/teams/current/ready": {
+      "post": {
+        "description": "Be ready to start DuringTask",
         "tags": [
           "team"
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Team"
-                }
-              }
-            }
+            "description": "Ok"
           },
           "400": {
-            "description": "Bad request"
+            "description": "Student doesn't belong to any team | No power assigned"
           },
           "401": {
             "description": "Missing authentication"
           },
           "403": {
             "description": "Unauthorized to access this resource"
-          },
-          "404": {
-            "description": "Student doesn't belong to any team"
           },
           "498": {
             "description": "Token expired/invalid"

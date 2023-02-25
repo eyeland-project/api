@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { assignPowerToStudent, getStudentById, getTeamFromStudent, getTeammates } from '../../services/student.service';
-import { addStudentToTeam, getStudentsFromTeam, removeStudentFromTeam } from '../../services/team.service';
+import { addStudentToTeam, getMembersFromTeam, removeStudentFromTeam } from '../../services/team.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse } from '../../services/course.service';
@@ -46,7 +46,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
         if (prevTeam) {
             // TODO: send notification to old team
         }
-        const members = (await getStudentsFromTeam({ code })).map(({
+        const members = (await getMembersFromTeam({ code })).map(({
             id_student: id, first_name, last_name, username, task_attempt: { power }
         }) => ({
             id, first_name, last_name, username, power
@@ -102,6 +102,17 @@ export async function reqPower(req: Request, res: Response, next: Function) {
         const teammates = await getTeammates(idStudent);
         await assignPowerToStudent(idStudent, power, teammates);
         res.status(200).json({ message: 'Power assigned successfully' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function ready(req: Request, res: Response, next: Function) {
+    const { id: idStudent } = req.user!;
+    try {
+        const { power } = await getStudCurrTaskAttempt(idStudent);
+        if (!power) return res.status(400).json({ message: 'You don\'t have any power' });
+        res.status(200).json({ message: 'Ok' });
     } catch (err) {
         next(err);
     }
