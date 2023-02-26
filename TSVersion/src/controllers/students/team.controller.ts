@@ -13,16 +13,40 @@ import { TeamMember } from '../../types/Student.types';
 import { directory } from '../../listeners/namespaces/students';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
+    const { id: idStudent } = req.user!;
     try {
-        const { id: idUser } = req.user!;
-        const { id_course } = await getStudentById(idUser);
-        const teams = await getTeamsFromCourse(id_course);
-        res.status(200).json([]);
-        // res.status(200).json(teams.filter(t => t.active).map(({ name, code, id_team: id }) => ({
-        //     id,
-        //     name,
-        //     code: code || '',
-        // })));
+        const { id_course } = await getStudentById(idStudent);
+        const teams = await getTeamsFromCourseWithStud(id_course, true);
+        res.status(200).json(teams.map(({ code, id, name, students }) => ({
+            id,
+            name,
+            code: code || '',
+            students
+        })));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function getCurrentTeam(req: Request, res: Response<TeamResp>, next: Function) {
+    const { id: idStudent } = req.user!;
+    try {
+        const { id_team, name, code } = await getTeamFromStudent(idStudent);
+        const members = await getMembersFromTeam({ idTeam: id_team });
+        // const { id_course } = await getStudentById(idStudent);
+        // const teams = await getTeamsFromCourseWithStud(id_course, true);
+        res.status(200).json({
+            id: id_team,
+            name,
+            code: code || '',
+            students: members.map(({ id_student, first_name, last_name, task_attempt: { power }, username }) => ({
+                id: id_student,
+                firstName: first_name,
+                lastName: last_name,
+                username,
+                power
+            }))
+        });
     } catch (err) {
         next(err);
     }

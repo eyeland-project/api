@@ -40,41 +40,6 @@ export async function getTeamsFromCourse(idCourse: number): Promise<Team[]> {
     return await TeamModel.findAll({ where: { id_course: idCourse } });
 }
 
-// export async function getTeamsFromCourseWithStud(idCourse: number, active: boolean): Promise<TeamSocket[]> {
-//     type StudentWithTeam = {
-//         id_team: number;
-//         id_student: number;
-//         username: string;
-//         first_name: string;
-//         last_name: string;
-//         power: Power;
-//     }
-
-//     const studentsWithTeam = await sequelize.query<StudentWithTeam>(`
-//         SELECT t.id_team, s.id_student, s.username, s.first_name, s.last_name, ta.power
-//         FROM team t
-//         JOIN task_attempt ta ON ta.id_team = t.id_team
-//         JOIN student s ON s.id_student = ta.id_student
-//         WHERE t.id_course = ${idCourse} AND t.active = ${active};
-//     `, { type: QueryTypes.SELECT });
-
-//     const grouped = groupBy(studentsWithTeam, 'id_team') as StudentWithTeam[][];
-//     console.log(grouped);
-//     return grouped.map((students) => {
-//         const team = students[0];
-//         return {
-//             id: team.id_team,
-//             students: students.map(({ id_student, username, first_name, last_name, power }) => ({
-//                 id: id_student,
-//                 username,
-//                 firstName: first_name,
-//                 lastName: last_name,
-//                 power
-//             }))
-//         };
-//     });
-// }
-
 export async function getTeamsFromCourseWithStud(idCourse: number, active: boolean): Promise<TeamResp[]> {
     type StudentWithTeam = {
         id_team: number;

@@ -17,8 +17,8 @@ import { finishStudTaskAttempts } from '../../services/taskAttempt.service';
 
 export async function root(req: Request, res: Response<TaskResp[]>, next: Function) {
     try {
-        const {id: idUser} = req.user!;
-        res.status(200).json(await getTasksFromStudentWithCompleted(idUser));
+        const {id: idStudent} = req.user!;
+        res.status(200).json(await getTasksFromStudentWithCompleted(idStudent));
     } catch (err) {
         next(err);
     }
