@@ -4,8 +4,10 @@ import { ApiError } from "../middlewares/handleErrors";
 import { CourseModel, TeamModel } from "../models";
 import { Course } from "../types/Course.types";
 import { Team } from "../types/Team.types";
-import { TeamSummResp } from "../types/responses/teachers.types";
 import { Namespace, of } from "../listeners/sockets";
+import { Power } from "../types/enums";
+import { groupBy } from "../utils";
+import { TeamResp } from "../types/responses/globals.types";
 
 // COURSE CRUD
 // get many
@@ -38,26 +40,89 @@ export async function getTeamsFromCourse(idCourse: number): Promise<Team[]> {
     return await TeamModel.findAll({ where: { id_course: idCourse } });
 }
 
-export async function getTeamsFromCourseWithNumStud(idCourse: number, active: boolean): Promise<TeamSummResp[]> {
-    const teams = await sequelize.query<TeamSummResp>(`
-        SELECT t.*, COUNT(s.id_student) AS "numStudents"
+// export async function getTeamsFromCourseWithStud(idCourse: number, active: boolean): Promise<TeamSocket[]> {
+//     type StudentWithTeam = {
+//         id_team: number;
+//         id_student: number;
+//         username: string;
+//         first_name: string;
+//         last_name: string;
+//         power: Power;
+//     }
+
+//     const studentsWithTeam = await sequelize.query<StudentWithTeam>(`
+//         SELECT t.id_team, s.id_student, s.username, s.first_name, s.last_name, ta.power
+//         FROM team t
+//         JOIN task_attempt ta ON ta.id_team = t.id_team
+//         JOIN student s ON s.id_student = ta.id_student
+//         WHERE t.id_course = ${idCourse} AND t.active = ${active};
+//     `, { type: QueryTypes.SELECT });
+
+//     const grouped = groupBy(studentsWithTeam, 'id_team') as StudentWithTeam[][];
+//     console.log(grouped);
+//     return grouped.map((students) => {
+//         const team = students[0];
+//         return {
+//             id: team.id_team,
+//             students: students.map(({ id_student, username, first_name, last_name, power }) => ({
+//                 id: id_student,
+//                 username,
+//                 firstName: first_name,
+//                 lastName: last_name,
+//                 power
+//             }))
+//         };
+//     });
+// }
+
+export async function getTeamsFromCourseWithStud(idCourse: number, active: boolean): Promise<TeamResp[]> {
+    type StudentWithTeam = {
+        id_team: number;
+        code: string;
+        name: string;
+        active: boolean;
+        id_student: number;
+        username: string;
+        first_name: string;
+        last_name: string;
+        power: Power;
+    }
+
+    const studentsWithTeam = await sequelize.query<StudentWithTeam>(`
+        SELECT t.id_team, t.code, t.name, t.active, s.id_student, s.username, s.first_name, s.last_name, ta.power
         FROM team t
         JOIN task_attempt ta ON ta.id_team = t.id_team
         JOIN student s ON s.id_student = ta.id_student
-        WHERE t.id_course = ${idCourse} AND t.active = ${active}
-        GROUP BY t.id_team
+        WHERE t.id_course = ${idCourse} AND t.active = ${active};
     `, { type: QueryTypes.SELECT });
-    console.log(teams);
-    return teams;
+
+    const teams = groupBy(studentsWithTeam, 'id_team') as StudentWithTeam[][];
+    // console.log(teams);
+    return teams.map((students) => {
+        const { active, code, id_team, name } = students[0];
+        return {
+            id: id_team,
+            code: code,
+            name: name,
+            active: active,
+            students: students.map(({ id_student, username, first_name, last_name, power }) => ({
+                id: id_student,
+                username,
+                firstName: first_name,
+                lastName: last_name,
+                power
+            }))
+        };
+    });
 }
 
 export async function createCourseSession(idCourse: number) {
     const nsp = of(Namespace.STUDENTS);
     if (!nsp) throw new ApiError("Namespace not found", 500);
-    
+
     const { session, id_course } = await getCourseById(idCourse);
     if (session) throw new ApiError("Course already has an active session", 400);
-    
+
     await updateCourse(idCourse, { session: true });
     nsp.to('c' + id_course).emit('session:teacher:create');
 }
@@ -65,10 +130,10 @@ export async function createCourseSession(idCourse: number) {
 export async function endCourseSession(idCourse: number) {
     const nsp = of(Namespace.STUDENTS);
     if (!nsp) throw new ApiError("Namespace not found", 500);
-    
+
     const { session, id_course } = await getCourseById(idCourse);
     if (!session) throw new ApiError("Course has no active session", 400);
-    
+
     await updateCourse(idCourse, { session: false });
     nsp.to('c' + id_course).emit('session:teacher:end');
 }
@@ -79,6 +144,6 @@ export async function startCourseSession(idCourse: number) {
 
     const { session, id_course } = await getCourseById(idCourse);
     if (!session) throw new ApiError("Course has no active session", 400);
-    
+
     nsp.to('c' + id_course).emit('session:teacher:start');
 }

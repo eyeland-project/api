@@ -1,21 +1,20 @@
 import { Request, Response } from "express";
-import { getTeamsFromCourseWithNumStud } from "../../services/course.service";
+import { getTeamsFromCourseWithStud } from "../../services/course.service";
 import {
     createTeam as createTeamServ,
     getTeamById,
     getMembersFromTeam,
     updateTeam as updateTeamServ
 } from "../../services/team.service";
-import { TeamResp, TeamSummResp, ElementCreatedResp } from "../../types/responses/teachers.types";
+import { ElementCreatedResp, TeamResp } from "../../types/responses/teachers.types";
 import { TeamCreateReq, TeamUpdateReq } from "../../types/requests/teachers.types";
 import { TeamMember } from "../../types/Student.types";
 
-export async function getTeams(req: Request<{ idCourse: number }>, res: Response<TeamSummResp[]>, next: Function) {
+export async function getTeams(req: Request<{ idCourse: number }>, res: Response<TeamResp[]>, next: Function) {
     const { idCourse } = req.params;
     const { active } = req.query as { active?: boolean };
-
     try {
-        res.status(200).json(await getTeamsFromCourseWithNumStud(idCourse, active === false ? false : true)); // get active teams by default
+        res.status(200).json(await getTeamsFromCourseWithStud(idCourse, active === false ? false : true)); // get active teams by default
     } catch (err) {
         next(err);
     }

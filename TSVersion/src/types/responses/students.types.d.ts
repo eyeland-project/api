@@ -1,3 +1,6 @@
+import { TeamResp as TeamRespGlobal } from "./globals.types"
+import { Power } from "../enums"
+
 // API
 // auth
 export interface LoginResp {
@@ -110,18 +113,7 @@ export interface PostaskQuestionResp {
 }
 
 // teams
-export interface TeamResp {
-    id: number,
-    code: string,
-    name: string,
-    students: {
-        id: number,
-        firstName: string,
-        lastName: string,
-        username: string,
-        power: Power
-    }[]
-}
+export interface TeamResp extends TeamRespGlobal {}
 
 // SOCKETS
 export interface StudentSocket {
@@ -129,7 +121,7 @@ export interface StudentSocket {
     firstName: string,
     lastName: string,
     username: string,
-    power: Power
+    power: Power | null
 }
 
 export interface TeamSocket {

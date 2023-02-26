@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 
+// PASSWORDS
 export function comparePassword(password: string, hash: string): boolean {
     return bcrypt.compareSync(password, hash);
 };
@@ -10,14 +11,17 @@ export function hashPassword(password: string): string {
     return bcrypt.hashSync(password, 11);
 };
 
+// JWT
 export function signToken(payload: Object): string {
     return jwt.sign(payload, process.env.JWT_SECRET || ' top secret ');
 }
 
+// TEAM CODE
 export function genTeamCode() {
     return nanoid(6);
 }
 
+// TRANSLATION
 export function translateFormat(str: string): { noun: string[], prep: string[] } {
     // the input string is in the format of "words... {noun} words... [prep] words..."
     // the output is an object with two arrays: noun and prep translated to spanich from the input string
@@ -53,4 +57,23 @@ export function distributeOptions(options: (any & { correct: boolean })[], index
     // if the size is 3, the output is an array with three elements, the correct option and two random options
     throw new Error('Not implemented');
     return [];
+}
+
+// GROUP BY
+// export function groupBy<T, K extends keyof T>(arr: T[], key: K): Record<T[K], T[]> {
+// export function groupBy<T>(arr: T[], fn: (item: T) => any) {
+//     return arr.reduce<Record<string, T[]>>((prev, curr) => {
+//         const groupKey = fn(curr);
+//         const group = prev[groupKey] || [];
+//         group.push(curr);
+//         return { ...prev, [groupKey]: group };
+//     }, {});
+// }
+export function groupBy(arr: any[], key: string): any[] {
+    return Object.values(arr.reduce((groups, item) => {
+        const groupKey = item[key];
+        const group = groups[groupKey] || [];
+        group.push(item);
+        return { ...groups, [groupKey]: group };
+    }, {}));
 }

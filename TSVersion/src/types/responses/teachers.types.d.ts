@@ -1,3 +1,5 @@
+import { TeamResp as TeamRespGlobal } from "./globals.types"
+
 // general
 export interface ElementCreatedResp {
     id: number
@@ -63,24 +65,4 @@ export interface StudentResp {
 }
 
 // teams
-export interface TeamSummResp {
-    id: number,
-    code: string,
-    name: string,
-    active: boolean,
-    numStudents: number
-}
-
-export interface TeamResp {
-    id: number,
-    code: string,
-    name: string,
-    active: boolean,
-    students: {
-        id: number,
-        firstName: string,
-        lastName: string,
-        username: string,
-        power: Power
-    }[]
-}
+export interface TeamResp extends TeamRespGlobal {}

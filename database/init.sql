@@ -732,9 +732,9 @@ INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, emai
 INSERT INTO student (id_course, id_blindness_acuity, first_name, last_name, email, username, password) VALUES (1, 7, 'Estudiante7', 'Prueba', 'student7@test.com', 'student7', 'pass123');
 
 -- INSERT INTO team
-INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 1', '123456');
-INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 2', '234567');
-INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 3', '345678');
+INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 1', '111111');
+INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 2', '222222');
+INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 3', '333333');
 
 -- INSERT INTO admin
 INSERT INTO admin (id_admin, first_name, last_name, email, username, password) VALUES (1, 'Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');

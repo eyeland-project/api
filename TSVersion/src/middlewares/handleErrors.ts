@@ -19,7 +19,7 @@ const errorHandler: ErrorRequestHandler = (err: ApiError, _req, res, _next) => {
     const { statusCode, message } = err;
     // const handler = ERROR_HANDLERS[err.name] || ERROR_HANDLERS.defaultError;
     // handler(res);
-    res.status(statusCode).json({ message: message });
+    res.status(statusCode || 500).json({ message: message });
 };
 
 export default errorHandler;
