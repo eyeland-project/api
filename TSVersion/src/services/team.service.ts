@@ -75,3 +75,11 @@ export async function addStudentToTeam(idStudent: number, idTeam: number, taskOr
 export async function removeStudFromTeam(idStudent: number) {
     await updateStudCurrTaskAttempt(idStudent, { id_team: null });
 }
+<<<<<<< HEAD
+=======
+
+export async function notifyTeam(idStudent: number, idTeam: number) {
+    const nsp = of(Namespace.STUDENTS);
+    if (!nsp) throw new ApiError("Namespace not found", 500);
+}
+>>>>>>> 669d1a0d35e017492267df76e3bac752b24822f9

@@ -3,14 +3,24 @@ import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTea
 import { addStudentToTeam, getMembersFromTeam, getTeamByCode, removeStudFromTeam } from '../../services/team.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
+<<<<<<< HEAD
 import { getTeamsFromCourse, getTeamsFromCourseWithStud } from '../../services/course.service';
 import { StudentSocket, TeamResp, TeamSocket } from '../../types/responses/students.types';
+=======
+import { getTeamsFromCourse } from '../../services/course.service';
+import { StudentSocket, TeamResp } from '../../types/responses/students.types';
+>>>>>>> 669d1a0d35e017492267df76e3bac752b24822f9
 import { getStudCurrTaskAttempt } from '../../services/taskAttempt.service';
 import { Power } from '../../types/enums';
 import { PowerReq } from "../../types/requests/students.types";
 import { Namespace, of } from '../../listeners/sockets';
+<<<<<<< HEAD
 import { TeamMember } from '../../types/Student.types';
 import { directory } from '../../listeners/namespaces/students';
+=======
+import { Student, TeamMember } from '../../types/Student.types';
+import { Team } from '../../types/Team.types';
+>>>>>>> 669d1a0d35e017492267df76e3bac752b24822f9
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     try {
