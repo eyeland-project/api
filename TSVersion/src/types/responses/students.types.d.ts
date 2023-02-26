@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 import { TeamResp as TeamRespGlobal } from "./globals.types"
 import { Power } from "../enums"
 
-=======
->>>>>>> 669d1a0d35e017492267df76e3bac752b24822f9
 // API
 // auth
 export interface LoginResp {
