@@ -15,6 +15,7 @@ export function onConnection(socket: Socket) {
     // FUNCTIONS
     async function onId(id: number, cb: (session: {session: boolean}) => void) {
         console.log('S: Student id', id);
+        id = Number(id);
 
         const idCourse = await validConnection(id);
         if (idCourse === -1) {
@@ -32,8 +33,8 @@ export function onConnection(socket: Socket) {
             console.log(cb);
             return;
         }
-        // cb({ session });
         console.log("S: TYPE:",typeof cb);
+        cb({ session });
     }
 
     function onDisconnect() {
