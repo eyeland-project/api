@@ -27,7 +27,13 @@ export function onConnection(socket: Socket) {
         printStudentsDir();
 
         const { session } = await getCourseById(idCourse);
-        cb({ session });
+        if(!cb){
+            console.log('S: student invalid callback', socket.id);
+            console.log(cb);
+            return;
+        }
+        // cb({ session });
+        console.log("S: TYPE:",typeof cb);
     }
 
     function onDisconnect() {
