@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
 import { deleteSocket, printDirectory } from "../utils";
 import { getCourseFromStudent } from "../../services/student.service";
+import { getCourseById } from "../../services/course.service";
 
 export const directory = new Map<number, Socket>();
 
@@ -12,7 +13,7 @@ export function onConnection(socket: Socket) {
     socket.on('disconnect', onDisconnect);
 
     // FUNCTIONS
-    async function onId(id: number) {
+    async function onId(id: number, cb: (session: {session: boolean}) => void) {
         console.log('S: Student id', id);
 
         const idCourse = await validConnection(id);
@@ -24,6 +25,9 @@ export function onConnection(socket: Socket) {
         socket.join('c' + idCourse);
         directory.set(id, socket);
         printStudentsDir();
+
+        const { session } = await getCourseById(idCourse);
+        cb({ session });
     }
 
     function onDisconnect() {
