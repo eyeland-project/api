@@ -13,9 +13,10 @@ export function onConnection(socket: Socket) {
     socket.on('disconnect', onDisconnect);
 
     // FUNCTIONS
-    async function onId(id: number, cb: (session: {session: boolean}) => void) {
+    async function onId(id: any, cb: (session: {session: boolean}) => void) {
         console.log('S: Student id', id);
-        id = Number(id);
+        console.log('S: id type', typeof id);
+        id = typeof id === 'object'? id.id : Number(id);
 
         const idCourse = await validConnection(id);
         if (idCourse === -1) {
@@ -34,6 +35,11 @@ export function onConnection(socket: Socket) {
             return;
         }
         console.log("S: TYPE:",typeof cb);
+        if(typeof cb !== 'function'){
+            console.log('S: student invalid callback', socket.id);
+            console.log(cb);
+            return;
+        }
         cb({ session });
     }
 

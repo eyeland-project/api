@@ -12,10 +12,10 @@ export enum Namespace {
 
 export default function initSocket(server: Server): Server {
     io = new IO(server, {
-        cors: {
-            origin: '*',
-            methods: ['GET', 'POST']
-        }
+        // cors: {
+        //     origin: '*',
+        //     methods: ['GET', 'POST']
+        // }
     });
 
     // students
