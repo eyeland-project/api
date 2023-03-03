@@ -1,1 +1,1 @@
-docker run -d --name tps -e POSTGRES_PASSWORD=password tpsq
+docker run -d --name tps -e POSTGRES_PASSWORD=password postgres

@@ -11,6 +11,7 @@ export function onConnection(socket: Socket) {
     // EVENTS
     socket.on('id', onId);
     socket.on('disconnect', onDisconnect);
+    socket.handshake.auth
 
     // FUNCTIONS
     async function onId(id: any, cb: (session: {session: boolean}) => void) {
