@@ -98,7 +98,12 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
 
                 try {
                     teamsData = (await getTeamsFromCourseWithStud(team.id_course, true))
-                        .map(({ id, students }) => ({ id, students }));
+                        .map(({ code, id, name, students }) => ({
+                            id,
+                            name,
+                            code: code || '',
+                            students
+                        }))
                 } catch (err) {
                     console.log(err);
                 }
@@ -172,7 +177,12 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
             
             try{
                 const teamsData = (await getTeamsFromCourseWithStud(id_course, true))
-                .map(({ id, students }) => ({ id, students }));
+                    .map(({ code, id, name, students }) => ({
+                        id,
+                        name,
+                        code: code || '',
+                        students
+                    }))
                 studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit('teams:student:update', teamsData);
             }catch(err){
                 console.error(err);
