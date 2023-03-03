@@ -61,7 +61,7 @@ export async function getTeamsFromCourseWithStud(idCourse: number, active: boole
         WHERE t.id_course = ${idCourse} AND t.active = ${active};
     `, { type: QueryTypes.SELECT });
 
-    console.log(studentsWithTeam);
+    // console.log(studentsWithTeam);
 
     const teams = groupBy(studentsWithTeam, 'id_team') as StudentWithTeam[][];
     // console.log(teams);

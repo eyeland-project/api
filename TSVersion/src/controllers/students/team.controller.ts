@@ -10,7 +10,7 @@ import { Power } from '../../types/enums';
 import { PowerReq } from "../../types/requests/students.types";
 import { Namespace, of } from '../../listeners/sockets';
 import { TeamMember } from '../../types/Student.types';
-import { directory } from '../../listeners/namespaces/students';
+import { directory, printStudentsDir } from '../../listeners/namespaces/students';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     const { id: idStudent } = req.user!;
@@ -104,7 +104,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                 }
 
                 if (teamsData) {
-                    studSocket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit('teams:student:joinedTeam', teamsData);
+                    studSocket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit('teams:student:updateTeam', teamsData);
                     teamData = teamsData.find(t => t.id === team.id_team)?.students;
                 }
                 if (!teamData) {
@@ -148,7 +148,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
 
     try {
         const power = (await getStudCurrTaskAttempt(idStudent)).power;
-        const { id_team } = await getTeamFromStudent(idStudent); // check if student is already in a team
+        const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
         await removeStudFromTeam(idStudent);
         res.status(200).json({ message: 'Done' });
 
@@ -156,7 +156,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
             studSocket.leave('t' + id_team); // leave student from team socket room
             // check if this student had super_hearing to assign it to another student
             if (power === Power.SuperHearing) {
-                getTeammates(idStudent).then(async (teammates) => {
+                getMembersFromTeam({idTeam: id_team}).then(async (teammates) => {
                     if (!teammates.length) return; // no teammates left
 
                     const blindnessLevels = teammates.map(({ blindness_acuity: { level } }) => level);
@@ -168,6 +168,14 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
                     const power = await assignPowerToStudent(idNewStudent, Power.SuperHearing, teammates);
                     // TODO: notify that student got super_hearing
                 }).catch(err => console.log(err));
+            }
+            
+            try{
+                const teamsData = (await getTeamsFromCourseWithStud(id_course, true))
+                .map(({ id, students }) => ({ id, students }));
+                studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit('teams:student:updateTeam', teamsData);
+            }catch(err){
+                console.error(err);
             }
 
             const nsp = of(Namespace.STUDENTS);

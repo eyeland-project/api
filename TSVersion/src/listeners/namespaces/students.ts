@@ -51,7 +51,7 @@ export function onConnection(socket: Socket) {
     }
 }
 
-function printStudentsDir() {
+export function printStudentsDir() {
     printDirectory(directory, 'students');
 }
 
