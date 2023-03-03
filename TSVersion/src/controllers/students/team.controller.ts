@@ -104,7 +104,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                 }
 
                 if (teamsData) {
-                    studSocket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit('teams:student:updateTeam', teamsData);
+                    studSocket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit('teams:student:update', teamsData);
                     teamData = teamsData.find(t => t.id === team.id_team)?.students;
                 }
                 if (!teamData) {
@@ -119,7 +119,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                         }
                     ];
                 }
-                studSocket.broadcast.to('t' + team.id_team).emit('team:student:joined', teamData);
+                studSocket.broadcast.to('t' + team.id_team).emit('team:student:update', teamData);
             }).catch(err => console.log(err));
 
             if (prevTeam) { // notify previous team that student left
@@ -129,7 +129,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                 const idPrevTeam = prevTeam.id_team;
                 getMembersFromTeam({ idTeam: idPrevTeam }).then(async (prevTeamMembers) => {
                     const teamData: StudentSocket[] = summMembers(prevTeamMembers);
-                    nsp.to('t' + idPrevTeam).emit('team:student:left', teamData);
+                    nsp.to('t' + idPrevTeam).emit('team:student:update', teamData);
                 }).catch(err => console.log(err));
             }
         } catch (err) {
@@ -173,7 +173,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
             try{
                 const teamsData = (await getTeamsFromCourseWithStud(id_course, true))
                 .map(({ id, students }) => ({ id, students }));
-                studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit('teams:student:updateTeam', teamsData);
+                studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit('teams:student:update', teamsData);
             }catch(err){
                 console.error(err);
             }
@@ -182,7 +182,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
             if (!nsp) return;
             getMembersFromTeam({ idTeam: id_team }).then(async (teamMembers) => {
                 const teamData: StudentSocket[] = summMembers(teamMembers);
-                nsp.to('t' + id_team).emit('team:student:left', teamData);
+                nsp.to('t' + id_team).emit('team:student:update', teamData);
             }).catch(err => console.log(err));
         } catch (err) {
             console.log(err);
