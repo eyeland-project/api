@@ -77,3 +77,30 @@ export function groupBy(arr: any[], key: string): any[] {
         return { ...groups, [groupKey]: group };
     }, {}));
 }
+
+export function verifyToken<T=any>(token: string): T | false {
+    // the input is a token
+    // the output is true if the token is valid, false otherwise
+    
+    try{
+        const payload: T | any = jwt.verify(token, process.env.SECRET || " top_secret ")
+        return payload;
+    }catch(e){
+        return false;
+    }
+}
+
+export function getIdFromToken(token: string): number {
+    // the input is a token
+    // the output is the id of the user that generated the token
+    
+    // check if token is valid
+    if (!token) {
+        return -1;
+    }
+    const payload = verifyToken<{id: number}>(token);
+    if (!payload) {
+        return -1;
+    }
+    return payload.id;
+}
