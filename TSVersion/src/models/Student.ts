@@ -1,5 +1,5 @@
 // imports
-import { DataTypes, ForeignKey, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model, NonAttribute } from 'sequelize';
 import sequelize from '../database/db';
 import CourseModel from './Course';
 import { comparePassword, hashPassword } from '../utils';
@@ -17,6 +17,9 @@ class StudentModel extends Model<Student, StudentCreation> {
     declare email: string;
     declare username: string;
     declare password: string;
+
+    declare BlindnessAcuityModel: NonAttribute<BlindnessAcuityModel>;
+
     comparePassword = (password: string): boolean => (
         // comparePassword(password, this.password)
         password === this.password // temporary

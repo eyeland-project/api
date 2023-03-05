@@ -147,3 +147,5 @@ export interface StudentSocket {
     username: string,
     power: Power        
 }
+
+export type UserResp = Omit<StudentSocket, 'power'> & {visualCondition?: string};

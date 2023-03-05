@@ -10,6 +10,7 @@ export function onConnection(socket: Socket) {
     console.log('S: New student connection', socket.id);
 
     // EVENTS
+    // TODO: delete id event
     socket.on('id', onId);
     socket.on('join', onId);
     socket.on('disconnect', onDisconnect);
