@@ -6,9 +6,9 @@ import { Student, TeamMember } from "../types/Student.types";
 import { Team } from "../types/Team.types";
 import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import { TaskAttempt } from "../types/TaskAttempt.types";
-import { updateStudCurrTaskAttempt } from "./taskAttempt.service";
+import { getStudCurrTaskAttempt, updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { Power } from "../types/enums";
-import { getMembersFromTeam } from "./team.service";
+import { getAvailablePowers, getMembersFromTeam } from "./team.service";
 import { Course } from "../types/Course.types";
 
 export async function getStudentById(id: number): Promise<Student> {
@@ -49,6 +49,35 @@ export async function getBlindnessAcFromStudent(idStudent: number): Promise<Blin
     return blindness[0];
 }
 
+function assignPower(idStudent: number, power: Power, opts: { transaction?: Transaction } = {}){ // prevent errors when updating teammate
+    try {
+        updateStudCurrTaskAttempt(idStudent, { power });
+    } catch (err) { }
+};
+
+export async function rafflePower(idStudent: number){
+    // * Verify if the student has a visual illness
+    const { level } = await getBlindnessAcFromStudent(idStudent);
+    // ** if the student has a visual illness, return false
+    if (level !== 0) return false;
+    // * Get the student team
+    const { id_team } = await getTeamFromStudent(idStudent);
+    // * Get the available powers
+    const powers = await getAvailablePowers(id_team);
+    if (powers.length === 0) return false;
+    
+    // * raffle the powers
+    // ** get a number between -1 and the length of the powers array
+    const randomIdx = Math.floor(Math.random() * (powers.length + 1)) - 1;
+    // ** if the number is -1, return false
+    if (randomIdx === -1) return false;
+    // ** else, assign the power to the student
+    assignPower(idStudent, powers[randomIdx]);
+    
+    // * return the power
+    return powers[randomIdx];
+}
+
 export async function assignPowerToStudent(
     idStudent: number,
     power: Power | 'auto',
@@ -67,11 +96,6 @@ export async function assignPowerToStudent(
         return Object.values(Power).filter(power => !currPowers.includes(power));
     };
 
-    const assignPower = (idStudent: number, power: Power, opts: { transaction?: Transaction } = {}) => { // prevent errors when updating teammate
-        try {
-            updateStudCurrTaskAttempt(idStudent, { power });
-        } catch (err) { }
-    };
 
     if (power === 'auto') {
         let autoPower: Power;

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent, getTeammates } from '../../services/student.service';
+import { assignPowerToStudent, getBlindnessAcFromStudent, getStudentById, getTeamFromStudent, getTeammates, rafflePower } from '../../services/student.service';
 import { addStudentToTeam, getMembersFromTeam, getTeamByCode, removeStudFromTeam } from '../../services/team.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { LoginTeamReq } from '../../types/requests/students.types';
@@ -221,6 +221,20 @@ export async function ready(req: Request, res: Response, next: Function) {
         const { power } = await getStudCurrTaskAttempt(idStudent);
         if (!power) return res.status(400).json({ message: 'You don\'t have any power' });
         res.status(200).json({ message: 'Ok' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function reroll(req: Request, res: Response, next: Function) {
+    const { id: idStudent } = req.user!;
+    try {
+        const power = await rafflePower(idStudent);
+        if (!power) return res.status(304).json({ message: 'You got the same power' });
+
+        // TODO: notify that student got new power
+
+        res.status(200).json({ power });
     } catch (err) {
         next(err);
     }

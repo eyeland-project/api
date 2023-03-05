@@ -27,9 +27,9 @@ export async function getMembersFromTeam(teamInfo: { idTeam?: number, code?: str
     };
     const teamMembers = await sequelize.query<TeamMemberRaw>(`
         SELECT s.*, ba.name AS blindness_acuity_name, ba.level AS blindness_acuity_level, ta.id_task_attempt, ta.power
-        FROM student s
-        JOIN task_attempt ta ON ta.id_student = s.id_student AND ta.active = true
-        JOIN team t ON t.id_team = ta.id_team
+        FROM team t 
+        JOIN task_attempt ta ON t.id_team = ta.id_team AND t.active = ta.active
+        JOIN student s ON ta.id_student = s.id_student
         JOIN blindness_acuity ba ON ba.id_blindness_acuity = s.id_blindness_acuity
         WHERE ${idTeam ? `t.id_team = ${idTeam}` : `t.code = '${code}'`}
     `, { type: QueryTypes.SELECT });
@@ -50,6 +50,13 @@ export async function getTeamById(idTeam: number): Promise<Team> {
     const team = await TeamModel.findOne({ where: { id_team: idTeam } });
     if (!team) throw new ApiError("Team not found", 404);
     return team;
+}
+
+export async function getAvailablePowers(idTeam: number) {
+    const members = await getMembersFromTeam({ idTeam });
+    const powers = members.map(({ task_attempt }) => task_attempt.power);
+    const availablePowers = Object.values(Power).filter(power => !powers.includes(power));
+    return availablePowers;
 }
 
 export async function createTeam(name: string, idCourse: number): Promise<Team> {

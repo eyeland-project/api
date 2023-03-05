@@ -982,6 +982,52 @@
         }
       }
     },
+    "/teams/current/reroll": {
+      "put": {
+        "description": "change the selected power",
+        "tags": [
+          "team"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "power": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "304":{
+            "description": "Your power didn't change"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Student doesn't belong to any team"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/teams/current/req-power": {
       "post": {
         "description": "Request power in current team",
