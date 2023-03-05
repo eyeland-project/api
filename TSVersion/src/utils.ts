@@ -83,7 +83,7 @@ export function verifyToken<T=any>(token: string): T | false {
     // the output is true if the token is valid, false otherwise
     
     try{
-        const payload: T | any = jwt.verify(token, process.env.SECRET || " top_secret ")
+        const payload: T | any = jwt.verify(token, process.env.JWT_SECRET || ' top secret ')
         return payload;
     }catch(e){
         return false;
