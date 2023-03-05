@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
+import translate from "node-traductor";
+import { Power } from './types/enums';
 
 // PASSWORDS
 export function comparePassword(password: string, hash: string): boolean {
@@ -21,15 +23,45 @@ export function genTeamCode() {
     return nanoid(6);
 }
 
-// TRANSLATION
-export function translateFormat(str: string): { noun: string[], prep: string[] } {
-    // the input string is in the format of "words... {noun} words... [prep] words..."
-    // the output is an object with two arrays: noun and prep translated to spanich from the input string
-    throw new Error('Not implemented');
-    return {
-        noun: [],
-        prep: []
+// *TRANSLATION
+async function translateWord(word: string): Promise<string[]> {
+    if(!word) return Promise.resolve([]);
+    return translate(word, { to: "es" })
+    .then((res) => {
+            const traductions: string[] = [];
+            //retornar todas las posibles traducciones
+            console.log(res.raw[1][0][0][5][0][4][0][0]);
+            let len = res.raw[1][0][0][5][0][4].length;
+            for (let i = 0; i < len; i++) {
+                traductions.push(res.raw[1][0][0][5][0][4][i][0]);
+            }
+            // console.log(traductions);
+            return traductions;
+        })
+        .catch((err) => {
+            console.error(err);
+            return []
+        });
+}
+
+export async function translateFormat(
+    str: string
+): Promise<{ nouns: string[]; preps: string[] }> {
+
+    let noun = str.match(/{(.+?)}/g)?.[0].replace(/[{}]/g, '');
+    let prep = str.match(/\[(.+?)\]/g)?.[0].replace(/[\[\]]/g, '');
+    //traducir las palabras
+    let nouns: string[] = [];
+    let preps: string[] = [];
+    console.log(noun, prep)
+    if (noun) {
+        nouns = await translateWord(noun);
     }
+    if (prep) {
+        preps = await translateWord(prep);
+    }
+    
+    return { nouns, preps };
 }
 
 export function pseudoRandom(seed: number): number {
@@ -49,14 +81,82 @@ export function shuffle(array: any[], seed: number): any[] {
     return shuffled;
 }
 
-export function distributeOptions(options: (any & { correct: boolean })[], index: number, size: 1 | 2 | 3): (any & { correct: boolean })[2] {
-    // the input is an array of options, an index of the correct option, and the size of the array to return
-    // the output is an array of options with the correct option in the index position
-    // if the size is 1, the output is an array with one element, the correct option
-    // if the size is 2, the output is an array with two elements, the correct option and a random option
-    // if the size is 3, the output is an array with three elements, the correct option and two random options
-    throw new Error('Not implemented');
-    return [];
+export function indexPower(power: Power){
+    switch (power) {
+        case Power.SuperHearing:
+            return 0;
+        case Power.MemoryPro:
+            return 1;
+        case Power.SuperRadar:
+            return 2;
+        default:
+            return 0;
+    }
+}
+
+export function distributeOptions(
+    options: ({ correct: boolean, [key: string]: any })[],
+    index: number,
+    size: number
+): ({ correct: boolean, [key: string]: any })[2] {
+
+    let paquete: number = 0;
+    console.log(index, options.length);
+
+    for (let i = 0; i < 6; i=i+2) {
+        if (options[i].correct||options[i+1].correct) {
+            paquete= i;
+        }
+    }
+
+    if (size == 1) {
+        return [options[paquete], options[paquete+1]];
+    }
+
+    if (size == 2) {
+
+        if (paquete == 0) {
+            if (index == 1) {
+                return [options[0], options[1]];
+            }
+            if (index == 2) {
+                return [options[2], options[3]];
+            }
+        }
+        
+        if (paquete == 2) {
+            if (index == 1) {
+                return [options[2], options[3]];
+            }
+            if (index == 2) {
+                return [options[4], options[5]];
+            }
+        }
+
+        if (paquete == 4) {
+            if (index == 2) {
+                return [options[4], options[5]];
+            }
+            if (index == 1) {
+                return [options[2], options[3]];
+            }
+        }
+
+    }
+
+    if (size == 3) {
+        if (index == 1) {
+            return [options[0], options[1]];
+        }
+        if (index == 2) {
+            return [options[2], options[3]];
+        }
+        if (index == 3) {
+            return [options[4], options[5]];
+        }
+    }
+
+    return undefined ;
 }
 
 // GROUP BY
