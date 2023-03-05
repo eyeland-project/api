@@ -28,7 +28,7 @@ export async function getMembersFromTeam(teamInfo: { idTeam?: number, code?: str
     const teamMembers = await sequelize.query<TeamMemberRaw>(`
         SELECT s.*, ba.name AS blindness_acuity_name, ba.level AS blindness_acuity_level, ta.id_task_attempt, ta.power
         FROM student s
-        JOIN task_attempt ta ON ta.id_student = s.id_student
+        JOIN task_attempt ta ON ta.id_student = s.id_student AND ta.active = true
         JOIN team t ON t.id_team = ta.id_team
         JOIN blindness_acuity ba ON ba.id_blindness_acuity = s.id_blindness_acuity
         WHERE ${idTeam ? `t.id_team = ${idTeam}` : `t.code = '${code}'`}
