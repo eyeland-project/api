@@ -28,7 +28,7 @@ export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Fu
     }
 }
 
-export async function getCurrentTeam(req: Request, res: Response<TeamResp>, next: Function) {
+export async function getCurrentTeam(req: Request, res: Response<TeamResp & {myPower?: Power}>, next: Function) {
     const { id: idStudent } = req.user!;
     try {
         const { id_team, name, code } = await getTeamFromStudent(idStudent);
@@ -39,6 +39,7 @@ export async function getCurrentTeam(req: Request, res: Response<TeamResp>, next
             id: id_team,
             name,
             code: code || '',
+            myPower: members.find(m => m.id_student === idStudent)?.task_attempt.power,
             students: members.map(({ id_student, first_name, last_name, task_attempt: { power }, username }) => ({
                 id: id_student,
                 firstName: first_name,

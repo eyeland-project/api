@@ -1465,6 +1465,58 @@
           }
         }
       },
+      "CurrentTeam":{
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "myPower": {
+            "type": "string",
+            "enum": [
+              "super_hearing",
+              "memory_pro",
+              "super_radar"
+            ]
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "format": "int64"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "power": {
+                  "type": "string",
+                  "enum": [
+                    "super_hearing",
+                    "memory_pro",
+                    "super_radar"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
       "Team": {
         "type": "object",
         "properties": {
