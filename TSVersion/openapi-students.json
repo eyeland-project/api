@@ -1402,6 +1402,18 @@
           },
           "videoUrl": {
             "type": "string"
+          },    
+          "nounTranslation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prepositionTranslation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "options": {
             "type": "array",

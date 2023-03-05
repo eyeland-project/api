@@ -5,6 +5,10 @@ import { getQuestionOptions } from '../../services/option.service';
 import { duringtaskAvailable, getTaskStageByOrder } from '../../services/taskStage.service';
 import { ApiError } from '../../middlewares/handleErrors';
 import { createTaskAttempt, getStudCurrTaskAttempt } from '../../services/taskAttempt.service';
+import { translateFormat, distributeOptions, shuffle, indexPower } from '../../utils'
+import { getTeamFromStudent, getTeammates } from '../../services/student.service';
+import { Power } from '../../types/enums';
+import { getMembersFromTeam } from '../../services/team.service';
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<DuringtaskResp>, next: Function) {
     try {
@@ -27,8 +31,24 @@ export async function getQuestion(req: Request<{ taskOrder: number, questionOrde
         const { taskOrder, questionOrder } = req.params;
         
         const { id_question, content, type, img_alt, img_url, audio_url, video_url } = await getQuestionByOrder(taskOrder, 2, questionOrder);
-        const options = await getQuestionOptions(id_question);
-    
+        let options = await getQuestionOptions(id_question);
+        
+        const {nouns, preps} = await translateFormat(content);
+        const { id_team, power } = await getStudCurrTaskAttempt(idStudent);
+        
+        // * If student has no team, send error
+        if (!id_team || !power){
+            throw new ApiError('No team or power found', 400);
+        }
+        const members = (await getTeammates(idStudent, {idTeam: id_team})).map(({ task_attempt }) => task_attempt.power);
+        members.push(power);
+        members.sort((a, b) => indexPower(a) - indexPower(b));
+
+        // * shuffle options
+        options = shuffle(options, id_team);
+        // * distribute options based on power
+        options = distributeOptions(options, members.indexOf(power) + 1, members.length);
+
         res.status(200).json({
             content, type,
             id: id_question,
@@ -36,6 +56,8 @@ export async function getQuestion(req: Request<{ taskOrder: number, questionOrde
             imgUrl: img_url || '',
             audioUrl: audio_url || '',
             videoUrl: video_url || '',
+            nounTranslation: nouns,
+            prepositionTranslation: preps,
             options: options.map(({ id_option, content, correct, feedback }) => ({
                 id: id_option,
                 content,

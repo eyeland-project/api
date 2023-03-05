@@ -80,6 +80,8 @@ export interface DuringtaskQuestionResp {
     imgUrl: string,
     audioUrl: string,
     videoUrl: string,
+    nounTranslation?: string[],
+    prepositionTranslation?: string[],
     options: {
         id: number,
         content: string,
