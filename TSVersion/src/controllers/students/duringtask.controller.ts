@@ -34,20 +34,20 @@ export async function getQuestion(req: Request<{ taskOrder: number, questionOrde
         let options = await getQuestionOptions(id_question);
         
         const {nouns, preps} = await translateFormat(content);
-        const { id_team, power } = await getStudCurrTaskAttempt(idStudent);
+        //- const { id_team, power } = await getStudCurrTaskAttempt(idStudent);
         
         // * If student has no team, send error
-        if (!id_team || !power){
-            throw new ApiError('No team or power found', 400);
-        }
-        const members = (await getTeammates(idStudent, {idTeam: id_team})).map(({ task_attempt }) => task_attempt.power);
-        members.push(power);
-        members.sort((a, b) => indexPower(a) - indexPower(b));
+        //- if (!id_team || !power){
+        //-     throw new ApiError('No team or power found', 400);
+        //- }
+        //- const members = (await getTeammates(idStudent, {idTeam: id_team})).map(({ task_attempt }) => task_attempt.power);
+        //- members.push(power);
+        //- members.sort((a, b) => indexPower(a) - indexPower(b));
 
         // * shuffle options
-        options = shuffle(options, id_team);
+        //- options = shuffle(options, id_team);
         // * distribute options based on power
-        options = distributeOptions(options, members.indexOf(power) + 1, members.length);
+        //- options = distributeOptions(options, members.indexOf(power) + 1, members.length);
 
         res.status(200).json({
             content, type,
