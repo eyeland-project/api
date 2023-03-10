@@ -76,6 +76,7 @@ export async function answer(req: Request<{ taskOrder: number, questionOrder: nu
         }
         await createAnswerOption(taskOrder, 1, questionOrder, idOption, answerSeconds, idTaskAttempt);
         res.status(200).json({ message: `Answered question ${questionOrder} of task ${taskOrder}` });
+
     } catch (err) {
         next(err);
     }
@@ -85,8 +86,8 @@ export async function setCompleted(req: Request<{ taskOrder: number }>, res: Res
     try {
         const { id: idStudent } = req.user!;
         const { taskOrder } = req.params;
-        await updateStudentTaskProgress(idStudent, taskOrder, 1);
-        res.status(200).json({ message: `Completed task ${taskOrder}` });
+        await updateStudentTaskProgress(taskOrder, idStudent, 1);
+        res.status(200).json({ message: `Completed pretask ${taskOrder}` });
     } catch (err) {
         next(err);
     }

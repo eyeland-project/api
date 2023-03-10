@@ -31,9 +31,6 @@ export async function getStudentTaskProgressByOrder(taskOrder: number, idStudent
 }
 
 export async function updateStudentTaskProgress(taskOrder: number, idStudent: number, newHighestStage: number): Promise<void> {
-    // const task = await TaskModel.findOne({ where: { task_order: taskOrder } });
-    // if (!task) throw new Error("Task not found");
-
     const result = await sequelize.query(`
             UPDATE student_task
             SET highest_stage = ${newHighestStage}
