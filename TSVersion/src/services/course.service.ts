@@ -74,7 +74,7 @@ export async function getTeamsFromCourseWithStud(idCourse: number, active: boole
             active: active,
             students: students
             .filter(({id_student})=>{
-                return id_student != null;
+                return id_student !== null;
             })
             .map(({ id_student, username, first_name, last_name, power }) => ({
                 id: id_student,
@@ -95,7 +95,7 @@ export async function createCourseSession(idCourse: number) {
     if (session) throw new ApiError("Course already has an active session", 400);
 
     await updateCourse(idCourse, { session: true });
-    nsp.to('c' + id_course).emit(OutgoingEvents.SessionCreate);
+    nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_CREATE);
 }
 
 export async function endCourseSession(idCourse: number) {
@@ -106,7 +106,7 @@ export async function endCourseSession(idCourse: number) {
     if (!session) throw new ApiError("Course has no active session", 400);
 
     await updateCourse(idCourse, { session: false });
-    nsp.to('c' + id_course).emit(OutgoingEvents.SessionEnd);
+    nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_END);
 }
 
 export async function startCourseSession(idCourse: number) {
@@ -116,5 +116,5 @@ export async function startCourseSession(idCourse: number) {
     const { session, id_course } = await getCourseById(idCourse);
     if (!session) throw new ApiError("Course has no active session", 400);
 
-    nsp.to('c' + id_course).emit(OutgoingEvents.SessionStart);
+    nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_START);
 }

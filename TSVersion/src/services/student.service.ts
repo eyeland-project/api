@@ -21,7 +21,7 @@ export async function getTeamFromStudent(idStudent: number): Promise<Team> {
     const team = await sequelize.query(`
         SELECT t.* FROM team t
         JOIN task_attempt ta ON ta.id_team = t.id_team
-        WHERE ta.id_student = ${idStudent} AND ta.active = TRUE AND t.active = TRUE
+        WHERE ta.id_student = ${idStudent} AND ta.active AND t.active
         LIMIT 1;
     `, { type: QueryTypes.SELECT }) as Team[];
     if (!team.length) throw new ApiError("Team not found", 400);

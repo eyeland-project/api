@@ -56,8 +56,8 @@ export async function getCurrentTeam(req: Request, res: Response<TeamResp & {myP
 export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: Function) {
     const { id: idStudent } = req.user!;
 
-    const studSocket = directory.get(idStudent);
-    if (!studSocket) return res.status(400).json({ message: 'Student is not connected' });
+    const socket = directory.get(idStudent);
+    if (!socket) return res.status(400).json({ message: 'Student is not connected' });
 
     const { code, taskOrder } = req.body as LoginTeamReq;
 
@@ -83,7 +83,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
 
         // assign power + sockets (this could go to a subroutine)
         try { // if an error occurs, then it will not be sent to the next() function and the server will not crash
-            studSocket.join('t' + team.id_team); // join student to team socket room
+            socket.join('t' + team.id_team); // join student to team socket room
 
             getBlindnessAcFromStudent(idStudent).then(async ({ level }) => {
                 let power: Power | null;
@@ -110,7 +110,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                 }
 
                 if (teamsData) {
-                    studSocket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit(OutgoingEvents.TeamsUpdate, teamsData);
+                    socket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit(OutgoingEvents.TEAMS_UPDATE, teamsData);
                     teamData = teamsData.find(t => t.id === team.id_team)?.students;
                 }
                 if (!teamData) {
@@ -125,7 +125,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                         }
                     ];
                 }
-                studSocket.broadcast.to('t' + team.id_team).emit(OutgoingEvents.TeamUpdate, teamData);
+                socket.broadcast.to('t' + team.id_team).emit(OutgoingEvents.TEAM_UPDATE, teamData);
             }).catch(err => console.log(err));
 
             if (prevTeam) { // notify previous team that student left
@@ -135,7 +135,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                 const idPrevTeam = prevTeam.id_team;
                 getMembersFromTeam({ idTeam: idPrevTeam }).then(async (prevTeamMembers) => {
                     const teamData: StudentSocket[] = summMembers(prevTeamMembers);
-                    nsp.to('t' + idPrevTeam).emit(OutgoingEvents.TeamUpdate, teamData);
+                    nsp.to('t' + idPrevTeam).emit(OutgoingEvents.TEAM_UPDATE, teamData);
                 }).catch(err => console.log(err));
             }
         } catch (err) {
@@ -184,7 +184,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
                         code: code || '',
                         students
                     }))
-                studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit(OutgoingEvents.TeamsUpdate, teamsData);
+                studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit(OutgoingEvents.TEAMS_UPDATE, teamsData);
             }catch(err){
                 console.error(err);
             }
@@ -193,7 +193,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
             if (!nsp) return;
             getMembersFromTeam({ idTeam: id_team }).then(async (teamMembers) => {
                 const teamData: StudentSocket[] = summMembers(teamMembers);
-                nsp.to('t' + id_team).emit(OutgoingEvents.TeamUpdate, teamData);
+                nsp.to('t' + id_team).emit(OutgoingEvents.TEAM_UPDATE, teamData);
             }).catch(err => console.log(err));
         } catch (err) {
             console.log(err);
