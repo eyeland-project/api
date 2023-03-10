@@ -30,10 +30,14 @@ async function translateWord(word: string): Promise<string[]> {
     .then((res) => {
             const traductions: string[] = [];
             //retornar todas las posibles traducciones
-            console.log(res.raw[1][0][0][5][0][4][0][0]);
-            let len = res.raw[1][0][0][5][0][4].length;
-            for (let i = 0; i < len; i++) {
-                traductions.push(res.raw[1][0][0][5][0][4][i][0]);
+            try{
+                console.log(res.raw[1][0][0][5][0][4][0][0]);
+                let len = res.raw[1][0][0][5][0][4].length;
+                for (let i = 0; i < len; i++) {
+                    traductions.push(res.raw[1][0][0][5][0][4][i][0]);
+                }
+            }catch(e){
+                traductions.push(res.text);
             }
             // console.log(traductions);
             return traductions;
