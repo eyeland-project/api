@@ -44,7 +44,7 @@ export async function root(
     try {
         const { taskOrder } = req.params;
         const { description, keywords, id_task_stage } =
-            await getTaskStageByOrder(taskOrder, 1);
+            await getTaskStageByOrder(taskOrder, 2);
         res.status(200).json({
             description: description,
             keywords: keywords,

@@ -12,7 +12,7 @@ import { getTaskByOrder } from '../../services/task.service';
 export async function root(req: Request<{ taskOrder: number }>, res: Response<PostaskResp>, next: Function) {
     try {
         const { taskOrder } = req.params;
-        const { description, keywords, id_task, id_task_stage } = await getTaskStageByOrder(taskOrder, 1);
+        const { description, keywords, id_task_stage } = await getTaskStageByOrder(taskOrder, 3);
         res.status(200).json({
             description: description,
             keywords: keywords,
