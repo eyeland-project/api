@@ -129,8 +129,9 @@ export async function answer(
     const { id: idStudent } = req.user!;
 
     // - Check if duringtask is available
-    if (!(await duringtaskAvailable(idStudent)))
-        throw new ApiError("DuringTask is not available", 400);
+    // ! TEMPORARY DISABLED
+    // if (!(await duringtaskAvailable(idStudent)))
+    //     throw new ApiError("DuringTask is not available", 400);
 
     // - Check if question exists and is in the correct task stage, and get question_id
     const { id_question } = await getQuestionByOrder(
@@ -156,6 +157,7 @@ export async function answer(
     });
 
     // - create the answer
+    // ! TEMPORARY DISABLED
     /*
     await createAnswer({
         id_question,
