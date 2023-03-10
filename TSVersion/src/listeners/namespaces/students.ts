@@ -44,7 +44,21 @@ export function onConnection(socket: Socket) {
         // console.log('S: id type', typeof id);
         // id = typeof id === 'object'? id.id : Number(id);
 
-        const idCourse = await validConnection(id);
+        // check if student is already in directory
+        const prevSocket = directory.get(id);
+        if (prevSocket) {
+            console.log('S: student already connected', socket.id);
+            prevSocket.disconnect();
+        }
+        
+        // check if student is in a course
+        let idCourse;
+        try {
+            idCourse = (await getCourseFromStudent(id)).id_course;
+        } catch (err) {
+            return;
+        }
+
         if (idCourse === -1) {
             console.log('S: student invalid connection', socket.id);
             socket.disconnect();
@@ -60,10 +74,9 @@ export function onConnection(socket: Socket) {
             console.log(cb);
             return;
         }
-        console.log("S: TYPE:",typeof cb);
+        console.log("S: TYPE:", typeof cb);
         if(typeof cb !== 'function'){
-            console.log('S: student invalid callback', socket.id);
-            console.log(cb);
+            console.log('S: student invalid callback', socket.id, cb);
             return;
         }
         cb({ session });
@@ -78,19 +91,4 @@ export function onConnection(socket: Socket) {
 
 export function printStudentsDir() {
     printDirectory(directory, 'students');
-}
-
-async function validConnection(id: number): Promise<number> {
-    // check if student is already in directory
-    if (directory.has(id)) return -1;
-    
-    // check if student is in a course
-    let idCourse;
-    try {
-        idCourse = (await getCourseFromStudent(id)).id_course;
-    } catch (err) {
-        return -1;
-    }
-    
-    return idCourse;
 }
