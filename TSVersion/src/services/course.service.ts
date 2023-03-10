@@ -5,7 +5,7 @@ import { CourseModel, TeamModel } from "../models";
 import { Course } from "../types/Course.types";
 import { Team } from "../types/Team.types";
 import { Namespace, of } from "../listeners/sockets";
-import { Power } from "../types/enums";
+import { OutgoingEvents, Power } from "../types/enums";
 import { groupBy } from "../utils";
 import { TeamResp } from "../types/responses/globals.types";
 
@@ -95,7 +95,7 @@ export async function createCourseSession(idCourse: number) {
     if (session) throw new ApiError("Course already has an active session", 400);
 
     await updateCourse(idCourse, { session: true });
-    nsp.to('c' + id_course).emit('session:teacher:create');
+    nsp.to('c' + id_course).emit(OutgoingEvents.SessionCreate);
 }
 
 export async function endCourseSession(idCourse: number) {
@@ -106,7 +106,7 @@ export async function endCourseSession(idCourse: number) {
     if (!session) throw new ApiError("Course has no active session", 400);
 
     await updateCourse(idCourse, { session: false });
-    nsp.to('c' + id_course).emit('session:teacher:end');
+    nsp.to('c' + id_course).emit(OutgoingEvents.SessionEnd);
 }
 
 export async function startCourseSession(idCourse: number) {
@@ -116,5 +116,5 @@ export async function startCourseSession(idCourse: number) {
     const { session, id_course } = await getCourseById(idCourse);
     if (!session) throw new ApiError("Course has no active session", 400);
 
-    nsp.to('c' + id_course).emit('session:teacher:start');
+    nsp.to('c' + id_course).emit(OutgoingEvents.SessionStart);
 }

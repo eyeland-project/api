@@ -6,7 +6,7 @@ import { LoginTeamReq } from '../../types/requests/students.types';
 import { getTeamsFromCourse, getTeamsFromCourseWithStud } from '../../services/course.service';
 import { StudentSocket, TeamResp, TeamSocket } from '../../types/responses/students.types';
 import { getStudCurrTaskAttempt } from '../../services/taskAttempt.service';
-import { Power } from '../../types/enums';
+import { OutgoingEvents, Power } from '../../types/enums';
 import { PowerReq } from "../../types/requests/students.types";
 import { Namespace, of } from '../../listeners/sockets';
 import { TeamMember } from '../../types/Student.types';
@@ -110,7 +110,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                 }
 
                 if (teamsData) {
-                    studSocket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit('teams:student:update', teamsData);
+                    studSocket.broadcast.to('c' + team.id_course).except('t' + team.id_team).emit(OutgoingEvents.TeamsUpdate, teamsData);
                     teamData = teamsData.find(t => t.id === team.id_team)?.students;
                 }
                 if (!teamData) {
@@ -125,7 +125,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                         }
                     ];
                 }
-                studSocket.broadcast.to('t' + team.id_team).emit('team:student:update', teamData);
+                studSocket.broadcast.to('t' + team.id_team).emit(OutgoingEvents.TeamUpdate, teamData);
             }).catch(err => console.log(err));
 
             if (prevTeam) { // notify previous team that student left
@@ -135,7 +135,7 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
                 const idPrevTeam = prevTeam.id_team;
                 getMembersFromTeam({ idTeam: idPrevTeam }).then(async (prevTeamMembers) => {
                     const teamData: StudentSocket[] = summMembers(prevTeamMembers);
-                    nsp.to('t' + idPrevTeam).emit('team:student:update', teamData);
+                    nsp.to('t' + idPrevTeam).emit(OutgoingEvents.TeamUpdate, teamData);
                 }).catch(err => console.log(err));
             }
         } catch (err) {
@@ -184,7 +184,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
                         code: code || '',
                         students
                     }))
-                studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit('teams:student:update', teamsData);
+                studSocket.broadcast.to('c' + id_course).except('t' + id_team).emit(OutgoingEvents.TeamsUpdate, teamsData);
             }catch(err){
                 console.error(err);
             }
@@ -193,7 +193,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
             if (!nsp) return;
             getMembersFromTeam({ idTeam: id_team }).then(async (teamMembers) => {
                 const teamData: StudentSocket[] = summMembers(teamMembers);
-                nsp.to('t' + id_team).emit('team:student:update', teamData);
+                nsp.to('t' + id_team).emit(OutgoingEvents.TeamUpdate, teamData);
             }).catch(err => console.log(err));
         } catch (err) {
             console.log(err);
