@@ -2,6 +2,7 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TaskProgressResp as TaskProgressRespStud } from "../types/responses/students.types";
 import { StudentTask } from "../types/StudentTask.types";
+import { TaskModel } from "../models";
 
 export async function getStudentTaskProgressByOrder(taskOrder: number, idStudent: number): Promise<TaskProgressRespStud> {
     const studentTasks = await sequelize.query<StudentTask>(`
@@ -27,4 +28,22 @@ export async function getStudentTaskProgressByOrder(taskOrder: number, idStudent
             blocked: highestStage < 2
         }
     };
+}
+
+export async function updateStudentTaskProgress(taskOrder: number, idStudent: number, newHighestStage: number): Promise<void> {
+    // const task = await TaskModel.findOne({ where: { task_order: taskOrder } });
+    // if (!task) throw new Error("Task not found");
+
+    const result = await sequelize.query(`
+            UPDATE student_task
+            SET highest_stage = ${newHighestStage}
+            WHERE id_student = ${idStudent} AND (SELECT id_task FROM task WHERE task_order = ${taskOrder}) = id_task;
+        `, { type: QueryTypes.UPDATE });
+    if (!result[0]) {
+        const resultInsert = await sequelize.query(`
+            INSERT INTO student_task (id_student, id_task, highest_stage)
+            VALUES (${idStudent}, (SELECT id_task FROM task WHERE task_order = ${taskOrder}), ${newHighestStage});
+        `, { type: QueryTypes.INSERT });
+        if (!resultInsert[0]) throw new Error("Error inserting student_task");
+    }
 }

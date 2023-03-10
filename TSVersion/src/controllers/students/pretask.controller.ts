@@ -8,6 +8,7 @@ import { createAnswerOption } from '../../services/answer.service';
 import { getTaskStageByOrder } from '../../services/taskStage.service';
 import { createTaskAttempt, finishStudTaskAttempts, getStudCurrTaskAttempt } from '../../services/taskAttempt.service';
 import { getTaskByOrder } from '../../services/task.service';
+import { updateStudentTaskProgress } from '../../services/studentTask.service';
 
 export async function root(req: Request<{ taskOrder: number }>, res: Response<PretaskResp>, next: Function) {
     try {
@@ -75,6 +76,17 @@ export async function answer(req: Request<{ taskOrder: number, questionOrder: nu
         }
         await createAnswerOption(taskOrder, 1, questionOrder, idOption, answerSeconds, idTaskAttempt);
         res.status(200).json({ message: `Answered question ${questionOrder} of task ${taskOrder}` });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function setCompleted(req: Request<{ taskOrder: number }>, res: Response, next: Function) {
+    try {
+        const { id: idStudent } = req.user!;
+        const { taskOrder } = req.params;
+        await updateStudentTaskProgress(idStudent, taskOrder, 1);
+        res.status(200).json({ message: `Completed task ${taskOrder}` });
     } catch (err) {
         next(err);
     }
