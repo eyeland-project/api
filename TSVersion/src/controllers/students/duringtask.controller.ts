@@ -7,7 +7,10 @@ import {
     DuringtaskQuestionResp,
     DuringtaskResp,
 } from "../../types/responses/students.types";
-import { getQuestionOptions } from "../../services/option.service";
+import {
+    getOptionById,
+    getQuestionOptions,
+} from "../../services/option.service";
 import {
     duringtaskAvailable,
     getTaskStageByOrder,
@@ -27,9 +30,11 @@ import {
     getTeamFromStudent,
     getTeammates,
 } from "../../services/student.service";
-import { Power } from "../../types/enums";
+import { OutgoingEvents, Power } from "../../types/enums";
 import { getMembersFromTeam } from "../../services/team.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
+import { createAnswer } from "../../services/answer.service";
+import { directory } from "../../listeners/namespaces/students";
 
 export async function root(
     req: Request<{ taskOrder: number }>,
@@ -124,16 +129,43 @@ export async function answer(
     const { id: idStudent } = req.user!;
 
     // - Check if duringtask is available
-    // if (!await duringtaskAvailable(idStudent)) throw new ApiError('DuringTask is not available', 400);
+    if (!(await duringtaskAvailable(idStudent)))
+        throw new ApiError("DuringTask is not available", 400);
+
     // - Check if question exists and is in the correct task stage, and get question_id
-    // const { id_question } = await getQuestionByOrder(taskOrder, 2, questionOrder);
+    const { id_question } = await getQuestionByOrder(
+        taskOrder,
+        2,
+        questionOrder
+    );
+
     // - Check if option exists and is in the correct question
-    // - get student's current task attempt
-    // - get student's team id from task attempt
+    const { id_option, correct } = await getOptionById(idOption);
+    if (id_option !== id_question) throw new ApiError("Option not found", 404);
+
+    // - get student's current task attempt and get student's team id from task attempt
+    const { id_team, id_task_attempt } = await getStudCurrTaskAttempt(
+        idStudent
+    );
+
+    // TODO: inform team members that student has answered
+    const studentSocket = directory.get(idStudent);
+    if (!studentSocket) throw new ApiError("Student not found", 404);
+    studentSocket.broadcast.to(`t${id_team}`).emit(OutgoingEvents.Answer, {
+        correct,
+    });
+
     // - create the answer
-
-
-    res.json({
-        message: "Answered"
+    /*
+    await createAnswer({
+        id_question,
+        id_option: idOption,
+        id_task_attempt,
+        answer_seconds: answerSeconds,
+        id_team
     })
+    // */
+    res.json({
+        message: "Answered",
+    });
 }
