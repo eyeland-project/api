@@ -1,5 +1,5 @@
 import { AnswerModel } from "../models";
-import { Answer } from "../types/Answer.types";
+import { Answer, AnswerCreation } from "../types/Answer.types";
 import { getQuestionByOrder } from "./question.service";
 
 export async function createAnswerOption(
@@ -10,7 +10,11 @@ export async function createAnswerOption(
     answerSeconds: number,
     idTaskAttempt: number
 ): Promise<Answer> {
-    const { id_question } = await getQuestionByOrder(taskOrder, taskStageOrder, questionOrder);
+    const { id_question } = await getQuestionByOrder(
+        taskOrder,
+        taskStageOrder,
+        questionOrder
+    );
     const answer = await AnswerModel.create({
         id_question,
         id_task_attempt: idTaskAttempt,
@@ -18,4 +22,9 @@ export async function createAnswerOption(
         answer_seconds: answerSeconds,
     });
     return answer;
+}
+
+export async function createAnswer(answer: AnswerCreation): Promise<Answer> {
+    const newAnswer = await AnswerModel.create(answer);
+    return newAnswer;
 }

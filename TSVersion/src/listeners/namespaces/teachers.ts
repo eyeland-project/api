@@ -8,6 +8,7 @@ export function onConnection(socket: Socket) {
 
     // EVENTS
     socket.on('id', onId);
+    socket.on('join', onId);
     socket.on('disconnect', onDisconnect);
 
     // FUNCTIONS
