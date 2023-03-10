@@ -141,8 +141,8 @@ export async function answer(
     );
 
     // - Check if option exists and is in the correct question
-    const { id_option, correct } = await getOptionById(idOption);
-    if (id_option !== id_question) throw new ApiError("Option not found", 404);
+    const { id_option, correct, id_question: question_id } = await getOptionById(idOption);
+    if (question_id !== id_question) throw new ApiError("Option not found", 404);
 
     // - get student's current task attempt and get student's team id from task attempt
     const { id_team, id_task_attempt } = await getStudCurrTaskAttempt(
