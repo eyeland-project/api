@@ -148,6 +148,12 @@ export async function answer(
       }
     }
 
+    if (taskAttempt.id_task !== task.id_task) {
+      return res
+        .status(400)
+        .json({ message: "Current Task attempt is from another task" });
+    }
+
     await answerQuestion(
       taskOrder,
       1,

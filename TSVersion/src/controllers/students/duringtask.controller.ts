@@ -153,7 +153,7 @@ export async function answer(
     return res.status(400).json({ message: "Bad idOption" });
 
   try {
-    await getTaskByOrder(taskOrder);
+    const task = await getTaskByOrder(taskOrder);
 
     const { session } = await getCourseFromStudent(idStudent);
     if (!session) {
@@ -171,6 +171,12 @@ export async function answer(
     const taskAttempt = await getStudCurrTaskAttempt(idStudent);
     if (!taskAttempt.id_team) {
       return res.status(400).json({ message: "Student is not in a team" });
+    }
+
+    if (taskAttempt.id_task !== task.id_task) {
+      return res
+        .status(400)
+        .json({ message: "Current Task attempt is from another task" });
     }
 
     // - Check if team exists
