@@ -38,7 +38,7 @@ import {
   updateTeam,
 } from "../../services/team.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
-import { answerQuestion } from "../../services/answer.service";
+import { createAnswer } from "../../services/answer.service";
 import { directory } from "../../listeners/namespaces/students";
 import {
   getStudentTaskProgressByOrder,
@@ -183,7 +183,7 @@ export async function answer(
     await getTeamFromStudent(idStudent);
 
     // - Check if question exists and is in the correct task stage, and get question_id
-    const { id_question } = await getQuestionByOrder(
+    const question = await getQuestionByOrder(
       taskOrder,
       2,
       questionOrder
@@ -191,13 +191,11 @@ export async function answer(
 
     // - Check if option exists and is in the correct question
     const option = await getOptionById(idOption);
-    if (id_question !== option.id_question)
+    if (question.id_question !== option.id_question)
       throw new ApiError("Option does not belong to question", 400);
 
-    await answerQuestion(
-      taskOrder,
-      2,
-      questionOrder,
+    await createAnswer(
+      question.id_question,
       idOption,
       answerSeconds,
       taskAttempt.id_task_attempt
@@ -212,7 +210,7 @@ export async function answer(
           correct: option.correct,
         });
       getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
-        if (lastQuestion.id_question === id_question) {
+        if (lastQuestion.id_question === question.id_question) {
           upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
             console.log(err)
           );

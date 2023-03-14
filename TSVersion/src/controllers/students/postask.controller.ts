@@ -11,7 +11,7 @@ import {
   getOptionById,
   getQuestionOptions,
 } from "../../services/option.service";
-import { answerQuestion } from "../../services/answer.service";
+import { createAnswer } from "../../services/answer.service";
 import {
   AnswerAudioReq,
   AnswerOptionReq,
@@ -153,11 +153,9 @@ export async function answer(
         .status(400)
         .json({ message: "Current Task attempt is from another task" });
     }
-    
-    await answerQuestion(
-      taskOrder,
-      3,
-      questionOrder,
+
+    await createAnswer(
+      question.id_question,
       idOption,
       answerSeconds,
       taskAttempt.id_task_attempt

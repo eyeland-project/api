@@ -14,7 +14,7 @@ import {
   getQuestionOptions,
 } from "../../services/option.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
-import { answerQuestion } from "../../services/answer.service";
+import { createAnswer } from "../../services/answer.service";
 import {
   getLastQuestionFromTaskStage,
   getTaskStageByOrder,
@@ -154,10 +154,8 @@ export async function answer(
         .json({ message: "Current Task attempt is from another task" });
     }
 
-    await answerQuestion(
-      taskOrder,
-      1,
-      questionOrder,
+    await createAnswer(
+      question.id_question,
       idOption,
       answerSeconds,
       taskAttempt.id_task_attempt
