@@ -26,7 +26,6 @@ import {
 } from "../../services/taskAttempt.service";
 import { getTaskByOrder } from "../../services/task.service";
 import {
-  canStudentAnswerPretask,
   getStudentTaskByOrder,
   upgradeStudentTaskProgress,
 } from "../../services/studentTask.service";

@@ -27,19 +27,26 @@ import {
   indexPower,
 } from "../../utils";
 import {
+  getCourseFromStudent,
   getTeamFromStudent,
   getTeammates,
 } from "../../services/student.service";
 import { OutgoingEvents, Power } from "../../types/enums";
-import { getMembersFromTeam, updateTeam } from "../../services/team.service";
+import {
+  getMembersFromTeam,
+  getTeamById,
+  updateTeam,
+} from "../../services/team.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
-import { createAnswer } from "../../services/answer.service";
+import { answerQuestion } from "../../services/answer.service";
 import { directory } from "../../listeners/namespaces/students";
 import {
   getStudentTaskProgressByOrder,
   canStudentAnswerDuringtask,
   upgradeStudentTaskProgress,
+  getStudentTaskByOrder,
 } from "../../services/studentTask.service";
+import { getTaskByOrder } from "../../services/task.service";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
@@ -139,22 +146,35 @@ export async function answer(
     return res.status(400).json({ message: "Student is not connected" });
   }
 
-  try {
-    // - get student's current task attempt and get student's team id from task attempt
-    const { id_team, id_task_attempt } = await getStudCurrTaskAttempt(
-      idStudent
-    );
-    if (!id_team) {
-			return res.status(400).json({ message: "Student is not in a team" });
-		}
+  if (taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
+  if (questionOrder < 1)
+    return res.status(400).json({ message: "Bad questionOrder" });
+  if (!idOption || idOption < 1)
+    return res.status(400).json({ message: "Bad idOption" });
 
-    // - Check if duringtask is available (task_attempt should exist)
-    // check: task_attempt exists, progress is correct, team is active, session is active
-    if (!(await canStudentAnswerDuringtask(taskOrder, idStudent))) {
-      return res
-        .status(403)
-        .json({ message: "Student cannot answer this duringtask" });
+  try {
+    await getTaskByOrder(taskOrder);
+
+    const { session } = await getCourseFromStudent(idStudent);
+    if (!session) {
+      return res.status(403).json({ message: "Course session not started" });
     }
+
+    const { highest_stage } = await getStudentTaskByOrder(idStudent, taskOrder);
+    if (highest_stage < 1) {
+      return res.status(403).json({
+        message: `Student must complete PreTask from task ${taskOrder}`,
+      });
+    }
+
+    // - get student's current task attempt and get student's team id from task attempt
+    const taskAttempt = await getStudCurrTaskAttempt(idStudent);
+    if (!taskAttempt.id_team) {
+      return res.status(400).json({ message: "Student is not in a team" });
+    }
+
+    // - Check if team exists
+    await getTeamFromStudent(idStudent);
 
     // - Check if question exists and is in the correct task stage, and get question_id
     const { id_question } = await getQuestionByOrder(
@@ -168,26 +188,29 @@ export async function answer(
     if (id_question !== option.id_question)
       throw new ApiError("Option does not belong to question", 400);
 
-    await createAnswer({
-      id_question,
-      id_option: idOption,
-      id_task_attempt,
-      answer_seconds: answerSeconds,
-      id_team,
-    });
+    await answerQuestion(
+      taskOrder,
+      2,
+      questionOrder,
+      idOption,
+      answerSeconds,
+      taskAttempt.id_task_attempt
+    );
     res.status(200).json({ message: "Answered" });
 
-		// additional logic to upgrade student's task progress and do socket stuff
+    // additional logic to upgrade student's task progress and do socket stuff
     try {
-      socket.broadcast.to(`t${id_team}`).emit(OutgoingEvents.ANSWER, {
-        correct: option.correct,
-      });
+      socket.broadcast
+        .to(`t${taskAttempt.id_team}`)
+        .emit(OutgoingEvents.ANSWER, {
+          correct: option.correct,
+        });
       getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
         if (lastQuestion.id_question === id_question) {
           upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
             console.log(err)
           );
-          getTeammates(idStudent, { idTeam: id_team })
+          getTeammates(idStudent, { idTeam: taskAttempt.id_team! })
             .then((teammates) => {
               teammates.forEach(({ id_student }) => {
                 upgradeStudentTaskProgress(taskOrder, id_student, 2).catch(
@@ -196,8 +219,10 @@ export async function answer(
               });
             })
             .catch((err) => console.log(err));
-          
-          updateTeam(id_team, { active: false }).catch((err) => console.log(err));
+
+          updateTeam(taskAttempt.id_team!, { active: false }).catch((err) =>
+            console.log(err)
+          );
         }
       });
     } catch (err) {

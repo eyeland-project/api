@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import multer from "multer";
 import {
   getQuestionByOrder,
   getTaskStageQuestionsCount,
@@ -29,9 +28,10 @@ import {
 } from "../../services/taskAttempt.service";
 import { getTaskByOrder } from "../../services/task.service";
 import {
-  canStudentAnswerPostask,
+  getStudentTaskByOrder,
   upgradeStudentTaskProgress,
 } from "../../services/studentTask.service";
+import { getCourseFromStudent } from "../../services/student.service";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
@@ -100,74 +100,74 @@ export async function answer(
 ) {
   const { id: idStudent } = req.user!;
   const { taskOrder, questionOrder } = req.params;
+  const { answerSeconds, idOption, newAttempt } = req.body as AnswerOptionReq;
+
+  if (taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
+  if (questionOrder < 1)
+    return res.status(400).json({ message: "Bad questionOrder" });
+  if (!idOption || idOption < 1)
+    return res.status(400).json({ message: "Bad idOption" });
 
   try {
-    const { newAttempt } = req.body as AnswerOptionReq;
-
     // create task_attempt if required
-    let idTaskAttempt;
+    const task = await getTaskByOrder(taskOrder);
+
+    const { session } = await getCourseFromStudent(idStudent);
+    if (!session) {
+      return res.status(403).json({ message: "Course session not started" });
+    }
+
+    const { highest_stage } = await getStudentTaskByOrder(idStudent, taskOrder);
+    if (highest_stage < 2) {
+      return res.status(403).json({
+        message: `Student must complete DuringTask from task ${taskOrder}`,
+      });
+    }
+
+    // verify question exists
+    const question = await getQuestionByOrder(taskOrder, 3, questionOrder);
+
+    // verify option belongs to question
+    const option = await getOptionById(idOption);
+    if (question.id_question !== option.id_question) {
+      return res
+        .status(400)
+        .json({ message: "Option does not belong to question" });
+    }
+
+    // create task attempt if required
+    let taskAttempt;
     if (newAttempt) {
       await finishStudTaskAttempts(idStudent);
-      const { id_task } = await getTaskByOrder(taskOrder);
-      idTaskAttempt = (await createTaskAttempt(idStudent, id_task, null))
-        .id_task_attempt;
+      taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
     } else {
       try {
-        idTaskAttempt = (await getStudCurrTaskAttempt(idStudent))
-          .id_task_attempt;
+        taskAttempt = await getStudCurrTaskAttempt(idStudent);
       } catch (err) {
-        const { id_task } = await getTaskByOrder(taskOrder);
-        idTaskAttempt = (await createTaskAttempt(idStudent, id_task, null))
-          .id_task_attempt;
+        taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
       }
     }
 
-    // verify if student can answer (task_attempt exists, proggres is correct, session is active)
-    if (!canStudentAnswerPostask(taskOrder, idStudent)) {
-      return res
-        .status(403)
-        .json({ message: "Student cannot answer this postask" });
-    }
-
-    const { type: questionType, id_question } = await getQuestionByOrder(
+    await answerQuestion(
       taskOrder,
       3,
-      questionOrder
+      questionOrder,
+      idOption,
+      answerSeconds,
+      taskAttempt.id_task_attempt
     );
-    const { answerSeconds, idOption } = req.body as AnswerOptionReq;
-      if (!idOption) {
-        return res.status(400).json({ message: "Missing idOption" });
-      }
-
-			// verify if option belongs to question
-      const option = await getOptionById(idOption);
-      console.log(id_question, option.id_question);
-      
-      if (id_question !== option.id_question) {
-        return res
-          .status(400)
-          .json({ message: "Option does not belong to question" });
-      }
-
-      await answerQuestion(
-        taskOrder,
-        3,
-        questionOrder,
-        idOption,
-        answerSeconds,
-        idTaskAttempt
-      );
     res.status(200).json({
       message: `Answered question ${questionOrder} of task ${taskOrder}`,
     });
 
-		// additional logic to upgrade student_task progress
+    // additional logic to upgrade student_task progress
     try {
-      const lastQuestion = await getLastQuestionFromTaskStage(taskOrder, 3);
-      if (lastQuestion.id_question === id_question) {
-        await upgradeStudentTaskProgress(taskOrder, idStudent, 3);
-        updateStudCurrTaskAttempt(idStudent, { active: false });
-      }
+      getLastQuestionFromTaskStage(taskOrder, 3).then(async (lastQuestion) => {
+        if (lastQuestion.id_question === question.id_question) {
+          upgradeStudentTaskProgress(taskOrder, idStudent, 3);
+          updateStudCurrTaskAttempt(idStudent, { active: false });
+        }
+      });
     } catch (err) {
       console.log(err);
     }

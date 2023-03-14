@@ -22,8 +22,3 @@ export async function answerQuestion(
         answer_seconds: answerSeconds,
     });
 }
-
-export async function createAnswer(answer: AnswerCreation): Promise<Answer> {
-    const newAnswer = await AnswerModel.create(answer);
-    return newAnswer;
-}
