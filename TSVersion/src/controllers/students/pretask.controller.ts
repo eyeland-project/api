@@ -27,6 +27,7 @@ import {
 import { getTaskByOrder } from "../../services/task.service";
 import {
   canStudentAnswerPretask,
+  getStudentTaskByOrder,
   upgradeStudentTaskProgress,
 } from "../../services/studentTask.service";
 
@@ -103,55 +104,58 @@ export async function answer(
   const { taskOrder, questionOrder } = req.params;
   const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
 
-  try {
-    if (!idOption) return res.status(400).json({ message: "Missing idOption" });
+  if (taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
+  if (questionOrder < 1)
+    return res.status(400).json({ message: "Bad questionOrder" });
+  if (!idOption || idOption < 1)
+    return res.status(400).json({ message: "Bad idOption" });
 
-    // create task attempt if required
-    let idTaskAttempt;
-    if (newAttempt) {
-      await finishStudTaskAttempts(idStudent);
-      const { id_task } = await getTaskByOrder(taskOrder);
-      idTaskAttempt = (await createTaskAttempt(idStudent, id_task, null))
-        .id_task_attempt;
-    } else {
-      try {
-        idTaskAttempt = (await getStudCurrTaskAttempt(idStudent))
-          .id_task_attempt;
-      } catch (err) {
-        const { id_task } = await getTaskByOrder(taskOrder);
-        idTaskAttempt = (await createTaskAttempt(idStudent, id_task, null))
-          .id_task_attempt;
+  try {
+    const task = await getTaskByOrder(taskOrder);
+
+    if (taskOrder !== 1) {
+      const { highest_stage } = await getStudentTaskByOrder(
+        idStudent,
+        taskOrder - 1
+      );
+      if (highest_stage < 3) {
+        return res.status(403).json({
+          message: `Student must complete PosTask from task ${taskOrder - 1}`,
+        });
       }
     }
 
-    // verify student can answer (task_attempt is active, progress is correct)
-    if (!canStudentAnswerPretask(taskOrder, idStudent)) {
-      return res
-        .status(403)
-        .json({ message: "Student cannot answer this pretask" });
-    }
-
     // verify question exists
-    const { id_question } = await getQuestionByOrder(
-      taskOrder,
-      1,
-      questionOrder
-    );
+    const question = await getQuestionByOrder(taskOrder, 1, questionOrder);
 
     // verify option belongs to question
     const option = await getOptionById(idOption);
-    if (id_question !== option.id_question) {
+    if (question.id_question !== option.id_question) {
       return res
         .status(400)
         .json({ message: "Option does not belong to question" });
     }
+
+    // create task attempt if required
+    let taskAttempt;
+    if (newAttempt) {
+      await finishStudTaskAttempts(idStudent);
+      taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
+    } else {
+      try {
+        taskAttempt = await getStudCurrTaskAttempt(idStudent);
+      } catch (err) {
+        taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
+      }
+    }
+
     await answerQuestion(
       taskOrder,
       1,
       questionOrder,
       idOption,
       answerSeconds,
-      idTaskAttempt
+      taskAttempt.id_task_attempt
     );
     res.status(200).json({
       message: `Answered question ${questionOrder} of task ${taskOrder}`,
@@ -159,10 +163,17 @@ export async function answer(
 
     // additional logic to upgrade student_task progress
     try {
-      const lastQuestion = await getLastQuestionFromTaskStage(taskOrder, 1);
-      if (lastQuestion.id_question === id_question) {
-        await upgradeStudentTaskProgress(taskOrder, idStudent, 1);
-      }
+      getLastQuestionFromTaskStage(taskOrder, 1)
+        .then((lastQuestion) => {
+          if (lastQuestion.id_question === question.id_question) {
+            upgradeStudentTaskProgress(taskOrder, idStudent, 1).catch((err) => {
+              console.log(err);
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } catch (err) {
       console.log(err);
     }

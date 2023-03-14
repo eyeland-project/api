@@ -17,7 +17,7 @@ export function onConnection(socket: Socket) {
     socket.handshake.auth
 
     // FUNCTIONS
-    async function onId(id: number | string, cb: (session: { session: boolean }) => void) {
+    async function onId(id: number | string, cb?: (session: { session: boolean }) => void) {
         // check if id is string
         if (typeof id === 'string') {
             // check if id is a number
@@ -69,16 +69,8 @@ export function onConnection(socket: Socket) {
         printStudentsDir();
 
         const { session } = await getCourseById(idCourse);
-        if (!cb) {
-            console.log('S: student invalid callback', socket.id);
-            console.log(cb);
-            return;
-        }
-        console.log("S: TYPE:", typeof cb);
-        if (typeof cb !== 'function') {
-            console.log('S: student invalid callback', socket.id, cb);
-            return;
-        }
+        
+        if (!cb || typeof cb !== 'function') return;
         cb({ session });
     }
 

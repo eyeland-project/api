@@ -3,6 +3,18 @@ import sequelize from "../database/db";
 import { TaskProgressResp as TaskProgressRespStud } from "../types/responses/students.types";
 import { StudentTask } from "../types/StudentTask.types";
 import { TaskModel } from "../models";
+import { ApiError } from "../middlewares/handleErrors";
+
+export async function getStudentTaskByOrder(idStudent: number, taskOrder: number): Promise<StudentTask> {
+  const studentTasks = await sequelize.query<StudentTask>(`
+        SELECT st.* FROM student_task st
+        JOIN task t ON t.id_task = st.id_task
+        WHERE st.id_student = ${idStudent} AND t.task_order = ${taskOrder}
+        LIMIT 1;
+  `, { type: QueryTypes.SELECT });
+  if (!studentTasks.length) throw new ApiError("Student task not found", 404);
+  return studentTasks[0];
+}
 
 export async function getStudentTaskProgressByOrder(
   taskOrder: number,
@@ -22,8 +34,6 @@ export async function getStudentTaskProgressByOrder(
     { type: QueryTypes.SELECT }
   );
   console.log(studentTasks);
-  
-
   const highestStage = studentTasks.length ? studentTasks[0].highest_stage : 0;
   return {
     pretask: {
@@ -60,7 +70,7 @@ export async function canStudentAnswerPretask(
   taskOrder: number,
   idStudent: number
 ): Promise<boolean> {
-  if (+taskOrder === 1) return true;
+  if (taskOrder === 1) return true;
 
   const results = await sequelize.query(
     `
