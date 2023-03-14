@@ -227,7 +227,8 @@ CREATE TABLE answer (
     CONSTRAINT fk_answer_question FOREIGN KEY (id_question) REFERENCES question(id_question),
     CONSTRAINT fk_answer_option FOREIGN KEY (id_option) REFERENCES option(id_option),
     CONSTRAINT fk_answer_task_attempt FOREIGN KEY (id_task_attempt) REFERENCES task_attempt(id_task_attempt),
-    CONSTRAINT fk_answer_team FOREIGN KEY (id_team) REFERENCES team(id_team)
+    CONSTRAINT fk_answer_team FOREIGN KEY (id_team) REFERENCES team(id_team),
+    CONSTRAINT uk_answer UNIQUE (id_task_attempt, id_question, id_option) -- a student can only answer a question once per task_attempt
 );
 
 -- TODO: create table Animal
