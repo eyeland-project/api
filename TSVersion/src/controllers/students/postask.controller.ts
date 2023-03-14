@@ -25,6 +25,7 @@ import {
   createTaskAttempt,
   finishStudTaskAttempts,
   getStudCurrTaskAttempt,
+  updateStudCurrTaskAttempt,
 } from "../../services/taskAttempt.service";
 import { getTaskByOrder } from "../../services/task.service";
 import {
@@ -133,14 +134,15 @@ export async function answer(
       3,
       questionOrder
     );
-    if (questionType === "select") {
-      const { answerSeconds, idOption } = req.body as AnswerOptionReq;
+    const { answerSeconds, idOption } = req.body as AnswerOptionReq;
       if (!idOption) {
         return res.status(400).json({ message: "Missing idOption" });
       }
 
 			// verify if option belongs to question
       const option = await getOptionById(idOption);
+      console.log(id_question, option.id_question);
+      
       if (id_question !== option.id_question) {
         return res
           .status(400)
@@ -155,13 +157,6 @@ export async function answer(
         answerSeconds,
         idTaskAttempt
       );
-    } else if (questionType === "audio") {
-      // const { answerSeconds, audio } = req.body as AnswerAudioReq;
-      // const storage = multer.memoryStorage();
-      // const upload = multer({ storage });
-      // const file = req.file;
-      // const userId = req.body.userId;
-    }
     res.status(200).json({
       message: `Answered question ${questionOrder} of task ${taskOrder}`,
     });
@@ -171,6 +166,7 @@ export async function answer(
       const lastQuestion = await getLastQuestionFromTaskStage(taskOrder, 3);
       if (lastQuestion.id_question === id_question) {
         await upgradeStudentTaskProgress(taskOrder, idStudent, 3);
+        updateStudCurrTaskAttempt(idStudent, { active: false });
       }
     } catch (err) {
       console.log(err);
