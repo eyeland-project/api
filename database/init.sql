@@ -295,6 +295,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Throw exception if all team members don't doing the same task
+CREATE OR REPLACE FUNCTION check_team_tasks() RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM task_attempt t1
+    WHERE t1.id_team = NEW.id_team AND t1.id_task <> NEW.id_task AND t1.active
+  ) THEN
+    RAISE EXCEPTION 'Team members must be doing the same task';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- TRIGGERS
 -- Trigger to insert records into the student_task table for each new student
 CREATE TRIGGER insert_student_task_for_new_student_trigger
@@ -313,6 +326,12 @@ CREATE TRIGGER insert_task_stage_for_new_task_trigger
 AFTER INSERT ON task
 FOR EACH ROW
 EXECUTE FUNCTION insert_task_stage_for_new_task();
+
+-- Trigger to check that all team members are doing the same task
+CREATE TRIGGER check_team_tasks_trigger
+BEFORE INSERT OR UPDATE ON task_attempt
+FOR EACH ROW
+EXECUTE FUNCTION check_team_tasks();
 
 -- INSERTING DATA
 -- INSERT INTO task

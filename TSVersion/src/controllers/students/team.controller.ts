@@ -11,6 +11,7 @@ import { PowerReq } from "../../types/requests/students.types";
 import { Namespace, of } from '../../listeners/sockets';
 import { TeamMember } from '../../types/Student.types';
 import { directory, printStudentsDir } from '../../listeners/namespaces/students';
+import { getTaskById } from '../../services/task.service';
 
 export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Function) {
     const { id: idStudent } = req.user!;
@@ -78,6 +79,13 @@ export async function joinTeam(req: Request<LoginTeamReq>, res: Response, next: 
         const teammates = await getMembersFromTeam({ idTeam: team.id_team });
         if (teammates.length >= 3) throw new ApiError('Team is full', 400);
 
+        if (teammates.length) {
+            // check if the team is already working on a different task
+            const { id_task } = await getStudCurrTaskAttempt(teammates[0].id_student);
+            const { task_order } = await getTaskById(id_task); 
+            if (task_order !== taskOrder) throw new ApiError('This team is already working on a different task', 400);
+        }
+        
         await addStudentToTeam(idStudent, team.id_team, taskOrder);
         res.status(200).json({ message: 'Done' });
 
