@@ -31,7 +31,7 @@ import {
   getTeammates,
 } from "../../services/student.service";
 import { OutgoingEvents, Power } from "../../types/enums";
-import { getMembersFromTeam } from "../../services/team.service";
+import { getMembersFromTeam, updateTeam } from "../../services/team.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
 import { createAnswer } from "../../services/answer.service";
 import { directory } from "../../listeners/namespaces/students";
@@ -135,11 +135,11 @@ export async function answer(
   const { id: idStudent } = req.user!;
 
   const socket = directory.get(idStudent);
-  if (!socket)
+  if (!socket) {
     return res.status(400).json({ message: "Student is not connected" });
+  }
 
   try {
-		
     // - get student's current task attempt and get student's team id from task attempt
     const { id_team, id_task_attempt } = await getStudCurrTaskAttempt(
       idStudent
@@ -196,6 +196,8 @@ export async function answer(
               });
             })
             .catch((err) => console.log(err));
+          
+          updateTeam(id_team, { active: false }).catch((err) => console.log(err));
         }
       });
     } catch (err) {
