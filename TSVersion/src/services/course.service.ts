@@ -85,38 +85,6 @@ export async function getTeamsFromCourseWithStudents(idCourse: number): Promise<
     });
 }
 
-export async function createCourseSession(idCourse: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    const { session, id_course } = await getCourseById(idCourse);
-    if (session) throw new ApiError("Course already has an active session", 400);
-
-    await updateCourse(idCourse, { session: true });
-    nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_CREATE);
-}
-
-export async function endCourseSession(idCourse: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    const { session, id_course } = await getCourseById(idCourse);
-    if (!session) throw new ApiError("Course has no active session", 400);
-
-    await updateCourse(idCourse, { session: false });
-    nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_END);
-}
-
-export async function startCourseSession(idCourse: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    const { session, id_course } = await getCourseById(idCourse);
-    if (!session) throw new ApiError("Course has no active session", 400);
-
-    nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_START);
-}
-
 export function getStudentsFromCourse(idCourse: number): Promise<Student[]> {
     return StudentModel.findAll({ where: { id_course: idCourse } });
 }
