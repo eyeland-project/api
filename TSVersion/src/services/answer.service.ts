@@ -1,6 +1,5 @@
 import { AnswerModel } from "../models";
 import { Answer, AnswerCreation } from "../types/Answer.types";
-import { getQuestionByOrder } from "./question.service";
 
 export async function createAnswer(
     idQuestion: number,

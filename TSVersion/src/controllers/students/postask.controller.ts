@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  getAnswerFromQuestionOfAttempt,
   getQuestionByOrder,
   getTaskStageQuestionsCount,
 } from "../../services/question.service";
@@ -153,7 +154,12 @@ export async function answer(
         .status(400)
         .json({ message: "Current Task attempt is from another task" });
     }
-
+    
+    try {
+      await getAnswerFromQuestionOfAttempt(taskAttempt.id_task_attempt, question.id_question);
+      return res.status(400).json({ message: "Question already answered in this attempt" });
+    } catch (err) {}
+    
     await createAnswer(
       question.id_question,
       idOption,
@@ -161,12 +167,12 @@ export async function answer(
       taskAttempt.id_task_attempt
     );
     res.status(200).json({
-      message: `Answered question ${questionOrder} of task ${taskOrder}`,
+      message: `Answered question ${questionOrder} of postask ${taskOrder}`,
     });
 
     // additional logic to upgrade student_task progress
     try {
-      getLastQuestionFromTaskStage(taskOrder, 3).then(async (lastQuestion) => {
+      getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
         if (lastQuestion.id_question === question.id_question) {
           upgradeStudentTaskProgress(taskOrder, idStudent, 3);
           updateStudCurrTaskAttempt(idStudent, { active: false });

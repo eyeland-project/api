@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  getAnswerFromQuestionOfAttempt,
   getQuestionByOrder,
   getTaskStageQuestionsCount,
 } from "../../services/question.service";
@@ -41,8 +42,6 @@ import { AnswerOptionReq } from "../../types/requests/students.types";
 import { createAnswer } from "../../services/answer.service";
 import { directory } from "../../listeners/namespaces/students";
 import {
-  getStudentTaskProgressByOrder,
-  canStudentAnswerDuringtask,
   upgradeStudentTaskProgress,
   getStudentTaskByOrder,
 } from "../../services/studentTask.service";
@@ -194,6 +193,11 @@ export async function answer(
     if (question.id_question !== option.id_question)
       throw new ApiError("Option does not belong to question", 400);
 
+    try {
+      await getAnswerFromQuestionOfAttempt(taskAttempt.id_task_attempt, question.id_question);
+      return res.status(400).json({ message: "Question already answered in this attempt" });
+    } catch (err) {}
+    
     await createAnswer(
       question.id_question,
       idOption,
