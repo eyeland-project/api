@@ -101,11 +101,14 @@ export async function answer(
   next: Function
 ) {
   const { id: idStudent } = req.user!;
-  const { taskOrder, questionOrder } = req.params;
+  const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } = req.params;
   const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
 
-  if (taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
-  if (questionOrder < 1)
+  const taskOrder = +taskOrderStr;
+  const questionOrder = +questionOrderStr;
+  
+  if (isNaN(taskOrder) || taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
+  if (isNaN(questionOrder) || questionOrder < 1)
     return res.status(400).json({ message: "Bad questionOrder" });
   if (!idOption || idOption < 1)
     return res.status(400).json({ message: "Bad idOption" });

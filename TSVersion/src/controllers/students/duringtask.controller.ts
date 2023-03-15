@@ -136,17 +136,20 @@ export async function answer(
   res: Response,
   next: Function
 ) {
-  const { taskOrder, questionOrder } = req.params;
-  const { idOption, answerSeconds } = req.body;
   const { id: idStudent } = req.user!;
+  const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } = req.params;
+  const { idOption, answerSeconds } = req.body;
 
+  const taskOrder = +taskOrderStr;
+  const questionOrder = +questionOrderStr;
+  
   const socket = directory.get(idStudent);
   if (!socket) {
     return res.status(400).json({ message: "Student is not connected" });
   }
 
-  if (taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
-  if (questionOrder < 1)
+  if (isNaN(taskOrder) || taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
+  if (isNaN(questionOrder) || questionOrder < 1)
     return res.status(400).json({ message: "Bad questionOrder" });
   if (!idOption || idOption < 1)
     return res.status(400).json({ message: "Bad idOption" });
