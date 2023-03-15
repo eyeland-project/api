@@ -2,8 +2,9 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TaskProgressResp as TaskProgressRespStud } from "../types/responses/students.types";
 import { StudentTask } from "../types/StudentTask.types";
-import { TaskModel } from "../models";
+import { StudentTaskModel, TaskModel } from "../models";
 import { ApiError } from "../middlewares/handleErrors";
+import { Task } from "../types/Task.types";
 
 export async function getStudentTaskByOrder(
   idStudent: number,
@@ -22,7 +23,7 @@ export async function getStudentTaskByOrder(
   return studentTasks[0];
 }
 
-export async function getStudentTaskProgressByOrder(
+export async function getStudentProgressFromTaskByOrder(
   taskOrder: number,
   idStudent: number
 ): Promise<TaskProgressRespStud> {
@@ -70,4 +71,23 @@ export async function upgradeStudentTaskProgress(
     `,
     { type: QueryTypes.UPDATE }
   );
+}
+
+export async function getStudentTasks(idStudent: number): Promise<StudentTask[]> {
+  return StudentTaskModel.findAll({ where: { id_student: idStudent } });
+}
+
+export async function getHighestTaskCompletedFromStudent(idStudent: number): Promise<Task | null> {
+  const tasks = await sequelize.query<Task>(`
+    SELECT t.*
+    FROM student_task st
+    JOIN task t ON t.id_task = st.id_task
+    WHERE st.id_student = ${idStudent} AND st.highest_stage = 3
+    ORDER BY t.task_order DESC
+    LIMIT 1;
+  `, {
+    type: QueryTypes.SELECT,
+  });
+  if (!tasks.length) return null;
+  return tasks[0];
 }

@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { getTasksFromStudentWithCompleted, getTaskByOrder } from '../../services/task.service';
 import { TaskResp, TaskIntroResp, TaskProgressResp } from '../../types/responses/students.types';
-import { getStudentTaskProgressByOrder } from '../../services/studentTask.service';
+import { getStudentProgressFromTaskByOrder } from '../../services/studentTask.service';
 import { finishStudTaskAttempts } from '../../services/taskAttempt.service';
 
 // interface UserWithId{
@@ -54,7 +54,7 @@ export async function getProgress(req: Request<{ taskOrder: number }>, res: Resp
     try {
         const { id: idStudent } = req.user!;
         const { taskOrder } = req.params;
-        res.status(200).json(await getStudentTaskProgressByOrder(taskOrder, idStudent));
+        res.status(200).json(await getStudentProgressFromTaskByOrder(taskOrder, idStudent));
     } catch (err) {
         next(err);
     }
