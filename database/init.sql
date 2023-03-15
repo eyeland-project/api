@@ -461,19 +461,19 @@ INSERT INTO option (id_question, content, feedback, correct) VALUES (5, 'Yes, th
 INSERT INTO option (id_question, content, feedback, correct) VALUES (5, 'Yes, we are', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (5, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Palermo town is [near] the {road}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Tasajera town is [behind] the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Palermo town is [on] the {bridge}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Tasajera town is [under] the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Palermo town is [near] Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Tasajera town isn''t [near] Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (6, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is [between] the {hotel} and Terranova {farm}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is [between] the {beach} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is [between] the {toll} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is [between] the {bridge} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is [between] the {beach} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is [between] the {hotel} and the {beach}', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (7, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
 INSERT INTO option (id_question, content, feedback, correct) VALUES (8, 'Yes, it is', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (8, 'No, it isn''t', 'Incorrect!', FALSE);
@@ -520,19 +520,19 @@ INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Yes, t
 INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Yes, we are', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is [near] the {road}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town is [behind] the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is [on] the {bridge}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town is [under] the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is [near] Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town isn''t [near] Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is [between] the {hotel} and Terranova {farm}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is [between] the {beach} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is [between] the {toll} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is [between] the {bridge} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is [between] the {beach} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is [between] the {hotel} and the {beach}', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
 INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Yes, it is', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'No, it isn''t', 'Incorrect!', FALSE);
@@ -579,19 +579,19 @@ INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Yes, t
 INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Yes, we are', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is [near] the {road}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town is [behind] the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is [on] the {bridge}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town is [under] the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is [near] Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town isn''t [near] Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is [between] the {hotel} and Terranova {farm}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is [between] the {beach} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is [between] the {toll} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is [between] the {bridge} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is [between] the {beach} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is [between] the {hotel} and the {beach}', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
 INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'Yes, it is', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'No, it isn''t', 'Incorrect!', FALSE);
@@ -638,19 +638,19 @@ INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'Yes, t
 INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'Yes, we are', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is [near] the {road}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town is [behind] the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is [on] the {bridge}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town is [under] the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is [near] Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town isn''t [near] Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is [between] the {hotel} and Terranova {farm}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is [between] the {beach} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is [between] the {toll} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is [between] the {bridge} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is [between] the {beach} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is [between] the {hotel} and the {beach}', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
 INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'Yes, it is', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'No, it isn''t', 'Incorrect!', FALSE);
@@ -697,19 +697,19 @@ INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'Yes, t
 INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'Yes, we are', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is [near] the {road}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town is [behind] the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is [on] the {bridge}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town is [under] the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is [near] Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town isn''t [near] Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is [between] the {hotel} and Terranova {farm}', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is [between] the {beach} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is [between] the {toll} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is [between] the {bridge} and the {river}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is [between] the {beach} and the {road}', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is [between] the {hotel} and the {beach}', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
 INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'Yes, it is', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'No, it isn''t', 'Incorrect!', FALSE);
