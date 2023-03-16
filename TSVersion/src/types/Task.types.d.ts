@@ -8,7 +8,8 @@ export interface Task {
     long_description?: string | null;
     keywords: string[];
     thumbnail_url?: string | null;
+    coming_soon: boolean;
     deleted: boolean;
 };
 
-export type TaskCreation = Omit<Task, 'id_task'>;
+export type TaskCreation = Omit<Task, 'id_task' | 'coming_soon'>;

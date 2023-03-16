@@ -1227,7 +1227,15 @@
           },
           "completed": {
             "type": "boolean",
-            "description": "If the task was completed successfully"
+            "description": "If the task was completed"
+          },
+          "blocked": {
+            "type": "boolean",
+            "description": "If the task is blocked"
+          },
+          "comingSoon": {
+            "type": "boolean",
+            "description": "If the task is coming soon"
           },
           "thumbnailUrl": {
             "type": "string",

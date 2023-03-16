@@ -13,6 +13,8 @@ export interface TaskResp {
     description: string,
     taskOrder: number,
     completed: boolean,
+    blocked: boolean,
+    comingSoon: boolean,
     thumbnailUrl: string
 }
 

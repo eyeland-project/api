@@ -1,8 +1,8 @@
 
 import { Request, Response } from 'express';
-import { getTasksFromStudentWithCompleted, getTaskByOrder } from '../../services/task.service';
+import { getTaskByOrder } from '../../services/task.service';
 import { TaskResp, TaskIntroResp, TaskProgressResp } from '../../types/responses/students.types';
-import { getStudentProgressFromTaskByOrder } from '../../services/studentTask.service';
+import { getStudentProgressFromTaskByOrder, getTasksFromStudentWithCompleted } from '../../services/studentTask.service';
 import { finishStudTaskAttempts } from '../../services/taskAttempt.service';
 
 // interface UserWithId{

@@ -25,28 +25,6 @@ export async function getTaskById(idTask: number): Promise<Task> {
     return task;
 }
 
-export async function getTasksFromStudentWithCompleted(idStudent: number): Promise<TaskRespStudent[]> {
-    interface TaskWithHighestStage extends Task {
-        highest_stage: number;
-    }
-    const tasks = await sequelize.query(`
-        SELECT t.*, st.highest_stage
-        FROM task t
-        LEFT JOIN student_task st ON t.id_task = st.id_task
-        WHERE st.id_student = ${idStudent}
-        ORDER BY task_order ASC;
-    `, { type: QueryTypes.SELECT }) as TaskWithHighestStage[];
-
-    return tasks.map(({ id_task, name, description, task_order, highest_stage, thumbnail_url }) => ({
-        id: id_task,
-        name,
-        description,
-        taskOrder: task_order,
-        completed: highest_stage === 3, // 3 is the highest stage
-        thumbnailUrl: thumbnail_url
-    } as TaskRespStudent));
-}
-
 // export async function getAllLinksByOrder(taskOrder: number): Promise<any> {
 //     // throw new Error("Method not implemented.");
 //     const task = (await Task.findOne({where: {orden: taskOrder}}));
