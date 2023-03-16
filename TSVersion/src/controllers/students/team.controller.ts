@@ -37,7 +37,7 @@ export async function getTeams(req: Request, res: Response<TeamResp[]>, next: Fu
         const teamsWithTasks = await sequelize.query<TeamWithTask>(`
             SELECT te.id_team, t.task_order
             FROM team te
-            LEFT JOIN task_attempt ta ON ta.id_team = te.id_team AND ta.active = te.active
+            LEFT JOIN task_attempt ta ON ta.id_team = te.id_team AND ta.active = true
             LEFT JOIN task t ON t.id_task = ta.id_task
             WHERE ${activeTeams.map(team => `te.id_team = ${team.id}`).join(' OR ')}
             GROUP BY te.id_team, t.task_order;
