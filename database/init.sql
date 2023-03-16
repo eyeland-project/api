@@ -10,7 +10,7 @@ CREATE TABLE task (
     id_task SMALLSERIAL NOT NULL,
     task_order SMALLINT NOT NULL,
     name VARCHAR(100) NOT NULL,
-    description VARCHAR(100) NOT NULL,
+    description VARCHAR(200) NOT NULL,
     long_description VARCHAR(1000),
     keywords VARCHAR(50)[] NOT NULL DEFAULT '{}',
     thumbnail_url VARCHAR(2048),
@@ -62,7 +62,7 @@ CREATE TABLE question (
     id_question SERIAL NOT NULL,
     id_task_stage SMALLINT NOT NULL,
     question_order SMALLINT NOT NULL,
-    content VARCHAR(100) NOT NULL,
+    content VARCHAR(200) NOT NULL,
     audio_url VARCHAR(2048),
     video_url VARCHAR(2048),
     type VARCHAR(50) NOT NULL,
@@ -336,11 +336,16 @@ EXECUTE FUNCTION check_team_tasks();
 
 -- INSERTING DATA
 -- INSERT INTO task
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (1, 'Task 1', 'Description for Task 1', 'Long description for Task 1', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (2, 'Task 2', 'Description for Task 2', 'Long description for Task 2', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (3, 'Task 3', 'Description for Task 3', 'Long description for Task 3', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (4, 'Task 4', 'Description for Task 4', 'Long description for Task 4', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (5, 'Task 5', 'Description for Task 5', 'Long description for Task 5', '{ "Keyword 1", "Keyword 2", "Keyword 3" }', 'https://picsum.photos/300/200');
+-- <a href="https://www.freepik.es/foto-gratis/puente-cable-murom-traves-oka_1469557.htm#page=2&query=bridge&position=0&from_view=search&track=sph">Imagen de bearfotos</a> en Freepik
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (1, 'Journey to the Mangroves', 'Join a virtual journey to Parque Isla Salamanca, while learning basic English phrases related to travel and nature.', 'Get ready for a fun journey from Barranquilla to Parque Isla Salamanca! We''ll cross a big bridge and the sea, while learning how to say hello, goodbye, and thank you in English. You''ll also learn new words and phrases related to travel and nature, like "boat", "beach", "mountain", and "tree". Are you excited?', '{ "travel", "nature", "vocabulary", "phrases", "basic English", "bridge", "sea" }', 'https://img.freepik.com/foto-gratis/puente-cable-murom-traves-oka_1398-3511.jpg');
+-- <a href="https://www.freepik.es/foto-gratis/ancho-rio-cerca-rio-negro-jamaica-paisaje-exotico-manglares_14875432.htm#query=mangrove%20swamp&position=33&from_view=search&track=ais">Imagen de mb-photoarts</a> en Freepik
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (2, 'Meet the Animals', 'Explore the wildlife of the mangroves, learning animal names, habits, and habitats.', 'Let''s explore the amazing wildlife of the mangroves! We''ll meet different animals, like birds, crabs, and reptiles, and learn how to say their names and where they live. We''ll also learn some cool facts about their habits and how they survive in the mangroves. Get ready to have fun and learn new things!', '{ "wildlife", "animals", "names", "habits", "habitats", "birds", "crabs", "reptiles" }', 'https://img.freepik.com/foto-gratis/ancho-rio-cerca-rio-negro-jamaica-paisaje-exotico-manglares_333098-202.jpg');
+-- Foto de Tom Fisk: https://www.pexels.com/es-es/foto/arboles-verdes-2666806/
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (3, 'Eco Adventures', 'Go on eco-friendly adventures, like hiking, kayaking, and fishing, while practicing English phrases related to outdoor activities and environmental awareness.', 'It''s time for some eco-friendly adventures in the mangroves! We''ll go hiking, kayaking, and fishing, while learning new English phrases related to outdoor activities, like "let''s go!", "I''m having fun", and "this is beautiful". We''ll also learn how to take care of the environment and why it''s important to protect the mangroves. Are you up for the challenge?', '{ "eco-friendly", "adventures", "hiking", "kayaking", "fishing", "phrases", "outdoor activities", "environmental awareness" }', 'https://images.pexels.com/photos/2666806/pexels-photo-2666806.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+-- Foto de icon0.com: https://www.pexels.com/es-es/foto/madera-paisaje-naturaleza-verano-726298/
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (4, 'Local Culture', 'Discover the local culture and traditions of the communities surrounding Parque Isla Salamanca, learning about food, music, dance, and crafts.', 'Let''s discover the local culture and traditions of the communities surrounding Parque Isla Salamanca! We''ll learn how to say hello and how are you in English, and we''ll also learn about the delicious food, fun music, colorful dance, and beautiful crafts that make this place special. You''ll even get to practice some English expressions and have a virtual chat with a local friend!', '{ "local culture", "traditions", "food", "music", "dance", "crafts", "greetings", "expressions", "social interaction" }', 'https://images.pexels.com/photos/726298/pexels-photo-726298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+-- Foto de Marcel Kodama: https://www.pexels.com/es-es/foto/bosque-de-bambu-con-hilera-de-arboles-en-un-dia-soleado-3632689/
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url) VALUES (5, 'The Great Challenge', 'Use all your English skills to solve a mystery or complete a puzzle related to the mangroves, consolidating your learning and having fun.', 'Are you ready for the ultimate challenge? In this final task, you''ll have to use all your English skills to solve a mystery or complete a puzzle related to the history, geography, and ecology of the mangroves. You''ll have fun and learn at the same time, while consolidating all the knowledge you''ve gained during the previous tasks. Do you have what it takes to be a great English learner?', '{ "English skills", "mystery", "puzzle", "mangroves", "learning", "fun" }', 'https://images.pexels.com/photos/3632689/pexels-photo-3632689.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
 
 -- INSERT INTO blindness_acuity
 INSERT INTO blindness_acuity (name, level, description) VALUES ('None', 0, 'Equal to or better than: 6/12 | 5/10 (0.5) | 20/40 | 0.3');
@@ -370,82 +375,85 @@ INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 3, 'Prepositions o
 
 -- INSERT INTO question
 -- square brackets: prepositions; curly braces: nouns
--- task 1
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 2, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 3, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (3, 1, 'What was your favorite part of the activity?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (3, 2, 'Did you learn any new information about Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
--- task 2
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 2, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 3, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (6, 1, 'What was your favorite part of the activity?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (6, 2, 'Did you learn any new information about Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
--- task 3
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 2, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 3, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (9, 1, 'What was your favorite part of the activity?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (9, 2, 'Did you learn any new information about Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
--- task 4
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 2, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 3, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (12, 1, 'What was your favorite part of the activity?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (12, 2, 'Did you learn any new information about Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
--- task 5
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 1, 'What''s your name?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 2, 'How old are you?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 3, 'Where are you from?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (15, 1, 'What was your favorite part of the activity?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
-INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (15, 2, 'Did you learn any new information about Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://picsum.photos/300/200');
+-- questions from task 1
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 1, 'How do you greet someone?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 2, 'Which one is about nature?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (1, 3, 'What can you find in Isla Salamanca?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (2, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (3, 1, 'What was a part of the road?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (3, 2, 'How do you thank someone?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+-- questions from task 2
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 1, 'Which of the following animals lives in the mangroves?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 2, 'Which of the following animals is a reptile?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (4, 3, 'Which of the following animals can fly?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 1, 'What is the name of the bird that is often found in the mangroves?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 2, 'Which of the following animals has a hard shell for protection?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 3, 'What is the name of the snake that is commonly found in the mangroves?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 4, 'Which of the following animals is a herbivore?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 5, 'Which of the following animals is NOT commonly found in the mangroves?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 6, 'What is the name of the animal that can change its skin color?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (5, 7, 'Which of the following birds is known for its long, curved beak?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (6, 1, 'Which of the following animals did you learn about?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (6, 2, 'Which of the following words did you learn about the ecosystem?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/mangrove,animals');
+-- questions from task 3
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 1, 'How do you greet someone?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 2, 'Which one is about nature?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (7, 3, 'What can you find in Isla Salamanca?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (8, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (9, 1, 'What was a part of the road?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (9, 2, 'How do you thank someone?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+-- questions from task 4
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 1, 'How do you greet someone?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 2, 'Which one is about nature?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (10, 3, 'What can you find in Isla Salamanca?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (11, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (12, 1, 'What was a part of the road?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (12, 2, 'How do you thank someone?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+-- questions from task 5
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 1, 'How do you greet someone?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 2, 'Which one is about nature?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (13, 3, 'What can you find in Isla Salamanca?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (14, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (15, 1, 'What was a part of the road?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
+INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url) VALUES (15, 2, 'How do you thank someone?', NULL, NULL, 'audio', NULL, 'https://loremflickr.com/320/240/bridge');
 
 -- INSERT INTO option
--- task 1
-INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'My name is Walter Hartwell White.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'I don''t know.', 'Incorrect!', FALSE);
+-- options for task 1
+INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'Hello', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'Good morning', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (1, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (2, 'I am 52 years old.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (2, 'I don''t remember.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (2, 'Mangrove', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (2, 'Hotel', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (2, 'Car', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (3, 'I live at 308 Negra Arroyo Lane Albuquerque New Mexico', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (3, 'I am from Mars.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (3, 'Lakes', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (3, 'Beaches', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (3, 'Mountains', 'Incorrect!', FALSE);
 
 INSERT INTO option (id_question, content, feedback, correct) VALUES (4, 'Yes, we are', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (4, 'No, we aren''t', 'Incorrect!', FALSE);
@@ -496,241 +504,283 @@ INSERT INTO option (id_question, content, feedback, correct) VALUES (10, 'No, th
 INSERT INTO option (id_question, content, feedback, correct) VALUES (10, 'Yes, there aren''t', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (10, 'No, there is', 'Incorrect!', FALSE);
 
--- task 2
-INSERT INTO option (id_question, content, feedback, correct) VALUES (11, 'My name is Walter Hartwell White.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (11, 'I don''t know.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (11, 'The bridge', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (11, 'The tunnel', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (12, 'I am 52 years old.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (12, 'I don''t remember.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (12, 'Thank you', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (12, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (13, 'I live at 308 Negra Arroyo Lane Albuquerque New Mexico', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (13, 'I am from Mars.', 'Incorrect!', FALSE);
+-- options for task 2
+INSERT INTO option (id_question, content, feedback, correct) VALUES (13, 'Hello', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (13, 'Good morning', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (13, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'Yes, we are', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'No, we aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'Yes, we aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'No, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'Yes, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'Mangrove', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'Hotel', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (14, 'Car', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Yes, there is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'No, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Yes, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'No, she isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Lakes', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Beaches', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (15, 'Mountains', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is near the road', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town is under the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Yes, we are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'No, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Yes, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'No, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (16, 'Yes, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the beach and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the toll and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the bridge and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the beach and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'Yes, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'Yes, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (17, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Yes, it is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'No, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Yes, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'No, it is', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Yes, he is', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (18, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'Yes, there are', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'Yes, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'No, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'No, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (19, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'Yes, it is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'No, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'Yes, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'No, it is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'Yes, he is', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'Yes, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'No, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'Yes, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (20, 'No, there is', 'Incorrect!', FALSE);
 
--- task 3
-INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'My name is Walter Hartwell White.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'I don''t know.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'Yes, there are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'Yes, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'No, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (21, 'No, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'I am 52 years old.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'I don''t remember.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'Yes, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (22, 'No, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (23, 'I live at 308 Negra Arroyo Lane Albuquerque New Mexico', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (23, 'I am from Mars.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (23, 'The bridge', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (23, 'The tunnel', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'Yes, we are', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'No, we aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'Yes, we aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'No, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'Yes, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'Thank you', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (24, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Yes, there is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'No, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Yes, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'No, she isn''t', 'Incorrect!', FALSE);
+-- options for task 3
+INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Hello', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Good morning', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (25, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is near the road', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town is under the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Mangrove', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Hotel', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (26, 'Car', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the beach and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the toll and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the bridge and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the beach and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'Lakes', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'Beaches', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (27, 'Mountains', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'Yes, it is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'No, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'Yes, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'No, it is', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'Yes, he is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'Yes, we are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'No, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'Yes, we aren''t', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'No, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (28, 'Yes, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'Yes, there are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'Yes, there is', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'No, there aren''t', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'No, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'No, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'Yes, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (29, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Yes, there is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Yes, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'No, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Yes, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'No, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (30, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
--- task 4
-INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'My name is Walter Hartwell White.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'I don''t know.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (31, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'I am 52 years old.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'I don''t remember.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'Yes, it is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'No, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'Yes, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'No, it is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'Yes, he is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (32, 'No, there isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'I live at 308 Negra Arroyo Lane Albuquerque New Mexico', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'I am from Mars.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'Yes, there are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'Yes, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'No, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (33, 'No, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'Yes, we are', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'No, we aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'Yes, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'Yes, there is', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'No, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'Yes, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'Yes, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (34, 'No, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'Yes, there is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'No, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'Yes, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'No, she isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'The bridge', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (35, 'The tunnel', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is near the road', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town is under the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Thank you', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (36, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the beach and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the toll and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the bridge and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the beach and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
+-- options for task 4
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'Hello', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'Good morning', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (37, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'Yes, it is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'No, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'Yes, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'No, it is', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'Yes, he is', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'Mangrove', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'Hotel', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (38, 'Car', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'Yes, there are', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'Yes, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'No, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'No, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'Lakes', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'Beaches', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (39, 'Mountains', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'Yes, we are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'No, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'Yes, we aren''t', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'Yes, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'No, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'Yes, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'No, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'No, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (40, 'Yes, there is', 'Incorrect!', FALSE);
 
--- task 5
-INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'My name is Walter Hartwell White.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'I don''t know.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'Yes, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'Yes, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (41, 'No, she isn''t', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'I am 52 years old.', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'I don''t remember.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (42, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'I live at 308 Negra Arroyo Lane Albuquerque New Mexico', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'I am from Mars.', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (43, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'Yes, we are', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'No, we aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'Yes, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'Yes, it is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'No, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'Yes, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'No, it is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'Yes, he is', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'No, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (44, 'Yes, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'Yes, there are', 'Correct!', TRUE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'Yes, there aren''t', 'Incorrect!', FALSE);
 INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'Yes, we are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'No, she isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'No, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (45, 'No, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is near the road', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town is under the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Yes, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (46, 'No, there is', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the beach and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the toll and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the bridge and the river', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the beach and the road', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'The bridge', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (47, 'The tunnel', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'Yes, it is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'No, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'Yes, it isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'No, it is', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'Yes, he is', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'Thank you', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (48, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'Yes, there are', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'Yes, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'Yes, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'No, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'No, there is', 'Incorrect!', FALSE);
+-- options for task 5
+INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'Hello', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'Good morning', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (49, 'Goodbye', 'Incorrect!', FALSE);
 
-INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'Yes, there is', 'Correct!', TRUE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'No, there isn''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'Yes, there are', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'No, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'Yes, there aren''t', 'Incorrect!', FALSE);
-INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'No, there is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'Mangrove', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'Hotel', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (50, 'Car', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (51, 'Lakes', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (51, 'Beaches', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (51, 'Mountains', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (52, 'Yes, we are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (52, 'No, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (52, 'Yes, we aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (52, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (52, 'No, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (52, 'Yes, there is', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (53, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (53, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (53, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (53, 'Yes, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (53, 'Yes, we are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (53, 'No, she isn''t', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (54, 'Palermo town is near the road', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (54, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (54, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (54, 'Tasajera town is under the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (54, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (54, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (55, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (55, 'It is between the beach and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (55, 'It is between the toll and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (55, 'It is between the bridge and the river', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (55, 'It is between the beach and the road', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (55, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (56, 'Yes, it is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (56, 'No, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (56, 'Yes, it isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (56, 'No, it is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (56, 'Yes, he is', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (56, 'No, there isn''t', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (57, 'Yes, there are', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (57, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (57, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (57, 'Yes, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (57, 'No, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (57, 'No, there is', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (58, 'Yes, there is', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (58, 'No, there isn''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (58, 'Yes, there are', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (58, 'No, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (58, 'Yes, there aren''t', 'Incorrect!', FALSE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (58, 'No, there is', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (59, 'The bridge', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (59, 'The tunnel', 'Incorrect!', FALSE);
+
+INSERT INTO option (id_question, content, feedback, correct) VALUES (60, 'Thank you', 'Correct!', TRUE);
+INSERT INTO option (id_question, content, feedback, correct) VALUES (60, 'Goodbye', 'Incorrect!', FALSE);
 
 -- *INSERTANDO USUARIOS E INSTITUCIONES DE PRUEBA
 -- INSERT INTO institution
