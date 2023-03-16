@@ -57,7 +57,7 @@ export async function getTeamsFromCourseWithStudents(idCourse: number): Promise<
     const studentsWithTeam = await sequelize.query<StudentWithTeam>(`
         SELECT t.id_team, t.code, t.name, t.active, s.id_student, s.username, s.first_name, s.last_name, ta.power
         FROM team t
-        LEFT JOIN task_attempt ta ON ta.id_team = t.id_team
+        LEFT JOIN task_attempt ta ON ta.id_team = t.id_team AND t.active = ta.active
         LEFT JOIN student s ON s.id_student = ta.id_student
         WHERE t.id_course = ${idCourse};
     `, { type: QueryTypes.SELECT });
