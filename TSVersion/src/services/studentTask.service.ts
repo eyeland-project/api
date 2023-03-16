@@ -19,7 +19,7 @@ export async function getTasksFromStudentWithCompleted(idStudent: number): Promi
       ORDER BY task_order ASC;
   `, { type: QueryTypes.SELECT }) as TaskWithHighestStage[];
 
-  return tasks.map(({ id_task, name, description, task_order, highest_stage, thumbnail_url, coming_soon }, index) => ({
+  return tasks.map(({ id_task, name, description, task_order, highest_stage, thumbnail_url, coming_soon, thumbnail_alt }, index) => ({
       id: id_task,
       name,
       description,
@@ -27,6 +27,7 @@ export async function getTasksFromStudentWithCompleted(idStudent: number): Promi
       completed: highest_stage === 3, // 3 is the highest stage
       blocked: task_order === 1 ? false : tasks[index - 1].highest_stage < 3,
       thumbnailUrl: thumbnail_url,
+      thumbnailAlt: thumbnail_alt,
       comingSoon: coming_soon
   } as TaskRespStudent));
 }

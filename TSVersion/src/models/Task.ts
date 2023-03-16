@@ -13,6 +13,7 @@ class TaskModel extends Model<Task, TaskCreation> {
     declare long_description?: string | null;
     declare keywords: string[];
     declare thumbnail_url?: string | null;
+    declare thumbnail_alt?: string | null;
     declare coming_soon: boolean;
     declare deleted: boolean;
 }
@@ -46,6 +47,9 @@ TaskModel.init({
     },
     thumbnail_url: {
         type: DataTypes.STRING(2048)
+    },
+    thumbnail_alt: {
+        type: DataTypes.STRING(50)
     },
     coming_soon: {
         type: DataTypes.BOOLEAN,

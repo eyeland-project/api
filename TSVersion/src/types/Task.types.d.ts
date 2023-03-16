@@ -8,6 +8,7 @@ export interface Task {
     long_description?: string | null;
     keywords: string[];
     thumbnail_url?: string | null;
+    thumbnail_alt?: string | null;
     coming_soon: boolean;
     deleted: boolean;
 };

@@ -42,6 +42,7 @@ export async function getIntro(req: Request<{ taskOrder: number }>, res: Respons
             description: task.description,
             taskOrder: task.task_order,
             thumbnailUrl: task.thumbnail_url || '',
+            thumbnailAlt: task.thumbnail_alt || '',
             keywords: task.keywords,
             longDescription: task.long_description || ''
         });

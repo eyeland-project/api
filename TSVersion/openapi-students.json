@@ -1240,6 +1240,10 @@
           "thumbnailUrl": {
             "type": "string",
             "description": "The url of the thumbnail of the task"
+          },
+          "thumbnailAlt": {
+            "type": "string",
+            "description": "The alt of the thumbnail of the task"
           }
         }
       },
@@ -1264,6 +1268,10 @@
           "thumbnailUrl": {
             "type": "string",
             "description": "The url of the thumbnail of the task"
+          },
+          "thumbnailAlt": {
+            "type": "string",
+            "description": "The alt of the thumbnail of the task"
           },
           "keywords": {
             "type": "array",
