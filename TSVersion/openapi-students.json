@@ -1227,11 +1227,23 @@
           },
           "completed": {
             "type": "boolean",
-            "description": "If the task was completed successfully"
+            "description": "If the task was completed"
+          },
+          "blocked": {
+            "type": "boolean",
+            "description": "If the task is blocked"
+          },
+          "comingSoon": {
+            "type": "boolean",
+            "description": "If the task is coming soon"
           },
           "thumbnailUrl": {
             "type": "string",
             "description": "The url of the thumbnail of the task"
+          },
+          "thumbnailAlt": {
+            "type": "string",
+            "description": "The alt of the thumbnail of the task"
           }
         }
       },
@@ -1256,6 +1268,10 @@
           "thumbnailUrl": {
             "type": "string",
             "description": "The url of the thumbnail of the task"
+          },
+          "thumbnailAlt": {
+            "type": "string",
+            "description": "The alt of the thumbnail of the task"
           },
           "keywords": {
             "type": "array",

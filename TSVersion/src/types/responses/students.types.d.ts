@@ -13,7 +13,10 @@ export interface TaskResp {
     description: string,
     taskOrder: number,
     completed: boolean,
-    thumbnailUrl: string
+    blocked: boolean,
+    comingSoon: boolean,
+    thumbnailUrl: string;
+    thumbnailAlt: string;
 }
 
 export interface TaskIntroResp {
@@ -22,6 +25,7 @@ export interface TaskIntroResp {
     description: string,
     taskOrder: number,
     thumbnailUrl: string,
+    thumbnailAlt: string,
     keywords: string[],
     longDescription: string
 }
