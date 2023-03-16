@@ -1,8 +1,9 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
-import { TaskModel, TaskStageModel } from "../models";
+import { QuestionModel, TaskModel, TaskStageModel } from "../models";
 import { TaskStage } from "../types/TaskStage.types";
 import { ApiError } from "../middlewares/handleErrors";
+import { Question } from "../types/Question.types";
 
 export async function getTaskStageByOrder(taskOrder: number, taskStageOrder: number): Promise<TaskStage> {
     const taskStages = await sequelize.query(`
@@ -15,25 +16,15 @@ export async function getTaskStageByOrder(taskOrder: number, taskStageOrder: num
     return taskStages[0];
 }
 
-export async function duringtaskAvailable(idStudent: number): Promise<boolean> {
-    const results = await sequelize.query(`
-        SELECT c.session, t.active FROM student s
-        LEFT JOIN task_attempt ta ON s.id_student = ta.id_student
-        LEFT JOIN team t ON ta.id_team = t.id_team
-        LEFT JOIN course c ON c.id_course = s.id_course
-        WHERE s.id_student = ${idStudent} AND ta.active = TRUE AND c.session = TRUE AND t.active = TRUE
+export async function getLastQuestionFromTaskStage(taskOrder: number, taskStageOrder: number): Promise<Question> {
+    const questions = await sequelize.query(`
+        SELECT q.* FROM question q
+        JOIN task_stage ts ON q.id_task_stage = ts.id_task_stage
+        JOIN task t ON ts.id_task = t.id_task
+        WHERE t.task_order = ${taskOrder} AND ts.task_stage_order = ${taskStageOrder}
+        ORDER BY q.question_order DESC
         LIMIT 1;
-    `, { type: QueryTypes.SELECT }) as { session: boolean, active: boolean }[];
-    return results.length != 0;
-}
-
-export async function postaskAvailable(idStudent: number): Promise<boolean> {
-    const results = await sequelize.query(`
-        SELECT c.session FROM student s
-        LEFT JOIN task_attempt ta ON s.id_student = ta.id_student
-        LEFT JOIN course c ON c.id_course = s.id_course
-        WHERE s.id_student = ${idStudent} AND ta.active = TRUE AND c.session = TRUE
-        LIMIT 1;
-    `, { type: QueryTypes.SELECT }) as { session: boolean, active: boolean }[];
-    return results.length != 0;
+    `, { type: QueryTypes.SELECT }) as Question[];
+    if (!questions.length) throw new ApiError('Question not found', 404);
+    return questions[0];
 }

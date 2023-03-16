@@ -12,12 +12,12 @@ export enum IncommingEvents{
 };
 
 export enum OutgoingEvents{
-    TeamUpdate = 'team:student:update',
-    TeamsUpdate = 'teams:student:update',
+    TEAM_UPDATE = 'team:student:update',
+    TEAMS_UPDATE = 'teams:student:update',
     
-    SessionCreate = 'session:teacher:create',
-    SessionEnd = 'session:teacher:end',
-    SessionStart = 'session:teacher:start',
+    SESSION_CREATE = 'session:teacher:create',
+    SESSION_END = 'session:teacher:end',
+    SESSION_START = 'session:teacher:start',
 
-    Answer = 'team:student:answer',
+    ANSWER = 'team:student:answer',
 };

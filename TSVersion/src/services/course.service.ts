@@ -1,13 +1,14 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
-import { CourseModel, TeamModel } from "../models";
+import { CourseModel, StudentModel, TeamModel } from "../models";
 import { Course } from "../types/Course.types";
 import { Team } from "../types/Team.types";
 import { Namespace, of } from "../listeners/sockets";
 import { OutgoingEvents, Power } from "../types/enums";
 import { groupBy } from "../utils";
 import { TeamResp } from "../types/responses/globals.types";
+import { Student } from "../types/Student.types";
 
 // COURSE CRUD
 // get many
@@ -40,7 +41,7 @@ export async function getTeamsFromCourse(idCourse: number): Promise<Team[]> {
     return await TeamModel.findAll({ where: { id_course: idCourse } });
 }
 
-export async function getTeamsFromCourseWithStud(idCourse: number, active: boolean): Promise<TeamResp[]> {
+export async function getTeamsFromCourseWithStudents(idCourse: number): Promise<TeamResp[]> {
     type StudentWithTeam = {
         id_team: number;
         code: string;
@@ -56,15 +57,12 @@ export async function getTeamsFromCourseWithStud(idCourse: number, active: boole
     const studentsWithTeam = await sequelize.query<StudentWithTeam>(`
         SELECT t.id_team, t.code, t.name, t.active, s.id_student, s.username, s.first_name, s.last_name, ta.power
         FROM team t
-        LEFT JOIN task_attempt ta ON ta.id_team = t.id_team AND ta.active = ${active}
+        LEFT JOIN task_attempt ta ON ta.id_team = t.id_team
         LEFT JOIN student s ON s.id_student = ta.id_student
-        WHERE t.id_course = ${idCourse} AND t.active = ${active};
+        WHERE t.id_course = ${idCourse};
     `, { type: QueryTypes.SELECT });
 
-    // console.log(studentsWithTeam);
-
     const teams = groupBy(studentsWithTeam, 'id_team') as StudentWithTeam[][];
-    // console.log(teams);
     return teams.map((students) => {
         const { active, code, id_team, name } = students[0];
         return {
@@ -74,7 +72,7 @@ export async function getTeamsFromCourseWithStud(idCourse: number, active: boole
             active: active,
             students: students
             .filter(({id_student})=>{
-                return id_student != null;
+                return id_student !== null;
             })
             .map(({ id_student, username, first_name, last_name, power }) => ({
                 id: id_student,
@@ -87,34 +85,6 @@ export async function getTeamsFromCourseWithStud(idCourse: number, active: boole
     });
 }
 
-export async function createCourseSession(idCourse: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    const { session, id_course } = await getCourseById(idCourse);
-    if (session) throw new ApiError("Course already has an active session", 400);
-
-    await updateCourse(idCourse, { session: true });
-    nsp.to('c' + id_course).emit(OutgoingEvents.SessionCreate);
-}
-
-export async function endCourseSession(idCourse: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    const { session, id_course } = await getCourseById(idCourse);
-    if (!session) throw new ApiError("Course has no active session", 400);
-
-    await updateCourse(idCourse, { session: false });
-    nsp.to('c' + id_course).emit(OutgoingEvents.SessionEnd);
-}
-
-export async function startCourseSession(idCourse: number) {
-    const nsp = of(Namespace.STUDENTS);
-    if (!nsp) throw new ApiError("Namespace not found", 500);
-
-    const { session, id_course } = await getCourseById(idCourse);
-    if (!session) throw new ApiError("Course has no active session", 400);
-
-    nsp.to('c' + id_course).emit(OutgoingEvents.SessionStart);
+export function getStudentsFromCourse(idCourse: number): Promise<Student[]> {
+    return StudentModel.findAll({ where: { id_course: idCourse } });
 }

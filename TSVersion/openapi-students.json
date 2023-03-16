@@ -255,6 +255,55 @@
         }
       }
     },
+    "/tasks/{taskOrder}/pretask/complete": {
+      "post": {
+        "description": "Set the pretask as completed",
+        "tags": [
+          "task"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the task",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid taskOrder"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Task not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/tasks/{taskOrder}/duringtask": {
       "get": {
         "description": "Get the pretask based on the number of the Task",

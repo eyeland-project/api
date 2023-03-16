@@ -2,7 +2,7 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { TeamModel } from "../models";
 import { Team } from "../types/Team.types";
-import { createTaskAttempt, updateStudCurrTaskAttempt } from "./taskAttempt.service";
+import { createTaskAttempt, getStudCurrTaskAttempt, updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
 import { Student, TeamMember } from "../types/Student.types";
@@ -69,9 +69,14 @@ export async function updateTeam(idTeam: number, fields: Partial<Team>) {
 }
 
 export async function addStudentToTeam(idStudent: number, idTeam: number, taskOrder: number) {
+    let currTaskAttempt;
     try {
+        currTaskAttempt = await getStudCurrTaskAttempt(idStudent);
+    } catch (err) {}
+
+    if (currTaskAttempt) {
         await updateStudCurrTaskAttempt(idStudent, { id_team: idTeam });
-    } catch (err) {
+    } else {
         console.log('Student has no task attempt, creating one...');
         const { id_task } = await getTaskByOrder(taskOrder);
         await createTaskAttempt(idStudent, id_task, idTeam);

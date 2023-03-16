@@ -3,6 +3,17 @@ import sequelize from "../database/db";
 import { QuestionModel } from "../models";
 import { Question } from "../types/Question.types";
 import { ApiError } from "../middlewares/handleErrors";
+import { Answer } from "../types/Answer.types";
+
+export async function getAnswerFromQuestionOfAttempt(idTaskAttempt: number, idQuestion: number): Promise<Answer> {
+    const answers = await sequelize.query<Answer>(`
+        SELECT a.* FROM answer a
+        WHERE a.id_question = ${idQuestion} AND a.id_task_attempt = ${idTaskAttempt}
+        LIMIT 1;
+    `, { type: QueryTypes.SELECT });
+    if (!answers.length) throw new ApiError('Answer not found', 404);
+    return answers[0];
+}
 
 export async function getQuestionByOrder(
     taskOrder: number,

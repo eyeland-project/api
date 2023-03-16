@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getTeamsFromCourseWithStud } from "../../services/course.service";
+import { getTeamsFromCourseWithStudents } from "../../services/course.service";
 import {
     createTeam as createTeamServ,
     getTeamById,
@@ -14,7 +14,10 @@ export async function getTeams(req: Request<{ idCourse: number }>, res: Response
     const { idCourse } = req.params;
     const { active } = req.query as { active?: boolean };
     try {
-        res.status(200).json(await getTeamsFromCourseWithStud(idCourse, active === false ? false : true)); // get active teams by default
+        const teams = (await getTeamsFromCourseWithStudents(idCourse)).filter(({ active: teamActive }) => (
+            active === undefined ? true : teamActive === active
+        ));
+        res.status(200).json(teams);
     } catch (err) {
         next(err);
     }

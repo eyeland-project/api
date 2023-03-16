@@ -4,14 +4,13 @@ import {
     getCourses as getCoursesServ,
     createCourse as createCourseServ,
     updateCourse as updateCourseServ,
-    deleteCourse as deleteCourseServ,
-    createCourseSession,
-    endCourseSession,
-    startCourseSession
+    deleteCourse as deleteCourseServ
 } from "../../services/course.service";
 import { CourseResp, CourseSummResp, ElementCreatedResp } from "../../types/responses/teachers.types";
 import { CourseCreateReq, CourseUpdateReq } from "../../types/requests/teachers.types";
 import { getTeacherById } from "../../services/teacher.service";
+import { Namespace, of } from "../../listeners/sockets";
+import { OutgoingEvents } from "../../types/enums";
 
 export async function getCourses(req: Request, res: Response<CourseSummResp[]>, next: Function) {
     try {
@@ -76,21 +75,42 @@ export async function deleteCourse(req: Request<{ idCourse: number }>, res: Resp
     }
 }
 
-export async function startSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
+export async function createSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
     const { idCourse } = req.params;
+    const nsp = of(Namespace.STUDENTS);
+    if (!nsp) {
+        return res.status(500).json({ message: 'Namespace not found' });
+    }
+    
     try {
-        await startCourseSession(idCourse);
-        res.status(200).json({ message: 'Session started successfully' });
+        const { session, id_course } = await getCourseById(idCourse);
+        if (session) {
+            return res.status(400).json({ message: 'Course already has an active session' });
+        }
+
+        await updateCourseServ(idCourse, { session: true });
+        nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_CREATE);
+        res.status(201).json({ message: 'Session created successfully' });
     } catch (err) {
         next(err);
     }
 }
 
-export async function createSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
+export async function startSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
     const { idCourse } = req.params;
+    const nsp = of(Namespace.STUDENTS);
+    if (!nsp) {
+        return res.status(500).json({ message: 'Namespace not found' });
+    }
+    
     try {
-        await createCourseSession(idCourse);
-        res.status(201).json({ message: 'Session created successfully' });
+        const { session, id_course } = await getCourseById(idCourse);
+        if (!session) {
+            return res.status(400).json({ message: 'Course has no active session' });
+        }
+
+        nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_START);
+        res.status(200).json({ message: 'Session started successfully' });
     } catch (err) {
         next(err);
     }
@@ -98,8 +118,19 @@ export async function createSession(req: Request<{ idCourse: number }>, res: Res
 
 export async function endSession(req: Request<{ idCourse: number }>, res: Response, next: Function) {
     const { idCourse } = req.params;
+    const nsp = of(Namespace.STUDENTS);
+    if (!nsp) {
+        return res.status(500).json({ message: 'Namespace not found' });
+    }
+
     try {
-        await endCourseSession(idCourse);
+        const { session, id_course } = await getCourseById(idCourse);
+        if (!session) {
+            return res.status(400).json({ message: 'Course has no active session' });
+        }
+
+        await updateCourseServ(idCourse, { session: false });
+        nsp.to('c' + id_course).emit(OutgoingEvents.SESSION_END);
         res.status(200).json({ message: 'Session ended successfully' });
     } catch (err) {
         next(err);

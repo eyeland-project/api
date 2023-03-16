@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 
 export function printDirectory(directory: Map<number, Socket>, name?: string) {
-    console.log(`S: directory ${name ? `(${name})` : ''}`);
+    console.log(`S: directory ${name ? `(${name})` : ''} ***`);
     for (let [key, value] of directory) {
         console.log(key, value.id);
     }
