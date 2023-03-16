@@ -208,3 +208,8 @@ export function getIdFromToken(token: string): number {
     }
     return payload.id;
 }
+
+let counter = 0;
+export function incrementCounter(): number {
+    return counter++;
+}
