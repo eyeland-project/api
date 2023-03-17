@@ -11,11 +11,12 @@ import {
   addStudentToTeam,
   getMembersFromTeam,
   getTeamByCode,
+  notifyTeamOfUpdate,
   removeStudFromTeam
 } from "../../services/team.service";
 import { ApiError } from "../../middlewares/handleErrors";
 import { LoginTeamReq } from "../../types/requests/students.types";
-import { getTeamsFromCourseWithStudents } from "../../services/course.service";
+import { getTeamsFromCourseWithStudents, notifyCourseOfTeamUpdate } from "../../services/course.service";
 import {
   StudentSocket,
   TeamResp,
@@ -204,53 +205,17 @@ export async function joinTeam(
 
       getBlindnessAcFromStudent(idStudent)
         .then(async ({ level }) => {
-          let power: Power | null;
           try {
-            power = await assignPowerToStudent(
+            await assignPowerToStudent(
               idStudent,
               "auto",
               teammates,
               level,
               false
             );
-          } catch (err) {
-            console.log(err);
-            power = null;
-          }
-
-          let teamsData: TeamSocket[] | undefined; // for the course
-          let teamData: StudentSocket[] | undefined; // for the team the student joined
-
-          try {
-            teamsData = (
-              await getTeamsFromCourseWithStudents(team.id_course)
-            ).filter((t) => t.active);
-          } catch (err) {
-            console.log(err);
-          }
-
-          if (teamsData) {
-            socket.broadcast
-              .to("c" + team.id_course)
-              .except("t" + team.id_team)
-              .emit(OutgoingEvents.TEAMS_UPDATE, teamsData);
-            teamData = teamsData.find((t) => t.id === team.id_team)?.students;
-          }
-          if (!teamData) {
-            teamData = [
-              ...summMembers(teammates),
-              {
-                id: idStudent,
-                firstName: student.first_name,
-                lastName: student.last_name,
-                username: student.username,
-                power
-              }
-            ];
-          }
-          socket.broadcast
-            .to("t" + team.id_team)
-            .emit(OutgoingEvents.TEAM_UPDATE, teamData);
+          } catch (err) {}
+          notifyCourseOfTeamUpdate(student.id_course, team.id_team, idStudent);
+          notifyTeamOfUpdate(team.id_team, idStudent);
         })
         .catch((err) => console.log(err));
 
@@ -342,17 +307,6 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
   }
 }
 
-export async function reqPower(req: Request, res: Response, next: Function) {
-  const { power } = req.body as PowerReq;
-  const { id: idStudent } = req.user!;
-  try {
-    await assignPowerToStudent(idStudent, power);
-    res.status(200).json({ message: "Power assigned successfully" });
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function ready(req: Request, res: Response, next: Function) {
   const { id: idStudent } = req.user!;
   try {
@@ -370,9 +324,9 @@ export async function reroll(req: Request, res: Response, next: Function) {
   try {
     // * Students are being notified directly in the rafflePower function
     const power = await rafflePower(idStudent);
-    if (!power)
+    if (!power) {
       return res.status(304).json({ message: "You got the same power" });
-
+    }
     res.status(200).json({ power });
   } catch (err) {
     next(err);

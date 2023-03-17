@@ -7,10 +7,10 @@ import { Team } from "../types/Team.types";
 import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import { updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { OutgoingEvents, Power } from "../types/enums";
-import { getAvailablePowers, getMembersFromTeam } from "./team.service";
+import { getAvailablePowers, getMembersFromTeam, notifyTeamOfUpdate } from "./team.service";
 import { Course } from "../types/Course.types";
 import { directory } from "../listeners/namespaces/students";
-import { getTeamsFromCourseWithStudents } from "./course.service";
+import { getTeamsFromCourseWithStudents, notifyCourseOfTeamUpdate } from "./course.service";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);
@@ -91,30 +91,8 @@ export async function rafflePower(idStudent: number) {
   // ** else, assign the power to the student
   assignPower(idStudent, powers[randomIdx]);
 
-  const members = await getMembersFromTeam({ idTeam: id_team });
-  const studentSocket = directory.get(idStudent);
-
-  if (studentSocket) {
-    studentSocket.to(`t${id_team}`).emit(OutgoingEvents.TEAM_UPDATE, {
-      ...members.map((member) => ({
-        id: member.id_student,
-        firstName: member.first_name,
-        lastName: member.last_name,
-        username: member.username,
-        power: member.task_attempt.power
-      }))
-    });
-
-    const teams = (await getTeamsFromCourseWithStudents(idStudent)).filter(
-      (t) => t.active
-    );
-    studentSocket
-      .to(`c${id_course}`)
-      .except(`t${id_team}`)
-      .emit(OutgoingEvents.TEAMS_UPDATE, teams);
-  } else {
-    console.log("StudentSocket not found");
-  }
+  notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
+  notifyTeamOfUpdate(id_team, idStudent);
 
   // * return the power
   return powers[randomIdx];
