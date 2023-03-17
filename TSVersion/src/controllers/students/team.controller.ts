@@ -206,14 +206,19 @@ export async function joinTeam(
       getBlindnessAcFromStudent(idStudent)
         .then(async ({ level }) => {
           try {
-            await assignPowerToStudent(
+            const power = await assignPowerToStudent(
               idStudent,
               "auto",
               teammates,
               level,
               false
             );
-          } catch (err) {}
+            console.log('power assigned*', power);
+            
+          } catch (err) {
+            console.log(err);
+            
+          }
           notifyCourseOfTeamUpdate(student.id_course, team.id_team, idStudent);
           notifyTeamOfUpdate(team.id_team, idStudent);
         })
