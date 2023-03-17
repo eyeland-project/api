@@ -130,12 +130,6 @@ export async function notifyCourseOfTeamUpdate(
   if (idTeam) {
     courseRoom = courseRoom.except(`t${idTeam}`);
   }
-  const inspect = require("util").inspect;
-  console.log(
-    "teams",
-    inspect(teams, { showHidden: false, depth: null, colors: true })
-  );
-
   courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, teams);
   // TODO: notify teacher
 }

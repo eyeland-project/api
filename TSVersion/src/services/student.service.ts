@@ -92,7 +92,7 @@ export async function rafflePower(idStudent: number) {
   assignPower(idStudent, powers[randomIdx]);
 
   notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
-  notifyTeamOfUpdate(id_team, idStudent);
+  notifyTeamOfUpdate(idStudent);
 
   // * return the power
   return powers[randomIdx];

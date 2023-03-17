@@ -102,7 +102,7 @@ export async function addStudentToTeam(
   let currTaskAttempt;
   try {
     currTaskAttempt = await getStudCurrTaskAttempt(idStudent);
-    console.log('1. currTaskAttempt', currTaskAttempt);
+    console.log("1. currTaskAttempt", currTaskAttempt);
   } catch (err) {}
 
   if (currTaskAttempt) {
@@ -119,26 +119,13 @@ export async function removeStudFromTeam(idStudent: number) {
   await updateStudCurrTaskAttempt(idStudent, { id_team: null });
 }
 
-export async function notifyTeamOfUpdate(idTeam: number, idStudent?: number) {
-  let teamRoom;
-  if (idStudent) {
-    const studentSocket = directoryStudents.get(idStudent);
-    if (!studentSocket) return;
-    teamRoom = studentSocket.broadcast.to(`t${idTeam}`);
-  } else {
-    const channelStudents = of(Namespace.STUDENTS);
-    if (!channelStudents) return;
-    teamRoom = channelStudents.to(`t${idTeam}`);
-  }
-  const members = await getMembersFromTeam({ idTeam: idTeam });
-  teamRoom.emit(OutgoingEvents.TEAM_UPDATE, {
-    ...members.map((member) => ({
-      id: member.id_student,
-      firstName: member.first_name,
-      lastName: member.last_name,
-      username: member.username,
-      power: member.task_attempt.power
-    }))
+export async function notifyTeamOfUpdate(idStudent?: number) {
+  if (!idStudent) return;
+  const studentSocket = directoryStudents.get(idStudent);
+  if (!studentSocket) return;
+  const { power } = await getStudCurrTaskAttempt(idStudent);
+  studentSocket.emit(OutgoingEvents.TEAM_UPDATE, {
+    power
   });
   // TODO: notify teacher
 }
