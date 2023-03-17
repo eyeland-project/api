@@ -1,157 +1,159 @@
-import { Power } from "../enums"
+import { Power } from "../enums";
 
 // API
 // auth
 export interface LoginResp {
-    token: string
+  token: string;
 }
 
 // tasks
 export interface TaskResp {
-    id: number,
-    name: string,
-    description: string,
-    taskOrder: number,
-    completed: boolean,
-    blocked: boolean,
-    comingSoon: boolean,
-    thumbnailUrl: string;
-    thumbnailAlt: string;
+  id: number;
+  name: string;
+  description: string;
+  taskOrder: number;
+  completed: boolean;
+  blocked: boolean;
+  comingSoon: boolean;
+  thumbnailUrl: string;
+  thumbnailAlt: string;
 }
 
 export interface TaskIntroResp {
-    id: number,
-    name: string,
-    description: string,
-    taskOrder: number,
-    thumbnailUrl: string,
-    thumbnailAlt: string,
-    keywords: string[],
-    longDescription: string
+  id: number;
+  name: string;
+  description: string;
+  taskOrder: number;
+  thumbnailUrl: string;
+  thumbnailAlt: string;
+  keywords: string[];
+  longDescription: string;
 }
 
 interface ProgressBody {
-    completed: boolean,
-    blocked: boolean
+  completed: boolean;
+  blocked: boolean;
 }
 
 export interface TaskProgressResp {
-    pretask: ProgressBody,
-    duringtask: ProgressBody,
-    postask: ProgressBody
+  pretask: ProgressBody;
+  duringtask: ProgressBody;
+  postask: ProgressBody;
 }
 
 // pretasks
 export interface PretaskResp {
-    description: string,
-    keywords: string[],
-    numQuestions: number,
-    numLinks: number
+  description: string;
+  keywords: string[];
+  numQuestions: number;
+  numLinks: number;
 }
 
 export interface PretaskLinkResp {
-    id: number,
-    topic: string,
-    url: string
+  id: number;
+  topic: string;
+  url: string;
 }
 
 export interface PretaskQuestionResp {
-    id: number,
-    content: string,
-    type: string,
-    imgAlt: string,
-    imgUrl: string,
-    options: {
-        id: number,
-        content: string,
-        correct: boolean,
-        feedback: string
-    }[]
+  id: number;
+  content: string;
+  type: string;
+  imgAlt: string;
+  imgUrl: string;
+  options: {
+    id: number;
+    content: string;
+    correct: boolean;
+    feedback: string;
+  }[];
 }
 
 // duringtasks
 export interface DuringtaskResp {
-    description: string,
-    keywords: string[],
-    numQuestions: number
+  description: string;
+  keywords: string[];
+  numQuestions: number;
 }
 
 export interface DuringtaskQuestionResp {
-    id: number,
-    content: string,
-    type: string,
-    imgAlt: string,
-    imgUrl: string,
-    audioUrl: string,
-    videoUrl: string,
-    nounTranslation?: string[],
-    prepositionTranslation?: string[],
-    options: {
-        id: number,
-        content: string,
-        correct: boolean,
-        feedback: string
-    }[]
+  id: number;
+  content: string;
+  type: string;
+  imgAlt: string;
+  imgUrl: string;
+  audioUrl: string;
+  videoUrl: string;
+  nounTranslation?: string[];
+  prepositionTranslation?: string[];
+  options: {
+    id: number;
+    content: string;
+    correct: boolean;
+    feedback: string;
+  }[];
 }
 
 // postasks
 export interface PostaskResp {
-    description: string,
-    keywords: string[],
-    numQuestions: number
+  description: string;
+  keywords: string[];
+  numQuestions: number;
 }
 
 export interface PostaskQuestionResp {
-    id: number,
-    content: string,
-    type: string,
-    imgAlt: string,
-    imgUrl: string,
-    audioUrl: string,
-    videoUrl: string,
-    options: {
-        id: number,
-        content: string,
-        correct: boolean,
-        feedback: string
-    }[]
+  id: number;
+  content: string;
+  type: string;
+  imgAlt: string;
+  imgUrl: string;
+  audioUrl: string;
+  videoUrl: string;
+  options: {
+    id: number;
+    content: string;
+    correct: boolean;
+    feedback: string;
+  }[];
 }
 
 // teams
 export interface TeamResp {
-    id: number,
-    code: string,
-    name: string,
-    students: {
-        id: number,
-        firstName: string,
-        lastName: string,
-        username: string,
-        power: Power | null
-    }[]
+  id: number;
+  code: string;
+  name: string;
+  students: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    username: string;
+    power: Power | null;
+  }[];
 }
 
 // SOCKETS
 export interface StudentSocket {
-    id: number,
-    firstName: string,
-    lastName: string,
-    username: string,
-    power: Power | null
+  id: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  power: Power | null;
 }
 
 export interface TeamSocket {
-    id: number,
-    students: StudentSocket[]
+  id: number;
+  students: StudentSocket[];
 }
 
 // SOCKETS
 export interface StudentSocket {
-    id: number,
-    firstName: string,
-    lastName: string,
-    username: string,
-    power: Power        
+  id: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  power: Power;
 }
 
-export type UserResp = Omit<StudentSocket, 'power'> & {visualCondition?: string};
+export type UserResp = Omit<StudentSocket, "power"> & {
+  visualCondition?: string;
+};

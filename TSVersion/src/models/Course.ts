@@ -1,69 +1,72 @@
 // imports
-import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../database/db';
-import InstitutionModel from './Institution';
-import TeacherModel from './Teacher';
-import { Course, CourseCreation } from '../types/Course.types';
+import { DataTypes, ForeignKey, Model } from "sequelize";
+import sequelize from "../database/db";
+import InstitutionModel from "./Institution";
+import TeacherModel from "./Teacher";
+import { Course, CourseCreation } from "../types/Course.types";
 
 // model class definition
 class CourseModel extends Model<Course, CourseCreation> {
-    declare id_course: number;
-    declare id_teacher: ForeignKey<number>;
-    declare id_institution: ForeignKey<number>;
-    declare name: string;
-    declare description?: string | null;
-    declare session: boolean;
+  declare id_course: number;
+  declare id_teacher: ForeignKey<number>;
+  declare id_institution: ForeignKey<number>;
+  declare name: string;
+  declare description?: string | null;
+  declare session: boolean;
 }
 
 // model initialization
-CourseModel.init({
+CourseModel.init(
+  {
     id_course: {
-        type: DataTypes.SMALLINT,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.SMALLINT,
+      primaryKey: true,
+      autoIncrement: true
     },
     id_teacher: {
-        type: DataTypes.SMALLINT,
-        allowNull: false
+      type: DataTypes.SMALLINT,
+      allowNull: false
     },
     id_institution: {
-        type: DataTypes.SMALLINT,
-        allowNull: false
+      type: DataTypes.SMALLINT,
+      allowNull: false
     },
     name: {
-        type: DataTypes.STRING(100),
-        allowNull: false
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     description: {
-        type: DataTypes.STRING(1000)
+      type: DataTypes.STRING(1000)
     },
     session: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
-}, {
+  },
+  {
     sequelize,
-    modelName: 'CourseModel',
-    tableName: 'course',
+    modelName: "CourseModel",
+    tableName: "course",
     timestamps: false
-});
+  }
+);
 
 // model associations
 // course and teacher
 TeacherModel.hasMany(CourseModel, {
-    foreignKey: 'id_teacher'
+  foreignKey: "id_teacher"
 });
 CourseModel.belongsTo(TeacherModel, {
-    foreignKey: 'id_teacher'
+  foreignKey: "id_teacher"
 });
 
 // course and institution
 InstitutionModel.hasMany(CourseModel, {
-    foreignKey: 'id_institution'
+  foreignKey: "id_institution"
 });
 CourseModel.belongsTo(InstitutionModel, {
-    foreignKey: 'id_institution'
+  foreignKey: "id_institution"
 });
 
 export default CourseModel;

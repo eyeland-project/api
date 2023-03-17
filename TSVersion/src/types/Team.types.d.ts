@@ -1,11 +1,11 @@
 import { Model, ForeignKey } from "sequelize";
 
 export interface Team {
-    id_team: number;
-    id_course: number;
-    name: string;
-    code?: string | null;
-    active: boolean;
-};
+  id_team: number;
+  id_course: number;
+  name: string;
+  code?: string | null;
+  active: boolean;
+}
 
-export type TeamCreation = Omit<Team, 'id_team' | 'active'>;
+export type TeamCreation = Omit<Team, "id_team" | "active">;

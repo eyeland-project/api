@@ -2,48 +2,48 @@ import { Request, Response } from "express";
 import {
   getAnswerFromQuestionOfAttempt,
   getQuestionByOrder,
-  getTaskStageQuestionsCount,
+  getTaskStageQuestionsCount
 } from "../../services/question.service";
 import {
   DuringtaskQuestionResp,
-  DuringtaskResp,
+  DuringtaskResp
 } from "../../types/responses/students.types";
 import {
   getOptionById,
-  getQuestionOptions,
+  getQuestionOptions
 } from "../../services/option.service";
 import {
   getLastQuestionFromTaskStage,
-  getTaskStageByOrder,
+  getTaskStageByOrder
 } from "../../services/taskStage.service";
 import { ApiError } from "../../middlewares/handleErrors";
 import {
   createTaskAttempt,
-  getStudCurrTaskAttempt,
+  getStudCurrTaskAttempt
 } from "../../services/taskAttempt.service";
 import {
   translateFormat,
   distributeOptions,
   shuffle,
-  indexPower,
+  indexPower
 } from "../../utils";
 import {
   getCourseFromStudent,
   getTeamFromStudent,
-  getTeammates,
+  getTeammates
 } from "../../services/student.service";
 import { OutgoingEvents, Power } from "../../types/enums";
 import {
   getMembersFromTeam,
   getTeamById,
-  updateTeam,
+  updateTeam
 } from "../../services/team.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
 import { createAnswer } from "../../services/answer.service";
 import { directory } from "../../listeners/namespaces/students";
 import {
   upgradeStudentTaskProgress,
-  getStudentTaskByOrder,
+  getStudentTaskByOrder
 } from "../../services/studentTask.service";
 import { getTaskByOrder } from "../../services/task.service";
 
@@ -61,7 +61,7 @@ export async function root(
     res.status(200).json({
       description: description,
       keywords: keywords,
-      numQuestions: await getTaskStageQuestionsCount(id_task_stage),
+      numQuestions: await getTaskStageQuestionsCount(id_task_stage)
     });
   } catch (err) {
     next(err);
@@ -85,7 +85,7 @@ export async function getQuestion(
       img_alt,
       img_url,
       audio_url,
-      video_url,
+      video_url
     } = await getQuestionByOrder(taskOrder, 2, questionOrder);
     let options = await getQuestionOptions(id_question);
 
@@ -93,17 +93,23 @@ export async function getQuestion(
     const { id_team, power } = await getStudCurrTaskAttempt(idStudent);
 
     // * If student has no team, send error
-    if (!id_team || !power){
-        throw new ApiError('No team or power found', 400);
+    if (!id_team || !power) {
+      throw new ApiError("No team or power found", 400);
     }
-    const members = (await getTeammates(idStudent, {idTeam: id_team})).map(({ task_attempt }) => task_attempt.power);
+    const members = (await getTeammates(idStudent, { idTeam: id_team })).map(
+      ({ task_attempt }) => task_attempt.power
+    );
     members.push(power);
     members.sort((a, b) => indexPower(a) - indexPower(b));
 
     // * shuffle options
     options = shuffle(options, id_team);
     // * distribute options based on power
-    options = distributeOptions(options, members.indexOf(power) + 1, members.length);
+    options = distributeOptions(
+      options,
+      members.indexOf(power) + 1,
+      members.length
+    );
 
     res.status(200).json({
       content,
@@ -119,8 +125,8 @@ export async function getQuestion(
         id: id_option,
         content,
         correct,
-        feedback: feedback || "",
-      })),
+        feedback: feedback || ""
+      }))
     });
   } catch (err) {
     next(err);
@@ -137,18 +143,20 @@ export async function answer(
   next: Function
 ) {
   const { id: idStudent } = req.user!;
-  const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } = req.params;
+  const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } =
+    req.params;
   const { idOption, answerSeconds } = req.body;
 
   const taskOrder = +taskOrderStr;
   const questionOrder = +questionOrderStr;
-  
+
   const socket = directory.get(idStudent);
   if (!socket) {
     return res.status(400).json({ message: "Student is not connected" });
   }
 
-  if (isNaN(taskOrder) || taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
+  if (isNaN(taskOrder) || taskOrder < 1)
+    return res.status(400).json({ message: "Bad taskOrder" });
   if (isNaN(questionOrder) || questionOrder < 1)
     return res.status(400).json({ message: "Bad questionOrder" });
   if (!idOption || idOption < 1)
@@ -165,7 +173,7 @@ export async function answer(
     const { highest_stage } = await getStudentTaskByOrder(idStudent, taskOrder);
     if (highest_stage < 1) {
       return res.status(403).json({
-        message: `Student must complete PreTask from task ${taskOrder}`,
+        message: `Student must complete PreTask from task ${taskOrder}`
       });
     }
 
@@ -185,11 +193,7 @@ export async function answer(
     await getTeamFromStudent(idStudent);
 
     // - Check if question exists and is in the correct task stage, and get question_id
-    const question = await getQuestionByOrder(
-      taskOrder,
-      2,
-      questionOrder
-    );
+    const question = await getQuestionByOrder(taskOrder, 2, questionOrder);
 
     // - Check if option exists and is in the correct question
     const option = await getOptionById(idOption);
@@ -197,10 +201,15 @@ export async function answer(
       throw new ApiError("Option does not belong to question", 400);
 
     try {
-      await getAnswerFromQuestionOfAttempt(taskAttempt.id_task_attempt, question.id_question);
-      return res.status(400).json({ message: "Question already answered in this attempt" });
+      await getAnswerFromQuestionOfAttempt(
+        taskAttempt.id_task_attempt,
+        question.id_question
+      );
+      return res
+        .status(400)
+        .json({ message: "Question already answered in this attempt" });
     } catch (err) {}
-    
+
     await createAnswer(
       question.id_question,
       idOption,
@@ -214,7 +223,7 @@ export async function answer(
       socket.broadcast
         .to(`t${taskAttempt.id_team}`)
         .emit(OutgoingEvents.ANSWER, {
-          correct: option.correct,
+          correct: option.correct
         });
       getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
         if (lastQuestion.id_question === question.id_question) {

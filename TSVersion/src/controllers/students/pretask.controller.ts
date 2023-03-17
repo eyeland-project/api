@@ -3,32 +3,32 @@ import { getLinkByOrder, getTaskLinksCount } from "../../services/link.service";
 import {
   getAnswerFromQuestionOfAttempt,
   getQuestionByOrder,
-  getTaskStageQuestionsCount,
+  getTaskStageQuestionsCount
 } from "../../services/question.service";
 import {
   PretaskLinkResp,
   PretaskQuestionResp,
-  PretaskResp,
+  PretaskResp
 } from "../../types/responses/students.types";
 import {
   getOptionById,
-  getQuestionOptions,
+  getQuestionOptions
 } from "../../services/option.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
 import { createAnswer } from "../../services/answer.service";
 import {
   getLastQuestionFromTaskStage,
-  getTaskStageByOrder,
+  getTaskStageByOrder
 } from "../../services/taskStage.service";
 import {
   createTaskAttempt,
   finishStudTaskAttempts,
-  getStudCurrTaskAttempt,
+  getStudCurrTaskAttempt
 } from "../../services/taskAttempt.service";
 import { getTaskByOrder } from "../../services/task.service";
 import {
   getStudentTaskByOrder,
-  upgradeStudentTaskProgress,
+  upgradeStudentTaskProgress
 } from "../../services/studentTask.service";
 
 export async function root(
@@ -44,7 +44,7 @@ export async function root(
       description: description,
       keywords: keywords,
       numLinks: await getTaskLinksCount(id_task),
-      numQuestions: await getTaskStageQuestionsCount(id_task_stage),
+      numQuestions: await getTaskStageQuestionsCount(id_task_stage)
     });
   } catch (err) {
     next(err);
@@ -87,8 +87,8 @@ export async function getQuestion(
         id: id_option,
         content,
         correct,
-        feedback: feedback || "",
-      })),
+        feedback: feedback || ""
+      }))
     });
   } catch (err) {
     next(err);
@@ -101,13 +101,15 @@ export async function answer(
   next: Function
 ) {
   const { id: idStudent } = req.user!;
-  const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } = req.params;
+  const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } =
+    req.params;
   const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
 
   const taskOrder = +taskOrderStr;
   const questionOrder = +questionOrderStr;
-  
-  if (isNaN(taskOrder) || taskOrder < 1) return res.status(400).json({ message: "Bad taskOrder" });
+
+  if (isNaN(taskOrder) || taskOrder < 1)
+    return res.status(400).json({ message: "Bad taskOrder" });
   if (isNaN(questionOrder) || questionOrder < 1)
     return res.status(400).json({ message: "Bad questionOrder" });
   if (!idOption || idOption < 1)
@@ -123,7 +125,7 @@ export async function answer(
       );
       if (highest_stage < 3) {
         return res.status(403).json({
-          message: `Student must complete PosTask from task ${taskOrder - 1}`,
+          message: `Student must complete PosTask from task ${taskOrder - 1}`
         });
       }
     }
@@ -159,10 +161,15 @@ export async function answer(
     }
 
     try {
-      await getAnswerFromQuestionOfAttempt(taskAttempt.id_task_attempt, question.id_question);
-      return res.status(400).json({ message: "Question already answered in this attempt" });
+      await getAnswerFromQuestionOfAttempt(
+        taskAttempt.id_task_attempt,
+        question.id_question
+      );
+      return res
+        .status(400)
+        .json({ message: "Question already answered in this attempt" });
     } catch (err) {}
-    
+
     await createAnswer(
       question.id_question,
       idOption,
@@ -170,7 +177,7 @@ export async function answer(
       taskAttempt.id_task_attempt
     );
     res.status(200).json({
-      message: `Answered question ${questionOrder} of pretask ${taskOrder}`,
+      message: `Answered question ${questionOrder} of pretask ${taskOrder}`
     });
 
     // additional logic to upgrade student_task progress
