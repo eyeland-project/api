@@ -8,9 +8,11 @@ import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import {
   updateStudCurrTaskAttempt,
 } from "./taskAttempt.service";
-import { Power } from "../types/enums";
+import { OutgoingEvents, Power } from "../types/enums";
 import { getAvailablePowers, getMembersFromTeam } from "./team.service";
 import { Course } from "../types/Course.types";
+import { directory } from "../listeners/namespaces/students";
+import { getTeamsFromCourseWithStudents } from "./course.service";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);
@@ -78,7 +80,7 @@ export async function rafflePower(idStudent: number) {
   // ** if the student has a visual illness, return false
   if (level !== 0) return false;
   // * Get the student team
-  const { id_team } = await getTeamFromStudent(idStudent);
+  const { id_team, id_course } = await getTeamFromStudent(idStudent);
   // * Get the available powers
   const powers = await getAvailablePowers(id_team);
   if (powers.length === 0) return false;
@@ -90,6 +92,26 @@ export async function rafflePower(idStudent: number) {
   if (randomIdx === -1) return false;
   // ** else, assign the power to the student
   assignPower(idStudent, powers[randomIdx]);
+
+  const members = await getMembersFromTeam({idTeam: id_team});
+  const StudentSocket = directory.get(idStudent);
+
+  if (StudentSocket) {
+    StudentSocket.to(`t${id_team}`).emit(OutgoingEvents.TEAM_UPDATE, {
+      ...members.map((member) => ({
+        id: member.id_student,
+        firstName: member.first_name,
+        lastName: member.last_name,
+        username: member.username,
+        power: member.task_attempt.power,
+      }))
+    });
+
+    const teams = (await getTeamsFromCourseWithStudents(idStudent)).filter(t => t.active);
+    StudentSocket.to(`c${id_course}`).except(`t${id_team}`).emit(OutgoingEvents.TEAMS_UPDATE, teams);
+  }else{
+    console.log("StudentSocket not found");
+  }
 
   // * return the power
   return powers[randomIdx];

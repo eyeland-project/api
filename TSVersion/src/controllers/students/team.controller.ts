@@ -271,10 +271,9 @@ export async function ready(req: Request, res: Response, next: Function) {
 export async function reroll(req: Request, res: Response, next: Function) {
     const { id: idStudent } = req.user!;
     try {
+        // * Students are being notified directly in the rafflePower function
         const power = await rafflePower(idStudent);
         if (!power) return res.status(304).json({ message: 'You got the same power' });
-
-        // TODO: notify that student got new power
 
         res.status(200).json({ power });
     } catch (err) {
