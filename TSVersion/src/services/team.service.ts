@@ -1,6 +1,6 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
-import { TeamModel } from "../models";
+import { TaskAttemptModel, TeamModel } from "../models";
 import { Team } from "../types/Team.types";
 import {
   createTaskAttempt,
@@ -13,6 +13,7 @@ import { Student, TeamMember } from "../types/Student.types";
 import { OutgoingEvents, Power } from "../types/enums";
 import { Namespace, of } from "../listeners/sockets";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
+import { TaskAttempt } from "../types/TaskAttempt.types";
 
 export async function getTeamByCode(code: string): Promise<Team> {
   const team = await TeamModel.findOne({ where: { code } });
@@ -128,4 +129,8 @@ export async function notifyTeamOfUpdate(idStudent?: number) {
     power
   });
   // TODO: notify teacher
+}
+
+export async function getTaskAttemptsFromTeam(idTeam: number): Promise<TaskAttempt[]> {
+  return await TaskAttemptModel.findAll({ where: { id_team: idTeam } });
 }

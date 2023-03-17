@@ -4,6 +4,7 @@ export interface TeamResp {
   code: string;
   name: string;
   active: boolean;
+  taskOrder: number | null;
   students: {
     id: number;
     firstName: string;

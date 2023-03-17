@@ -47,51 +47,8 @@ export async function getTeams(
   const { id: idStudent } = req.user!;
   try {
     const { id_course } = await getStudentById(idStudent);
-    const teams = await getTeamsFromCourseWithStudents(id_course);
-    console.log(teams);
-
-    const activeTeams = teams.filter((t) => t.active);
-    if (!activeTeams.length) {
-      return res.status(200).json(activeTeams);
-    }
-
-    const nextTaskOrder =
-      ((await getHighestTaskCompletedFromStudent(idStudent))?.task_order || 0) +
-      1;
-
-    interface TeamWithTask {
-      id_team: number;
-      task_order: number | null;
-    }
-    const teamsWithTasks = await sequelize.query<TeamWithTask>(
-      `
-            SELECT te.id_team, t.task_order
-            FROM team te
-            LEFT JOIN task_attempt ta ON ta.id_team = te.id_team AND ta.active = true
-            LEFT JOIN task t ON t.id_task = ta.id_task
-            WHERE ${activeTeams
-              .map((team) => `te.id_team = ${team.id}`)
-              .join(" OR ")}
-            GROUP BY te.id_team, t.task_order;
-        `,
-      { type: QueryTypes.SELECT }
-    );
-    console.log(teamsWithTasks);
-
-    res.status(200).json(
-      activeTeams.filter((team) => {
-        const teamWithTask = teamsWithTasks.find((t) => t.id_team === team.id);
-        if (!teamWithTask) {
-          // should never happen
-          console.log("Unexpected error: team not found in teamsWithTasks");
-          return false;
-        }
-        return (
-          teamWithTask.task_order === null || // the team is not working on any task yet
-          nextTaskOrder >= teamWithTask.task_order // or the team is working on the next task of the student
-        );
-      })
-    );
+    const teams = (await getTeamsFromCourseWithStudents(id_course)).filter((t) => t.active);
+    res.status(200).json(teams);
   } catch (err) {
     next(err);
   }

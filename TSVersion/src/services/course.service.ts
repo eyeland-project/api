@@ -67,13 +67,15 @@ export async function getTeamsFromCourseWithStudents(
     first_name: string;
     last_name: string;
     power: Power;
+    task_order: number | null;
   };
 
   const studentsWithTeam = await sequelize.query<StudentWithTeam>(
     `
-        SELECT t.id_team, t.code, t.name, t.active, s.id_student, s.username, s.first_name, s.last_name, ta.power
+        SELECT t.id_team, t.code, t.name, t.active, s.id_student, s.username, s.first_name, s.last_name, ta.power, tk.task_order
         FROM team t
         LEFT JOIN task_attempt ta ON ta.id_team = t.id_team AND t.active = ta.active
+        LEFT JOIN task tk ON tk.id_task = ta.id_task
         LEFT JOIN student s ON s.id_student = ta.id_student
         WHERE t.id_course = ${idCourse};
     `,
@@ -82,12 +84,13 @@ export async function getTeamsFromCourseWithStudents(
 
   const teams = groupBy(studentsWithTeam, "id_team") as StudentWithTeam[][];
   return teams.map((students) => {
-    const { active, code, id_team, name } = students[0];
+    const { active, code, id_team, name, task_order } = students[0];
     return {
       id: id_team,
       code: code,
       name: name,
       active: active,
+      taskOrder: task_order,
       students: students
         .filter(({ id_student }) => {
           return id_student !== null;

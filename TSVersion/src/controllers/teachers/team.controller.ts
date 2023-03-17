@@ -4,7 +4,8 @@ import {
   createTeam as createTeamServ,
   getTeamById,
   getMembersFromTeam,
-  updateTeam as updateTeamServ
+  updateTeam as updateTeamServ,
+  getTaskAttemptsFromTeam
 } from "../../services/team.service";
 import {
   ElementCreatedResp,
@@ -15,6 +16,7 @@ import {
   TeamUpdateReq
 } from "../../types/requests/teachers.types";
 import { TeamMember } from "../../types/Student.types";
+import { getTaskById } from "../../services/task.service";
 
 export async function getTeams(
   req: Request<{ idCourse: number }>,
@@ -42,6 +44,16 @@ export async function getTeam(
   const { idTeam } = req.params;
   try {
     const team = await getTeamById(idTeam);
+    let taskOrder: number | null = null;
+    try {
+      const taskAttempts = (await getTaskAttemptsFromTeam(idTeam)).filter(
+        ({ active }) => active
+      );
+      if (taskAttempts.length > 0) {
+        taskOrder = (await getTaskById(taskAttempts[0].id_task)).task_order;
+      }
+    } catch (err) {}
+
     const { id_team, name, active, code } = team;
     let students: TeamMember[];
     try {
@@ -54,6 +66,7 @@ export async function getTeam(
       id: id_team,
       name,
       active,
+      taskOrder: taskOrder || null,
       code: code || "",
       students: students.map(
         ({

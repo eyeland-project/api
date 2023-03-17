@@ -1622,6 +1622,13 @@
           "name": {
             "type": "string"
           },
+          "active": {
+            "type": "boolean"
+          },
+          "taskOrder": {
+            "type": "number",
+            "format": "int64"
+          },
           "students": {
             "type": "array",
             "items": {
