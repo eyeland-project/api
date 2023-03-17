@@ -119,24 +119,19 @@ export async function notifyCourseOfTeamUpdate(
   let courseRoom;
   if (idStudent) {
     const studentSocket = directoryStudents.get(idStudent);
-    if (!studentSocket) {
-      console.log('1. asdahsdbnaklsmdñlasd,ads');
-      
-      return;
-    }
+    if (!studentSocket) return;
     courseRoom = studentSocket.broadcast.to(`c${idCourse}`);
   } else {
     const channelStudents = of(Namespace.STUDENTS);
-    if (!channelStudents) {
-      console.log('2. asdahsdbnaklsmdñlasd,ads');
-      return;
-    }
+    if (!channelStudents) return;
     courseRoom = channelStudents.to(`c${idCourse}`);
   }
 
   if (idTeam) {
     courseRoom = courseRoom.except(`t${idTeam}`);
   }
+  console.log('teams', teams);
+  
   courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, teams);
   // TODO: notify teacher
 }
