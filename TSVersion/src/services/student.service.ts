@@ -123,10 +123,11 @@ export async function rafflePower(idStudent: number) {
 export async function assignPowerToStudent(
   idStudent: number,
   power: Power | "auto",
-  teammates: TeamMember[],
+  teammates?: TeamMember[],
   blindnessLevel?: number,
   allowConflicts: boolean = true
 ): Promise<Power> {
+  if (!teammates) teammates = await getTeammates(idStudent);
   if (teammates.length > 2) throw new ApiError("Team is full", 400);
 
   if (!blindnessLevel)
@@ -147,12 +148,12 @@ export async function assignPowerToStudent(
       powers[Math.floor(Math.random() * powers.length)];
 
     if (blindnessLevel !== 0) {
-      const withSuperHearingIdx = currPowers.indexOf(Power.SuperHearing);
+      const withSuperHearingIdx = currPowers.indexOf(Power.SUPER_HEARING);
       if (withSuperHearingIdx === -1) {
-        autoPower = Power.SuperHearing;
+        autoPower = Power.SUPER_HEARING;
       } else if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
         assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
-        autoPower = Power.SuperHearing;
+        autoPower = Power.SUPER_HEARING;
       } else {
         autoPower = randomPowerBetween(getFreePowers()); // assign free power to student
       }
@@ -163,7 +164,7 @@ export async function assignPowerToStudent(
     return autoPower;
   }
 
-  if (power === Power.MemoryPro || power === Power.SuperRadar) {
+  if (power === Power.MEMORY_PRO || power === Power.SUPER_RADAR) {
     assignPower(idStudent, power);
     if (!allowConflicts) {
       const withPowerIdx = currPowers.indexOf(power);
@@ -171,8 +172,8 @@ export async function assignPowerToStudent(
         assignPower(ids[withPowerIdx], getFreePowers()[0]); // assign free power to teammate with power
       }
     }
-  } else if (power === Power.SuperHearing) {
-    const withSuperHearingIdx = currPowers.indexOf(Power.SuperHearing);
+  } else if (power === Power.SUPER_HEARING) {
+    const withSuperHearingIdx = currPowers.indexOf(Power.SUPER_HEARING);
     if (withSuperHearingIdx === -1) assignPower(idStudent, power);
     else if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
       // there can't be conflict if student has higher blindness level

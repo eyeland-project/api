@@ -85,11 +85,11 @@ export function shuffle(array: any[], seed: number): any[] {
 
 export function indexPower(power: Power) {
   switch (power) {
-    case Power.SuperHearing:
+    case Power.SUPER_HEARING:
       return 0;
-    case Power.MemoryPro:
+    case Power.MEMORY_PRO:
       return 1;
-    case Power.SuperRadar:
+    case Power.SUPER_RADAR:
       return 2;
     default:
       return 0;

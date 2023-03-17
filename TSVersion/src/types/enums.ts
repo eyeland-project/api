@@ -1,14 +1,14 @@
 export enum Power {
-  SuperHearing = "super_hearing",
-  MemoryPro = "memory_pro",
-  SuperRadar = "super_radar"
+  SUPER_HEARING = "super_hearing",
+  MEMORY_PRO = "memory_pro",
+  SUPER_RADAR = "super_radar"
 }
 
 export enum IncommingEvents {
-  Connection = "connection",
-  Disconnect = "disconnect",
-  Error = "error",
-  Join = "join"
+  CONNECTION = "connection",
+  DISCONNECT = "disconnect",
+  ERROR = "error",
+  JOIN = "join"
 }
 
 export enum OutgoingEvents {

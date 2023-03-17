@@ -291,7 +291,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
     try {
       studSocket.leave("t" + id_team); // leave student from team socket room
       // check if this student had super_hearing to assign it to another student
-      if (power === Power.SuperHearing) {
+      if (power === Power.SUPER_HEARING) {
         getMembersFromTeam({ idTeam: id_team })
           .then(async (teammates) => {
             if (!teammates.length) return; // no teammates left
@@ -307,7 +307,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
             const { id_student: idNewStudent } = teammates[withMaxBlindnessIdx];
             await assignPowerToStudent(
               idNewStudent,
-              Power.SuperHearing,
+              Power.SUPER_HEARING,
               teammates
             );
           })
@@ -346,8 +346,7 @@ export async function reqPower(req: Request, res: Response, next: Function) {
   const { power } = req.body as PowerReq;
   const { id: idStudent } = req.user!;
   try {
-    const teammates = await getTeammates(idStudent);
-    await assignPowerToStudent(idStudent, power, teammates);
+    await assignPowerToStudent(idStudent, power);
     res.status(200).json({ message: "Power assigned successfully" });
   } catch (err) {
     next(err);
