@@ -16,7 +16,10 @@ import {
 } from "../../services/team.service";
 import { ApiError } from "../../middlewares/handleErrors";
 import { LoginTeamReq } from "../../types/requests/students.types";
-import { getTeamsFromCourseWithStudents, notifyCourseOfTeamUpdate } from "../../services/course.service";
+import {
+  getTeamsFromCourseWithStudents,
+  notifyCourseOfTeamUpdate
+} from "../../services/course.service";
 import {
   StudentSocket,
   TeamResp,
@@ -187,11 +190,9 @@ export async function joinTeam(
       const { id_task } = await getStudCurrTaskAttempt(teammates[0].id_student);
       const { task_order } = await getTaskById(id_task);
       if (task_order !== taskOrder) {
-        return res
-          .status(400)
-          .json({
-            message: "This team is already working on a different task"
-          });
+        return res.status(400).json({
+          message: "This team is already working on a different task"
+        });
       }
     }
 
@@ -206,18 +207,22 @@ export async function joinTeam(
       getBlindnessAcFromStudent(idStudent)
         .then(async ({ level }) => {
           try {
-            await assignPowerToStudent(
+            const { yaper } = await assignPowerToStudent(
               idStudent,
               "auto",
               teammates,
               level,
               false
             );
+            notifyCourseOfTeamUpdate(
+              student.id_course,
+              team.id_team,
+              idStudent
+            );
+            if (yaper) notifyTeamOfUpdate(yaper);
           } catch (err) {
             console.log(err);
           }
-          notifyCourseOfTeamUpdate(student.id_course, team.id_team, idStudent);
-          notifyTeamOfUpdate(idStudent);
         })
         .catch((err) => console.log(err));
 
@@ -228,7 +233,7 @@ export async function joinTeam(
 
         const idPrevTeam = prevTeam.id_team;
         getMembersFromTeam({ idTeam: idPrevTeam })
-          .then(async (prevTeamMembers) => {
+          .then((prevTeamMembers) => {
             const teamData: StudentSocket[] = summMembers(prevTeamMembers);
             nsp.to("t" + idPrevTeam).emit(OutgoingEvents.TEAM_UPDATE, teamData);
           })

@@ -7,10 +7,17 @@ import { Team } from "../types/Team.types";
 import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import { updateStudCurrTaskAttempt } from "./taskAttempt.service";
 import { OutgoingEvents, Power } from "../types/enums";
-import { getAvailablePowers, getMembersFromTeam, notifyTeamOfUpdate } from "./team.service";
+import {
+  getAvailablePowers,
+  getMembersFromTeam,
+  notifyTeamOfUpdate
+} from "./team.service";
 import { Course } from "../types/Course.types";
 import { directory } from "../listeners/namespaces/students";
-import { getTeamsFromCourseWithStudents, notifyCourseOfTeamUpdate } from "./course.service";
+import {
+  getTeamsFromCourseWithStudents,
+  notifyCourseOfTeamUpdate
+} from "./course.service";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);
@@ -104,7 +111,10 @@ export async function assignPowerToStudent(
   teammates?: TeamMember[],
   blindnessLevel?: number,
   allowConflicts: boolean = true
-): Promise<Power> {
+): Promise<{
+  power: Power;
+  yaper: number | null;
+}> {
   if (!teammates) teammates = await getTeammates(idStudent);
   if (teammates.length > 2) throw new ApiError("Team is full", 400);
 
@@ -120,8 +130,10 @@ export async function assignPowerToStudent(
     return Object.values(Power).filter((power) => !currPowers.includes(power));
   };
 
+  let yaper: number | null = null;
   if (power === "auto") {
     let autoPower: Power;
+
     const randomPowerBetween = (powers: Power[]) =>
       powers[Math.floor(Math.random() * powers.length)];
 
@@ -131,6 +143,7 @@ export async function assignPowerToStudent(
         autoPower = Power.SUPER_HEARING;
       } else if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
         await assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
+        yaper = ids[withSuperHearingIdx];
         autoPower = Power.SUPER_HEARING;
       } else {
         autoPower = randomPowerBetween(getFreePowers()); // assign free power to student
@@ -139,7 +152,10 @@ export async function assignPowerToStudent(
       autoPower = randomPowerBetween(getFreePowers());
     }
     await assignPower(idStudent, autoPower);
-    return autoPower;
+    return {
+      power: autoPower,
+      yaper
+    };
   }
 
   if (power === Power.MEMORY_PRO || power === Power.SUPER_RADAR) {
@@ -148,6 +164,7 @@ export async function assignPowerToStudent(
       const withPowerIdx = currPowers.indexOf(power);
       if (withPowerIdx !== -1) {
         await assignPower(ids[withPowerIdx], getFreePowers()[0]); // assign free power to teammate with power
+        yaper = ids[withPowerIdx];
       }
     }
   } else if (power === Power.SUPER_HEARING) {
@@ -156,10 +173,12 @@ export async function assignPowerToStudent(
     else if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
       // there can't be conflict if student has higher blindness level
       await assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
+      yaper = ids[withSuperHearingIdx];
       await assignPower(idStudent, power);
     } else if (blindnessLevel === currBlindnessLevels[withSuperHearingIdx]) {
       if (!allowConflicts) {
         await assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
+        yaper = ids[withSuperHearingIdx];
       }
       await assignPower(idStudent, power);
     } else
@@ -168,7 +187,10 @@ export async function assignPowerToStudent(
         400
       );
   }
-  return power;
+  return {
+    power,
+    yaper
+  };
 }
 
 export async function getTeammates(
