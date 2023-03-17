@@ -102,6 +102,7 @@ export async function addStudentToTeam(
   let currTaskAttempt;
   try {
     currTaskAttempt = await getStudCurrTaskAttempt(idStudent);
+    console.log('1. currTaskAttempt', currTaskAttempt);
   } catch (err) {}
 
   if (currTaskAttempt) {
@@ -110,7 +111,7 @@ export async function addStudentToTeam(
     console.log("Student has no task attempt, creating one...");
     const { id_task } = await getTaskByOrder(taskOrder);
     await createTaskAttempt(idStudent, id_task, idTeam);
-    console.log("Task attempt created");
+    console.log("Task attempt created", currTaskAttempt);
   }
 }
 
