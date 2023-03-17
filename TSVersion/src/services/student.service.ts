@@ -61,14 +61,14 @@ export async function getBlindnessAcFromStudent(
   return blindness[0];
 }
 
-function assignPower(
+async function assignPower(
   idStudent: number,
   power: Power,
   opts: { transaction?: Transaction } = {}
 ) {
   // prevent errors when updating teammate
   try {
-    updateStudCurrTaskAttempt(idStudent, { power });
+    await updateStudCurrTaskAttempt(idStudent, { power });
   } catch (err) {}
 }
 
@@ -130,7 +130,7 @@ export async function assignPowerToStudent(
       if (withSuperHearingIdx === -1) {
         autoPower = Power.SUPER_HEARING;
       } else if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
-        assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
+        await assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
         autoPower = Power.SUPER_HEARING;
       } else {
         autoPower = randomPowerBetween(getFreePowers()); // assign free power to student
@@ -138,30 +138,30 @@ export async function assignPowerToStudent(
     } else {
       autoPower = randomPowerBetween(getFreePowers());
     }
-    assignPower(idStudent, autoPower);
+    await assignPower(idStudent, autoPower);
     return autoPower;
   }
 
   if (power === Power.MEMORY_PRO || power === Power.SUPER_RADAR) {
-    assignPower(idStudent, power);
+    await assignPower(idStudent, power);
     if (!allowConflicts) {
       const withPowerIdx = currPowers.indexOf(power);
       if (withPowerIdx !== -1) {
-        assignPower(ids[withPowerIdx], getFreePowers()[0]); // assign free power to teammate with power
+        await assignPower(ids[withPowerIdx], getFreePowers()[0]); // assign free power to teammate with power
       }
     }
   } else if (power === Power.SUPER_HEARING) {
     const withSuperHearingIdx = currPowers.indexOf(Power.SUPER_HEARING);
-    if (withSuperHearingIdx === -1) assignPower(idStudent, power);
+    if (withSuperHearingIdx === -1) await assignPower(idStudent, power);
     else if (blindnessLevel > currBlindnessLevels[withSuperHearingIdx]) {
       // there can't be conflict if student has higher blindness level
-      assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
-      assignPower(idStudent, power);
+      await assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
+      await assignPower(idStudent, power);
     } else if (blindnessLevel === currBlindnessLevels[withSuperHearingIdx]) {
       if (!allowConflicts) {
-        assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
+        await assignPower(ids[withSuperHearingIdx], getFreePowers()[0]); // assign free power to teammate with super_hearing
       }
-      assignPower(idStudent, power);
+      await assignPower(idStudent, power);
     } else
       throw new ApiError(
         "Student has lower blindness level than teammate with super hearing",
