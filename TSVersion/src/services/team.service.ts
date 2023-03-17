@@ -10,8 +10,9 @@ import {
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
 import { Student, TeamMember } from "../types/Student.types";
-import { Power } from "../types/enums";
+import { OutgoingEvents, Power } from "../types/enums";
 import { Namespace, of } from "../listeners/sockets";
+import { directory as directoryStudents } from "../listeners/namespaces/students";
 
 export async function getTeamByCode(code: string): Promise<Team> {
   const team = await TeamModel.findOne({ where: { code } });
@@ -115,4 +116,28 @@ export async function addStudentToTeam(
 
 export async function removeStudFromTeam(idStudent: number) {
   await updateStudCurrTaskAttempt(idStudent, { id_team: null });
+}
+
+export async function notifyTeamOfUpdate(idTeam: number, idStudent?: number) {
+  let teamRoom;
+  if (idStudent) {
+    const studentSocket = directoryStudents.get(idStudent);
+    if (!studentSocket) return;
+    teamRoom = studentSocket.broadcast.to(`t${idTeam}`);
+  } else {
+    const channelStudents = of(Namespace.STUDENTS);
+    if (!channelStudents) return;
+    teamRoom = channelStudents.to(`t${idTeam}`);
+  }
+  const members = await getMembersFromTeam({ idTeam: idTeam });
+  teamRoom.emit(OutgoingEvents.TEAM_UPDATE, {
+    ...members.map((member) => ({
+      id: member.id_student,
+      firstName: member.first_name,
+      lastName: member.last_name,
+      username: member.username,
+      power: member.task_attempt.power
+    }))
+  });
+  // TODO: notify teacher
 }

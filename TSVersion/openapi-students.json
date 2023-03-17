@@ -1077,37 +1077,6 @@
         }
       }
     },
-    "/teams/current/req-power": {
-      "post": {
-        "description": "Request power in current team",
-        "tags": [
-          "team"
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/RequestPower"
-        },
-        "responses": {
-          "200": {
-            "description": "Power assigned successfully"
-          },
-          "400": {
-            "description": "Invalid body | Student doesn't belong to any team"
-          },
-          "401": {
-            "description": "Missing authentication"
-          },
-          "403": {
-            "description": "Unauthorized to access this resource"
-          },
-          "498": {
-            "description": "Token expired/invalid"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
     "/teams/current/ready": {
       "post": {
         "description": "Be ready to start DuringTask",

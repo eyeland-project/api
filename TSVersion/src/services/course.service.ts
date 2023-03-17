@@ -9,6 +9,7 @@ import { OutgoingEvents, Power } from "../types/enums";
 import { groupBy } from "../utils";
 import { TeamResp } from "../types/responses/globals.types";
 import { Student } from "../types/Student.types";
+import { directory as directoryStudents } from "../listeners/namespaces/students";
 
 // COURSE CRUD
 // get many
@@ -104,4 +105,38 @@ export async function getTeamsFromCourseWithStudents(
 
 export function getStudentsFromCourse(idCourse: number): Promise<Student[]> {
   return StudentModel.findAll({ where: { id_course: idCourse } });
+}
+
+export async function notifyCourseOfTeamUpdate(
+  idCourse: number,
+  idTeam?: number,
+  idStudent?: number
+): Promise<void> {
+  const teams = (await getTeamsFromCourseWithStudents(idCourse)).filter(
+    (t) => t.active
+  );
+
+  let courseRoom;
+  if (idStudent) {
+    const studentSocket = directoryStudents.get(idStudent);
+    if (!studentSocket) {
+      console.log('1. asdahsdbnaklsmdñlasd,ads');
+      
+      return;
+    }
+    courseRoom = studentSocket.broadcast.to(`c${idCourse}`);
+  } else {
+    const channelStudents = of(Namespace.STUDENTS);
+    if (!channelStudents) {
+      console.log('2. asdahsdbnaklsmdñlasd,ads');
+      return;
+    }
+    courseRoom = channelStudents.to(`c${idCourse}`);
+  }
+
+  if (idTeam) {
+    courseRoom = courseRoom.except(`t${idTeam}`);
+  }
+  courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, teams);
+  // TODO: notify teacher
 }
