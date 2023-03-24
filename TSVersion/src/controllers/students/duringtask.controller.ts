@@ -225,6 +225,8 @@ export async function answer(
         .emit(OutgoingEvents.ANSWER, {
           correct: option.correct
         });
+      console.log('answer emitted to team', taskAttempt.id_team);
+      
       getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
         if (lastQuestion.id_question === question.id_question) {
           upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
