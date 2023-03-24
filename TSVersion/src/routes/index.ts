@@ -1,6 +1,8 @@
 import fs from "fs";
 import { Router } from "express";
 import { join } from "path";
+import { directory as studentDirectory } from "../listeners/namespaces/students";
+import { directory as teacherDirectory } from "../listeners/namespaces/teachers";
 
 const router = Router();
 const rel = (...path: string[]) => join(__dirname, ...path);
@@ -51,6 +53,13 @@ router.get("/ping", (_, res) => {
 
 router.get("/", (_, res) => {
   res.status(200).json({ message: "API is ready" });
+});
+
+router.get("/directories", (_, res) => {
+  res.json({
+    studentDirectory,
+    teacherDirectory
+  });
 });
 
 export default router;
