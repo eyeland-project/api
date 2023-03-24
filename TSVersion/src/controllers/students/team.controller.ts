@@ -215,7 +215,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
   }
 
   try {
-    leaveTeamService(idStudent, socketStudent, () => (
+    await leaveTeamService(idStudent, socketStudent, () => (
       res.status(200).json({ message: "Done" })
     ));
   } catch (err) {
