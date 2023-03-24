@@ -1,8 +1,9 @@
 import { Socket } from "socket.io";
-import { deleteSocket, printDirectory } from "../utils";
+import { deleteSocket, findId, printDirectory } from "../utils";
 import { getCourseFromStudent } from "../../services/student.service";
 import { getCourseById } from "../../services/course.service";
 import { getIdFromToken } from "../../utils";
+import { leaveTeam } from "../../services/team.service";
 
 export const directory = new Map<number, Socket>();
 
@@ -77,8 +78,21 @@ export function onConnection(socket: Socket) {
     cb({ session });
   }
 
-  function onDisconnect() {
+  async function onDisconnect() {
     console.log("S: student disconnected", socket.id);
+    const idStudent = findId(socket, directory);
+    try {
+      await leaveTeam(idStudent, socket); // leave team room is done in leaveTeam function
+    } catch (err) {
+      console.log("S: error on leave team", err);
+    }
+    try {
+      socket.leave("c" + (await getCourseFromStudent(idStudent)).id_course);
+    } catch (err) {
+      console.log("S: error on leave course", err);
+    }
+
+    // delete from directory at the end because it's needed for leaveTeam function
     deleteSocket(socket, directory);
     printStudentsDir();
   }
