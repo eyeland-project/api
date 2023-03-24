@@ -57,19 +57,28 @@ router.get("/", (_, res) => {
 });
 
 router.get("/directories", (_, res) => {
+  const students = [];
+  for (let [key, value] of studentDirectory) {
+    students.push({ id: key, socketId: value.id });
+  }
+  const teachers = [];
+  for (let [key, value] of teacherDirectory) {
+    teachers.push({ id: key, socketId: value.id });
+  }
+  
   res.json({
-    studentDirectory,
-    teacherDirectory
+    studentDirectory: students,
+    teacherDirectory: teachers
   });
 });
 
 router.get("/sockets", (_, res) => {
-  const studentsNamespace = of(Namespace.STUDENTS);
-  const teachersNamespace = of(Namespace.TEACHERS);
+  const studentsSockets = of(Namespace.STUDENTS)?.sockets;
+  const teachersSockets = of(Namespace.TEACHERS)?.sockets;
 
   res.json({
-    studentsSockets: studentsNamespace?.sockets,
-    teachersSockets: teachersNamespace?.sockets
+    studentsSockets: studentsSockets?.keys,
+    teachersSockets: teachersSockets?.keys
   });
 });
 
