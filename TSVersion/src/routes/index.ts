@@ -3,7 +3,7 @@ import { Router } from "express";
 import { join } from "path";
 import { directory as studentDirectory } from "../listeners/namespaces/students";
 import { directory as teacherDirectory } from "../listeners/namespaces/teachers";
-import { Namespace, of } from "../listeners/sockets";
+import { Namespaces, of } from "../listeners/sockets";
 
 const router = Router();
 const rel = (...path: string[]) => join(__dirname, ...path);
@@ -73,8 +73,8 @@ router.get("/directories", (_, res) => {
 });
 
 router.get("/sockets", (_, res) => {
-  const studentsSockets = of(Namespace.STUDENTS)?.sockets;
-  const teachersSockets = of(Namespace.TEACHERS)?.sockets;
+  const studentsSockets = of(Namespaces.STUDENTS)?.sockets;
+  const teachersSockets = of(Namespaces.TEACHERS)?.sockets;
 
   const students: string[] = [];
   if (studentsSockets) {

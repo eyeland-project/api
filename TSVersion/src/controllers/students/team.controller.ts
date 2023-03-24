@@ -28,7 +28,7 @@ import {
 import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
 import { OutgoingEvents, Power } from "../../types/enums";
 import { PowerReq } from "../../types/requests/students.types";
-import { Namespace, of } from "../../listeners/sockets";
+import { Namespaces, of } from "../../listeners/sockets";
 import { TeamMember } from "../../types/Student.types";
 import { directory } from "../../listeners/namespaces/students";
 import { getTaskById } from "../../services/task.service";
@@ -185,7 +185,7 @@ export async function joinTeam(
 
       if (prevTeam) {
         // notify previous team that student left
-        const nsp = of(Namespace.STUDENTS);
+        const nsp = of(Namespaces.STUDENTS);
         if (!nsp) return;
 
         const idPrevTeam = prevTeam.id_team;
@@ -255,7 +255,7 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
         console.error(err);
       }
 
-      const nsp = of(Namespace.STUDENTS);
+      const nsp = of(Namespaces.STUDENTS);
       if (!nsp) return;
       getMembersFromTeam({ idTeam: id_team })
         .then(async (teamMembers) => {

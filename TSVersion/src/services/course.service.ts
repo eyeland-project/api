@@ -4,7 +4,7 @@ import { ApiError } from "../middlewares/handleErrors";
 import { CourseModel, StudentModel, TeamModel } from "../models";
 import { Course } from "../types/Course.types";
 import { Team } from "../types/Team.types";
-import { Namespace, of } from "../listeners/sockets";
+import { Namespaces, of } from "../listeners/sockets";
 import { OutgoingEvents, Power } from "../types/enums";
 import { groupBy } from "../utils";
 import { TeamResp } from "../types/responses/globals.types";
@@ -125,7 +125,7 @@ export async function notifyCourseOfTeamUpdate(
     if (!studentSocket) return;
     courseRoom = studentSocket.broadcast.to(`c${idCourse}`);
   } else {
-    const channelStudents = of(Namespace.STUDENTS);
+    const channelStudents = of(Namespaces.STUDENTS);
     if (!channelStudents) return;
     courseRoom = channelStudents.to(`c${idCourse}`);
   }

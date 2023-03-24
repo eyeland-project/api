@@ -16,7 +16,7 @@ import {
   CourseUpdateReq
 } from "../../types/requests/teachers.types";
 import { getTeacherById } from "../../services/teacher.service";
-import { Namespace, of } from "../../listeners/sockets";
+import { Namespaces, of } from "../../listeners/sockets";
 import { OutgoingEvents } from "../../types/enums";
 
 export async function getCourses(
@@ -116,7 +116,7 @@ export async function createSession(
   next: Function
 ) {
   const { idCourse } = req.params;
-  const nsp = of(Namespace.STUDENTS);
+  const nsp = of(Namespaces.STUDENTS);
   if (!nsp) {
     return res.status(500).json({ message: "Namespace not found" });
   }
@@ -143,7 +143,7 @@ export async function startSession(
   next: Function
 ) {
   const { idCourse } = req.params;
-  const nsp = of(Namespace.STUDENTS);
+  const nsp = of(Namespaces.STUDENTS);
   if (!nsp) {
     return res.status(500).json({ message: "Namespace not found" });
   }
@@ -167,7 +167,7 @@ export async function endSession(
   next: Function
 ) {
   const { idCourse } = req.params;
-  const nsp = of(Namespace.STUDENTS);
+  const nsp = of(Namespaces.STUDENTS);
   if (!nsp) {
     return res.status(500).json({ message: "Namespace not found" });
   }

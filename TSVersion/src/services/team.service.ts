@@ -11,7 +11,7 @@ import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
 import { Student, TeamMember } from "../types/Student.types";
 import { OutgoingEvents, Power } from "../types/enums";
-import { Namespace, of } from "../listeners/sockets";
+import { Namespaces, of } from "../listeners/sockets";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
 import { TaskAttempt } from "../types/TaskAttempt.types";
 

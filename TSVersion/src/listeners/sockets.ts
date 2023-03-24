@@ -5,7 +5,7 @@ import { onConnection as onTeacherConnection } from "./namespaces/teachers";
 
 let io: IO;
 
-export enum Namespace {
+export enum Namespaces {
   STUDENTS = "/students",
   TEACHERS = "/teachers"
 }
@@ -14,12 +14,12 @@ export default function initSocket(server: Server): Server {
   io = new IO(server);
 
   // students
-  io.of(Namespace.STUDENTS).on("connection", onStudentConnection);
-  io.of(Namespace.STUDENTS).on("error", onError);
+  io.of(Namespaces.STUDENTS).on("connection", onStudentConnection);
+  io.of(Namespaces.STUDENTS).on("error", onError);
 
   // teachers
-  io.of(Namespace.TEACHERS).on("connection", onTeacherConnection);
-  io.of(Namespace.TEACHERS).on("error", onError);
+  io.of(Namespaces.TEACHERS).on("connection", onTeacherConnection);
+  io.of(Namespaces.TEACHERS).on("error", onError);
 
   return server;
 }
@@ -42,7 +42,7 @@ export function on(event: string, callback: (data: any) => void) {
   }
 }
 
-export function of(namespace: Namespace) {
+export function of(namespace: Namespaces) {
   if (io) {
     return io.of(namespace);
   }
