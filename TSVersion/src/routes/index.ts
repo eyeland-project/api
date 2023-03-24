@@ -57,11 +57,11 @@ router.get("/", (_, res) => {
 });
 
 router.get("/directories", (_, res) => {
-  const students = [];
+  const students: { id: number; socketId: string }[] = [];
   for (let [key, value] of studentDirectory) {
     students.push({ id: key, socketId: value.id });
   }
-  const teachers = [];
+  const teachers: { id: number; socketId: string }[] = [];
   for (let [key, value] of teacherDirectory) {
     teachers.push({ id: key, socketId: value.id });
   }
@@ -76,9 +76,19 @@ router.get("/sockets", (_, res) => {
   const studentsSockets = of(Namespace.STUDENTS)?.sockets;
   const teachersSockets = of(Namespace.TEACHERS)?.sockets;
 
+  const students: string[] = [];
+  if (studentsSockets) {
+    for (let [key] of studentsSockets) students.push(key);
+  }
+  
+  const teachers: string[] = [];
+  if (teachersSockets) {
+    for (let [key] of teachersSockets) teachers.push(key);
+  }
+  
   res.json({
-    studentsSockets: studentsSockets?.keys,
-    teachersSockets: teachersSockets?.keys
+    studentsSockets: students,
+    teachersSockets: teachers
   });
 });
 
