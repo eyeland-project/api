@@ -120,8 +120,7 @@ export async function removeStudFromTeam(idStudent: number) {
   await updateStudCurrTaskAttempt(idStudent, { id_team: null });
 }
 
-export async function notifyTeamOfUpdate(idStudent?: number) {
-  if (!idStudent) return;
+export async function notifyStudentOfTeamUpdate(idStudent: number) {
   const studentSocket = directoryStudents.get(idStudent);
   if (!studentSocket) return;
   const { power } = await getStudCurrTaskAttempt(idStudent);

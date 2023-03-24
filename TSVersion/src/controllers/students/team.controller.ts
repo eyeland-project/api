@@ -11,7 +11,7 @@ import {
   addStudentToTeam,
   getMembersFromTeam,
   getTeamByCode,
-  notifyTeamOfUpdate,
+  notifyStudentOfTeamUpdate,
   removeStudFromTeam
 } from "../../services/team.service";
 import { ApiError } from "../../middlewares/handleErrors";
@@ -47,7 +47,9 @@ export async function getTeams(
   const { id: idStudent } = req.user!;
   try {
     const { id_course } = await getStudentById(idStudent);
-    const teams = (await getTeamsFromCourseWithStudents(id_course)).filter((t) => t.active);
+    const teams = (await getTeamsFromCourseWithStudents(id_course)).filter(
+      (t) => t.active
+    );
     res.status(200).json(teams);
   } catch (err) {
     next(err);
@@ -176,7 +178,7 @@ export async function joinTeam(
               team.id_team,
               idStudent
             );
-            if (yaper) notifyTeamOfUpdate(yaper);
+            if (yaper) notifyStudentOfTeamUpdate(yaper);
           } catch (err) {
             console.log(err);
           }
@@ -208,8 +210,9 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
   const { id: idStudent } = req.user!;
 
   const studSocket = directory.get(idStudent);
-  if (!studSocket)
+  if (!studSocket) {
     return res.status(400).json({ message: "Student is not connected" });
+  }
 
   try {
     const power = (await getStudCurrTaskAttempt(idStudent)).power;
@@ -239,30 +242,11 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
               Power.SUPER_HEARING,
               teammates
             );
+            notifyStudentOfTeamUpdate(idNewStudent);
           })
           .catch((err) => console.log(err));
       }
-
-      try {
-        const teamsData = (
-          await getTeamsFromCourseWithStudents(id_course)
-        ).filter((t) => t.active);
-        studSocket.broadcast
-          .to("c" + id_course)
-          .except("t" + id_team)
-          .emit(OutgoingEvents.TEAMS_UPDATE, teamsData);
-      } catch (err) {
-        console.error(err);
-      }
-
-      const nsp = of(Namespaces.STUDENTS);
-      if (!nsp) return;
-      getMembersFromTeam({ idTeam: id_team })
-        .then(async (teamMembers) => {
-          const teamData: StudentSocket[] = summMembers(teamMembers);
-          nsp.to("t" + id_team).emit(OutgoingEvents.TEAM_UPDATE, teamData);
-        })
-        .catch((err) => console.log(err));
+      notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
     } catch (err) {
       console.log(err);
     }

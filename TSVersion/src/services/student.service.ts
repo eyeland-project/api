@@ -10,7 +10,7 @@ import { OutgoingEvents, Power } from "../types/enums";
 import {
   getAvailablePowers,
   getMembersFromTeam,
-  notifyTeamOfUpdate
+  notifyStudentOfTeamUpdate
 } from "./team.service";
 import { Course } from "../types/Course.types";
 import { directory } from "../listeners/namespaces/students";
@@ -99,7 +99,7 @@ export async function rafflePower(idStudent: number) {
   assignPower(idStudent, powers[randomIdx]);
 
   notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
-  notifyTeamOfUpdate(idStudent);
+  notifyStudentOfTeamUpdate(idStudent);
 
   // * return the power
   return powers[randomIdx];
