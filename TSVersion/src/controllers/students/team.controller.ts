@@ -12,7 +12,7 @@ import {
   getMembersFromTeam,
   getTeamByCode,
   notifyStudentOfTeamUpdate,
-  removeStudFromTeam
+  leaveTeam as leaveTeamService,
 } from "../../services/team.service";
 import { ApiError } from "../../middlewares/handleErrors";
 import { LoginTeamReq } from "../../types/requests/students.types";
@@ -209,47 +209,15 @@ export async function joinTeam(
 export async function leaveTeam(req: Request, res: Response, next: Function) {
   const { id: idStudent } = req.user!;
 
-  const studSocket = directory.get(idStudent);
-  if (!studSocket) {
+  const socketStudent = directory.get(idStudent);
+  if (!socketStudent) {
     return res.status(400).json({ message: "Student is not connected" });
   }
 
   try {
-    const power = (await getStudCurrTaskAttempt(idStudent)).power;
-    const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
-    await removeStudFromTeam(idStudent);
-    res.status(200).json({ message: "Done" });
-
-    try {
-      studSocket.leave("t" + id_team); // leave student from team socket room
-      // check if this student had super_hearing to assign it to another student
-      if (power === Power.SUPER_HEARING) {
-        getMembersFromTeam({ idTeam: id_team })
-          .then(async (teammates) => {
-            if (!teammates.length) return; // no teammates left
-
-            const blindnessLevels = teammates.map(
-              ({ blindness_acuity: { level } }) => level
-            );
-            const maxBlindnessLevel = Math.max(...blindnessLevels);
-            if (maxBlindnessLevel === 0) return; // no teammates with blindness
-
-            const withMaxBlindnessIdx =
-              blindnessLevels.indexOf(maxBlindnessLevel);
-            const { id_student: idNewStudent } = teammates[withMaxBlindnessIdx];
-            await assignPowerToStudent(
-              idNewStudent,
-              Power.SUPER_HEARING,
-              teammates
-            );
-            notifyStudentOfTeamUpdate(idNewStudent);
-          })
-          .catch((err) => console.log(err));
-      }
-      notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
-    } catch (err) {
-      console.log(err);
-    }
+    leaveTeamService(idStudent, socketStudent, () => (
+      res.status(200).json({ message: "Done" })
+    ));
   } catch (err) {
     next(err);
   }
