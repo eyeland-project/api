@@ -103,7 +103,7 @@ export async function getQuestion(
     members.sort((a, b) => indexPower(a) - indexPower(b));
 
     // * shuffle options
-    options = shuffle(options, id_team);
+    options = shuffle(options, (id_team + 1) * id_question);
     // * distribute options based on power
     options = distributeOptions(
       options,
@@ -225,8 +225,8 @@ export async function answer(
         .emit(OutgoingEvents.ANSWER, {
           correct: option.correct
         });
-      console.log('answer emitted to team', taskAttempt.id_team);
-      
+      console.log("answer emitted to team", taskAttempt.id_team);
+
       getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
         if (lastQuestion.id_question === question.id_question) {
           upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
