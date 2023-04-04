@@ -59,6 +59,9 @@ CREATE TABLE link (
     CONSTRAINT uk_link_constr UNIQUE (id_task, link_order)
 );
 
+CREATE TYPE valid_question_type AS ENUM ('flashcard', 'fill', 'order', 'select', 'audio');
+CREATE TYPE valid_question_topic AS ENUM('vocabulary', 'prepositions');
+
 -- CREATING TABLE preguntas
 CREATE TABLE question (
     id_question SERIAL NOT NULL,
@@ -67,15 +70,15 @@ CREATE TABLE question (
     content VARCHAR(200) NOT NULL,
     audio_url VARCHAR(2048),
     video_url VARCHAR(2048),
-    type VARCHAR(50) NOT NULL,
+    type VALID_QUESTION_TYPE NOT NULL,
     img_alt VARCHAR(50),
     img_url VARCHAR(2048),
+    topic VALID_QUESTION_TOPIC,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_question PRIMARY KEY (id_question),
     CONSTRAINT fk_question_task FOREIGN KEY (id_task_stage) REFERENCES task_stage(id_task_stage),
     CONSTRAINT uk_question_constr UNIQUE (id_task_stage, question_order),
-    CONSTRAINT check_question_type CHECK (type IN ('select', 'audio'))
 );
 
 -- CREATING TABLE respuestas

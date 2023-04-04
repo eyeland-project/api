@@ -3,6 +3,7 @@ import sequelize from "../database/db";
 import TaskStageModel from "./TaskStage";
 import { Question, QuestionCreation } from "../types/Question.types";
 import { ApiError } from "../middlewares/handleErrors";
+import { QuestionTopic, QuestionType } from "../types/enums";
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {
@@ -12,9 +13,10 @@ class QuestionModel extends Model<Question, QuestionCreation> {
   declare content: string;
   declare audio_url?: string | null;
   declare video_url?: string | null;
-  declare type: string;
+  declare type: QuestionType;
   declare img_alt?: string | null;
   declare img_url?: string | null;
+  declare topic: QuestionTopic | null;
   declare deleted: boolean;
 }
 
@@ -41,7 +43,7 @@ QuestionModel.init(
       type: DataTypes.STRING(2048)
     },
     type: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.ENUM(...Object.values(QuestionType)),
       allowNull: false
     },
     question_order: {
@@ -53,6 +55,9 @@ QuestionModel.init(
     },
     img_url: {
       type: DataTypes.STRING(2048)
+    },
+    topic: {
+      type: DataTypes.ENUM(...Object.values(QuestionTopic))
     },
     deleted: {
       type: DataTypes.BOOLEAN,
@@ -66,12 +71,24 @@ QuestionModel.init(
     tableName: "question",
     timestamps: false,
     hooks: {
-      beforeCreate: async ({ type }: QuestionModel) => {
-        if (type !== "select" && type !== "audio") {
+      beforeCreate: async ({ type, topic }: QuestionModel) => {
+        const typeValues = Object.values(QuestionType);
+        if (typeValues.indexOf(type) === -1) {
           throw new ApiError(
-            "Type must be one of the following values: select, audio",
+            "Type must be one of the following values: " +
+              typeValues.join(", "),
             400
           );
+        }
+        if (topic) {
+          const topicValues = Object.values(QuestionTopic);
+          if (topicValues.indexOf(topic) === -1) {
+            throw new ApiError(
+              "Topic must be one of the following values: " +
+                topicValues.join(", "),
+              400
+            );
+          }
         }
       }
     }
