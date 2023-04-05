@@ -4,6 +4,7 @@ import { getCourseFromStudent } from "../../services/student.service";
 import { getCourseById } from "../../services/course.service";
 import { getIdFromToken } from "../../utils";
 import { leaveTeam } from "../../services/team.service";
+import { Namespaces, of } from "../sockets";
 
 export const directory = new Map<number, Socket>();
 
@@ -100,4 +101,13 @@ export function onConnection(socket: Socket) {
 
 export function printStudentsDir() {
   printDirectory(directory, "students");
+}
+
+export function getNamespace() {
+  return of(Namespaces.STUDENTS)!;
+}
+
+export function emitTo(room: string, event: string, data: any) {
+  getNamespace().to(room).emit(event, data);
+  console.log("S: Emitting", event, data);
 }
