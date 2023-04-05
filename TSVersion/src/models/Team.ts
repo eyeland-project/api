@@ -1,8 +1,14 @@
 // imports
-import { DataTypes, ForeignKey, Model } from "sequelize";
+import {
+  DataTypes,
+  Model,
+  HasManyGetAssociationsMixin,
+  NonAttribute
+} from "sequelize";
 import sequelize from "../database/db";
 import { Team, TeamCreation } from "../types/Team.types";
 import CourseModel from "./Course";
+import { AnswerModel } from "./";
 import { genTeamCode } from "../utils";
 
 // model class definition
@@ -12,6 +18,10 @@ class TeamModel extends Model<Team, TeamCreation> {
   declare name: string;
   declare code?: string | null;
   declare active: boolean;
+
+  declare getAnswers: HasManyGetAssociationsMixin<AnswerModel>;
+
+  declare answers: NonAttribute<AnswerModel[]>;
 }
 
 // model initialization
