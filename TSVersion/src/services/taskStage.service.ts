@@ -74,9 +74,10 @@ export async function getQuestionsFromTaskStage(
     { type: QueryTypes.SELECT }
   );
 
-  const questions = groupBy(optionsWithQuestion, "id_question") as OptionWithQuestion[][];
+  const questions = groupBy(optionsWithQuestion, "id_question");
   return questions.map((options) => {
-    const { content_question, id_question, img_alt, img_url, topic, type } = options[0];
+    const { content_question, id_question, img_alt, img_url, topic, type } =
+      options[0];
     return {
       id: id_question,
       content: content_question,
@@ -92,7 +93,7 @@ export async function getQuestionsFromTaskStage(
           id: id_option,
           content: content_option,
           feedback,
-          correct,
+          correct
         }))
     };
   });
