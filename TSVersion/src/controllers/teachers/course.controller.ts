@@ -18,6 +18,7 @@ import {
 import { getTeacherById } from "../../services/teacher.service";
 import { Namespaces, of } from "../../listeners/sockets";
 import { OutgoingEvents } from "../../types/enums";
+import { updateLeaderBoard } from "../../services/leaderBoard.service";
 
 export async function getCourses(
   req: Request,
@@ -155,6 +156,7 @@ export async function startSession(
     }
 
     nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_START);
+    updateLeaderBoard(id_course);
     res.status(200).json({ message: "Session started successfully" });
   } catch (err) {
     next(err);
