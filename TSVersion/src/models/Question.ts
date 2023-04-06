@@ -4,6 +4,7 @@ import TaskStageModel from "./TaskStage";
 import { Question, QuestionCreation } from "../types/Question.types";
 import { ApiError } from "../middlewares/handleErrors";
 import { QuestionTopic, QuestionType } from "../types/enums";
+import OptionModel from "./Option";
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {
@@ -20,6 +21,7 @@ class QuestionModel extends Model<Question, QuestionCreation> {
   declare deleted: boolean;
 
   declare stage: NonAttribute<TaskStageModel>;
+  declare options: NonAttribute<OptionModel[]>;
 }
 
 // model initialization

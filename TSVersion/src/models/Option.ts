@@ -55,7 +55,8 @@ OptionModel.init(
 // model associations
 // option and question
 QuestionModel.hasMany(OptionModel, {
-  foreignKey: "id_question"
+  foreignKey: "id_question",
+  as: "options"
 });
 OptionModel.belongsTo(QuestionModel, {
   foreignKey: "id_question"
