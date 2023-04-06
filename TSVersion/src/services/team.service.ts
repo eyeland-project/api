@@ -1,6 +1,11 @@
-import { QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import sequelize from "../database/db";
-import { TaskAttemptModel, TeamModel } from "../models";
+import {
+  AnswerModel,
+  OptionModel,
+  TaskAttemptModel,
+  TeamModel
+} from "../models";
 import { Team } from "../types/Team.types";
 import {
   createTaskAttempt,
@@ -118,11 +123,15 @@ export async function addStudentToTeam(
   }
 }
 
-export async function leaveTeam(idStudent: number, socketStudent: Socket, responseCb?: Function) {
+export async function leaveTeam(
+  idStudent: number,
+  socketStudent: Socket,
+  responseCb?: Function
+) {
   const power = (await getStudCurrTaskAttempt(idStudent)).power;
   const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
   await removeStudFromTeam(idStudent);
-  if(responseCb) responseCb();
+  if (responseCb) responseCb();
 
   socketStudent.leave("t" + id_team); // leave student from team socket room
   // check if this student had super_hearing to assign it to another student
@@ -169,4 +178,31 @@ export async function getTaskAttemptsFromTeam(
   idTeam: number
 ): Promise<TaskAttempt[]> {
   return await TaskAttemptModel.findAll({ where: { id_team: idTeam } });
+}
+
+export async function getPlayingTeamsFromCourse(
+  idCourse: number
+): Promise<TeamModel[]> {
+  // return all active teams that have at least one student with a task attempt
+  const teams = await TeamModel.findAll({
+    where: { id_course: idCourse, active: true },
+    include: [
+      {
+        model: TaskAttemptModel,
+        required: true,
+        where: { id_team: { [Op.ne]: null } },
+        as: "taskAttempts"
+      },
+      {
+        model: AnswerModel,
+        as: "answers",
+        include: ["question"]
+      },
+      {
+        model: OptionModel,
+        as: "option"
+      }
+    ]
+  });
+  return teams;
 }
