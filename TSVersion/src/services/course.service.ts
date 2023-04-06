@@ -10,6 +10,7 @@ import { groupBy } from "../utils";
 import { TeamResp } from "../types/responses/globals.types";
 import { Student } from "../types/Student.types";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
+import { updateLeaderBoard } from "./leaderBoard.service";
 
 // COURSE CRUD
 // get many
@@ -135,7 +136,7 @@ export async function notifyCourseOfTeamUpdate(
 export async function createSession(idCourse: number) {
   const nsp = of(Namespaces.STUDENTS);
   if (!nsp) throw new ApiError("Namespace not found", 500);
-  
+
   const { session, id_course } = await getCourseById(idCourse);
   if (session) {
     throw new ApiError("Course already has an active session", 400);
@@ -154,6 +155,7 @@ export async function startSession(idCourse: number) {
     throw new ApiError("Course has no active session", 400);
   }
 
+  updateLeaderBoard(idCourse);
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_START);
 }
 
@@ -165,7 +167,7 @@ export async function endSession(idCourse: number) {
   if (!session) {
     throw new ApiError("Course has no active session", 400);
   }
-  
+
   await updateCourse(idCourse, { session: false });
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_END);
 }

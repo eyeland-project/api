@@ -45,3 +45,18 @@ export async function getTaskStageQuestionsCount(
 ): Promise<number> {
   return await QuestionModel.count({ where: { id_task_stage: idTaskStage } });
 }
+
+export async function getQuestionsFromTaskStageByTaskId(
+  idTask: number,
+  TaskStageOrder: number
+): Promise<Question[]> {
+  const questions = await sequelize.query<Question>(
+    `
+        SELECT q.* FROM question q
+        JOIN task_stage ts ON q.id_task_stage = ts.id_task_stage AND ts.task_stage_order = ${TaskStageOrder}
+        JOIN task t ON ts.id_task = t.id_task AND t.id_task = ${idTask}
+    `,
+    { type: QueryTypes.SELECT }
+  );
+  return questions;
+}

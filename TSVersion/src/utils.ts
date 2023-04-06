@@ -72,7 +72,8 @@ export function pseudoRandom(seed: number): number {
   return x - Math.floor(x);
 }
 
-export function shuffle<T>(array: T[], seed: number): T[] {
+export function shuffle<T>(array: T[], seed?: number): T[] {
+  if (seed === undefined) return [...array].sort(() => Math.random() - 0.5);
   const shuffled = [...array];
 
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -168,10 +169,10 @@ export function distributeOptions(
 //         return { ...prev, [groupKey]: group };
 //     }, {});
 // }
-export function groupBy(arr: any[], key: string): any[] {
+export function groupBy<T = any>(arr: T[], key: keyof T): T[][] {
   return Object.values(
-    arr.reduce((groups, item) => {
-      const groupKey = item[key];
+    arr.reduce<{ [key: string]: T[] }>((groups, item) => {
+      const groupKey = item[key] as string;
       const group = groups[groupKey] || [];
       group.push(item);
       return { ...groups, [groupKey]: group };

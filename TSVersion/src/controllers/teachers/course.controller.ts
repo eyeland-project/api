@@ -10,8 +10,6 @@ import {
   CourseUpdateReq
 } from "../../types/requests/teachers.types";
 import { getTeacherById } from "../../services/teacher.service";
-import { Namespaces, of } from "../../listeners/sockets";
-import { OutgoingEvents } from "../../types/enums";
 
 export async function getCourses(
   _: Request,
