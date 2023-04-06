@@ -73,7 +73,7 @@ export function pseudoRandom(seed: number): number {
 }
 
 export function shuffle<T>(array: T[], seed?: number): T[] {
-  if (!seed) return [...array].sort(() => Math.random() - 0.5);
+  if (seed === undefined) return [...array].sort(() => Math.random() - 0.5);
   const shuffled = [...array];
 
   for (let i = shuffled.length - 1; i > 0; i--) {
