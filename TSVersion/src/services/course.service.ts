@@ -24,18 +24,13 @@ export async function getCourseById(idCourse: number): Promise<Course> {
   return course;
 }
 
-export async function createCourse(
-  name: string,
-  description: string,
-  idTeacher: number,
-  idInstitution: number
-): Promise<Course> {
-  return await CourseModel.create({
-    name,
-    description,
-    id_teacher: idTeacher,
-    id_institution: idInstitution
-  });
+export async function createCourse(fields: {
+  name: string;
+  description: string;
+  id_teacher: number;
+  id_institution: number;
+}): Promise<Course> {
+  return await CourseModel.create(fields);
 }
 
 export async function updateCourse(idCourse: number, fields: Partial<Course>) {
@@ -68,7 +63,7 @@ export async function getTeamsFromCourseWithStudents(
     last_name: string;
     power: Power;
     task_order: number | null;
-  };
+  }
 
   const studentsWithTeam = await sequelize.query<StudentWithTeam>(
     `
@@ -135,4 +130,42 @@ export async function notifyCourseOfTeamUpdate(
   }
   courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, teams);
   // TODO: notify teacher
+}
+
+export async function createSession(idCourse: number) {
+  const nsp = of(Namespaces.STUDENTS);
+  if (!nsp) throw new ApiError("Namespace not found", 500);
+  
+  const { session, id_course } = await getCourseById(idCourse);
+  if (session) {
+    throw new ApiError("Course already has an active session", 400);
+  }
+
+  await updateCourse(idCourse, { session: true });
+  nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_CREATE);
+}
+
+export async function startSession(idCourse: number) {
+  const nsp = of(Namespaces.STUDENTS);
+  if (!nsp) throw new ApiError("Namespace not found", 500);
+
+  const { session, id_course } = await getCourseById(idCourse);
+  if (!session) {
+    throw new ApiError("Course has no active session", 400);
+  }
+
+  nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_START);
+}
+
+export async function endSession(idCourse: number) {
+  const nsp = of(Namespaces.STUDENTS);
+  if (!nsp) throw new ApiError("Namespace not found", 500);
+
+  const { session, id_course } = await getCourseById(idCourse);
+  if (!session) {
+    throw new ApiError("Course has no active session", 400);
+  }
+  
+  await updateCourse(idCourse, { session: false });
+  nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_END);
 }
