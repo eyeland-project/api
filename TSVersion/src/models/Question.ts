@@ -1,4 +1,4 @@
-import { DataTypes, ForeignKey, Model } from "sequelize";
+import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "../database/db";
 import TaskStageModel from "./TaskStage";
 import { Question, QuestionCreation } from "../types/Question.types";
@@ -16,6 +16,8 @@ class QuestionModel extends Model<Question, QuestionCreation> {
   declare img_alt?: string | null;
   declare img_url?: string | null;
   declare deleted: boolean;
+
+  declare stage: NonAttribute<TaskStageModel>;
 }
 
 // model initialization
@@ -90,7 +92,8 @@ TaskStageModel.hasMany(QuestionModel, {
   foreignKey: "id_task_stage"
 });
 QuestionModel.belongsTo(TaskStageModel, {
-  foreignKey: "id_task_stage"
+  foreignKey: "id_task_stage",
+  as: "stage"
 });
 
 export default QuestionModel;

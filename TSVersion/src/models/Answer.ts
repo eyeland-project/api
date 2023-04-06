@@ -19,6 +19,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
   declare audio_url?: string | null;
 
   declare question: NonAttribute<QuestionModel>;
+  declare option: NonAttribute<OptionModel>;
 }
 
 // model initialization
@@ -75,7 +76,8 @@ OptionModel.hasMany(AnswerModel, {
   foreignKey: "id_option"
 });
 AnswerModel.belongsTo(OptionModel, {
-  foreignKey: "id_option"
+  foreignKey: "id_option",
+  as: "option"
 });
 
 // answer and task attempt

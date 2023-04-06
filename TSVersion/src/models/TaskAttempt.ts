@@ -85,7 +85,8 @@ TaskAttemptModel.belongsTo(Task, {
 
 // task attempt and team
 TeamModel.hasMany(TaskAttemptModel, {
-  foreignKey: "id_team"
+  foreignKey: "id_team",
+  as: "taskAttempts"
 });
 TaskAttemptModel.belongsTo(TeamModel, {
   foreignKey: {

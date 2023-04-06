@@ -8,7 +8,7 @@ import {
 import sequelize from "../database/db";
 import { Team, TeamCreation } from "../types/Team.types";
 import CourseModel from "./Course";
-import { AnswerModel } from "./";
+import { AnswerModel, TaskAttemptModel } from "./";
 import { genTeamCode } from "../utils";
 
 // model class definition
@@ -22,6 +22,7 @@ class TeamModel extends Model<Team, TeamCreation> {
   declare getAnswers: HasManyGetAssociationsMixin<AnswerModel>;
 
   declare answers: NonAttribute<AnswerModel[]>;
+  declare taskAttempts: NonAttribute<TaskAttemptModel[]>;
 }
 
 // model initialization
