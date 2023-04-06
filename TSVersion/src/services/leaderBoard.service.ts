@@ -21,8 +21,8 @@ export function getLeaderBoard(id: number): Team[] {
 }
 
 //TODO: call the function in another places
-export async function updateLeaderBoard(id: number): Promise<void> {
-  const teams = await getPlayingTeamsFromCourse(id);
+export async function updateLeaderBoard(idCourse: number): Promise<void> {
+  const teams = await getPlayingTeamsFromCourse(idCourse);
 
   if (!teams.length) {
     return;
@@ -57,16 +57,19 @@ export async function updateLeaderBoard(id: number): Promise<void> {
 
   // Check if the leaderboard has changed
   if (
-    leaderBoards[id] &&
-    leaderBoards[id].length === leaderboard.length &&
-    leaderBoards[id].every((team, i) => team.id === leaderboard[i].id)
+    leaderBoards[idCourse] &&
+    leaderBoards[idCourse].length === leaderboard.length &&
+    leaderBoards[idCourse].every((team, i) => team.id === leaderboard[i].id)
   ) {
     return;
   }
 
   console.log("leaderboard", leaderboard);
 
-  // TODO: emit event to notify clients
-  emitTo(`c${id}`, OutgoingEvents.LEADER_BOARD_UPDATE, leaderBoards[id]);
+  emitTo(
+    `c${idCourse}`,
+    OutgoingEvents.LEADER_BOARD_UPDATE,
+    leaderBoards[idCourse]
+  );
   //*/
 }
