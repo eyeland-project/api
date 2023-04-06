@@ -46,6 +46,7 @@ import {
   getStudentTaskByOrder
 } from "../../services/studentTask.service";
 import { getTaskByOrder } from "../../services/task.service";
+import { updateLeaderBoard } from "../../services/leaderBoard.service";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
@@ -165,7 +166,7 @@ export async function answer(
   try {
     const task = await getTaskByOrder(taskOrder);
 
-    const { session } = await getCourseFromStudent(idStudent);
+    const { session, id_course } = await getCourseFromStudent(idStudent);
     if (!session) {
       return res.status(403).json({ message: "Course session not started" });
     }
@@ -216,10 +217,14 @@ export async function answer(
       answerSeconds,
       taskAttempt.id_task_attempt
     );
+
     res.status(200).json({ message: "Answered" });
 
     // additional logic to upgrade student's task progress and do socket stuff
     try {
+      // * Updating Leaderboard
+      updateLeaderBoard(id_course);
+
       socket.broadcast
         .to(`t${taskAttempt.id_team}`)
         .emit(OutgoingEvents.ANSWER, {

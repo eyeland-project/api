@@ -1,6 +1,6 @@
 // creating the model for the Asnwer table
 // imports
-import { DataTypes, ForeignKey, Model } from "sequelize";
+import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "../database/db";
 import { Answer, AnswerCreation } from "../types/Answer.types";
 import QuestionModel from "./Question";
@@ -17,6 +17,9 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
   declare id_team?: ForeignKey<number> | null;
   declare answer_seconds: number;
   declare audio_url?: string | null;
+
+  declare question: NonAttribute<QuestionModel>;
+  declare option: NonAttribute<OptionModel>;
 }
 
 // model initialization
@@ -64,7 +67,8 @@ QuestionModel.hasMany(AnswerModel, {
   foreignKey: "id_question"
 });
 AnswerModel.belongsTo(QuestionModel, {
-  foreignKey: "id_question"
+  foreignKey: "id_question",
+  as: "question"
 });
 
 // answer and option
@@ -72,7 +76,8 @@ OptionModel.hasMany(AnswerModel, {
   foreignKey: "id_option"
 });
 AnswerModel.belongsTo(OptionModel, {
-  foreignKey: "id_option"
+  foreignKey: "id_option",
+  as: "option"
 });
 
 // answer and task attempt
@@ -85,7 +90,8 @@ AnswerModel.belongsTo(TaskAttemptModel, {
 
 // answer and team
 TeamModel.hasMany(AnswerModel, {
-  foreignKey: "id_team"
+  foreignKey: "id_team",
+  as: "answers"
 });
 AnswerModel.belongsTo(TeamModel, {
   foreignKey: {

@@ -9,6 +9,7 @@ export enum Namespaces {
   STUDENTS = "/students",
   TEACHERS = "/teachers"
 }
+type Room = `c${number}`;
 
 export default function initSocket(server: Server): Server {
   io = new IO(server);
@@ -45,5 +46,12 @@ export function on(event: string, callback: (data: any) => void) {
 export function of(namespace: Namespaces) {
   if (io) {
     return io.of(namespace);
+  }
+}
+
+export function emitTo(room: Room, event: string, data: any) {
+  if (io) {
+    io.to(room).emit(event, data);
+    console.log("S: Emitting", event, data);
   }
 }

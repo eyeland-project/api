@@ -32,5 +32,7 @@ export enum OutgoingEvents {
   SESSION_END = "session:teacher:end",
   SESSION_START = "session:teacher:start",
 
-  ANSWER = "team:student:answer"
+  ANSWER = "team:student:answer",
+
+  LEADER_BOARD_UPDATE = "course:leaderboard:update"
 }
