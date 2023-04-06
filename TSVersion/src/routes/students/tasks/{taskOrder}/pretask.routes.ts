@@ -5,7 +5,8 @@ import {
   getQuestion,
   answer,
   getLink,
-  setCompleted
+  setCompleted,
+  getQuestions
 } from "../../../../controllers/students/pretask.controller";
 
 const auth = passport.authenticate("jwt-student", { session: false });
@@ -15,6 +16,7 @@ router.use(auth);
 
 router.get("/", root);
 router.get("/links/:linkOrder", getLink);
+router.get("/questions", getQuestions);
 router.get("/questions/:questionOrder", getQuestion);
 router.post("/questions/:questionOrder", answer);
 router.post("/complete", setCompleted);

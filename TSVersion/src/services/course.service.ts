@@ -57,7 +57,7 @@ export async function getTeamsFromCourse(idCourse: number): Promise<Team[]> {
 export async function getTeamsFromCourseWithStudents(
   idCourse: number
 ): Promise<TeamResp[]> {
-  type StudentWithTeam = {
+  interface StudentWithTeam {
     id_team: number;
     code: string;
     name: string;
