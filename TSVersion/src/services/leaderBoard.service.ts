@@ -1,10 +1,4 @@
 import { emitTo } from "../listeners/sockets";
-import {
-  AnswerModel,
-  OptionModel,
-  TaskAttemptModel,
-  TeamModel
-} from "../models";
 import { OutgoingEvents } from "../types/enums";
 import { getQuestionsFromTaskStageByTaskId } from "./question.service";
 import { getPlayingTeamsFromCourse } from "./team.service";
