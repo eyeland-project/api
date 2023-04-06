@@ -525,6 +525,118 @@
         }
       }
     },
+    "/tasks/{taskOrder}/pretask/questions": {
+      "get": {
+        "description": "Get the PreTask questions based on the number of the Task",
+        "tags": [
+          "question"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionPreTask",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid taskOrder | Invalid questionOrder"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Task not found | Question not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "description": "Answer the PreTask question based on the number of the Task and the number of the question inside the task",
+        "tags": [
+          "answer"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskOrder",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of the task"
+          },
+          {
+            "name": "questionOrder",
+            "in": "path",
+            "required": true,
+            "description": "The number of the question inside the task",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/AnswerOption"
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid taskOrder | Invalid questionOrder | Invalid body"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "404": {
+            "description": "Task not found | Question not found"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/tasks/{taskOrder}/pretask/questions/{questionOrder}": {
       "get": {
         "description": "Get the PreTask question based on the number of the Task and the number of the question inside the task",

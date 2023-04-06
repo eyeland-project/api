@@ -1,4 +1,4 @@
-import { Power } from "../enums";
+import { Power, QuestionTopic, QuestionType } from "../enums";
 
 // API
 // auth
@@ -58,7 +58,6 @@ export interface PretaskLinkResp {
 export interface PretaskQuestionResp {
   id: number;
   content: string;
-  type: string;
   imgAlt: string;
   imgUrl: string;
   options: {
@@ -67,6 +66,8 @@ export interface PretaskQuestionResp {
     correct: boolean;
     feedback: string;
   }[];
+  type: QuestionType;
+  topic: QuestionTopic | null;
 }
 
 // duringtasks

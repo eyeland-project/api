@@ -1,4 +1,5 @@
 import { Model, ForeignKey } from "sequelize";
+import { QuestionTopic, QuestionType } from "./enums";
 
 export interface Question {
   id_question: number;
@@ -7,9 +8,10 @@ export interface Question {
   content: string;
   audio_url?: string | null;
   video_url?: string | null;
-  type: string;
+  type: QuestionType;
   img_alt?: string | null;
   img_url?: string | null;
+  topic: QuestionTopic | null;
   deleted: boolean;
 }
 

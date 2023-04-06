@@ -18,6 +18,7 @@ import { AnswerOptionReq } from "../../types/requests/students.types";
 import { createAnswer } from "../../services/answer.service";
 import {
   getLastQuestionFromTaskStage,
+  getQuestionsFromTaskStage,
   getTaskStageByOrder
 } from "../../services/taskStage.service";
 import {
@@ -30,6 +31,7 @@ import {
   getStudentTaskByOrder,
   upgradeStudentTaskProgress
 } from "../../services/studentTask.service";
+import { shuffle } from "../../utils";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
@@ -65,15 +67,35 @@ export async function getLink(
   }
 }
 
+export async function getQuestions(
+  req: Request<{ taskOrder: number }>,
+  res: Response<PretaskQuestionResp[]>,
+  next: Function
+) {
+  const { taskOrder } = req.params;
+  try {
+    let questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 1);
+    questionsWithOptions = shuffle(questionsWithOptions, Math.floor(Math.random() * 10));
+    questionsWithOptions.sort((a, b) => {
+      // move nulls to the end
+      if (!a.topic) return 1;
+      if (!b.topic) return -1;
+      return a.topic.localeCompare(b.topic);
+    });
+    res.status(200).json(questionsWithOptions);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getQuestion(
   req: Request<{ taskOrder: number; questionOrder: number }>,
   res: Response<PretaskQuestionResp>,
   next: Function
 ) {
+  const { taskOrder, questionOrder } = req.params;
   try {
-    const { taskOrder, questionOrder } = req.params;
-
-    const { id_question, content, type, img_alt, img_url } =
+    const { id_question, content, type, img_alt, img_url, topic } =
       await getQuestionByOrder(taskOrder, 1, questionOrder);
     const options = await getQuestionOptions(id_question);
 
@@ -88,7 +110,8 @@ export async function getQuestion(
         content,
         correct,
         feedback: feedback || ""
-      }))
+      })),
+      topic: topic || null
     });
   } catch (err) {
     next(err);
