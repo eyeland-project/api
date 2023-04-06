@@ -74,8 +74,11 @@ export async function getQuestions(
 ) {
   const { taskOrder } = req.params;
   try {
-    let questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 1);
-    questionsWithOptions = shuffle(questionsWithOptions, Math.floor(Math.random() * 10));
+    // const questionsWithOptions = shuffle(
+    //   await getQuestionsFromTaskStage(taskOrder, 1),
+    //   Math.floor(Math.random() * 10)
+    // );
+    const questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 1);
     questionsWithOptions.sort((a, b) => {
       // move nulls to the end
       if (!a.topic) return 1;

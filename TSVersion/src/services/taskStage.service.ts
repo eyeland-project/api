@@ -68,7 +68,8 @@ export async function getQuestionsFromTaskStage(
         JOIN task t ON ts.id_task = t.id_task
         LEFT JOIN option o ON q.id_question = o.id_question
         WHERE t.task_order = ${taskOrder} AND ts.task_stage_order = ${taskStageOrder}
-        ORDER BY q.question_order ASC;
+        ORDER BY RANDOM()
+        LIMIT 10;
     `,
     { type: QueryTypes.SELECT }
   );
