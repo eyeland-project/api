@@ -63,13 +63,15 @@ export async function getQuestionsFromTaskStage(
   const optionsWithQuestion = await sequelize.query<OptionWithQuestion>(
     `
         SELECT o.id_option AS id_option, o.content AS content_option, o.correct, o.feedback, q.id_question, q.content AS content_question, q.img_alt AS img_alt, q.img_url AS img_url, q.type, q.topic
-        FROM question q
-        JOIN task_stage ts ON q.id_task_stage = ts.id_task_stage
-        JOIN task t ON ts.id_task = t.id_task
+        FROM (
+          SELECT * FROM question q
+          JOIN task_stage ts ON q.id_task_stage = ts.id_task_stage
+          JOIN task t ON ts.id_task = t.id_task
+          WHERE t.task_order = ${taskOrder} AND ts.task_stage_order = ${taskStageOrder}
+          ORDER BY RANDOM()
+          LIMIT 10
+        ) AS q
         LEFT JOIN option o ON q.id_question = o.id_question
-        WHERE t.task_order = ${taskOrder} AND ts.task_stage_order = ${taskStageOrder}
-        ORDER BY RANDOM()
-        LIMIT 10;
     `,
     { type: QueryTypes.SELECT }
   );
