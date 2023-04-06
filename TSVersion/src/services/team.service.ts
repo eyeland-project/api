@@ -190,7 +190,7 @@ export async function getPlayingTeamsFromCourse(
       {
         model: TaskAttemptModel,
         required: true,
-        where: { id_team: { [Op.ne]: null } },
+        where: { id_team: { [Op.ne]: null }, active: true },
         as: "taskAttempts"
       },
       {
