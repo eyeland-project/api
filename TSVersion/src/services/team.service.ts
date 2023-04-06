@@ -196,11 +196,13 @@ export async function getPlayingTeamsFromCourse(
       {
         model: AnswerModel,
         as: "answers",
-        include: ["question"]
-      },
-      {
-        model: OptionModel,
-        as: "option"
+        include: [
+          "question",
+          {
+            model: OptionModel,
+            as: "option"
+          }
+        ]
       }
     ]
   });
