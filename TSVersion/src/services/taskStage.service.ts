@@ -1,6 +1,11 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "../database/db";
-import { QuestionModel, TaskModel, TaskStageModel } from "../models";
+import {
+  OptionModel,
+  QuestionModel,
+  TaskModel,
+  TaskStageModel
+} from "../models";
 import { TaskStage } from "../types/TaskStage.types";
 import { ApiError } from "../middlewares/handleErrors";
 import { Question } from "../types/Question.types";
@@ -95,6 +100,59 @@ export async function getQuestionsFromTaskStage(
           feedback,
           correct
         }))
+    };
+  });
+}
+
+export async function test(
+  taskOrder: number,
+  stageOrder: number
+): Promise<PretaskQuestionResp[]> {
+  const questions = await QuestionModel.findAll({
+    include: [
+      {
+        model: TaskStageModel,
+        as: "stage",
+        include: [
+          {
+            model: TaskModel,
+            where: {
+              task_order: taskOrder
+            }
+          }
+        ],
+        where: {
+          task_stage_order: stageOrder
+        }
+      },
+      {
+        model: OptionModel,
+        required: true,
+        as: "options"
+      }
+    ],
+    limit: 10,
+    order: sequelize.random()
+  });
+
+  return questions.map((question) => {
+    const { content, id_question, img_alt, img_url, topic, type } = question;
+    return {
+      id: id_question,
+      content,
+      imgAlt: img_alt!,
+      imgUrl: img_url!,
+      topic,
+      type,
+      options: question.options.map((option) => {
+        const { content, correct, feedback, id_option } = option;
+        return {
+          id: id_option,
+          content,
+          feedback: feedback!,
+          correct
+        };
+      })
     };
   });
 }
