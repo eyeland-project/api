@@ -114,10 +114,11 @@ export async function getAvailableTeamsFromCourseWithStudents(
 ): Promise<TeamRespStudent[]> {
   return (await getTeamsFromCourseWithStudents(idCourse))
     .filter(({ active, playing }) => active && !playing)
-    .map(({ id, code, name, students }) => ({
+    .map(({ id, code, name, students, taskOrder }) => ({
       id,
       code,
       name,
+      taskOrder,
       students
     }));
 }
