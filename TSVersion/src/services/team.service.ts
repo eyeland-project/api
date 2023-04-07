@@ -110,7 +110,7 @@ export async function addStudentToTeam(
   let currTaskAttempt;
   try {
     currTaskAttempt = await getStudCurrTaskAttempt(idStudent);
-    console.log("1. currTaskAttempt", currTaskAttempt);
+    // console.log("1. currTaskAttempt", currTaskAttempt);
   } catch (err) {}
 
   if (currTaskAttempt) {
