@@ -104,7 +104,7 @@ export async function getQuestion(
     members.sort((a, b) => indexPower(a) - indexPower(b));
 
     // * shuffle options
-    options = shuffle(options, (id_team + 1) * id_question);
+    options = shuffle(options, (id_team + 1) * (id_question + 2));
     // * distribute options based on power
     options = distributeOptions(
       options,
