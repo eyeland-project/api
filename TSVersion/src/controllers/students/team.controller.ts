@@ -84,7 +84,7 @@ export async function getCurrentTeam(
 
 export async function joinTeam(
   req: Request<LoginTeamReq>,
-  res: Response<Team>,
+  res: Response<{ id: number } & Team>,
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
@@ -144,7 +144,7 @@ export async function joinTeam(
     }
 
     await addStudentToTeam(idStudent, team.id_team, taskOrder);
-    res.status(200).json(team);
+    res.status(200).json({ id: team.id_team, ...team });
 
     // assign power + sockets (this could go to a subroutine)
     try {
@@ -194,7 +194,11 @@ export async function joinTeam(
   }
 }
 
-export async function leaveTeam(req: Request, res: Response, next: NextFunction) {
+export async function leaveTeam(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { id: idStudent } = req.user!;
 
   const socketStudent = directory.get(idStudent);
