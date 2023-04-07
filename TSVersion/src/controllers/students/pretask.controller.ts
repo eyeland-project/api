@@ -79,6 +79,8 @@ export async function getQuestions(
     //   Math.floor(Math.random() * 10)
     // );
     const questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 1);
+    // console.log(questionsWithOptions);
+    
     questionsWithOptions.sort((a, b) => {
       // move nulls to the end
       if (!a.topic) return 1;

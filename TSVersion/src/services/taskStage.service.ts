@@ -51,63 +51,6 @@ export async function getLastQuestionFromTaskStage(
 
 export async function getQuestionsFromTaskStage(
   taskOrder: number,
-  taskStageOrder: number
-): Promise<PretaskQuestionResp[]> {
-  interface OptionWithQuestion {
-    id_option: number;
-    content_option: string;
-    correct: boolean;
-    feedback: string;
-    id_question: number;
-    content_question: string;
-    img_alt: string;
-    img_url: string;
-    type: QuestionType;
-    topic: QuestionTopic | null;
-  }
-  const optionsWithQuestion = await sequelize.query<OptionWithQuestion>(
-    `
-        SELECT o.id_option AS id_option, o.content AS content_option, o.correct, o.feedback, q.id_question, q.content AS content_question, q.img_alt AS img_alt, q.img_url AS img_url, q.type, q.topic
-        FROM (
-          SELECT * FROM question q
-          JOIN task_stage ts ON q.id_task_stage = ts.id_task_stage
-          JOIN task t ON ts.id_task = t.id_task
-          WHERE t.task_order = ${taskOrder} AND ts.task_stage_order = ${taskStageOrder}
-          ORDER BY RANDOM()
-          LIMIT 10
-        ) AS q
-        LEFT JOIN option o ON q.id_question = o.id_question
-    `,
-    { type: QueryTypes.SELECT }
-  );
-
-  const questions = groupBy(optionsWithQuestion, "id_question");
-  return questions.map((options) => {
-    const { content_question, id_question, img_alt, img_url, topic, type } =
-      options[0];
-    return {
-      id: id_question,
-      content: content_question,
-      imgAlt: img_alt,
-      imgUrl: img_url,
-      topic,
-      type,
-      options: options
-        .filter(({ id_option }) => {
-          return id_option !== null;
-        })
-        .map(({ content_option, correct, feedback, id_option }) => ({
-          id: id_option,
-          content: content_option,
-          feedback,
-          correct
-        }))
-    };
-  });
-}
-
-export async function test(
-  taskOrder: number,
   stageOrder: number
 ): Promise<PretaskQuestionResp[]> {
   const questions = await QuestionModel.findAll({
@@ -137,16 +80,15 @@ export async function test(
     order: sequelize.random()
   });
 
-  return questions.map((question) => {
-    const { content, id_question, img_alt, img_url, topic, type } = question;
-    return {
+  return questions.map(
+    ({ content, id_question, img_alt, img_url, topic, type, options }) => ({
       id: id_question,
       content,
       imgAlt: img_alt!,
       imgUrl: img_url!,
       topic,
       type,
-      options: question.options.map((option) => {
+      options: options.map((option) => {
         const { content, correct, feedback, id_option } = option;
         return {
           id: id_option,
@@ -155,6 +97,6 @@ export async function test(
           correct
         };
       })
-    };
-  });
+    })
+  );
 }
