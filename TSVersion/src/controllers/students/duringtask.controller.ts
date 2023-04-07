@@ -97,7 +97,7 @@ export async function getQuestion(
     members.sort((a, b) => indexPower(a) - indexPower(b));
 
     // * shuffle options
-    options = shuffle(options, (id_team + 1) * id_question);
+    options = shuffle(options, (id_team + 1) * (id_question + 2));
     // * distribute options based on power
     options = distributeOptions(
       options,
@@ -208,7 +208,8 @@ export async function answer(
       question.id_question,
       idOption,
       answerSeconds,
-      taskAttempt.id_task_attempt
+      taskAttempt.id_task_attempt,
+      taskAttempt.id_team
     );
 
     res.status(200).json({ message: "Answered" });
@@ -221,7 +222,8 @@ export async function answer(
       socket.broadcast
         .to(`t${taskAttempt.id_team}`)
         .emit(OutgoingEvents.ANSWER, {
-          correct: option.correct
+          correct: option.correct,
+          nextQuestion: questionOrder + 1
         });
       console.log("answer emitted to team", taskAttempt.id_team);
 

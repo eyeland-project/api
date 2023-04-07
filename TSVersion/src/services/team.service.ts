@@ -46,7 +46,7 @@ export async function getMembersFromTeam(teamInfo: {
     `
         SELECT s.*, ba.name AS blindness_acuity_name, ba.level AS blindness_acuity_level, ta.id_task_attempt, ta.power
         FROM team t 
-        JOIN task_attempt ta ON t.id_team = ta.id_team AND t.active = ta.active
+        JOIN task_attempt ta ON t.id_team = ta.id_team AND (t.active = ta.active OR t.active = false)
         JOIN student s ON ta.id_student = s.id_student
         JOIN blindness_acuity ba ON ba.id_blindness_acuity = s.id_blindness_acuity
         WHERE ${idTeam ? `t.id_team = ${idTeam}` : `t.code = '${code}'`}

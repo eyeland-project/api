@@ -65,7 +65,7 @@ router.get("/directories", (_, res) => {
   for (let [key, value] of teacherDirectory) {
     teachers.push({ id: key, socketId: value.id });
   }
-  
+
   res.json({
     studentDirectory: students,
     teacherDirectory: teachers
@@ -80,12 +80,12 @@ router.get("/sockets", (_, res) => {
   if (studentsSockets) {
     for (let [key] of studentsSockets) students.push(key);
   }
-  
+
   const teachers: string[] = [];
   if (teachersSockets) {
     for (let [key] of teachersSockets) teachers.push(key);
   }
-  
+
   res.json({
     studentsSockets: students,
     teachersSockets: teachers
