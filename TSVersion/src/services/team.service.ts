@@ -245,3 +245,25 @@ export async function verifyTeamStatus(teamId: number) {
   }
   await team.save();
 }
+
+export async function startPlayingTeams(idCourse: number) {
+  // update all teams that have at least one student with an active task attempt
+  const teams = await TeamModel.findAll({
+    where: { id_course: idCourse, active: true },
+    include: [
+      {
+        model: TaskAttemptModel,
+        required: true,
+        where: { id_team: { [Op.ne]: null }, active: true },
+        as: "taskAttempts"
+      }
+    ]
+  });
+
+  for (const team of teams) {
+    team.playing = true;
+    await team.save();
+  }
+
+  return teams;
+}

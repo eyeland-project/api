@@ -18,6 +18,7 @@ import { TeamResp as TeamRespStudent } from "../types/responses/students.types";
 import { Student } from "../types/Student.types";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
 import { emitLeaderboard, updateLeaderBoard } from "./leaderBoard.service";
+import { startPlayingTeams } from "./team.service";
 
 // COURSE CRUD
 // get many
@@ -162,6 +163,7 @@ export async function createSession(idCourse: number) {
     throw new ApiError("Course already has an active session", 400);
   }
 
+  // updateTeams(idCourse)
   await updateCourse(idCourse, { session: true });
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_CREATE);
 }
@@ -175,6 +177,7 @@ export async function startSession(idCourse: number) {
     throw new ApiError("Course has no active session", 400);
   }
 
+  await startPlayingTeams(idCourse);
   updateLeaderBoard(idCourse);
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_START);
   emitLeaderboard(idCourse);
