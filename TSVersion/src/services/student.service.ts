@@ -45,6 +45,7 @@ export async function getCurrentTeamFromStudent(
     id: id_team,
     name,
     code: code || "",
+    taskOrder: null,
     myPower: members.find((m) => m.id_student === idStudent)?.task_attempt
       .power,
     students: members.map(
