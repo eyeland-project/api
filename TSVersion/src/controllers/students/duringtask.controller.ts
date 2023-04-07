@@ -242,9 +242,10 @@ export async function answer(
             })
             .catch((err) => console.log(err));
 
-          updateTeam(taskAttempt.id_team!, { active: false }).catch((err) =>
-            console.log(err)
-          );
+          updateTeam(taskAttempt.id_team!, {
+            active: false,
+            playing: false
+          }).catch((err) => console.log(err));
         }
       });
     } catch (err) {

@@ -3,7 +3,7 @@ import { deleteSocket, findId, printDirectory } from "../utils";
 import { getCourseFromStudent } from "../../services/student.service";
 import { getCourseById } from "../../services/course.service";
 import { getIdFromToken } from "../../utils";
-import { leaveTeam } from "../../services/team.service";
+import { leaveTeam, verifyTeamStatus } from "../../services/team.service";
 import { Namespaces, of } from "../sockets";
 
 export const directory = new Map<number, Socket>();
