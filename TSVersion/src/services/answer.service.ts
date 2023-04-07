@@ -5,12 +5,14 @@ export async function createAnswer(
   idQuestion: number,
   idOption: number,
   answerSeconds: number,
-  idTaskAttempt: number
+  idTaskAttempt: number,
+  idTeam?: number
 ): Promise<Answer> {
   return await AnswerModel.create({
     id_question: idQuestion,
     id_task_attempt: idTaskAttempt,
     id_option: idOption,
-    answer_seconds: answerSeconds
+    answer_seconds: answerSeconds,
+    id_team: idTeam ?? null
   });
 }

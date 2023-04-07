@@ -208,7 +208,8 @@ export async function answer(
       question.id_question,
       idOption,
       answerSeconds,
-      taskAttempt.id_task_attempt
+      taskAttempt.id_task_attempt,
+      taskAttempt.id_team
     );
 
     res.status(200).json({ message: "Answered" });
