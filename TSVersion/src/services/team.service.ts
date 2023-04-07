@@ -96,6 +96,16 @@ export async function createTeam(
   return await TeamModel.create({ name, id_course: idCourse }); // code is auto-generated; TODO: create again if code already exists?
 }
 
+export async function createTeams(
+  names: string[],
+  idCourse: number
+): Promise<Team[]> {
+  const teams = await Promise.all(
+    names.map((name) => createTeam(name, idCourse))
+  );
+  return teams;
+}
+
 export async function updateTeam(idTeam: number, fields: Partial<Team>) {
   if (fields.active === true)
     throw new ApiError("Cannot re-activate team", 400);
@@ -266,4 +276,49 @@ export async function startPlayingTeams(idCourse: number) {
   }
 
   return teams;
+}
+
+export async function cleanTeams(idCourse: number) {
+  // get all teams that have active task attempts or answers
+  const teams = (
+    await TeamModel.findAll({
+      where: { id_course: idCourse, active: true },
+      include: [
+        {
+          model: TaskAttemptModel,
+          as: "taskAttempts",
+          where: { active: true }
+        },
+        {
+          model: AnswerModel,
+          as: "answers"
+        }
+      ]
+    })
+  ).filter((team) => team.taskAttempts.length > 0 || team.answers.length > 0);
+
+  const promises: Promise<any>[] = [];
+  for (const team of teams) {
+    team.active = false;
+    team.playing = false;
+    promises.push(team.save());
+  }
+
+  await Promise.all(promises);
+}
+
+export function getActiveTeamsFromCourse(idCourse: number) {
+  return TeamModel.findAll({
+    where: { id_course: idCourse, active: true },
+    include: [
+      {
+        model: TaskAttemptModel,
+        as: "taskAttempts"
+      },
+      {
+        model: AnswerModel,
+        as: "answers"
+      }
+    ]
+  });
 }
