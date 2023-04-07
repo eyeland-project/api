@@ -1,9 +1,9 @@
 // creating the model for the TaskAttempt table
 // imports
-import { DataTypes, ForeignKey, Model } from "sequelize";
+import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "../database/db";
 import { TaskAttempt, TaskAttemptCreation } from "../types/TaskAttempt.types";
-import Task from "./Task";
+import TaskModel from "./Task";
 import TeamModel from "./Team";
 import StudentModel from "./Student";
 import { ApiError } from "../middlewares/handleErrors";
@@ -18,6 +18,8 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
   declare power?: Power | null;
   declare active: boolean;
   declare time_stamp: Date;
+  declare task: NonAttribute<TaskModel>;
+  declare student: NonAttribute<StudentModel>;
 }
 
 // model initialization
@@ -76,11 +78,12 @@ function checkPower({ power }: TaskAttemptModel) {
 
 // model associations
 // task attempt and task
-Task.hasMany(TaskAttemptModel, {
+TaskModel.hasMany(TaskAttemptModel, {
   foreignKey: "id_task"
 });
-TaskAttemptModel.belongsTo(Task, {
-  foreignKey: "id_task"
+TaskAttemptModel.belongsTo(TaskModel, {
+  foreignKey: "id_task",
+  as: "task"
 });
 
 // task attempt and team
@@ -100,7 +103,8 @@ StudentModel.hasMany(TaskAttemptModel, {
   foreignKey: "id_student"
 });
 TaskAttemptModel.belongsTo(StudentModel, {
-  foreignKey: "id_student"
+  foreignKey: "id_student",
+  as: "student"
 });
 
 export default TaskAttemptModel;
