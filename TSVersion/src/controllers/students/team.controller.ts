@@ -67,7 +67,7 @@ export async function joinTeam(
   const { id: idStudent } = req.user!;
 
   const socket = directory.get(idStudent);
-  if (!socket) throw new ApiError("Student is not connected", 400);
+  if (!socket) return res.status(400).json({ message: "Student is not connected" });
 
   const { code, taskOrder } = req.body as LoginTeamReq;
   if (!code || !taskOrder) {

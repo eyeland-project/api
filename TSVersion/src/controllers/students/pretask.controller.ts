@@ -74,12 +74,7 @@ export async function getQuestions(
 ) {
   const { taskOrder } = req.params;
   try {
-    // const questionsWithOptions = shuffle(
-    //   await getQuestionsFromTaskStage(taskOrder, 1),
-    //   Math.floor(Math.random() * 10)
-    // );
     const questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 1);
-    // console.log(questionsWithOptions);
     
     questionsWithOptions.sort((a, b) => {
       // move nulls to the end
@@ -209,21 +204,21 @@ export async function answer(
     });
 
     // additional logic to upgrade student_task progress
-    try {
-      getLastQuestionFromTaskStage(taskOrder, 1)
-        .then((lastQuestion) => {
-          if (lastQuestion.id_question === question.id_question) {
-            upgradeStudentTaskProgress(taskOrder, idStudent, 1).catch((err) => {
-              console.log(err);
-            });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   getLastQuestionFromTaskStage(taskOrder, 1)
+    //     .then((lastQuestion) => {
+    //       if (lastQuestion.id_question === question.id_question) {
+    //         upgradeStudentTaskProgress(taskOrder, idStudent, 1).catch((err) => {
+    //           console.log(err);
+    //         });
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // } catch (err) {
+    //   console.log(err);
+    // }
   } catch (err) {
     next(err);
   }
