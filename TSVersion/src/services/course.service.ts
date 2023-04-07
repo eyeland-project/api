@@ -7,7 +7,8 @@ import { Team } from "../types/Team.types";
 import { Namespaces, of } from "../listeners/sockets";
 import { OutgoingEvents, Power } from "../types/enums";
 import { groupBy } from "../utils";
-import { TeamResp } from "../types/responses/globals.types";
+import { TeamResp as TeamRespTeacher } from "../types/responses/teachers.types";
+import { TeamResp as TeamRespStudent } from "../types/responses/students.types";
 import { Student } from "../types/Student.types";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
 import { updateLeaderBoard } from "./leaderBoard.service";
@@ -52,12 +53,13 @@ export async function getTeamsFromCourse(idCourse: number): Promise<Team[]> {
 
 export async function getTeamsFromCourseWithStudents(
   idCourse: number
-): Promise<TeamResp[]> {
+): Promise<TeamRespTeacher[]> {
   interface StudentWithTeam {
     id_team: number;
     code: string;
     name: string;
     active: boolean;
+    playing: boolean;
     id_student: number;
     username: string;
     first_name: string;
@@ -68,7 +70,7 @@ export async function getTeamsFromCourseWithStudents(
 
   const studentsWithTeam = await sequelize.query<StudentWithTeam>(
     `
-        SELECT t.id_team, t.code, t.name, t.active, s.id_student, s.username, s.first_name, s.last_name, ta.power, tk.task_order
+        SELECT t.id_team, t.code, t.name, t.active, t.playing, s.id_student, s.username, s.first_name, s.last_name, ta.power, tk.task_order
         FROM team t
         LEFT JOIN task_attempt ta ON ta.id_team = t.id_team AND t.active = ta.active
         LEFT JOIN task tk ON tk.id_task = ta.id_task
@@ -80,12 +82,13 @@ export async function getTeamsFromCourseWithStudents(
 
   const teams = groupBy(studentsWithTeam, "id_team") as StudentWithTeam[][];
   return teams.map((students) => {
-    const { active, code, id_team, name, task_order } = students[0];
+    const { active, code, id_team, name, task_order, playing } = students[0];
     return {
       id: id_team,
       code: code,
       name: name,
       active: active,
+      playing: playing,
       taskOrder: task_order,
       students: students
         .filter(({ id_student }) => {
@@ -102,6 +105,19 @@ export async function getTeamsFromCourseWithStudents(
   });
 }
 
+export async function getAvailableTeamsFromCourseWithStudents(
+  idCourse: number
+): Promise<TeamRespStudent[]> {
+  return (await getTeamsFromCourseWithStudents(idCourse)).filter(
+    ({ active, playing }) => active && !playing
+  ).map(({ id, code, name, students }) => ({
+    id,
+    code,
+    name,
+    students,
+  }));
+}
+
 export function getStudentsFromCourse(idCourse: number): Promise<Student[]> {
   return StudentModel.findAll({ where: { id_course: idCourse } });
 }
@@ -111,9 +127,7 @@ export async function notifyCourseOfTeamUpdate(
   idTeam?: number,
   idStudent?: number
 ): Promise<void> {
-  const teams = (await getTeamsFromCourseWithStudents(idCourse)).filter(
-    (t) => t.active
-  );
+  const teams = await getAvailableTeamsFromCourseWithStudents(idCourse);
 
   let courseRoom;
   if (idStudent) {

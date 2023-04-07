@@ -135,29 +135,31 @@ export async function leaveTeam(
 
   socketStudent.leave("t" + id_team); // leave student from team socket room
   // check if this student had super_hearing to assign it to another student
-  if (power === Power.SUPER_HEARING) {
-    getMembersFromTeam({ idTeam: id_team })
-      .then(async (teammates) => {
-        if (!teammates.length) return; // no teammates left
+  checkReassignSuperHearing(id_team, power).catch((err) => {
+    console.log(err);
+  });
 
-        const blindnessLevels = teammates.map(
-          ({ blindness_acuity: { level } }) => level
-        );
-        const maxBlindnessLevel = Math.max(...blindnessLevels);
-        if (maxBlindnessLevel === 0) return; // no teammates with blindness
-
-        const withMaxBlindnessIdx = blindnessLevels.indexOf(maxBlindnessLevel);
-        const { id_student: idNewStudent } = teammates[withMaxBlindnessIdx];
-        await assignPowerToStudent(
-          idNewStudent,
-          Power.SUPER_HEARING,
-          teammates
-        );
-        notifyStudentOfTeamUpdate(idNewStudent);
-      })
-      .catch((err) => console.log(err));
-  }
   notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
+}
+
+export async function checkReassignSuperHearing(
+  idTeam: number,
+  powerOldStudent: Power | null | undefined
+) {
+  if (powerOldStudent !== Power.SUPER_HEARING) return; // no need to reassign
+  const teammates = await getMembersFromTeam({ idTeam });
+  if (!teammates.length) return; // no teammates left
+
+  const blindnessLevels = teammates.map(
+    ({ blindness_acuity: { level } }) => level
+  );
+  const maxBlindnessLevel = Math.max(...blindnessLevels);
+  if (maxBlindnessLevel === 0) return; // no teammates with blindness
+
+  const withMaxBlindnessIdx = blindnessLevels.indexOf(maxBlindnessLevel);
+  const { id_student: idNewStudent } = teammates[withMaxBlindnessIdx];
+  await assignPowerToStudent(idNewStudent, Power.SUPER_HEARING, teammates);
+  notifyStudentOfTeamUpdate(idNewStudent);
 }
 
 export async function removeStudFromTeam(idStudent: number) {

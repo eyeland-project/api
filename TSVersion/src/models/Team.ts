@@ -18,9 +18,8 @@ class TeamModel extends Model<Team, TeamCreation> {
   declare name: string;
   declare code?: string | null;
   declare active: boolean;
-
+  declare playing: boolean;
   declare getAnswers: HasManyGetAssociationsMixin<AnswerModel>;
-
   declare answers: NonAttribute<AnswerModel[]>;
   declare taskAttempts: NonAttribute<TaskAttemptModel[]>;
 }
@@ -52,6 +51,11 @@ TeamModel.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
+    },
+    playing: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   },
   {

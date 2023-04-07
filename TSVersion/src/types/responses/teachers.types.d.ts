@@ -1,5 +1,3 @@
-import { TeamResp as TeamRespGlobal } from "./globals.types";
-
 // general
 export interface ElementCreatedResp {
   id: number;
@@ -65,4 +63,19 @@ export interface StudentResp {
 }
 
 // teams
-export interface TeamResp extends TeamRespGlobal {}
+export interface TeamResp {
+  id: number;
+  code: string;
+  name: string;
+  students: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    username: string;
+    power: Power | null;
+  }[];
+  active: boolean;
+  taskOrder: number | null;
+  playing: boolean;
+}
+

@@ -11,11 +11,12 @@ import {
   getMembersFromTeam,
   getTeamByCode,
   notifyStudentOfTeamUpdate,
-  leaveTeam as leaveTeamService
+  leaveTeam as leaveTeamService,
+  checkReassignSuperHearing
 } from "../../services/team.service";
 import { LoginTeamReq } from "../../types/requests/students.types";
 import {
-  getTeamsFromCourseWithStudents,
+  getAvailableTeamsFromCourseWithStudents,
   notifyCourseOfTeamUpdate
 } from "../../services/course.service";
 import { StudentSocket, TeamResp } from "../../types/responses/students.types";
@@ -37,10 +38,9 @@ export async function getTeams(
   const { id: idStudent } = req.user!;
   try {
     const { id_course } = await getStudentById(idStudent);
-    const teams = (await getTeamsFromCourseWithStudents(id_course)).filter(
-      (t) => t.active
-    );
-    res.status(200).json(teams);
+    res
+      .status(200)
+      .json(await getAvailableTeamsFromCourseWithStudents(id_course));
   } catch (err) {
     next(err);
   }
@@ -108,13 +108,15 @@ export async function joinTeam(
       );
     }
 
-    let prevTeam;
+    let prevTeamId: number | undefined;
+    let prevPower: Power | null | undefined;
     try {
-      prevTeam = await getTeamFromStudent(idStudent); // check if student is already in a team
+      prevTeamId = (await getTeamFromStudent(idStudent)).id_team; // check if student is already in a team
+      prevPower = (await getStudCurrTaskAttempt(idStudent)).power; // check if student has a power
     } catch (err) {} // no team found for student (expected)
 
     const team = await getTeamByCode(code);
-    if (team.id_team === prevTeam?.id_team) {
+    if (team.id_team === prevTeamId) {
       throw new ApiError("Student is already in this team", 400);
     }
 
@@ -134,8 +136,8 @@ export async function joinTeam(
     if (teammates.length) {
       // check if the team is already working on a different task
       const { id_task } = await getStudCurrTaskAttempt(teammates[0].id_student);
-      const { task_order } = await getTaskById(id_task);
-      if (task_order !== taskOrder) {
+      const { task_order: taskOrderTeam } = await getTaskById(id_task);
+      if (taskOrderTeam !== taskOrder) {
         throw new ApiError(
           "This team is already working on a different task",
           400
@@ -173,18 +175,10 @@ export async function joinTeam(
         })
         .catch((err) => console.log(err));
 
-      if (prevTeam) {
-        // notify previous team that student left
-        const nsp = of(Namespaces.STUDENTS);
-        if (!nsp) return;
-
-        const idPrevTeam = prevTeam.id_team;
-        getMembersFromTeam({ idTeam: idPrevTeam })
-          .then((prevTeamMembers) => {
-            const teamData: StudentSocket[] = summMembers(prevTeamMembers);
-            nsp.to("t" + idPrevTeam).emit(OutgoingEvents.TEAM_UPDATE, teamData);
-          })
-          .catch((err) => console.log(err));
+      if (prevTeamId && prevPower) {
+        checkReassignSuperHearing(prevTeamId, prevPower).catch((err) =>
+          console.log(err)
+        );
       }
     } catch (err) {
       console.log(err);
@@ -194,7 +188,11 @@ export async function joinTeam(
   }
 }
 
-export async function leaveTeam(req: Request, res: Response, next: NextFunction) {
+export async function leaveTeam(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { id: idStudent } = req.user!;
 
   const socketStudent = directory.get(idStudent);

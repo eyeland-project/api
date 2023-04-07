@@ -160,6 +160,7 @@ CREATE TABLE team (
     name VARCHAR(50) NOT NULL,
     code CHAR(6),
     active BOOLEAN NOT NULL DEFAULT TRUE,
+    playing BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_team PRIMARY KEY (id_team),
     CONSTRAINT fk_team_course FOREIGN KEY (id_course) REFERENCES course(id_course)
@@ -302,13 +303,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Throw exception if all team members don't doing the same task
-CREATE OR REPLACE FUNCTION check_team_tasks() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION validate_team_task() RETURNS TRIGGER AS $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM task_attempt t1
     WHERE t1.id_team = NEW.id_team AND t1.id_task <> NEW.id_task AND t1.active
   ) THEN
     RAISE EXCEPTION 'Team members must be doing the same task';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Throw exception if team not active is playing
+CREATE OR REPLACE FUNCTION validate_team_playing() RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.active = FALSE AND NEW.playing = TRUE THEN
+    RAISE EXCEPTION 'Team not active cannot be playing';
   END IF;
   RETURN NEW;
 END;
@@ -334,10 +345,16 @@ FOR EACH ROW
 EXECUTE FUNCTION insert_task_stage_for_new_task();
 
 -- Trigger to check that all team members are doing the same task
-CREATE TRIGGER check_team_tasks_trigger
+CREATE TRIGGER validate_team_task_trigger
 BEFORE INSERT OR UPDATE ON task_attempt
 FOR EACH ROW
-EXECUTE FUNCTION check_team_tasks();
+EXECUTE FUNCTION validate_team_task();
+
+-- Trigger to check that a team cannot be inactive and playing at the same time
+CREATE TRIGGER validate_team_playing_trigger
+BEFORE INSERT OR UPDATE ON team
+FOR EACH ROW
+EXECUTE FUNCTION validate_team_playing();
 
 -- INSERTING DATA
 -- INSERT INTO task

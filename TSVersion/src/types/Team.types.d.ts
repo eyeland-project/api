@@ -6,6 +6,7 @@ export interface Team {
   name: string;
   code?: string | null;
   active: boolean;
+  playing: boolean;
 }
 
-export type TeamCreation = Omit<Team, "id_team" | "active">;
+export type TeamCreation = Omit<Team, "id_team" | "active" | "playing">;

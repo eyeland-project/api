@@ -17,10 +17,7 @@ import {
   getTaskStageByOrder
 } from "../../services/taskStage.service";
 import { ApiError } from "../../middlewares/handleErrors";
-import {
-  createTaskAttempt,
-  getStudCurrTaskAttempt
-} from "../../services/taskAttempt.service";
+import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
 import {
   translateFormat,
   distributeOptions,
@@ -32,12 +29,8 @@ import {
   getTeamFromStudent,
   getTeammates
 } from "../../services/student.service";
-import { OutgoingEvents, Power } from "../../types/enums";
-import {
-  getMembersFromTeam,
-  getTeamById,
-  updateTeam
-} from "../../services/team.service";
+import { OutgoingEvents } from "../../types/enums";
+import { updateTeam } from "../../services/team.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
 import { createAnswer } from "../../services/answer.service";
 import { directory } from "../../listeners/namespaces/students";

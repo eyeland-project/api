@@ -54,7 +54,7 @@ export async function getTeam(
       }
     } catch (err) {}
 
-    const { id_team, name, active, code } = team;
+    const { id_team, name, active, code, playing } = team;
     let students: TeamMember[];
     try {
       students = await getMembersFromTeam({ idTeam: id_team });
@@ -66,6 +66,7 @@ export async function getTeam(
       id: id_team,
       name,
       active,
+      playing,
       taskOrder: taskOrder || null,
       code: code || "",
       students: students.map(
