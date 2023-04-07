@@ -34,7 +34,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   let position = 0;
 
   // create the leaderboard
-  const leaderboard = teams
+  const leaderboardScore = teams
     .map((team) => {
       // The score is proportional to the number of correct answers
       // The maximum score is 100 when all (or all - 1) answers are correct and the time is 0
@@ -52,39 +52,42 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
         score
       };
     })
-    .sort((a, b) => b.score - a.score)
-    .map((team, i, arr) => {
-      // teams with the same score have the same position
-      if (i > 0 && team.score === arr[i - 1].score) {
-        return {
-          id: team.id,
-          name: team.name,
-          position
-        };
-      } else {
-        position = i + 1;
+    .sort((a, b) => b.score - a.score);
 
-        return {
-          id: team.id,
-          name: team.name,
-          position
-        };
-      }
-    });
+  console.log("leaderboard2", leaderboardScore);
 
-  console.log("leaderboard2", leaderboard);
+  const leaderBoard = leaderboardScore.map((team, i, arr) => {
+    // teams with the same score have the same position
+    if (i > 0 && team.score === arr[i - 1].score) {
+      return {
+        id: team.id,
+        name: team.name,
+        position
+      };
+    } else {
+      position = i + 1;
+
+      return {
+        id: team.id,
+        name: team.name,
+        position
+      };
+    }
+  });
+
+  console.log("leaderboard2", leaderBoard);
   // Check if the leaderboard has changed
   if (
     leaderBoards[idCourse] &&
-    leaderBoards[idCourse].length === leaderboard.length &&
-    leaderBoards[idCourse].every((team, i) => team.id === leaderboard[i].id)
+    leaderBoards[idCourse].length === leaderBoard.length &&
+    leaderBoards[idCourse].every((team, i) => team.id === leaderBoard[i].id)
   ) {
     return;
   }
 
-  leaderBoards[idCourse] = leaderboard;
+  leaderBoards[idCourse] = leaderBoard;
 
-  console.log("leaderboard", leaderboard);
+  console.log("leaderboard", leaderBoard);
 
   emitTo(
     `c${idCourse}`,
