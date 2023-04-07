@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import {
   assignPowerToStudent,
   getBlindnessAcFromStudent,
+  getCurrentTeamFromStudent,
   getStudentById,
   getTeamFromStudent,
   rafflePower
@@ -21,8 +22,7 @@ import {
 } from "../../services/course.service";
 import { StudentSocket, TeamResp } from "../../types/responses/students.types";
 import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
-import { OutgoingEvents, Power } from "../../types/enums";
-import { Namespaces, of } from "../../listeners/sockets";
+import { Power } from "../../types/enums";
 import { TeamMember } from "../../types/Student.types";
 import { directory } from "../../listeners/namespaces/students";
 import { getTaskById } from "../../services/task.service";
@@ -53,30 +53,7 @@ export async function getCurrentTeam(
 ) {
   const { id: idStudent } = req.user!;
   try {
-    const { id_team, name, code } = await getTeamFromStudent(idStudent);
-    const members = await getMembersFromTeam({ idTeam: id_team });
-    res.status(200).json({
-      id: id_team,
-      name,
-      code: code || "",
-      myPower: members.find((m) => m.id_student === idStudent)?.task_attempt
-        .power,
-      students: members.map(
-        ({
-          id_student,
-          first_name,
-          last_name,
-          task_attempt: { power },
-          username
-        }) => ({
-          id: id_student,
-          firstName: first_name,
-          lastName: last_name,
-          username,
-          power
-        })
-      )
-    });
+    res.status(200).json(await getCurrentTeamFromStudent(idStudent));
   } catch (err) {
     next(err);
   }
@@ -84,7 +61,7 @@ export async function getCurrentTeam(
 
 export async function joinTeam(
   req: Request<LoginTeamReq>,
-  res: Response<{ id: number } & Team>,
+  res: Response,
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
@@ -146,7 +123,7 @@ export async function joinTeam(
     }
 
     await addStudentToTeam(idStudent, team.id_team, taskOrder);
-    res.status(200).json({ id: team.id_team, ...team });
+    res.status(200).json({ message: "Student joined team" });
 
     // assign power + sockets (this could go to a subroutine)
     try {

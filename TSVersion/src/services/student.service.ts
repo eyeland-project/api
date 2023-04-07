@@ -6,18 +6,15 @@ import { Student, TeamMember } from "../types/Student.types";
 import { Team } from "../types/Team.types";
 import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import { updateStudCurrTaskAttempt } from "./taskAttempt.service";
-import { OutgoingEvents, Power } from "../types/enums";
+import { Power } from "../types/enums";
 import {
   getAvailablePowers,
   getMembersFromTeam,
   notifyStudentOfTeamUpdate
 } from "./team.service";
 import { Course } from "../types/Course.types";
-import { directory } from "../listeners/namespaces/students";
-import {
-  getTeamsFromCourseWithStudents,
-  notifyCourseOfTeamUpdate
-} from "./course.service";
+import { notifyCourseOfTeamUpdate } from "./course.service";
+import { TeamResp as TeamRespStud } from "../types/responses/students.types";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);
@@ -37,6 +34,35 @@ export async function getTeamFromStudent(idStudent: number): Promise<Team> {
   )) as Team[];
   if (!team.length) throw new ApiError("Team not found", 400);
   return team[0];
+}
+
+export async function getCurrentTeamFromStudent(
+  idStudent: number
+): Promise<TeamRespStud & { myPower?: Power }> {
+  const { id_team, name, code } = await getTeamFromStudent(idStudent);
+  const members = await getMembersFromTeam({ idTeam: id_team });
+  return {
+    id: id_team,
+    name,
+    code: code || "",
+    myPower: members.find((m) => m.id_student === idStudent)?.task_attempt
+      .power,
+    students: members.map(
+      ({
+        id_student,
+        first_name,
+        last_name,
+        task_attempt: { power },
+        username
+      }) => ({
+        id: id_student,
+        firstName: first_name,
+        lastName: last_name,
+        username,
+        power
+      })
+    )
+  }
 }
 
 export async function getCourseFromStudent(idStudent: number): Promise<Course> {

@@ -67,18 +67,22 @@ export async function getTeamsFromCourseWithStudents(
     power: Power;
     task_order: number | null;
   }
-
   const studentsWithTeam = await sequelize.query<StudentWithTeam>(
     `
-        SELECT t.id_team, t.code, t.name, t.active, t.playing, s.id_student, s.username, s.first_name, s.last_name, ta.power, tk.task_order
-        FROM team t
-        LEFT JOIN task_attempt ta ON ta.id_team = t.id_team AND t.active = ta.active
-        LEFT JOIN task tk ON tk.id_task = ta.id_task
-        LEFT JOIN student s ON s.id_student = ta.id_student
+        SELECT t.id_team, t.code, t.name, t.active, t.playing, s.id_student, s.username, s.first_name, s.last_name, t.power, t.task_order
+        FROM (
+          SELECT t.id_team, t.code, t.name, t.active, t.playing, t.id_course, ta.power, ta.id_student, tk.task_order
+          FROM team t
+          LEFT JOIN task_attempt ta ON ta.id_team = t.id_team AND t.active = ta.active
+          LEFT JOIN task tk ON tk.id_task = ta.id_task
+        ) AS t
+        LEFT JOIN student s ON s.id_student = t.id_student
         WHERE t.id_course = ${idCourse};
     `,
     { type: QueryTypes.SELECT }
   );
+  console.log(studentsWithTeam);
+  
 
   const teams = groupBy(studentsWithTeam, "id_team") as StudentWithTeam[][];
   return teams.map((students) => {
@@ -108,14 +112,14 @@ export async function getTeamsFromCourseWithStudents(
 export async function getAvailableTeamsFromCourseWithStudents(
   idCourse: number
 ): Promise<TeamRespStudent[]> {
-  return (await getTeamsFromCourseWithStudents(idCourse)).filter(
-    ({ active, playing }) => active && !playing
-  ).map(({ id, code, name, students }) => ({
-    id,
-    code,
-    name,
-    students,
-  }));
+  return (await getTeamsFromCourseWithStudents(idCourse))
+    .filter(({ active, playing }) => active && !playing)
+    .map(({ id, code, name, students }) => ({
+      id,
+      code,
+      name,
+      students
+    }));
 }
 
 export function getStudentsFromCourse(idCourse: number): Promise<Student[]> {
