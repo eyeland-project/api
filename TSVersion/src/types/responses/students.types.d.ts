@@ -141,11 +141,6 @@ export interface StudentSocket {
   power: Power | null;
 }
 
-export interface TeamSocket {
-  id: number;
-  students: StudentSocket[];
-}
-
 // SOCKETS
 export interface StudentSocket {
   id: number;

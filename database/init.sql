@@ -427,7 +427,7 @@ BEGIN
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (1, 9, 'Describe the image', NULL, NULL, 'flashcard', 'Imagen de un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/bridge_1_uifemw', 'vocabulary') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Bridge', 'Correct!', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Road', 'Incorrect!', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Toll', 'Incorrect!', FALSE);
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (1, 10, 'Describe the image', NULL, NULL, 'flashcard', 'Imagen de un río', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/river_1_hjue1t', 'vocabulary') RETURNING id_question INTO last_question_id;

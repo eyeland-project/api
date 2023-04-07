@@ -1,10 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   assignPowerToStudent,
   getBlindnessAcFromStudent,
   getStudentById,
   getTeamFromStudent,
-  getTeammates,
   rafflePower
 } from "../../services/student.service";
 import {
@@ -12,37 +11,28 @@ import {
   getMembersFromTeam,
   getTeamByCode,
   notifyStudentOfTeamUpdate,
-  leaveTeam as leaveTeamService,
+  leaveTeam as leaveTeamService
 } from "../../services/team.service";
-import { ApiError } from "../../middlewares/handleErrors";
 import { LoginTeamReq } from "../../types/requests/students.types";
 import {
   getTeamsFromCourseWithStudents,
   notifyCourseOfTeamUpdate
 } from "../../services/course.service";
-import {
-  StudentSocket,
-  TeamResp,
-  TeamSocket
-} from "../../types/responses/students.types";
+import { StudentSocket, TeamResp } from "../../types/responses/students.types";
 import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
 import { OutgoingEvents, Power } from "../../types/enums";
-import { PowerReq } from "../../types/requests/students.types";
 import { Namespaces, of } from "../../listeners/sockets";
 import { TeamMember } from "../../types/Student.types";
 import { directory } from "../../listeners/namespaces/students";
 import { getTaskById } from "../../services/task.service";
-import sequelize from "../../database/db";
-import { QueryTypes } from "sequelize";
-import {
-  getHighestTaskCompletedFromStudent,
-  getStudentTasks
-} from "../../services/studentTask.service";
+import { getHighestTaskCompletedFromStudent } from "../../services/studentTask.service";
+import { Team } from "../../types/Team.types";
+import { ApiError } from "../../middlewares/handleErrors";
 
 export async function getTeams(
   req: Request,
   res: Response<TeamResp[]>,
-  next: Function
+  next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
   try {
@@ -59,7 +49,7 @@ export async function getTeams(
 export async function getCurrentTeam(
   req: Request,
   res: Response<TeamResp & { myPower?: Power }>,
-  next: Function
+  next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
   try {
@@ -94,27 +84,28 @@ export async function getCurrentTeam(
 
 export async function joinTeam(
   req: Request<LoginTeamReq>,
-  res: Response,
-  next: Function
+  res: Response<Team>,
+  next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
 
   const socket = directory.get(idStudent);
-  if (!socket)
-    return res.status(400).json({ message: "Student is not connected" });
+  if (!socket) throw new ApiError("Student is not connected", 400);
 
   const { code, taskOrder } = req.body as LoginTeamReq;
-  if (!code || !taskOrder)
-    return res.status(400).json({ message: "Wrong body" });
+  if (!code || !taskOrder) {
+    throw new ApiError("Wrong body", 400);
+  }
 
   try {
     const nextTaskOrder =
       ((await getHighestTaskCompletedFromStudent(idStudent))?.task_order || 0) +
       1;
     if (taskOrder > nextTaskOrder) {
-      return res
-        .status(400)
-        .json({ message: `You should first complete task ${nextTaskOrder}` });
+      throw new ApiError(
+        `You should first complete task ${nextTaskOrder}`,
+        400
+      );
     }
 
     let prevTeam;
@@ -124,24 +115,20 @@ export async function joinTeam(
 
     const team = await getTeamByCode(code);
     if (team.id_team === prevTeam?.id_team) {
-      return res
-        .status(400)
-        .json({ message: "Student is already in this team" });
+      throw new ApiError("Student is already in this team", 400);
     }
 
     const student = await getStudentById(idStudent);
     if (student.id_course !== team.id_course) {
-      return res
-        .status(400)
-        .json({ message: "Student and team are not in the same course" });
+      throw new ApiError("Student and team are not in the same course", 400);
     }
     if (!team.active) {
-      return res.status(400).json({ message: "Team is not active" });
+      throw new ApiError("Team is not active", 400);
     }
 
     const teammates = await getMembersFromTeam({ idTeam: team.id_team });
     if (teammates.length >= 3) {
-      return res.status(400).json({ message: "Team is full" });
+      throw new ApiError("Team is full", 400);
     }
 
     if (teammates.length) {
@@ -149,14 +136,15 @@ export async function joinTeam(
       const { id_task } = await getStudCurrTaskAttempt(teammates[0].id_student);
       const { task_order } = await getTaskById(id_task);
       if (task_order !== taskOrder) {
-        return res.status(400).json({
-          message: "This team is already working on a different task"
-        });
+        throw new ApiError(
+          "This team is already working on a different task",
+          400
+        );
       }
     }
 
     await addStudentToTeam(idStudent, team.id_team, taskOrder);
-    res.status(200).json({ message: "Done" });
+    res.status(200).json(team);
 
     // assign power + sockets (this could go to a subroutine)
     try {
@@ -206,7 +194,7 @@ export async function joinTeam(
   }
 }
 
-export async function leaveTeam(req: Request, res: Response, next: Function) {
+export async function leaveTeam(req: Request, res: Response, next: NextFunction) {
   const { id: idStudent } = req.user!;
 
   const socketStudent = directory.get(idStudent);
@@ -215,15 +203,15 @@ export async function leaveTeam(req: Request, res: Response, next: Function) {
   }
 
   try {
-    await leaveTeamService(idStudent, socketStudent, () => (
+    await leaveTeamService(idStudent, socketStudent, () =>
       res.status(200).json({ message: "Done" })
-    ));
+    );
   } catch (err) {
     next(err);
   }
 }
 
-export async function ready(req: Request, res: Response, next: Function) {
+export async function ready(req: Request, res: Response, next: NextFunction) {
   const { id: idStudent } = req.user!;
   try {
     const { power } = await getStudCurrTaskAttempt(idStudent);
@@ -235,7 +223,7 @@ export async function ready(req: Request, res: Response, next: Function) {
   }
 }
 
-export async function reroll(req: Request, res: Response, next: Function) {
+export async function reroll(req: Request, res: Response, next: NextFunction) {
   const { id: idStudent } = req.user!;
   try {
     // * Students are being notified directly in the rafflePower function
