@@ -231,14 +231,14 @@ export async function verifyTeamStatus(teamId: number) {
   if (!team) return;
 
   if (!team.active) return;
-  if (!team.playing) return;
 
   const hasActiveTaskAttempt = team.taskAttempts.some(
     ({ active }) => active === true
   );
-  if (!hasActiveTaskAttempt) return;
-  team.playing = false;
-
+  if (hasActiveTaskAttempt) return;
+  if (team.playing) {
+    team.playing = false;
+  }
   const hasAnswer = team.answers.length > 0;
   if (hasAnswer) {
     team.active = false;
