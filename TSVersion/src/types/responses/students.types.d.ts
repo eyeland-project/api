@@ -123,6 +123,7 @@ export interface TeamResp {
   id: number;
   code: string;
   name: string;
+  taskOrder: number | null;
   students: {
     id: number;
     firstName: string;
