@@ -139,7 +139,9 @@ export async function leaveTeam(
     console.log(err);
   });
 
+  await verifyTeamStatus(id_team);
   notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
+  return id_team;
 }
 
 export async function checkReassignSuperHearing(
@@ -187,7 +189,7 @@ export async function getPlayingTeamsFromCourse(
 ): Promise<TeamModel[]> {
   // return all active teams that have at least one student with a task attempt
   const teams = await TeamModel.findAll({
-    where: { id_course: idCourse, active: true },
+    where: { id_course: idCourse, active: true, playing: true },
     include: [
       {
         model: TaskAttemptModel,
@@ -209,4 +211,37 @@ export async function getPlayingTeamsFromCourse(
     ]
   });
   return teams;
+}
+
+export async function verifyTeamStatus(teamId: number) {
+  const team = await TeamModel.findOne({
+    where: { id_team: teamId },
+    include: [
+      {
+        model: TaskAttemptModel,
+        as: "taskAttempts"
+      },
+      {
+        model: AnswerModel,
+        as: "answers"
+      }
+    ]
+  });
+
+  if (!team) return;
+
+  if (!team.active) return;
+  if (!team.playing) return;
+
+  const hasActiveTaskAttempt = team.taskAttempts.some(
+    ({ active }) => active === true
+  );
+  if (!hasActiveTaskAttempt) return;
+  team.playing = false;
+
+  const hasAnswer = team.answers.length > 0;
+  if (hasAnswer) {
+    team.active = false;
+  }
+  await team.save();
 }

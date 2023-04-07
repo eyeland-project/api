@@ -1,5 +1,5 @@
 import { AnswerModel } from "../models";
-import { Answer, AnswerCreation } from "../types/Answer.types";
+import { Answer } from "../types/Answer.types";
 
 export async function createAnswer(
   idQuestion: number,
