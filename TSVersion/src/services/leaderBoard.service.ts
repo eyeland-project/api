@@ -17,7 +17,7 @@ export function getLeaderBoard(id: number): Team[] {
 //TODO: call the function in another places
 export async function updateLeaderBoard(idCourse: number): Promise<void> {
   const teams = await getPlayingTeamsFromCourse(idCourse);
-
+  console.log("teams", teams.length);
   if (!teams.length) {
     return;
   }
