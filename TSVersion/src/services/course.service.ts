@@ -13,13 +13,18 @@ import { Course } from "../types/Course.types";
 import { Team } from "../types/Team.types";
 import { Namespaces, of } from "../listeners/sockets";
 import { OutgoingEvents, Power } from "../types/enums";
-import { groupBy } from "../utils";
+import { generateTeamName, groupBy } from "../utils";
 import { TeamResp as TeamRespTeacher } from "../types/responses/teachers.types";
 import { TeamResp as TeamRespStudent } from "../types/responses/students.types";
 import { Student } from "../types/Student.types";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
 import { emitLeaderboard, updateLeaderBoard } from "./leaderBoard.service";
-import { cleanTeams, startPlayingTeams } from "./team.service";
+import {
+  cleanTeams,
+  createTeams,
+  getActiveTeamsFromCourse,
+  startPlayingTeams
+} from "./team.service";
 
 // COURSE CRUD
 // get many
@@ -178,7 +183,7 @@ export async function createSession(idCourse: number) {
     throw new ApiError("Course already has an active session", 400);
   }
 
-  initializeTeams(idCourse);
+  await initializeTeams(idCourse);
   await updateCourse(idCourse, { session: true });
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_CREATE);
 }
@@ -217,10 +222,10 @@ export async function initializeTeams(idCourse: number) {
 
   // Get all teams
   const teamsPromise = getTeamsFromCourse(idCourse).then((teams) => {
-    // return the number of teams and the number of active teams
+    // return the number of teams and the names of the active teams
     return {
       teams: teams.length,
-      activeTeams: teams.filter((team) => team.active).length
+      activeTeams: teams.filter((team) => team.active).map((team) => team.name)
     };
   });
   // Get students
@@ -249,10 +254,32 @@ export async function initializeTeams(idCourse: number) {
   }
 
   // If there are more teams than active teams, we need to create new teams
-  if (nTeams > teams.activeTeams) {
+  if (nTeams > teams.activeTeams.length) {
     // Get the number of teams to create
-    const nTeamsToCreate = nTeams - teams.activeTeams;
+    const nTeamsToCreate = nTeams - teams.activeTeams.length;
     // Create the teams
-    // await createTeams(idCourse, nTeamsToCreate);
+    await createMissingTeams(idCourse, nTeamsToCreate, teams.activeTeams);
   }
+}
+
+export async function createMissingTeams(
+  idCourse: number,
+  numberTeams: number,
+  usedTeamNames?: string[]
+) {
+  if (usedTeamNames === undefined) {
+    usedTeamNames =
+      (await getActiveTeamsFromCourse(idCourse).then((teams) =>
+        teams.map((team) => team.name)
+      )) || [];
+  }
+
+  const teams = [];
+  for (let i = 0; i < numberTeams; i++) {
+    let name = await generateTeamName(usedTeamNames);
+    usedTeamNames.push(name);
+    teams.push(name);
+  }
+
+  await createTeams(teams, idCourse);
 }
