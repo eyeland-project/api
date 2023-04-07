@@ -86,7 +86,7 @@ export async function getStudentProgressFromTaskByOrder(
     `,
     { type: QueryTypes.SELECT }
   );
-  console.log(studentTasks);
+  // console.log(studentTasks);
   const highestStage = studentTasks.length ? studentTasks[0].highest_stage : 0;
   return {
     pretask: {

@@ -54,7 +54,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
     })
     .sort((a, b) => b.score - a.score);
 
-  // console.log("leaderboard2", leaderboardScore);
+  console.log("leaderboard2", leaderboardScore);
 
   const leaderBoard = leaderboardScore.map((team, i, arr) => {
     // teams with the same score have the same position
@@ -75,7 +75,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
     }
   });
 
-  // console.log("leaderboard2", leaderBoard);
+  console.log("leaderboard2", leaderBoard);
   // Check if the leaderboard has changed
   if (
     leaderBoards[idCourse] &&
@@ -92,10 +92,19 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
 
   // console.log("leaderboard", leaderBoard);
 
+  // emit the leaderboard
+  emitLeaderboard(idCourse);
+  //*/
+}
+
+export async function emitLeaderboard(idCourse: number): Promise<void> {
+  if (!leaderBoards[idCourse]) {
+    await updateLeaderBoard(idCourse);
+  }
+
   emitTo(
     `c${idCourse}`,
     OutgoingEvents.LEADER_BOARD_UPDATE,
     leaderBoards[idCourse]
   );
-  //*/
 }

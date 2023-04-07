@@ -11,7 +11,7 @@ import { TeamResp as TeamRespTeacher } from "../types/responses/teachers.types";
 import { TeamResp as TeamRespStudent } from "../types/responses/students.types";
 import { Student } from "../types/Student.types";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
-import { updateLeaderBoard } from "./leaderBoard.service";
+import { emitLeaderboard, updateLeaderBoard } from "./leaderBoard.service";
 
 // COURSE CRUD
 // get many
@@ -175,6 +175,7 @@ export async function startSession(idCourse: number) {
 
   updateLeaderBoard(idCourse);
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_START);
+  emitLeaderboard(idCourse);
 }
 
 export async function endSession(idCourse: number) {
