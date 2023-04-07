@@ -123,7 +123,7 @@ export async function rafflePower(idStudent: number) {
   // ** if the number is -1, return false
   if (randomIdx === -1) return false;
   // ** else, assign the power to the student
-  assignPower(idStudent, powers[randomIdx]);
+  await assignPower(idStudent, powers[randomIdx]);
 
   notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
   notifyStudentOfTeamUpdate(idStudent);
