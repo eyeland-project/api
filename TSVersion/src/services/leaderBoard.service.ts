@@ -72,6 +72,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
       }
     });
 
+  console.log("leaderboard2", leaderboard);
   // Check if the leaderboard has changed
   if (
     leaderBoards[idCourse] &&
