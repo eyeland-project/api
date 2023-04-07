@@ -69,19 +69,22 @@ export async function getTeamsFromCourseWithStudents(
           {
             model: StudentModel,
             attributes: ["id_student", "username", "first_name", "last_name"],
-            as: "student"
+            as: "student",
+            required: false
           },
           {
             model: TaskModel,
             attributes: ["task_order"],
-            as: "task"
+            as: "task",
+            required: false
           }
         ],
         where: {
           active: sequelize.col("TeamModel.active")
         },
         attributes: ["power"],
-        as: "taskAttempts"
+        as: "taskAttempts",
+        required: false
       }
     ],
     where: { id_course: idCourse }
