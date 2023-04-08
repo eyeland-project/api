@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-  getAnswerFromQuestionOfAttempt,
   getQuestionByOrder,
   getTaskStageQuestionsCount
 } from "../../services/question.service";
@@ -8,14 +7,8 @@ import {
   DuringtaskQuestionResp,
   DuringtaskResp
 } from "../../types/responses/students.types";
-import {
-  getOptionById,
-  getQuestionOptions
-} from "../../services/option.service";
-import {
-  getLastQuestionFromTaskStage,
-  getTaskStageByOrder
-} from "../../services/taskStage.service";
+import { getQuestionOptions } from "../../services/option.service";
+import { getTaskStageByOrder } from "../../services/taskStage.service";
 import { ApiError } from "../../middlewares/handleErrors";
 import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
 import {
@@ -24,22 +17,9 @@ import {
   shuffle,
   indexPower
 } from "../../utils";
-import {
-  getCourseFromStudent,
-  getTeamFromStudent,
-  getTeammates
-} from "../../services/student.service";
-import { OutgoingEvents } from "../../types/enums";
-import { updateTeam } from "../../services/team.service";
+import { getTeammates } from "../../services/student.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
-import { createAnswer } from "../../services/answer.service";
-import { directory } from "../../listeners/namespaces/students";
-import {
-  upgradeStudentTaskProgress,
-  getStudentTaskByOrder
-} from "../../services/studentTask.service";
-import { getTaskByOrder } from "../../services/task.service";
-import { updateLeaderBoard } from "../../services/leaderBoard.service";
+import { answerDuringtask } from "../../services/answer.service";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
@@ -79,11 +59,13 @@ export async function getQuestion(
       audio_url,
       video_url
     } = await getQuestionByOrder(taskOrder, 2, questionOrder);
-    console.log('content', content);
-    
     let options = await getQuestionOptions(id_question);
 
-    const { nouns, preps, content: contentParsed } = separateTranslations(content);
+    const {
+      nouns,
+      preps,
+      content: contentParsed
+    } = separateTranslations(content);
     const { id_team, power } = await getStudCurrTaskAttempt(idStudent);
 
     // * If student has no team, send error
@@ -144,11 +126,6 @@ export async function answer(
   const taskOrder = +taskOrderStr;
   const questionOrder = +questionOrderStr;
 
-  const socket = directory.get(idStudent);
-  if (!socket) {
-    return res.status(400).json({ message: "Student is not connected" });
-  }
-
   if (isNaN(taskOrder) || taskOrder < 1)
     return res.status(400).json({ message: "Bad taskOrder" });
   if (isNaN(questionOrder) || questionOrder < 1)
@@ -157,100 +134,14 @@ export async function answer(
     return res.status(400).json({ message: "Bad idOption" });
 
   try {
-    const task = await getTaskByOrder(taskOrder);
-
-    const { session, id_course } = await getCourseFromStudent(idStudent);
-    if (!session) {
-      return res.status(403).json({ message: "Course session not started" });
-    }
-
-    const { highest_stage } = await getStudentTaskByOrder(idStudent, taskOrder);
-    if (highest_stage < 1) {
-      return res.status(403).json({
-        message: `Student must complete PreTask from task ${taskOrder}`
-      });
-    }
-
-    // - get student's current task attempt and get student's team id from task attempt
-    const taskAttempt = await getStudCurrTaskAttempt(idStudent);
-    if (!taskAttempt.id_team) {
-      return res.status(400).json({ message: "Student is not in a team" });
-    }
-
-    if (taskAttempt.id_task !== task.id_task) {
-      return res
-        .status(400)
-        .json({ message: "Current Task attempt is from another task" });
-    }
-
-    // - Check if team exists
-    await getTeamFromStudent(idStudent);
-
-    // - Check if question exists and is in the correct task stage, and get question_id
-    const question = await getQuestionByOrder(taskOrder, 2, questionOrder);
-
-    // - Check if option exists and is in the correct question
-    const option = await getOptionById(idOption);
-    if (question.id_question !== option.id_question)
-      throw new ApiError("Option does not belong to question", 400);
-
-    try {
-      await getAnswerFromQuestionOfAttempt(
-        taskAttempt.id_task_attempt,
-        question.id_question
-      );
-      return res
-        .status(400)
-        .json({ message: "Question already answered in this attempt" });
-    } catch (err) {}
-
-    await createAnswer(
-      question.id_question,
+    await answerDuringtask(
+      idStudent,
+      taskOrder,
+      questionOrder,
       idOption,
-      answerSeconds,
-      taskAttempt.id_task_attempt,
-      taskAttempt.id_team
+      answerSeconds
     );
-
     res.status(200).json({ message: "Answered" });
-
-    // additional logic to upgrade student's task progress and do socket stuff
-    try {
-      // * Updating Leaderboard
-      updateLeaderBoard(id_course);
-
-      socket.broadcast
-        .to(`t${taskAttempt.id_team}`)
-        .emit(OutgoingEvents.ANSWER, {
-          correct: option.correct,
-          nextQuestion: questionOrder + 1
-        });
-      console.log("answer emitted to team", taskAttempt.id_team);
-
-      getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
-        if (lastQuestion.id_question === question.id_question) {
-          upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
-            console.log(err)
-          );
-          getTeammates(idStudent, { idTeam: taskAttempt.id_team! })
-            .then((teammates) => {
-              teammates.forEach(({ id_student }) => {
-                upgradeStudentTaskProgress(taskOrder, id_student, 2).catch(
-                  (err) => console.log(err)
-                );
-              });
-            })
-            .catch((err) => console.log(err));
-
-          updateTeam(taskAttempt.id_team!, {
-            active: false,
-            playing: false
-          }).catch((err) => console.log(err));
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    }
   } catch (err) {
     next(err);
   }

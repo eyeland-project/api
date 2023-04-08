@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { getLinkByOrder, getTaskLinksCount } from "../../services/link.service";
 import {
-  getAnswerFromQuestionOfAttempt,
   getQuestionByOrder,
   getTaskStageQuestionsCount
 } from "../../services/question.service";
@@ -10,28 +9,14 @@ import {
   PretaskQuestionResp,
   PretaskResp
 } from "../../types/responses/students.types";
-import {
-  getOptionById,
-  getQuestionOptions
-} from "../../services/option.service";
+import { getQuestionOptions } from "../../services/option.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
-import { createAnswer } from "../../services/answer.service";
+import { answerPretask } from "../../services/answer.service";
 import {
-  getLastQuestionFromTaskStage,
   getQuestionsFromTaskStage,
   getTaskStageByOrder
 } from "../../services/taskStage.service";
-import {
-  createTaskAttempt,
-  finishStudTaskAttempts,
-  getStudCurrTaskAttempt
-} from "../../services/taskAttempt.service";
-import { getTaskByOrder } from "../../services/task.service";
-import {
-  getStudentTaskByOrder,
-  upgradeStudentTaskProgress
-} from "../../services/studentTask.service";
-import { shuffle } from "../../utils";
+import { upgradeStudentTaskProgress } from "../../services/studentTask.service";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
@@ -75,7 +60,7 @@ export async function getQuestions(
   const { taskOrder } = req.params;
   try {
     const questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 1);
-    
+
     questionsWithOptions.sort((a, b) => {
       // move nulls to the end
       if (!a.topic) return 1;
@@ -139,86 +124,17 @@ export async function answer(
     return res.status(400).json({ message: "Bad idOption" });
 
   try {
-    const task = await getTaskByOrder(taskOrder);
-
-    if (taskOrder !== 1) {
-      const { highest_stage } = await getStudentTaskByOrder(
-        idStudent,
-        taskOrder - 1
-      );
-      if (highest_stage < 3) {
-        return res.status(403).json({
-          message: `Student must complete PosTask from task ${taskOrder - 1}`
-        });
-      }
-    }
-
-    // verify question exists
-    const question = await getQuestionByOrder(taskOrder, 1, questionOrder);
-
-    // verify option belongs to question
-    const option = await getOptionById(idOption);
-    if (question.id_question !== option.id_question) {
-      return res
-        .status(400)
-        .json({ message: "Option does not belong to question" });
-    }
-
-    // create task attempt if required
-    let taskAttempt;
-    if (newAttempt) {
-      await finishStudTaskAttempts(idStudent);
-      taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
-    } else {
-      try {
-        taskAttempt = await getStudCurrTaskAttempt(idStudent);
-      } catch (err) {
-        taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
-      }
-    }
-
-    if (taskAttempt.id_task !== task.id_task) {
-      return res
-        .status(400)
-        .json({ message: "Current Task attempt is from another task" });
-    }
-
-    try {
-      await getAnswerFromQuestionOfAttempt(
-        taskAttempt.id_task_attempt,
-        question.id_question
-      );
-      return res
-        .status(400)
-        .json({ message: "Question already answered in this attempt" });
-    } catch (err) {}
-
-    await createAnswer(
-      question.id_question,
+    await answerPretask(
+      idStudent,
+      taskOrder,
+      questionOrder,
       idOption,
       answerSeconds,
-      taskAttempt.id_task_attempt
+      newAttempt
     );
     res.status(200).json({
       message: `Answered question ${questionOrder} of pretask ${taskOrder}`
     });
-
-    // additional logic to upgrade student_task progress
-    // try {
-    //   getLastQuestionFromTaskStage(taskOrder, 1)
-    //     .then((lastQuestion) => {
-    //       if (lastQuestion.id_question === question.id_question) {
-    //         upgradeStudentTaskProgress(taskOrder, idStudent, 1).catch((err) => {
-    //           console.log(err);
-    //         });
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    // } catch (err) {
-    //   console.log(err);
-    // }
   } catch (err) {
     next(err);
   }

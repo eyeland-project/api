@@ -178,9 +178,8 @@ export async function leaveTeam(
   }
 
   try {
-    await leaveTeamService(idStudent, socketStudent, () =>
-      res.status(200).json({ message: "Done" })
-    );
+    await leaveTeamService(idStudent, socketStudent);
+    res.status(200).json({ message: "Done" })
   } catch (err) {
     next(err);
   }
