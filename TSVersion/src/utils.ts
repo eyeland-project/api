@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
-import translate from "node-traductor";
 import { Power } from "./types/enums";
 
 // PASSWORDS
@@ -23,48 +22,25 @@ export function genTeamCode() {
   return nanoid(6);
 }
 
-// *TRANSLATION
-async function translateWord(word: string): Promise<string[]> {
-  if (!word) return [];
-  return translate(word, { to: "es" })
-    .then((res) => {
-      const traductions: string[] = [];
-      //retornar todas las posibles traducciones
-      try {
-        console.log(res.raw[1][0][0][5][0][4][0][0]);
-        let len = res.raw[1][0][0][5][0][4].length;
-        for (let i = 0; i < len; i++) {
-          traductions.push(res.raw[1][0][0][5][0][4][i][0]);
-        }
-      } catch (e) {
-        traductions.push(res.text);
-      }
-      // console.log(traductions);
-      return traductions;
-    })
-    .catch((err) => {
-      console.error(err);
-      return [];
-    });
-}
+export function separateTranslations(content: string): {
+  content: string;
+  nouns: string[];
+  preps: string[];
+} {
+  const regex = /(\{[^\|]*\|[^\}]*\})|(\[[^\|]*\|[^\]]*\])/g;
+  const matches = content.match(regex);
+  if (!matches) return { content, nouns: [], preps: [] };
 
-export async function translateFormat(
-  str: string
-): Promise<{ nouns: string[]; preps: string[] }> {
-  let noun = str.match(/{(.+?)}/g)?.[0].replace(/[{}]/g, "");
-  let prep = str.match(/\[(.+?)\]/g)?.[0].replace(/[\[\]]/g, "");
-  //traducir las palabras
-  let nouns: string[] = [];
-  let preps: string[] = [];
-  console.log(noun, prep);
-  if (noun) {
-    nouns = await translateWord(noun);
-  }
-  if (prep) {
-    preps = await translateWord(prep);
-  }
+  const nouns: string[] = [];
+  const preps: string[] = [];
 
-  return { nouns, preps };
+  matches.forEach((match) => {
+    const transl = match.slice(1, match.length - 1).split("|")[1];
+    (match[0] === "{" ? nouns : preps).push(transl);
+    content = content.replace(match, match.replace(/\|.*/, "") + match.at(-1));
+  });
+
+  return { content, nouns, preps };
 }
 
 export function pseudoRandom(seed: number): number {

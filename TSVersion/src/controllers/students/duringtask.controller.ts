@@ -19,7 +19,7 @@ import {
 import { ApiError } from "../../middlewares/handleErrors";
 import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
 import {
-  translateFormat,
+  separateTranslations,
   distributeOptions,
   shuffle,
   indexPower
@@ -67,11 +67,9 @@ export async function getQuestion(
   res: Response<DuringtaskQuestionResp>,
   next: Function
 ) {
+  const { id: idStudent } = req.user!;
+  const { taskOrder, questionOrder } = req.params;
   try {
-    const { id: idStudent } = req.user!;
-    // if (!await duringtaskAvailable(idStudent)) throw new ApiError('DuringTask is not available', 400);
-    const { taskOrder, questionOrder } = req.params;
-
     const {
       id_question,
       content,
@@ -81,9 +79,11 @@ export async function getQuestion(
       audio_url,
       video_url
     } = await getQuestionByOrder(taskOrder, 2, questionOrder);
+    console.log('content', content);
+    
     let options = await getQuestionOptions(id_question);
 
-    const { nouns, preps } = await translateFormat(content);
+    const { nouns, preps, content: contentParsed } = separateTranslations(content);
     const { id_team, power } = await getStudCurrTaskAttempt(idStudent);
 
     // * If student has no team, send error
@@ -106,7 +106,7 @@ export async function getQuestion(
     );
 
     res.status(200).json({
-      content,
+      content: contentParsed,
       type,
       id: id_question,
       imgAlt: img_alt || "",

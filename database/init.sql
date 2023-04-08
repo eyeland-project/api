@@ -542,7 +542,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'over', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'far from', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', 'Imagen de personas sobre un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/bridge_1_uifemw', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 1, 'Are you [on|sobre] the {bridge|puente}?', NULL, NULL, 'select', 'Imagen de personas sobre un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/bridge_1_uifemw', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, we are', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, we aren''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, we aren''t', 'Incorrect!', FALSE);
@@ -550,7 +550,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, we are', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there is', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', 'Imagen de un río bajo un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/river_bridge_1_sy7tay', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 2, 'Is there a {river|río} [under|debajo] the [bridge|puente]?', NULL, NULL, 'select', 'Imagen de un río bajo un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/river_bridge_1_sy7tay', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there is', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there aren''t', 'Incorrect!', FALSE);
@@ -558,7 +558,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, we are', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, she isn''t', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', 'Imagen de un pueblo cerca de un camino', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/town_1_gn0g72', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 3, 'Look at the {road|camino}. Is there a {town|pueblo} [near|cerca de] it?', NULL, NULL, 'select', 'Imagen de un pueblo cerca de un camino', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/town_1_gn0g72', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Palermo town is near the road', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
@@ -566,7 +566,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', 'Imagen de un peaje entre un hotel y una granja', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/toll_1_lxqjek', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 4, 'Where is Laureano Gomez {toll|peaje}?', NULL, NULL, 'select', 'Imagen de un peaje entre un hotel y una granja', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/toll_1_lxqjek', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the beach and the river', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the toll and the road', 'Incorrect!', FALSE);
@@ -574,7 +574,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the beach and the road', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', 'Imagen de una playa lejos de Barranquilla', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_2_lecrys', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 5, 'Is Playa Linda {beach|playa} [far from|lejos de] Barranquilla?', NULL, NULL, 'select', 'Imagen de una playa lejos de Barranquilla', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_2_lecrys', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, it is', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, it isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, it isn''t', 'Incorrect!', FALSE);
@@ -582,7 +582,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, he is', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', 'Imagen de una playa con pantanos cerca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_swamps_1_vc5owa', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 6, 'Are there {swamps|pantanos} [near|cerca de] the {beach|playa}?', NULL, NULL, 'select', 'Imagen de una playa con pantanos cerca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_swamps_1_vc5owa', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there are', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there aren''t', 'Incorrect!', FALSE);
@@ -590,7 +590,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there are', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there is', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'select', 'Imagen de una granja cerca de Isla Salamanca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/farm_1_fyxpy4', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (2, 7, 'Is there a {farm|granja} [next to|junto a] Salamanca Island?', NULL, NULL, 'select', 'Imagen de una granja cerca de Isla Salamanca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/farm_1_fyxpy4', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there is', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there are', 'Incorrect!', FALSE);
@@ -747,7 +747,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'over', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'far from', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 1, 'Are you [on] the {bridge}?', NULL, NULL, 'select', 'Imagen de personas sobre un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/bridge_1_uifemw', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 1, 'Are you [on|sobre] the {bridge|puente}?', NULL, NULL, 'select', 'Imagen de personas sobre un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/bridge_1_uifemw', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, we are', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, we aren''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, we aren''t', 'Incorrect!', FALSE);
@@ -755,7 +755,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, we are', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there is', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 2, 'Is there a {river} [under] the bridge?', NULL, NULL, 'select', 'Imagen de un río bajo un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/river_bridge_1_sy7tay', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 2, 'Is there a {river|río} [under|debajo] the [bridge|puente]?', NULL, NULL, 'select', 'Imagen de un río bajo un puente', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/river_bridge_1_sy7tay', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there is', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there aren''t', 'Incorrect!', FALSE);
@@ -763,7 +763,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, we are', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, she isn''t', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 3, 'Look at the {road}. Is there a {town} [near] it?', NULL, NULL, 'select', 'Imagen de un pueblo cerca de un camino', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/town_1_gn0g72', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 3, 'Look at the {road|camino}. Is there a {town|pueblo} [near|cerca de] it?', NULL, NULL, 'select', 'Imagen de un pueblo cerca de un camino', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/town_1_gn0g72', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Palermo town is near the road', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Tasajera town is behind the road', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Palermo town is on the bridge', 'Incorrect!', FALSE);
@@ -771,7 +771,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Palermo town is near Bogotá', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Tasajera town isn''t near Palermo', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 4, 'Where is Laureano Gomez {toll}?', NULL, NULL, 'select', 'Imagen de un peaje entre un hotel y una granja', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/toll_1_lxqjek', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 4, 'Where is Laureano Gomez {toll|peaje}?', NULL, NULL, 'select', 'Imagen de un peaje entre un hotel y una granja', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/toll_1_lxqjek', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the hotel and Terranova farm', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the beach and the river', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the toll and the road', 'Incorrect!', FALSE);
@@ -779,7 +779,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the beach and the road', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the hotel and the beach', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 5, 'Is Playa Linda {beach} [far from] Barranquilla?', NULL, NULL, 'select', 'Imagen de una playa lejos de Barranquilla', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_2_lecrys', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 5, 'Is Playa Linda {beach|playa} [far from|lejos de] Barranquilla?', NULL, NULL, 'select', 'Imagen de una playa lejos de Barranquilla', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_2_lecrys', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, it is', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, it isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, it isn''t', 'Incorrect!', FALSE);
@@ -787,7 +787,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, he is', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 6, 'Are there {swamps} [near] the {beach}?', NULL, NULL, 'select', 'Imagen de una playa con pantanos cerca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_swamps_1_vc5owa', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 6, 'Are there {swamps|pantanos} [near|cerca de] the {beach|playa}?', NULL, NULL, 'select', 'Imagen de una playa con pantanos cerca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/beach_swamps_1_vc5owa', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there are', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there aren''t', 'Incorrect!', FALSE);
@@ -795,7 +795,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there are', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there is', 'Incorrect!', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 7, 'Is there a {farm} [next to] Salamanca Island?', NULL, NULL, 'select', 'Imagen de una granja cerca de Isla Salamanca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/farm_1_fyxpy4', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic) VALUES (5, 7, 'Is there a {farm|granja} [next to|junto a] Salamanca Island?', NULL, NULL, 'select', 'Imagen de una granja cerca de Isla Salamanca', 'https://res.cloudinary.com/dajnynv13/image/upload/eyeland/task_1/farm_1_fyxpy4', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there is', 'Correct!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there isn''t', 'Incorrect!', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there are', 'Incorrect!', FALSE);
