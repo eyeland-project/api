@@ -89,52 +89,53 @@ export function distributeOptions(
     }
   }
 
+  let res = null;
   if (size == 1) {
-    return [options[paquete], options[paquete + 1]];
+    res = [options[paquete], options[paquete + 1]];
   }
 
   if (size == 2) {
     if (paquete == 0) {
       if (index == 1) {
-        return [options[0], options[1]];
+        res = [options[0], options[1]];
       }
       if (index == 2) {
-        return [options[2], options[3]];
+        res = [options[2], options[3]];
       }
     }
 
     if (paquete == 2) {
       if (index == 1) {
-        return [options[2], options[3]];
+        res = [options[2], options[3]];
       }
       if (index == 2) {
-        return [options[4], options[5]];
+        res = [options[4], options[5]];
       }
     }
 
     if (paquete == 4) {
       if (index == 2) {
-        return [options[4], options[5]];
+        res = [options[4], options[5]];
       }
       if (index == 1) {
-        return [options[2], options[3]];
+        res = [options[2], options[3]];
       }
     }
   }
 
   if (size == 3) {
     if (index == 1) {
-      return [options[0], options[1]];
+      res = [options[0], options[1]];
     }
     if (index == 2) {
-      return [options[2], options[3]];
+      res = [options[2], options[3]];
     }
     if (index == 3) {
-      return [options[4], options[5]];
+      res = [options[4], options[5]];
     }
   }
 
-  return undefined;
+  return res && shuffle(res);
 }
 
 // GROUP BY
@@ -205,4 +206,8 @@ export async function generateTeamName(usedTeamName: string[] = []) {
     teamName = teamNameBase + ` ${count}`;
   }
   return teamName;
+}
+
+export function getRandomFloatBetween(min: number, max: number) {
+  return Math.random() * (max - min) + min;
 }

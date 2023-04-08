@@ -15,6 +15,7 @@ import {
 import { Course } from "../types/Course.types";
 import { notifyCourseOfTeamUpdate } from "./course.service";
 import { TeamResp as TeamRespStud } from "../types/responses/students.types";
+import { getRandomFloatBetween } from "../utils";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);
@@ -63,7 +64,7 @@ export async function getCurrentTeamFromStudent(
         power
       })
     )
-  }
+  };
 }
 
 export async function getCourseFromStudent(idStudent: number): Promise<Course> {
@@ -118,8 +119,8 @@ export async function rafflePower(idStudent: number) {
   if (powers.length === 0) return false;
 
   // * raffle the powers
-  // ** get a number between -1 and the length of the powers array
-  const randomIdx = Math.floor(Math.random() * (powers.length + 1)) - 1;
+  // ** get a number between -0.5 and the length of the powers array
+  const randomIdx = Math.floor(getRandomFloatBetween(-0.5, powers.length));
   // ** if the number is -1, return false
   if (randomIdx === -1) return false;
   // ** else, assign the power to the student
