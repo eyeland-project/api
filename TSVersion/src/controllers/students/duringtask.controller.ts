@@ -134,14 +134,15 @@ export async function answer(
     return res.status(400).json({ message: "Bad idOption" });
 
   try {
-    await answerDuringtask(
+    const { alreadyAnswered } = await answerDuringtask(
       idStudent,
       taskOrder,
       questionOrder,
       idOption,
       answerSeconds
     );
-    res.status(200).json({ message: "Answered" });
+    if (!alreadyAnswered) return res.status(200).json({ message: "Answered" });
+    res.status(202).json({ message: "Already answered" });
   } catch (err) {
     next(err);
   }

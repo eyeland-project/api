@@ -1,6 +1,7 @@
+import { Op } from "sequelize";
 import { directory as dirStudents } from "../listeners/namespaces/students";
 import { ApiError } from "../middlewares/handleErrors";
-import { AnswerModel } from "../models";
+import { AnswerModel, QuestionModel } from "../models";
 import { Answer } from "../types/Answer.types";
 import { OutgoingEvents } from "../types/enums";
 import { updateLeaderBoard } from "./leaderBoard.service";
@@ -23,7 +24,7 @@ import {
   updateStudCurrTaskAttempt
 } from "./taskAttempt.service";
 import { getLastQuestionFromTaskStage } from "./taskStage.service";
-import { updateTeam } from "./team.service";
+import { getMembersFromTeam, updateTeam } from "./team.service";
 
 export async function answerPretask(
   idStudent: number,
@@ -98,7 +99,7 @@ export async function answerDuringtask(
   questionOrder: number,
   idOption: number,
   answerSeconds: number
-): Promise<void> {
+): Promise<{alreadyAnswered: boolean, nextQuestionOrder: number}> {
   return new Promise(async (resolve, reject) => {
     try {
       const socket = dirStudents.get(idStudent);
@@ -142,27 +143,55 @@ export async function answerDuringtask(
 
       // - Check if option exists and is in the correct question
       const option = await getOptionById(idOption);
-      if (question.id_question !== option.id_question)
+      if (question.id_question !== option.id_question) {
         throw new ApiError("Option does not belong to question", 400);
+      }
 
+      let idsTaskAttempts: number[];
       try {
-        await AnswerModel.findOne({
-          where: {
-            id_task_attempt: taskAttempt.id_task_attempt,
-            id_question: question.id_question
-          }
+        const teamMembers = await getMembersFromTeam({
+          idTeam: taskAttempt.id_team
         });
-        throw new ApiError("Question already answered in this attempt", 400);
-      } catch (err) {}
+        idsTaskAttempts = teamMembers.map((member) => member.task_attempt.id);
+      } catch (err) {
+        idsTaskAttempts = [taskAttempt.id_task_attempt];
+      }
 
-      await createAnswer(
-        question.id_question,
-        idOption,
-        answerSeconds,
-        taskAttempt.id_task_attempt,
-        taskAttempt.id_team
+      const anwersSession = await AnswerModel.findAll({
+        where: {
+          [Op.or]: idsTaskAttempts.map((id) => ({
+            id_task_attempt: id
+          }))
+        },
+        include: {
+          model: QuestionModel,
+          attributes: ['question_order'],
+          as: 'question'
+        }
+      });
+      
+      let nextQuestionOrder: number;
+      
+      const answered = anwersSession.find(
+        ({ id_question }) => id_question === question.id_question
       );
-      resolve();
+      if (answered) { // if question was already answered
+        nextQuestionOrder = answered.question.question_order + 1;
+      } else {
+        await createAnswer(
+          question.id_question,
+          idOption,
+          answerSeconds,
+          taskAttempt.id_task_attempt,
+          taskAttempt.id_team
+        );
+        nextQuestionOrder = questionOrder + 1;
+      }
+      
+      resolve({
+        alreadyAnswered: !!answered,
+        nextQuestionOrder
+      });
       // additional logic to upgrade student's task progress and do socket stuff
       try {
         // * Updating Leaderboard
