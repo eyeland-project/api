@@ -207,3 +207,7 @@ export async function generateTeamName(usedTeamName: string[] = []) {
   }
   return teamName;
 }
+
+export function getRandomFloatBetween(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
