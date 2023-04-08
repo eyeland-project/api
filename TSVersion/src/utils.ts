@@ -18,8 +18,10 @@ export function signToken(payload: Object): string {
 }
 
 // TEAM CODE
-export function genTeamCode() {
-  return nanoid(6);
+export function genTeamCode(teamId?: number) {
+  if (!teamId) return nanoid(6);
+  // the code is the teamId repeated 6 times
+  return String(teamId).repeat(6);
 }
 
 export function separateTranslations(content: string): {
@@ -189,4 +191,18 @@ export function getIdFromToken(token: string): number {
 let counter = 0;
 export function incrementCounter(): number {
   return counter++;
+}
+
+const teamNamesConst = ["Equipo"];
+
+export async function generateTeamName(usedTeamName: string[] = []) {
+  let count = 1;
+  const teamNameBase =
+    teamNamesConst[Math.floor(Math.random() * teamNamesConst.length)];
+  let teamName = teamNameBase + ` ${count}`;
+  while (usedTeamName.includes(teamName)) {
+    count++;
+    teamName = teamNameBase + ` ${count}`;
+  }
+  return teamName;
 }

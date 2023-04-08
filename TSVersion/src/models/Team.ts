@@ -64,8 +64,9 @@ TeamModel.init(
     tableName: "team",
     timestamps: false,
     hooks: {
-      beforeCreate: async (team: TeamModel) => {
-        team.code = genTeamCode();
+      afterCreate: async (team: TeamModel) => {
+        team.code = genTeamCode(team.id_team);
+        await team.save();
       }
     }
   }
