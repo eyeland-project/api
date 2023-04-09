@@ -315,8 +315,11 @@ export async function cleanTeams(idCourse: number) {
         ({ active }) => active
       );
       const hasAnswers = team.answers.length > 0;
+      const hasStudentsWithSockets = team.taskAttempts.some(({ id_student }) =>
+        directoryStudents.has(id_student)
+      );
 
-      if (hasAnswers) return true;
+      if (hasAnswers || hasStudentsWithSockets) return true;
 
       if (activeTaskAttempts.length > 0) {
         promises.push(

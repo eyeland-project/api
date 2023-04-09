@@ -16,6 +16,7 @@ import { Course } from "../types/Course.types";
 import { notifyCourseOfTeamUpdate } from "./course.service";
 import { TeamResp as TeamRespStud } from "../types/responses/students.types";
 import { getRandomFloatBetween } from "../utils";
+import { directory } from "../listeners/namespaces/students";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);
@@ -232,4 +233,8 @@ export async function getTeammates(
   return (await getMembersFromTeam(teamInfo)).filter(
     ({ id_student }) => id_student !== idStudent
   );
+}
+
+export function hasSocketConnection(idStudent: number) {
+  return !!directory.get(idStudent);
 }
