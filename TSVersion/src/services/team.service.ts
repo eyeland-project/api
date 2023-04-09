@@ -288,6 +288,7 @@ export async function startPlayingTeams(idCourse: number) {
 
 export async function cleanTeams(idCourse: number) {
   // get all teams that have active task attempts or answers
+  const promises: Promise<any>[] = [];
   const teams = (
     await TeamModel.findAll({
       where: { id_course: idCourse, active: true },
@@ -295,7 +296,8 @@ export async function cleanTeams(idCourse: number) {
         {
           model: TaskAttemptModel,
           as: "taskAttempts",
-          where: { active: true }
+          where: { active: true },
+          required: false
         },
         {
           model: AnswerModel,
@@ -303,9 +305,36 @@ export async function cleanTeams(idCourse: number) {
         }
       ]
     })
-  ).filter((team) => team.taskAttempts.length > 0 || team.answers.length > 0);
+  )
+    .filter(
+      (team) =>
+        team.taskAttempts.length > 0 || team.answers.length > 0 || team.playing
+    )
+    .filter((team) => {
+      const activeTaskAttempts = team.taskAttempts.filter(
+        ({ active }) => active
+      );
+      const hasAnswers = team.answers.length > 0;
 
-  const promises: Promise<any>[] = [];
+      if (hasAnswers) return true;
+
+      if (activeTaskAttempts.length > 0) {
+        promises.push(
+          ...activeTaskAttempts.map((taskAttempt) => {
+            taskAttempt.id_team = null;
+            return taskAttempt.save();
+          })
+        );
+      }
+
+      if (team.playing) {
+        team.playing = false;
+        promises.push(team.save());
+      }
+
+      return false;
+    });
+
   for (const team of teams) {
     team.active = false;
     team.playing = false;
