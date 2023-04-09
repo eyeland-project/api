@@ -172,7 +172,10 @@ export async function answerDuringtask(
   );
   if (answered) {
     // if question was already answered
-    nextQuestionOrder = answered.question.question_order + 1;
+    const highestAnsweredQuestionOrder = Math.max(
+      ...anwersSession.map(({ question }) => question.question_order)
+    );
+    nextQuestionOrder = highestAnsweredQuestionOrder + 1;
   } else {
     await createAnswer(
       question.id_question,
