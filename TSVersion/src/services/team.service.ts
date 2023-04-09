@@ -150,7 +150,7 @@ export async function leaveTeam(
         checkReassignSuperHearing(id_team, power).catch((err) => {
           console.log(err);
         });
-  
+
         await verifyTeamStatus(id_team);
         notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
       } catch (err) {
