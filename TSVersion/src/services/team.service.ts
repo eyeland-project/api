@@ -137,29 +137,20 @@ export async function leaveTeam(
   idStudent: number,
   socketStudent: Socket
 ): Promise<void> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const power = (await getStudCurrTaskAttempt(idStudent)).power;
-      const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
-      await removeStudFromTeam(idStudent);
-      resolve();
+  const power = (await getStudCurrTaskAttempt(idStudent)).power;
+  const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
+  await removeStudFromTeam(idStudent);
 
-      try {
-        socketStudent.leave("t" + id_team); // leave student from team socket room
-        // check if this student had super_hearing to assign it to another student
-        checkReassignSuperHearing(id_team, power).catch((err) => {
-          console.log(err);
-        });
+  new Promise(async () => {
+    socketStudent.leave("t" + id_team); // leave student from team socket room
+    // check if this student had super_hearing to assign it to another student
+    checkReassignSuperHearing(id_team, power).catch((err) => {
+      console.log(err);
+    });
 
-        await verifyTeamStatus(id_team);
-        notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
-      } catch (err) {
-        console.log(err);
-      }
-    } catch (err) {
-      reject(err);
-    }
-  });
+    await verifyTeamStatus(id_team);
+    notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
+  }).catch((err) => console.log(err));
 }
 
 export async function checkReassignSuperHearing(
