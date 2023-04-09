@@ -6,6 +6,7 @@ import { comparePassword, hashPassword } from "../utils";
 import { Student, StudentCreation } from "../types/Student.types";
 import { ApiError } from "../middlewares/handleErrors";
 import BlindnessAcuityModel from "./BlindnessAcuity";
+import TaskAttemptModel from "./TaskAttempt";
 
 // model class definition
 class StudentModel extends Model<Student, StudentCreation> {
@@ -19,6 +20,7 @@ class StudentModel extends Model<Student, StudentCreation> {
   declare password: string;
 
   declare BlindnessAcuityModel: NonAttribute<BlindnessAcuityModel>;
+  declare taskAttempts: NonAttribute<TaskAttemptModel>;
 
   comparePassword = (password: string): boolean =>
     // comparePassword(password, this.password)
