@@ -20,8 +20,7 @@ export function signToken(payload: Object): string {
 // TEAM CODE
 export function genTeamCode(teamId?: number) {
   if (!teamId) return nanoid(6);
-  // the code is the teamId repeated 6 times
-  return String(teamId).repeat(6);
+  return `${teamId}-${nanoid(4)}`.slice(0, 6);
 }
 
 export function separateTranslations(content: string): {
