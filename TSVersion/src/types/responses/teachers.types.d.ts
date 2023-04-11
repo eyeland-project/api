@@ -28,11 +28,6 @@ export interface TaskResp {
 }
 
 // courses
-export interface CourseSummResp {
-  id: number;
-  name: string;
-}
-
 export interface CourseResp {
   id: number;
   name: string;
