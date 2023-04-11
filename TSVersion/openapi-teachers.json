@@ -592,6 +592,76 @@
         }
       }
     },
+    "/courses/{idCourse}/teams/init": {
+      "post": {
+        "description": "Create teams based on the number of students",
+        "tags": [
+          "team"
+        ],
+        "parameters": [
+          {
+            "name": "idCourse",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "filter on which it will be based",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "socketBased": {
+                    "type": "boolean",
+                    "description": "if true, it will create teams based on the number of students with socket connected.\nOtherwise, it will create teams based on the number of students in the course"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Teams created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the team created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid idCourse | Invalid body"
+          },
+          "401": {
+            "description": "Missing authentication"
+          },
+          "403": {
+            "description": "Unauthorized to access this resource"
+          },
+          "498": {
+            "description": "Token expired/invalid"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/courses/{idCourse}/teams/{idTeam}": {
       "get": {
         "description": "Get team from course id and team id",

@@ -20,6 +20,7 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
   declare time_stamp: Date;
   declare task: NonAttribute<TaskModel>;
   declare student: NonAttribute<StudentModel>;
+  declare team: NonAttribute<TeamModel>;
 }
 
 // model initialization
@@ -95,12 +96,14 @@ TaskAttemptModel.belongsTo(TeamModel, {
   foreignKey: {
     name: "id_team",
     allowNull: true
-  }
+  },
+  as: "team"
 });
 
 // task attempt and student
 StudentModel.hasMany(TaskAttemptModel, {
-  foreignKey: "id_student"
+  foreignKey: "id_student",
+  as: "taskAttempts"
 });
 TaskAttemptModel.belongsTo(StudentModel, {
   foreignKey: "id_student",

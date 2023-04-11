@@ -1,4 +1,4 @@
-import { QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import {
@@ -220,25 +220,73 @@ export async function initializeTeams(idCourse: number) {
   // Clean used teams
   await cleanTeams(idCourse);
 
+  await createMissingTeams(idCourse);
+}
+
+export async function createMissingTeams(
+  idCourse: number,
+  socketBased: boolean = false
+) {
   // Get all teams
-  const teamsPromise = getTeamsFromCourse(idCourse).then((teams) => {
+  const teamsPromise = getActiveTeamsFromCourse(idCourse).then((teams) => {
     // return the number of teams and the names of the active teams
     return {
-      teams: teams.length,
-      activeTeams: teams.filter((team) => team.active).map((team) => team.name)
-    };
-  });
-  // Get students
-  const StudentsPromise = getStudentsFromCourse(idCourse).then((students) => {
-    // return the number of students and the number of students with blindness
-    return {
-      students: students.length,
-      blindStudents: students.filter(
-        (student) => student.BlindnessAcuityModel.level > 0
-      ).length
+      activeTeams: (socketBased
+        ? teams.filter((team) => !team.playing)
+        : teams
+      ).map((team) => team.name)
     };
   });
 
+  // Get students
+  let StudentsPromise;
+  if (!socketBased) {
+    StudentsPromise = getStudentsFromCourse(idCourse).then((students) => {
+      // return the number of students and the number of students with blindness
+      return {
+        students: students.length,
+        blindStudents: students.filter(
+          (student) => student.BlindnessAcuityModel.level > 0
+        ).length
+      };
+    });
+  } else {
+    StudentsPromise = StudentModel.findAll({
+      where: {
+        id_course: idCourse,
+        id_student: {
+          [Op.in]: Array.from(directoryStudents.keys())
+        }
+      },
+      include: [
+        {
+          model: TaskAttemptModel,
+          as: "taskAttempts",
+          where: {
+            active: true
+          },
+          required: false,
+          include: [
+            {
+              model: TeamModel,
+              as: "team",
+              where: {
+                playing: false
+              },
+              required: false
+            }
+          ]
+        }
+      ]
+    }).then((students) => {
+      return {
+        students: students.length,
+        blindStudents: students.filter(
+          (student) => student.BlindnessAcuityModel.level > 0
+        ).length
+      };
+    });
+  }
   // Get the results
   const [teams, students] = await Promise.all([teamsPromise, StudentsPromise]);
 
@@ -258,11 +306,11 @@ export async function initializeTeams(idCourse: number) {
     // Get the number of teams to create
     const nTeamsToCreate = nTeams - teams.activeTeams.length;
     // Create the teams
-    await createMissingTeams(idCourse, nTeamsToCreate, teams.activeTeams);
+    await createBunchOfTeams(idCourse, nTeamsToCreate, teams.activeTeams);
   }
 }
 
-export async function createMissingTeams(
+export async function createBunchOfTeams(
   idCourse: number,
   numberTeams: number,
   usedTeamNames?: string[]

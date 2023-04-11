@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
-import { getTeamsFromCourseWithStudents } from "../../services/course.service";
+import {
+  createMissingTeams,
+  getTeamsFromCourseWithStudents
+} from "../../services/course.service";
 import {
   createTeam as createTeamServ,
   getTeamById,
@@ -116,6 +119,21 @@ export async function updateTeam(
   try {
     await updateTeamServ(idTeam, fields);
     res.status(200).json({ message: "Team updated successfully" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function initTeams(
+  req: Request<{ idCourse: number }, any, { socketBased: boolean }>,
+  res: Response,
+  next: Function
+) {
+  const { idCourse } = req.params;
+  const { socketBased } = req.body;
+  try {
+    await createMissingTeams(idCourse, socketBased ?? false);
+    res.status(200).json({ message: "Teams initialized successfully" });
   } catch (err) {
     next(err);
   }
