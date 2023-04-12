@@ -1,3 +1,5 @@
+import { Power } from "../enums";
+
 // general
 export interface ElementCreatedResp {
   id: number;
@@ -78,4 +80,3 @@ export interface TeamResp {
   taskOrder: number | null;
   playing: boolean;
 }
-

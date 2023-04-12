@@ -115,7 +115,7 @@ export async function getTeamsFromCourseWithStudents(
           username,
           firstName: first_name,
           lastName: last_name,
-          power
+          power: power || null
         })
       )
     })
