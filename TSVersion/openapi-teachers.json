@@ -152,7 +152,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/Course"
+                    "$ref": "#/components/schemas/CourseSumm"
                   },
                   "type": "array"
                 }
@@ -968,6 +968,18 @@
           }
         }
       },
+      "CourseSumm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "Course": {
         "type": "object",
         "properties": {
@@ -1093,9 +1105,7 @@
           },
           "active": {
             "type": "boolean",
-            "enum": [
-              false
-            ],
+            "enum": [false],
             "description": "Deactivate the team; cannot be set to true"
           }
         }

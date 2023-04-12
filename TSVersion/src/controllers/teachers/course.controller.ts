@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as courseService from "../../services/course.service";
 import {
   CourseResp,
+  CourseSummResp,
   ElementCreatedResp
 } from "../../types/responses/teachers.types";
 import {
@@ -12,17 +13,15 @@ import { getTeacherById } from "../../services/teacher.service";
 
 export async function getCourses(
   _: Request,
-  res: Response<CourseResp[]>,
+  res: Response<CourseSummResp[]>,
   next: NextFunction
 ) {
   try {
     const courses = await courseService.getCourses();
     res.status(200).json(
-      courses.map(({ id_course, name, session, description }) => ({
+      courses.map(({ id_course, name }) => ({
         id: id_course,
-        name,
-        session,
-        description: description || ""
+        name
       }))
     );
   } catch (err) {
