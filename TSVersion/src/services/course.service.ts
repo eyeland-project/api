@@ -1,4 +1,4 @@
-import { Op, QueryTypes } from "sequelize";
+import { Op } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import {
@@ -10,15 +10,17 @@ import {
   TeamModel
 } from "../models";
 import { Course } from "../types/Course.types";
-import { Team } from "../types/Team.types";
 import { Namespaces, of } from "../listeners/sockets";
-import { OutgoingEvents, Power } from "../types/enums";
-import { generateTeamName, groupBy } from "../utils";
+import { OutgoingEvents } from "../types/enums";
+import { generateTeamName } from "../utils";
 import { TeamResp as TeamRespTeacher } from "../types/responses/teachers.types";
 import { TeamResp as TeamRespStudent } from "../types/responses/students.types";
-import { Student } from "../types/Student.types";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
-import { emitLeaderboard, updateLeaderBoard } from "./leaderBoard.service";
+import {
+  cleanLeaderBoard,
+  emitLeaderboard,
+  updateLeaderBoard
+} from "./leaderBoard.service";
 import {
   cleanTeams,
   createTeams,
@@ -190,6 +192,7 @@ export async function createSession(idCourse: number) {
   }
 
   await initializeTeams(idCourse);
+  await cleanLeaderBoard(idCourse);
   await updateCourse(idCourse, { session: true });
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_CREATE);
 }
@@ -219,6 +222,7 @@ export async function endSession(idCourse: number) {
   }
 
   await updateCourse(idCourse, { session: false });
+  await cleanLeaderBoard(idCourse);
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_END);
 }
 
