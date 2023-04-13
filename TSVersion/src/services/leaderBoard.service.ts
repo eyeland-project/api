@@ -109,19 +109,25 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   // Check if the leaderboard has changed
   if (
     leaderBoards[idCourse] &&
-    leaderBoards[idCourse].length === leaderBoard.length &&
-    leaderBoards[idCourse].every((team, i) => team.id === leaderBoard[i].id) &&
+    leaderBoards[idCourse].length === newLeaderBoard.length &&
     leaderBoards[idCourse].every(
-      (team, i) =>
-        team.position === leaderBoard[i].position &&
-        team.score === leaderBoard[i].score
+      (team, i) => team.id === newLeaderBoard[i].id
+    ) &&
+    leaderBoards[idCourse].every(
+      (team, i) => team.position === newLeaderBoard[i].position
     )
   ) {
+    if (
+      leaderBoards[idCourse].every(
+        (team, i) => team.score === newLeaderBoard[i].score
+      )
+    ) {
+      console.log("leaderboard not changed");
+    } else {
+      leaderBoards[idCourse] = newLeaderBoard;
+    }
     return;
   }
-
-  leaderBoards[idCourse] = newLeaderBoard;
-  // console.log("leaderboard", leaderBoard);
 
   // emit the leaderboard
   emitLeaderboard(idCourse);
