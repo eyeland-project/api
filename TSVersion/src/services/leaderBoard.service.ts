@@ -34,6 +34,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   // initialize the position
   let position = 0;
 
+  console.log("numQuestions", numQuestions);
   // create the leaderboard
   const leaderboardScore = teams
     .map((team) => {
