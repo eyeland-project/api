@@ -79,17 +79,6 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   });
 
   console.log("leaderboard2", leaderBoard);
-  // Check if the leaderboard has changed
-  if (
-    leaderBoards[idCourse] &&
-    leaderBoards[idCourse].length === leaderBoard.length &&
-    leaderBoards[idCourse].every((team, i) => team.id === leaderBoard[i].id) &&
-    leaderBoards[idCourse].every(
-      (team, i) => team.position === leaderBoard[i].position
-    )
-  ) {
-    return;
-  }
 
   // get not updated teams
   const notUpdatedTeams = leaderBoards[idCourse]
@@ -113,8 +102,25 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   });
 
   // update the leaderboard
-  leaderBoards[idCourse] = [...notUpdatedTeams, ...leaderBoard];
+  const newLeaderBoard = [...notUpdatedTeams, ...leaderBoard].sort(
+    (a, b) => b.position - a.position
+  );
 
+  // Check if the leaderboard has changed
+  if (
+    leaderBoards[idCourse] &&
+    leaderBoards[idCourse].length === leaderBoard.length &&
+    leaderBoards[idCourse].every((team, i) => team.id === leaderBoard[i].id) &&
+    leaderBoards[idCourse].every(
+      (team, i) =>
+        team.position === leaderBoard[i].position &&
+        team.score === leaderBoard[i].score
+    )
+  ) {
+    return;
+  }
+
+  leaderBoards[idCourse] = newLeaderBoard;
   // console.log("leaderboard", leaderBoard);
 
   // emit the leaderboard
