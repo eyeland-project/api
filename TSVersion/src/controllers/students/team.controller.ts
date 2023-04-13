@@ -17,7 +17,8 @@ import {
 } from "../../services/team.service";
 import { LoginTeamReq } from "../../types/requests/students.types";
 import {
-  getAvailableTeamsFromCourseWithStudents,
+  filterTeamsForStudents,
+  getTeamsFromCourseWithStudents,
   notifyCourseOfTeamUpdate
 } from "../../services/course.service";
 import { StudentSocket, TeamResp } from "../../types/responses/students.types";
@@ -40,7 +41,9 @@ export async function getTeams(
     const { id_course } = await getStudentById(idStudent);
     res
       .status(200)
-      .json(await getAvailableTeamsFromCourseWithStudents(id_course));
+      .json(
+        filterTeamsForStudents(await getTeamsFromCourseWithStudents(id_course))
+      );
   } catch (err) {
     next(err);
   }
@@ -67,7 +70,8 @@ export async function joinTeam(
   const { id: idStudent } = req.user!;
 
   const socket = directory.get(idStudent);
-  if (!socket) return res.status(400).json({ message: "Student is not connected" });
+  if (!socket)
+    return res.status(400).json({ message: "Student is not connected" });
 
   const { code, taskOrder } = req.body as LoginTeamReq;
   if (!code || !taskOrder) {
@@ -179,7 +183,7 @@ export async function leaveTeam(
 
   try {
     await leaveTeamService(idStudent, socketStudent);
-    res.status(200).json({ message: "Done" })
+    res.status(200).json({ message: "Done" });
   } catch (err) {
     next(err);
   }

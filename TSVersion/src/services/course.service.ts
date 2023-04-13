@@ -122,10 +122,10 @@ export async function getTeamsFromCourseWithStudents(
   );
 }
 
-export async function getAvailableTeamsFromCourseWithStudents(
-  idCourse: number
-): Promise<TeamRespStudent[]> {
-  return (await getTeamsFromCourseWithStudents(idCourse))
+export function filterTeamsForStudents(
+  teams: TeamRespTeacher[]
+): TeamRespStudent[] {
+  return teams
     .filter(({ active, playing }) => active && !playing)
     .map(({ id, code, name, students, taskOrder }) => ({
       id,
@@ -154,8 +154,6 @@ export async function notifyCourseOfTeamUpdate(
   idTeam?: number,
   idStudent?: number
 ): Promise<void> {
-  const teams = await getAvailableTeamsFromCourseWithStudents(idCourse);
-
   let courseRoom;
   if (idStudent) {
     const studentSocket = directoryStudents.get(idStudent);
@@ -170,8 +168,16 @@ export async function notifyCourseOfTeamUpdate(
   if (idTeam) {
     courseRoom = courseRoom.except(`t${idTeam}`);
   }
-  courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, teams);
-  // TODO: notify teacher
+
+  const teams: TeamRespTeacher[] = await getTeamsFromCourseWithStudents(
+    idCourse
+  );
+
+  const dataStudents: TeamRespStudent[] = filterTeamsForStudents(teams);
+  const dataTeachers: TeamRespTeacher[] = teams.filter(({ active }) => active);
+
+  courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, dataStudents);
+  of(Namespaces.TEACHERS)?.emit(OutgoingEvents.TEAMS_UPDATE, dataTeachers);
 }
 
 export async function createSession(idCourse: number) {

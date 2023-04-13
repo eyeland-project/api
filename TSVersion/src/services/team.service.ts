@@ -184,7 +184,6 @@ export async function notifyStudentOfTeamUpdate(idStudent: number) {
   studentSocket.emit(OutgoingEvents.TEAM_UPDATE, {
     power
   });
-  // TODO: notify teacher
 }
 
 export async function getTaskAttemptsFromTeam(
