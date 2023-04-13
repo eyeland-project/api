@@ -6,6 +6,7 @@ interface Team {
   id: number;
   name: string;
   position: number;
+  score: number;
 }
 
 const leaderBoards: Record<number, Team[]> = {};
@@ -39,12 +40,11 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
       // The score is proportional to the number of correct answers
       // The maximum score is 100 when all (or all - 1) answers are correct and the time is 0
       // const score = team.answers.reduce((acc, answer) => {
-      const score =
-        team.answers.reduce((acc, answer) => {
-          const correct = answer.option.correct;
+      const score = team.answers.reduce((acc, answer) => {
+        const correct = answer.option.correct;
 
-          return acc + (correct ? 90 / (numQuestions - 1) : 0);
-        }, 0) + (team.answers.length >= numQuestions ? 10 : 0);
+        return acc + (correct ? 100 / numQuestions : 0);
+      }, 0);
 
       return {
         id: team.id_team,
@@ -62,6 +62,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
       return {
         id: team.id,
         name: team.name,
+        score: team.score,
         position
       };
     } else {
@@ -70,6 +71,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
       return {
         id: team.id,
         name: team.name,
+        score: team.score,
         position
       };
     }
@@ -91,7 +93,9 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   // get not updated teams
   const notUpdatedTeams = leaderBoards[idCourse]
     ? leaderBoards[idCourse].filter(
-        (team) => !leaderBoard.some((t) => t.id === team.id)
+        (team) =>
+          !leaderBoard.some((t) => t.id === team.id) &&
+          team.score >= 100 - 100 / numQuestions
       )
     : [];
 
@@ -108,17 +112,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   });
 
   // update the leaderboard
-  leaderBoard.forEach((team) => {
-    const index = leaderBoards[idCourse].findIndex(
-      (t) => t.id === team.id && t.position === team.position
-    );
-
-    if (index >= 0) {
-      leaderBoards[idCourse][index] = team;
-    } else {
-      leaderBoards[idCourse].push(team);
-    }
-  });
+  leaderBoards[idCourse] = [...notUpdatedTeams, ...leaderBoard];
 
   // console.log("leaderboard", leaderBoard);
 
@@ -134,11 +128,16 @@ export async function cleanLeaderBoard(idCourse: number): Promise<void> {
 export async function emitLeaderboard(idCourse: number): Promise<void> {
   if (!leaderBoards[idCourse]) {
     await updateLeaderBoard(idCourse);
+    return;
   }
 
   emitTo(
     `c${idCourse}`,
     OutgoingEvents.LEADER_BOARD_UPDATE,
-    leaderBoards[idCourse]
+    leaderBoards[idCourse].map((team) => ({
+      id: team.id,
+      name: team.name,
+      position: team.position
+    }))
   );
 }
