@@ -129,6 +129,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
     return;
   }
 
+  leaderBoards[idCourse] = newLeaderBoard;
   // emit the leaderboard
   emitLeaderboard(idCourse);
   //*/
