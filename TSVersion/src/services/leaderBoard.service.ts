@@ -103,9 +103,8 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   );
 
   // update the position of the new (updated) teams
-  leaderBoards[idCourse] = leaderBoards[idCourse].map((team) => {
+  leaderBoard.forEach((team) => {
     team.position += offset;
-    return team;
   });
 
   // update the leaderboard
