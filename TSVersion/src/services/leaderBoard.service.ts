@@ -27,7 +27,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
   console.log("teams", teams.length);
   /*/
   const numQuestions = (
-    await getQuestionsFromTaskStageByTaskId(teams[0].taskAttempts[0].id_task, 1)
+    await getQuestionsFromTaskStageByTaskId(teams[0].taskAttempts[0].id_task, 2)
   ).length;
   //*
 
