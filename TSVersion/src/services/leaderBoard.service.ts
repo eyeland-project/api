@@ -88,48 +88,13 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
     return;
   }
 
-  // get not updated teams
-  const notUpdatedTeams = leaderBoards[idCourse]
-    ? leaderBoards[idCourse].filter(
-        (team) => !leaderBoard.some((t) => t.id === team.id)
-      )
-    : [];
-
-  // leaderBoards[idCourse] = leaderBoard;
-  // get biggest position of the not updated teams as an offset
-  const offset = notUpdatedTeams.reduce(
-    (acc, team) => (team.position > acc ? team.position : acc),
-    0
-  );
-
-  // update the position of the new (updated) teams
-  leaderBoards[idCourse] = leaderBoards[idCourse].map((team) => {
-    team.position += offset;
-    return team;
-  });
-
-  // update the leaderboard
-  leaderBoard.forEach((team) => {
-    const index = leaderBoards[idCourse].findIndex(
-      (t) => t.id === team.id && t.position === team.position
-    );
-
-    if (index >= 0) {
-      leaderBoards[idCourse][index] = team;
-    } else {
-      leaderBoards[idCourse].push(team);
-    }
-  });
+  leaderBoards[idCourse] = leaderBoard;
 
   // console.log("leaderboard", leaderBoard);
 
   // emit the leaderboard
   emitLeaderboard(idCourse);
   //*/
-}
-
-export async function cleanLeaderBoard(idCourse: number): Promise<void> {
-  leaderBoards[idCourse] = [];
 }
 
 export async function emitLeaderboard(idCourse: number): Promise<void> {
