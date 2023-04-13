@@ -12,7 +12,7 @@ export enum Namespaces {
 type Room = `c${number}`;
 
 export default function initSocket(server: Server): Server {
-  io = new IO(server);
+  io = new IO(server, { cors: { origin: "*" } });
 
   // students
   io.of(Namespaces.STUDENTS).on("connection", onStudentConnection);
