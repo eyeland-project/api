@@ -124,7 +124,7 @@ export async function startSession(
   const { idCourse } = req.params;
   try {
     await courseService.startSession(idCourse);
-    res.status(201).json({ message: "Session created successfully" });
+    res.status(200).json({ message: "Session started successfully" });
   } catch (err) {
     next(err);
   }
@@ -138,7 +138,7 @@ export async function endSession(
   const { idCourse } = req.params;
   try {
     await courseService.endSession(idCourse);
-    res.status(201).json({ message: "Session created successfully" });
+    res.status(200).json({ message: "Session ended successfully" });
   } catch (err) {
     next(err);
   }
