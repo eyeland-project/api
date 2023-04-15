@@ -31,7 +31,7 @@ export async function getTeams(
   try {
     const teams = (await getTeamsFromCourseWithStudents(idCourse)).filter(
       ({ active: teamActive }) =>
-        active === undefined ? true : teamActive === active
+        active === undefined ? teamActive === true : teamActive === active
     );
     res.status(200).json(teams);
   } catch (err) {
