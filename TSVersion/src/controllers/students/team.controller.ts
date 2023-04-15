@@ -28,7 +28,6 @@ import { TeamMember } from "../../types/Student.types";
 import { directory } from "../../listeners/namespaces/students";
 import { getTaskById } from "../../services/task.service";
 import { getHighestTaskCompletedFromStudent } from "../../services/studentTask.service";
-import { Team } from "../../types/Team.types";
 import { ApiError } from "../../middlewares/handleErrors";
 
 export async function getTeams(

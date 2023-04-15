@@ -5,7 +5,10 @@ import { StudentModel } from "../models";
 import { Student, TeamMember } from "../types/Student.types";
 import { Team } from "../types/Team.types";
 import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
-import { updateStudCurrTaskAttempt } from "./taskAttempt.service";
+import {
+  getStudCurrTaskAttempt,
+  updateStudCurrTaskAttempt
+} from "./taskAttempt.service";
 import { Power } from "../types/enums";
 import {
   getAvailablePowers,
@@ -108,11 +111,14 @@ async function assignPower(
   } catch (err) {}
 }
 
-export async function rafflePower(idStudent: number) {
+export async function rafflePower(idStudent: number): Promise<false | Power> {
   // * Verify if the student has a visual illness
   const { level } = await getBlindnessAcFromStudent(idStudent);
-  // ** if the student has a visual illness, return false
-  if (level !== 0) return false;
+  // * get the current power of the student
+  const { power } = await getStudCurrTaskAttempt(idStudent);
+
+  // ** if the student has a visual illness and has super-hearing, return false
+  if (level !== 0 && power === Power.SUPER_HEARING) return false;
   // * Get the student team
   const { id_team, id_course } = await getTeamFromStudent(idStudent);
   // * Get the available powers
