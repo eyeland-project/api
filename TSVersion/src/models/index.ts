@@ -1,7 +1,6 @@
 console.log("Initializing database...");
 export { default as TaskModel } from "./Task";
 export { default as TaskStageModel } from "./TaskStage";
-export { default as LinkModel } from "./Link";
 export { default as QuestionModel } from "./Question";
 export { default as OptionModel } from "./Option";
 export { default as InstitutionModel } from "./Institution";
@@ -14,3 +13,4 @@ export { default as StudentTaskModel } from "./StudentTask";
 export { default as TaskAttemptModel } from "./TaskAttempt";
 export { default as AnswerModel } from "./Answer";
 export { default as BlindnessAcuityModel } from "./BlindnessAcuity";
+export { default as ReleaseModel } from "./Release";

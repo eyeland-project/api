@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
-import { getLinkByOrder, getTaskLinksCount } from "../../services/link.service";
 import {
   getQuestionByOrder,
   getTaskStageQuestionsCount
 } from "../../services/question.service";
 import {
-  PretaskLinkResp,
   PretaskQuestionResp,
   PretaskResp
 } from "../../types/responses/students.types";
@@ -30,23 +28,8 @@ export async function root(
     res.status(200).json({
       description: description,
       keywords: keywords,
-      numLinks: await getTaskLinksCount(id_task),
       numQuestions: await getTaskStageQuestionsCount(id_task_stage)
     });
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function getLink(
-  req: Request<{ taskOrder: number; linkOrder: number }>,
-  res: Response<PretaskLinkResp>,
-  next: Function
-) {
-  try {
-    const { taskOrder, linkOrder } = req.params;
-    const { id_link, topic, url } = await getLinkByOrder(taskOrder, linkOrder);
-    res.status(200).json({ id: id_link, topic, url });
   } catch (err) {
     next(err);
   }

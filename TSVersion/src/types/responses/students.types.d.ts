@@ -46,13 +46,6 @@ export interface PretaskResp {
   description: string;
   keywords: string[];
   numQuestions: number;
-  numLinks: number;
-}
-
-export interface PretaskLinkResp {
-  id: number;
-  topic: string;
-  url: string;
 }
 
 export interface PretaskQuestionResp {

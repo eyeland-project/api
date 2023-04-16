@@ -46,19 +46,6 @@ CREATE TABLE blindness_acuity (
     CONSTRAINT uk_blindness_acuity_name UNIQUE (name)
 );
 
--- CREATING TABLE links (pre-task)
-CREATE TABLE link (
-    id_link SERIAL NOT NULL,
-    id_task SMALLINT NOT NULL,
-    link_order SMALLINT NOT NULL,
-    topic VARCHAR(100) NOT NULL,
-    url VARCHAR(2048) NOT NULL,
-    -- CONSTRAINTS
-    CONSTRAINT pk_link PRIMARY KEY (id_link),
-    CONSTRAINT fk_link_task FOREIGN KEY (id_task) REFERENCES task(id_task),
-    CONSTRAINT uk_link_constr UNIQUE (id_task, link_order)
-);
-
 CREATE TYPE valid_question_type AS ENUM ('flashcard', 'fill', 'order', 'select', 'audio');
 CREATE TYPE valid_question_topic AS ENUM('vocabulary', 'prepositions');
 
@@ -237,6 +224,18 @@ CREATE TABLE answer (
     CONSTRAINT uk_answer UNIQUE (id_task_attempt, id_question, id_option) -- a student can only answer a question once per task_attempt
 );
 
+CREATE TABLE release (
+    id_release SMALLSERIAL NOT NULL,
+    version VARCHAR(16) NOT NULL,
+    url VARCHAR(2048) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -- CONSTRAINTS
+    CONSTRAINT pk_release PRIMARY KEY (id_release),
+    CONSTRAINT uk_release_url UNIQUE (url),
+    CONSTRAINT uk_release_version UNIQUE(version)
+);
+
 -- TODO: create table Animal
 -- TODO: create table Historial
 
@@ -377,23 +376,6 @@ INSERT INTO blindness_acuity (name, level, description) VALUES ('Severe', 3, 'Wo
 INSERT INTO blindness_acuity (name, level, description) VALUES ('Blindness (category 4)', 4, 'Worse than: 3/60 | 1/20 (0.05) | 20/400 | 1.3; Equal to or better than: 1/60 | 1/50 (0.02) | 20/1200 | 1.8');
 INSERT INTO blindness_acuity (name, level, description) VALUES ('Blindness (category 5)', 5, 'Worse than: 1/60 | 1/50 (0.02) | 5/300 (20/1200) | 1.8; Equal to or better than: light perception');
 INSERT INTO blindness_acuity (name, level, description) VALUES ('Blindness (category 6)', 6, 'Worse than: no light perception');
-
--- INSERT INTO link
-INSERT INTO link (id_task, link_order, topic, url) VALUES (1, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (1, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36022540');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (1, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36054813');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (2, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (2, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36022540');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (2, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36054813');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (3, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (3, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36022540');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (3, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36054813');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (4, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (4, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36022540');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (4, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36054813');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 1, 'Vocabulary', 'https://wordwall.net/resource/36022113');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 2, 'Prepositions of place meaning', 'https://wordwall.net/resource/36022540');
-INSERT INTO link (id_task, link_order, topic, url) VALUES (5, 3, 'Prepositions of place questions', 'https://wordwall.net/resource/36054813');
 
 DO $$
 DECLARE
@@ -806,3 +788,6 @@ INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 3', '333333');
 
 -- INSERT INTO admin
 INSERT INTO admin (id_admin, first_name, last_name, email, username, password) VALUES (1, 'Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
+
+-- INSERT INTO release
+INSERT INTO release (id_release, url, version) VALUES (1, 'https://storage.cloud.google.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');

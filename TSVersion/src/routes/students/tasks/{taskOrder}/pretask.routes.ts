@@ -4,7 +4,6 @@ import {
   root,
   getQuestion,
   answer,
-  getLink,
   setCompleted,
   getQuestions
 } from "../../../../controllers/students/pretask.controller";
@@ -15,7 +14,6 @@ const router = Router({ mergeParams: true });
 router.use(auth);
 
 router.get("/", root);
-router.get("/links/:linkOrder", getLink);
 router.get("/questions", getQuestions);
 router.get("/questions/:questionOrder", getQuestion);
 router.post("/questions/:questionOrder", answer);
