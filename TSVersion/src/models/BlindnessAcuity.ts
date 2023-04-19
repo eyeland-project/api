@@ -12,9 +12,11 @@ class BlindnessAcuityModel extends Model<
   BlindnessAcuityCreation
 > {
   declare id_blindness_acuity: number;
+  declare code: string;
   declare name: string;
   declare level: number;
-  declare description: string;
+  declare worse_than?: string | null;
+  declare better_eq_than?: string | null;
 }
 
 // model initialization
@@ -25,16 +27,25 @@ BlindnessAcuityModel.init(
       primaryKey: true,
       autoIncrement: true
     },
+    code: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      unique: true
+    },
     name: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(50),
       allowNull: false
     },
     level: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    description: {
-      type: DataTypes.STRING(2048),
+    worse_than: {
+      type: DataTypes.STRING(200),
+      allowNull: false
+    },
+    better_eq_than: {
+      type: DataTypes.STRING(200),
       allowNull: false
     }
   },

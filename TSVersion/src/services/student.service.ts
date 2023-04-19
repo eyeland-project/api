@@ -2,7 +2,8 @@ import { QueryTypes, Transaction } from "sequelize";
 import sequelize from "../database/db";
 import { ApiError } from "../middlewares/handleErrors";
 import { StudentModel } from "../models";
-import { Student, TeamMember } from "../types/Student.types";
+import { TeamMember } from "../types/Team.types";
+import { Student } from "../types/Student.types";
 import { Team } from "../types/Team.types";
 import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
 import {
@@ -158,7 +159,7 @@ export async function assignPowerToStudent(
   const ids = teammates.map((member) => member.id_student);
   const currPowers = teammates.map((member) => member.task_attempt.power);
   const currBlindnessLevels = teammates.map(
-    (member) => member.blindness_acuity.level
+    (member) => member.blindness_acuity_level
   );
 
   const getFreePowers = () => {

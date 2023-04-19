@@ -37,11 +37,10 @@ export async function getCourse(
   const { idCourse } = req.params;
   try {
     const course = await courseService.getCourseById(idCourse);
-    const { id_course, name, description, session } = course;
+    const { id_course, name, session } = course;
     res.status(200).json({
       id: id_course,
       name,
-      description: description || "",
       session
     });
   } catch (err) {

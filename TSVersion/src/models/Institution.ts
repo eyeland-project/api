@@ -11,8 +11,10 @@ class InstitutionModel extends Model<Institution, InstitutionCreation> {
   declare address: string;
   declare city: string;
   declare country: string;
-  declare phone: string;
+  declare phone_code: string;
+  declare phone_number: string;
   declare email: string;
+  declare website_url?: string | null;
 }
 
 // model initialization
@@ -29,7 +31,8 @@ InstitutionModel.init(
     },
     nit: {
       type: DataTypes.STRING(9),
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     address: {
       type: DataTypes.STRING(100),
@@ -43,13 +46,20 @@ InstitutionModel.init(
       type: DataTypes.STRING(100),
       allowNull: false
     },
-    phone: {
+    phone_code: {
+      type: DataTypes.STRING(5),
+      allowNull: false
+    },
+    phone_number: {
       type: DataTypes.STRING(15),
       allowNull: false
     },
     email: {
       type: DataTypes.STRING(320),
       allowNull: false
+    },
+    website_url: {
+      type: DataTypes.STRING(2048)
     }
   },
   {

@@ -23,10 +23,12 @@ ReleaseModel.init(
     },
     version: {
       type: DataTypes.STRING(16),
+      unique: true,
       allowNull: false
     },
     url: {
       type: DataTypes.STRING(2048),
+      unique: true,
       allowNull: false
     },
     active: {

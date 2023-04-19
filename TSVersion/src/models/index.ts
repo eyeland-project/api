@@ -13,4 +13,6 @@ export { default as StudentTaskModel } from "./StudentTask";
 export { default as TaskAttemptModel } from "./TaskAttempt";
 export { default as AnswerModel } from "./Answer";
 export { default as BlindnessAcuityModel } from "./BlindnessAcuity";
+export { default as ColorDeficiencyModel } from "./ColorDeficiency";
+export { default as VisualFieldDefectModel } from "./VisualFieldDefect";
 export { default as ReleaseModel } from "./Release";

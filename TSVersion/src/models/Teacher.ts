@@ -14,6 +14,8 @@ class TeacherModel extends Model<Teacher, TeacherCreation> {
   declare email: string;
   declare username: string;
   declare password: string;
+  declare phone_code: string;
+  declare phone_number: string;
   comparePassword = (password: string): boolean =>
     // comparePassword(password, this.password)
     password === this.password; // temporary
@@ -55,6 +57,14 @@ TeacherModel.init(
     },
     comparePassword: {
       type: DataTypes.VIRTUAL
+    },
+    phone_code: {
+      type: DataTypes.STRING(5),
+      allowNull: false
+    },
+    phone_number: {
+      type: DataTypes.STRING(15),
+      allowNull: false
     }
   },
   {

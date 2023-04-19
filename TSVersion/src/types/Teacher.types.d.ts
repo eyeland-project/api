@@ -8,6 +8,8 @@ export interface Teacher {
   email: string;
   username: string;
   password: string;
+  phone_code: string;
+  phone_number: string;
   comparePassword: (password: string) => boolean;
 }
 

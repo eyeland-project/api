@@ -41,6 +41,7 @@ AdminModel.init(
     },
     username: {
       type: DataTypes.STRING(50),
+      unique: true,
       allowNull: false
     },
     password: {

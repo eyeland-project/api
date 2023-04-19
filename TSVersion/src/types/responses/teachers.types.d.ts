@@ -38,7 +38,6 @@ export interface CourseSummResp {
 export interface CourseResp {
   id: number;
   name: string;
-  description: string;
   session: boolean;
 }
 

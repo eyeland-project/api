@@ -18,7 +18,7 @@ import {
   TeamCreateReq,
   TeamUpdateReq
 } from "../../types/requests/teachers.types";
-import { TeamMember } from "../../types/Student.types";
+import { TeamMember } from "../../types/Team.types";
 import { getTaskById } from "../../services/task.service";
 
 export async function getTeams(

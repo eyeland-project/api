@@ -5,7 +5,6 @@ export interface Course {
   id_teacher: ForeignKey<number>;
   id_institution: ForeignKey<number>;
   name: string;
-  description?: string | null;
   session: boolean;
 }
 

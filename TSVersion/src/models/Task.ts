@@ -28,7 +28,8 @@ TaskModel.init(
     },
     task_order: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     name: {
       type: DataTypes.STRING(100),

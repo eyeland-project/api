@@ -7,8 +7,10 @@ export interface Institution {
   address: string;
   city: string;
   country: string;
-  phone: string;
+  phone_code: string;
+  phone_number: string;
   email: string;
+  website_url?: string | null;
 }
 
 export type InstitutionCreation = Omit<Institution, "id_institution">;

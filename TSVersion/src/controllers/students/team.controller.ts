@@ -21,10 +21,9 @@ import {
   getTeamsFromCourseWithStudents,
   notifyCourseOfTeamUpdate
 } from "../../services/course.service";
-import { StudentSocket, TeamResp } from "../../types/responses/students.types";
+import { TeamResp } from "../../types/responses/students.types";
 import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
 import { Power } from "../../types/enums";
-import { TeamMember } from "../../types/Student.types";
 import { directory } from "../../listeners/namespaces/students";
 import { getTaskById } from "../../services/task.service";
 import { getHighestTaskCompletedFromStudent } from "../../services/studentTask.service";
@@ -213,23 +212,3 @@ export async function reroll(req: Request, res: Response, next: NextFunction) {
     next(err);
   }
 }
-
-// this should be in a separate file
-const summMembers = (
-  teammates: TeamMember[]
-): StudentSocket[] => // summarize members data to send to client
-  teammates.map(
-    ({
-      id_student,
-      first_name,
-      last_name,
-      username,
-      task_attempt: { power }
-    }) => ({
-      id: id_student,
-      firstName: first_name,
-      lastName: last_name,
-      username,
-      power
-    })
-  );

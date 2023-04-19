@@ -4,7 +4,6 @@ import sequelize from "../database/db";
 import CourseModel from "./Course";
 import { comparePassword, hashPassword } from "../utils";
 import { Student, StudentCreation } from "../types/Student.types";
-import { ApiError } from "../middlewares/handleErrors";
 import BlindnessAcuityModel from "./BlindnessAcuity";
 import TaskAttemptModel from "./TaskAttempt";
 
@@ -13,12 +12,15 @@ class StudentModel extends Model<Student, StudentCreation> {
   declare id_student: number;
   declare id_course: ForeignKey<number>;
   declare id_blindness_acuity: ForeignKey<number>;
+  declare id_visual_field_defect: ForeignKey<number>;
+  declare id_color_deficiency: ForeignKey<number>;
   declare first_name: string;
   declare last_name: string;
-  declare email: string;
   declare username: string;
   declare password: string;
-
+  declare email: string;
+  declare phone_code: string;
+  declare phone_number: string;
   declare BlindnessAcuityModel: NonAttribute<BlindnessAcuityModel>;
   declare taskAttempts: NonAttribute<TaskAttemptModel>;
 
@@ -51,13 +53,9 @@ StudentModel.init(
       type: DataTypes.STRING(100),
       allowNull: false
     },
-    email: {
-      type: DataTypes.STRING(320),
-      unique: true,
-      allowNull: false
-    },
     username: {
       type: DataTypes.STRING(50),
+      unique: true,
       allowNull: false
     },
     password: {
@@ -66,6 +64,19 @@ StudentModel.init(
       // set(value: string) {
       //     this.setDataValue('password', hashPassword(value));
       // }
+    },
+    email: {
+      type: DataTypes.STRING(320),
+      unique: true,
+      allowNull: false
+    },
+    phone_code: {
+      type: DataTypes.STRING(5),
+      allowNull: false
+    },
+    phone_number: {
+      type: DataTypes.STRING(15),
+      allowNull: false
     },
     comparePassword: {
       type: DataTypes.VIRTUAL

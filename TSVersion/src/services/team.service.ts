@@ -14,7 +14,8 @@ import {
 } from "./taskAttempt.service";
 import { getTaskByOrder } from "./task.service";
 import { ApiError } from "../middlewares/handleErrors";
-import { Student, TeamMember } from "../types/Student.types";
+import { Student } from "../types/Student.types";
+import { TeamMember } from "../types/Team.types";
 import { OutgoingEvents, Power } from "../types/enums";
 import { directory as directoryStudents } from "../listeners/namespaces/students";
 import { TaskAttempt } from "../types/TaskAttempt.types";
@@ -37,18 +38,21 @@ export async function getMembersFromTeam(teamInfo: {
     throw new ApiError("Must provide either idTeam or code", 400);
 
   interface TeamMemberRaw extends Student {
-    blindness_acuity_name: string;
     blindness_acuity_level: number;
+    visual_field_defect_code: string;
+    color_deficiency_code: string;
     id_task_attempt: number;
     power: Power | null;
   }
   const teamMembers = await sequelize.query<TeamMemberRaw>(
     `
-        SELECT s.*, ba.name AS blindness_acuity_name, ba.level AS blindness_acuity_level, ta.id_task_attempt, ta.power
+        SELECT s.*, ba.level AS blindness_acuity_level, vfd.code AS visual_field_defect_code, cd.code AS color_deficiency_code, ta.id_task_attempt, ta.power
         FROM team t 
         JOIN task_attempt ta ON t.id_team = ta.id_team AND (t.active = ta.active OR t.active = false)
         JOIN student s ON ta.id_student = s.id_student
         JOIN blindness_acuity ba ON ba.id_blindness_acuity = s.id_blindness_acuity
+        JOIN visual_field_defect vfd ON vfd.id_visual_field_defect = s.id_visual_field_defect
+        JOIN color_deficiency cd ON cd.id_color_deficiency = s.id_color_deficiency
         WHERE ${idTeam ? `t.id_team = ${idTeam}` : `t.code = '${code}'`}
     `,
     { type: QueryTypes.SELECT }
@@ -56,16 +60,16 @@ export async function getMembersFromTeam(teamInfo: {
   return teamMembers.map(
     ({
       blindness_acuity_level,
-      blindness_acuity_name,
+      color_deficiency_code,
+      visual_field_defect_code,
       id_task_attempt,
       power,
       ...studentFields
     }) => ({
       ...studentFields,
-      blindness_acuity: {
-        level: blindness_acuity_level,
-        name: blindness_acuity_name
-      },
+      blindness_acuity_level,
+      color_deficiency_code,
+      visual_field_defect_code,
       task_attempt: {
         id: id_task_attempt,
         power
@@ -162,7 +166,7 @@ export async function checkReassignSuperHearing(
   if (!teammates.length) return; // no teammates left
 
   const blindnessLevels = teammates.map(
-    ({ blindness_acuity: { level } }) => level
+    ({ blindness_acuity_level }) => blindness_acuity_level
   );
   const maxBlindnessLevel = Math.max(...blindnessLevels);
   if (maxBlindnessLevel === 0) return; // no teammates with blindness
