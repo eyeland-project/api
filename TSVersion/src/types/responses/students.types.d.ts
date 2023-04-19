@@ -41,6 +41,23 @@ export interface TaskProgressResp {
   postask: ProgressBody;
 }
 
+export interface QuestionResp {
+  id: number;
+  content: string;
+  type: QuestionType;
+  topic: QuestionTopic | null;
+  imgAlt: string | null;
+  imgUrl: string | null;
+  audioUrl: string | null;
+  videoUrl: string | null;
+  options: {
+    id: number;
+    content: string;
+    correct: boolean;
+    feedback: string;
+  }[];
+}
+
 // pretasks
 export interface PretaskResp {
   description: string;
@@ -48,20 +65,7 @@ export interface PretaskResp {
   numQuestions: number;
 }
 
-export interface PretaskQuestionResp {
-  id: number;
-  content: string;
-  imgAlt: string;
-  imgUrl: string;
-  options: {
-    id: number;
-    content: string;
-    correct: boolean;
-    feedback: string;
-  }[];
-  type: QuestionType;
-  topic: QuestionTopic | null;
-}
+export type PretaskQuestionResp = Omit<QuestionResp, "audioUrl" | "videoUrl">;
 
 // duringtasks
 export interface DuringtaskResp {
@@ -70,22 +74,9 @@ export interface DuringtaskResp {
   numQuestions: number;
 }
 
-export interface DuringtaskQuestionResp {
-  id: number;
-  content: string;
-  type: string;
-  imgAlt: string;
-  imgUrl: string;
-  audioUrl: string;
-  videoUrl: string;
-  nounTranslation?: string[];
-  prepositionTranslation?: string[];
-  options: {
-    id: number;
-    content: string;
-    correct: boolean;
-    feedback: string;
-  }[];
+export interface DuringtaskQuestionResp extends QuestionResp {
+  nounTranslation: string[];
+  prepositionTranslation: string[];
 }
 
 // postasks
@@ -95,21 +86,7 @@ export interface PostaskResp {
   numQuestions: number;
 }
 
-export interface PostaskQuestionResp {
-  id: number;
-  content: string;
-  type: string;
-  imgAlt: string;
-  imgUrl: string;
-  audioUrl: string;
-  videoUrl: string;
-  options: {
-    id: number;
-    content: string;
-    correct: boolean;
-    feedback: string;
-  }[];
-}
+export interface PostaskQuestionResp extends QuestionResp {}
 
 // teams
 export interface TeamResp {

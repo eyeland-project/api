@@ -5,12 +5,16 @@ import {
 } from "../../services/question.service";
 import {
   DuringtaskQuestionResp,
+  PostaskQuestionResp,
   PostaskResp
 } from "../../types/responses/students.types";
 import { getQuestionOptions } from "../../services/option.service";
 import { answerPostask } from "../../services/answer.service";
 import { AnswerOptionReq } from "../../types/requests/students.types";
-import { getTaskStageByOrder } from "../../services/taskStage.service";
+import {
+  getQuestionsFromTaskStage,
+  getTaskStageByOrder
+} from "../../services/taskStage.service";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
@@ -35,7 +39,7 @@ export async function root(
 
 export async function getQuestion(
   req: Request<{ taskOrder: number; questionOrder: number }>,
-  res: Response<DuringtaskQuestionResp>,
+  res: Response<PostaskQuestionResp>,
   next: Function
 ) {
   try {
@@ -45,6 +49,7 @@ export async function getQuestion(
       id_question,
       content,
       type,
+      topic,
       img_alt,
       img_url,
       audio_url,
@@ -55,6 +60,7 @@ export async function getQuestion(
     res.status(200).json({
       content,
       type,
+      topic,
       id: id_question,
       imgAlt: img_alt || "",
       imgUrl: img_url || "",
@@ -72,8 +78,22 @@ export async function getQuestion(
   }
 }
 
+export async function getQuestions(
+  req: Request<{ taskOrder: number }>,
+  res: Response<PostaskQuestionResp[]>,
+  next: Function
+) {
+  const { taskOrder } = req.params;
+  try {
+    const questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 3);
+    res.status(200).json(questionsWithOptions);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function answer(
-  req: Request<{ taskOrder: number; questionOrder: number }>,
+  req: Request<{ taskOrder: string; questionOrder: string }>,
   res: Response,
   next: Function
 ) {
@@ -82,8 +102,8 @@ export async function answer(
     req.params;
   const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
 
-  const taskOrder = +taskOrderStr;
-  const questionOrder = +questionOrderStr;
+  const taskOrder = parseInt(taskOrderStr);
+  const questionOrder = parseInt(questionOrderStr);
 
   if (isNaN(taskOrder) || taskOrder < 1)
     return res.status(400).json({ message: "Bad taskOrder" });

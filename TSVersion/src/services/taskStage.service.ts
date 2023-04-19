@@ -11,7 +11,10 @@ import { ApiError } from "../middlewares/handleErrors";
 import { Question } from "../types/Question.types";
 import { QuestionTopic, QuestionType } from "../types/enums";
 import { groupBy } from "../utils";
-import { PretaskQuestionResp } from "../types/responses/students.types";
+import {
+  PretaskQuestionResp,
+  QuestionResp
+} from "../types/responses/students.types";
 
 export async function getTaskStageByOrder(
   taskOrder: number,
@@ -52,7 +55,7 @@ export async function getLastQuestionFromTaskStage(
 export async function getQuestionsFromTaskStage(
   taskOrder: number,
   stageOrder: number
-): Promise<PretaskQuestionResp[]> {
+): Promise<QuestionResp[]> {
   const questions = await QuestionModel.findAll({
     include: [
       {
@@ -76,18 +79,30 @@ export async function getQuestionsFromTaskStage(
         as: "options"
       }
     ],
-    limit: 10,
-    order: sequelize.random()
+    limit: stageOrder === 1 ? 10 : undefined,
+    order: stageOrder === 1 ? sequelize.random() : undefined
   });
 
   return questions.map(
-    ({ content, id_question, img_alt, img_url, topic, type, options }) => ({
-      id: id_question,
+    ({
       content,
-      imgAlt: img_alt!,
-      imgUrl: img_url!,
+      id_question,
+      img_alt,
+      img_url,
       topic,
       type,
+      options,
+      audio_url,
+      video_url
+    }) => ({
+      id: id_question,
+      content,
+      topic,
+      type,
+      imgAlt: img_alt || null,
+      imgUrl: img_url || null,
+      audioUrl: audio_url || null,
+      videoUrl: video_url || null,
       options: options.map((option) => {
         const { content, correct, feedback, id_option } = option;
         return {

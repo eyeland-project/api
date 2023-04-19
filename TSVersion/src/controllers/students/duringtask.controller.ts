@@ -8,7 +8,10 @@ import {
   DuringtaskResp
 } from "../../types/responses/students.types";
 import { getQuestionOptions } from "../../services/option.service";
-import { getTaskStageByOrder } from "../../services/taskStage.service";
+import {
+  getQuestionsFromTaskStage,
+  getTaskStageByOrder
+} from "../../services/taskStage.service";
 import { ApiError } from "../../middlewares/handleErrors";
 import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
 import {
@@ -54,6 +57,7 @@ export async function getQuestion(
       id_question,
       content,
       type,
+      topic,
       img_alt,
       img_url,
       audio_url,
@@ -90,6 +94,7 @@ export async function getQuestion(
     res.status(200).json({
       content: contentParsed,
       type,
+      topic,
       id: id_question,
       imgAlt: img_alt || "",
       imgUrl: img_url || "",
@@ -104,6 +109,34 @@ export async function getQuestion(
         feedback: feedback || ""
       }))
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getQuestions(
+  req: Request<{ taskOrder: number }>,
+  res: Response<DuringtaskQuestionResp[]>,
+  next: Function
+) {
+  const { taskOrder } = req.params;
+  try {
+    const questionsWithOptions = (
+      await getQuestionsFromTaskStage(taskOrder, 2)
+    ).map(({ content, ...fields }) => {
+      const {
+        nouns,
+        preps,
+        content: contentParsed
+      } = separateTranslations(content);
+      return {
+        ...fields,
+        content: contentParsed,
+        nounTranslation: nouns,
+        prepositionTranslation: preps
+      };
+    });
+    res.status(200).json(questionsWithOptions);
   } catch (err) {
     next(err);
   }

@@ -23,8 +23,10 @@ export async function root(
 ) {
   try {
     const { taskOrder } = req.params;
-    const { description, keywords, id_task, id_task_stage } =
-      await getTaskStageByOrder(taskOrder, 1);
+    const { description, keywords, id_task_stage } = await getTaskStageByOrder(
+      taskOrder,
+      1
+    );
     res.status(200).json({
       description: description,
       keywords: keywords,
@@ -42,7 +44,9 @@ export async function getQuestions(
 ) {
   const { taskOrder } = req.params;
   try {
-    const questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 1);
+    const questionsWithOptions = (
+      await getQuestionsFromTaskStage(taskOrder, 1)
+    ).map(({ audioUrl, videoUrl, ...fields }) => fields);
 
     questionsWithOptions.sort((a, b) => {
       // move nulls to the end
@@ -87,7 +91,7 @@ export async function getQuestion(
 }
 
 export async function answer(
-  req: Request<{ taskOrder: number; questionOrder: number }>,
+  req: Request<{ taskOrder: string; questionOrder: string }>,
   res: Response,
   next: Function
 ) {
@@ -96,8 +100,8 @@ export async function answer(
     req.params;
   const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
 
-  const taskOrder = +taskOrderStr;
-  const questionOrder = +questionOrderStr;
+  const taskOrder = parseInt(taskOrderStr);
+  const questionOrder = parseInt(questionOrderStr);
 
   if (isNaN(taskOrder) || taskOrder < 1)
     return res.status(400).json({ message: "Bad taskOrder" });
