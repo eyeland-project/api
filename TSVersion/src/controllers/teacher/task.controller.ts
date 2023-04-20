@@ -42,15 +42,15 @@ export async function getTask(
       task_order,
       thumbnail_url
     } = task;
-    res.status(200).json({
-      id: id_task,
-      name,
-      description,
-      longDescription: long_description || "",
-      keywords,
-      taskOrder: task_order,
-      thumbnailUrl: thumbnail_url || ""
-    });
+    // res.status(200).json({
+    //   id: id_task,
+    //   name,
+    //   description,
+    //   longDescription: long_description || "",
+    //   keywords,
+    //   taskOrder: task_order,
+    //   thumbnailUrl: thumbnail_url || ""
+    // });
   } catch (err) {
     next(err);
   }

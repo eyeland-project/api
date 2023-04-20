@@ -1,5 +1,5 @@
 // imports
-import { DataTypes, ForeignKey, Model } from "sequelize";
+import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { InstitutionModel } from "@models";
 import { comparePassword, hashPassword } from "@utils";
@@ -16,6 +16,7 @@ class TeacherModel extends Model<Teacher, TeacherCreation> {
   declare password: string;
   declare phone_code: string;
   declare phone_number: string;
+  declare institution: NonAttribute<InstitutionModel>;
   comparePassword = (password: string): boolean =>
     // comparePassword(password, this.password)
     password === this.password; // temporary
@@ -86,7 +87,8 @@ InstitutionModel.hasMany(TeacherModel, {
   foreignKey: "id_institution"
 });
 TeacherModel.belongsTo(InstitutionModel, {
-  foreignKey: "id_institution"
+  foreignKey: "id_institution",
+  as: "institution"
 });
 
 export default TeacherModel;
