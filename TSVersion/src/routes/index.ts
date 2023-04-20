@@ -1,8 +1,8 @@
 import fs from "fs";
 import { Router } from "express";
 import { join } from "path";
-import { directory as studentDirectory } from "@listeners/namespaces/students";
-import { directory as teacherDirectory } from "@listeners/namespaces/teachers";
+import { directory as studentDirectory } from "@listeners/namespaces/student";
+import { directory as teacherDirectory } from "@listeners/namespaces/teacher";
 import { Namespaces, of } from "@listeners/sockets";
 
 const router = Router();

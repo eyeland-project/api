@@ -3,8 +3,13 @@ import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { comparePassword, hashPassword } from "@utils";
 import { Student, StudentCreation } from "@interfaces/Student.types";
-import { BlindnessAcuityModel } from "@models";
-import { TaskAttemptModel, CourseModel } from "@models";
+import {
+  BlindnessAcuityModel,
+  VisualFieldDefectModel,
+  TaskAttemptModel,
+  CourseModel,
+  ColorDeficiencyModel
+} from "@models";
 
 // model class definition
 class StudentModel extends Model<Student, StudentCreation> {
@@ -20,7 +25,9 @@ class StudentModel extends Model<Student, StudentCreation> {
   declare email: string;
   declare phone_code: string;
   declare phone_number: string;
-  declare BlindnessAcuityModel: NonAttribute<BlindnessAcuityModel>;
+  declare blindnessAcuityModel: NonAttribute<BlindnessAcuityModel>;
+  declare visualFieldDefectModel: NonAttribute<VisualFieldDefectModel>;
+  declare colorDeficiencyModel: NonAttribute<ColorDeficiencyModel>;
   declare taskAttempts: NonAttribute<TaskAttemptModel>;
 
   comparePassword = (password: string): boolean =>
@@ -41,6 +48,14 @@ StudentModel.init(
       allowNull: false
     },
     id_blindness_acuity: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    id_visual_field_defect: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    id_color_deficiency: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -119,6 +134,22 @@ BlindnessAcuityModel.hasMany(StudentModel, {
 });
 StudentModel.belongsTo(BlindnessAcuityModel, {
   foreignKey: "id_blindness_acuity"
+});
+
+// student and visual_field_defect
+VisualFieldDefectModel.hasMany(StudentModel, {
+  foreignKey: "id_visual_field_defect"
+});
+StudentModel.belongsTo(VisualFieldDefectModel, {
+  foreignKey: "id_visual_field_defect"
+});
+
+// student and color_deficiency
+ColorDeficiencyModel.hasMany(StudentModel, {
+  foreignKey: "id_color_deficiency"
+});
+StudentModel.belongsTo(ColorDeficiencyModel, {
+  foreignKey: "id_color_deficiency"
 });
 
 export default StudentModel;

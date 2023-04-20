@@ -3,7 +3,7 @@ import { ApiError } from "@middlewares/handleErrors";
 import { TaskAttemptModel } from "@models";
 import { TaskAttempt } from "@interfaces/TaskAttempt.types";
 
-export async function getStudCurrTaskAttempt(
+export async function getCurrTaskAttempt(
   idStudent: number
 ): Promise<TaskAttempt> {
   const taskAttempt = await TaskAttemptModel.findOne({
@@ -26,7 +26,7 @@ export async function createTaskAttempt(
   return taskAttempt;
 }
 
-export async function updateStudCurrTaskAttempt(
+export async function updateCurrTaskAttempt(
   idStudent: number,
   values: Partial<TaskAttempt>,
   opts: { transaction?: Transaction } = {}
@@ -40,7 +40,7 @@ export async function updateStudCurrTaskAttempt(
   if (!result[0]) throw new ApiError("Task Attempt not found", 404);
 }
 
-export async function finishStudTaskAttempts(idStudent: number) {
+export async function finishStudentTaskAttempts(idStudent: number) {
   await TaskAttemptModel.update(
     { active: false },
     { where: { id_student: idStudent, active: true } }

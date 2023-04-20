@@ -7,8 +7,8 @@ import { Student } from "@interfaces/Student.types";
 import { Team } from "@interfaces/Team.types";
 import { BlindnessAcuity } from "@interfaces/BlindnessAcuity.types";
 import {
-  getStudCurrTaskAttempt,
-  updateStudCurrTaskAttempt
+  getCurrTaskAttempt,
+  updateCurrTaskAttempt
 } from "@services/taskAttempt.service";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
 import {
@@ -18,9 +18,9 @@ import {
 } from "@services/team.service";
 import { Course } from "@interfaces/Course.types";
 import { notifyCourseOfTeamUpdate } from "@services/course.service";
-import { TeamResp as TeamRespStud } from "@dto/student/team.dto";
+import { TeamDetailDto } from "@dto/student/team.dto";
 import { getRandomFloatBetween } from "@utils";
-import { directory } from "@listeners/namespaces/students";
+import { directory } from "@listeners/namespaces/student";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);
@@ -44,7 +44,7 @@ export async function getTeamFromStudent(idStudent: number): Promise<Team> {
 
 export async function getCurrentTeamFromStudent(
   idStudent: number
-): Promise<TeamRespStud & { myPower?: Power }> {
+): Promise<TeamDetailDto & { myPower?: Power }> {
   const { id_team, name, code } = await getTeamFromStudent(idStudent);
   const members = await getMembersFromTeam({ idTeam: id_team });
   return {
@@ -108,7 +108,7 @@ async function assignPower(
 ) {
   // prevent errors when updating teammate
   try {
-    await updateStudCurrTaskAttempt(idStudent, { power });
+    await updateCurrTaskAttempt(idStudent, { power });
   } catch (err) {}
 }
 
@@ -116,7 +116,7 @@ export async function rafflePower(idStudent: number): Promise<false | Power> {
   // * Verify if the student has a visual illness
   const { level } = await getBlindnessAcFromStudent(idStudent);
   // * get the current power of the student
-  const { power } = await getStudCurrTaskAttempt(idStudent);
+  const { power } = await getCurrTaskAttempt(idStudent);
 
   // ** if the student has a visual illness and has super-hearing, return false
   if (level !== 0 && power === Power.SUPER_HEARING) return false;

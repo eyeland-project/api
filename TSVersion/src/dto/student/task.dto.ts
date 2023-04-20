@@ -1,4 +1,4 @@
-export interface TaskResp {
+export interface TaskSummaryDto {
   id: number;
   name: string;
   description: string;
@@ -10,7 +10,7 @@ export interface TaskResp {
   thumbnailAlt: string;
 }
 
-export interface TaskIntroResp {
+export interface TaskDetailDto {
   id: number;
   name: string;
   description: string;
@@ -26,7 +26,7 @@ interface ProgressBody {
   blocked: boolean;
 }
 
-export interface TaskProgressResp {
+export interface TaskProgressDetailDto {
   pretask: ProgressBody;
   duringtask: ProgressBody;
   postask: ProgressBody;

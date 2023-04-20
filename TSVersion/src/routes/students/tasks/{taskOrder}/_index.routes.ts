@@ -4,7 +4,7 @@ import {
   getIntro,
   getProgress,
   finishAttempt
-} from "@controllers/students/task.controller";
+} from "@controllers/student/task.controller";
 
 const auth = passport.authenticate("jwt-student", { session: false });
 

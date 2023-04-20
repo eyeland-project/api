@@ -1,12 +1,12 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import { signToken } from "@utils";
 import { ApiError } from "@middlewares/handleErrors";
 import { BlindnessAcuityModel, StudentModel } from "@models";
-import { UserResp } from "@dto/student/team.dto";
+import { UserDto } from "@dto/student/auth.dto";
 
 // login with passport
-export async function login(req: Request, res: Response, next: Function) {
+export async function login(req: Request, res: Response, next: NextFunction) {
   passport.authenticate("login-student", async (err, { id }, _info) => {
     try {
       if (err) {
@@ -28,8 +28,8 @@ export async function login(req: Request, res: Response, next: Function) {
 
 export async function whoami(
   req: Request,
-  res: Response<UserResp>,
-  next: Function
+  res: Response<UserDto>,
+  next: NextFunction
 ) {
   const { id } = req.user!;
 
@@ -54,7 +54,7 @@ export async function whoami(
       lastName: student.last_name,
       username: student.username,
       visualCondition:
-        student.BlindnessAcuityModel?.name || "non-visually impaired"
+        student.blindnessAcuityModel?.name || "non-visually impaired"
     });
   } catch (err: any) {
     throw new ApiError(err.message, 500);

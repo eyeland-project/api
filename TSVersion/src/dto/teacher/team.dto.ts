@@ -1,26 +1,9 @@
-import { Power } from "@interfaces/enums/taskAttempt.enum";
+import { TeamDetailDto as TeamDetailDtoGlobal } from "@dto/global/team.dto";
 
-export interface TeamResp {
-  id: number;
-  code: string;
-  name: string;
-  students: {
-    id: number;
-    firstName: string;
-    lastName: string;
-    username: string;
-    power: Power | null;
-  }[];
-  active: boolean;
-  taskOrder: number | null;
-  playing: boolean;
-}
+export interface TeamDetailDto extends TeamDetailDtoGlobal {}
 
-export interface TeamCreateReq {
+export interface TeamCreateDto {
   name: string;
 }
 
-export interface TeamUpdateReq {
-  name: string;
-  active: false;
-}
+export type TeamUpdateDto = Partial<TeamCreateDto & { active: false }>;

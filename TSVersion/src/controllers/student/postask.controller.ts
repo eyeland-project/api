@@ -1,28 +1,28 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   getQuestionByOrder,
   getTaskStageQuestionsCount
 } from "@services/question.service";
 import { getQuestionOptions } from "@services/option.service";
-import { AnswerOptionReq } from "@dto/student/answer.dto";
-import { answerPretask } from "@services/answer.service";
+import { answerPostask } from "@services/answer.service";
+import { AnswerCreateDto } from "@dto/student/answer.dto";
 import {
   getQuestionsFromTaskStage,
   getTaskStageByOrder
 } from "@services/taskStage.service";
-import { upgradeStudentTaskProgress } from "@services/studentTask.service";
-import { PretaskQuestionResp, PretaskResp } from "@dto/student/question.dto";
+import { QuestionPostaskDetailResp } from "@dto/student/question.dto";
+import { PostaskDetailDto } from "@dto/student/taskStage.dto";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
-  res: Response<PretaskResp>,
-  next: Function
+  res: Response<PostaskDetailDto>,
+  next: NextFunction
 ) {
   try {
     const { taskOrder } = req.params;
     const { description, keywords, id_task_stage } = await getTaskStageByOrder(
       taskOrder,
-      1
+      3
     );
     res.status(200).json({
       description: description,
@@ -34,54 +34,56 @@ export async function root(
   }
 }
 
-export async function getQuestions(
-  req: Request<{ taskOrder: number }>,
-  res: Response<PretaskQuestionResp[]>,
-  next: Function
-) {
-  const { taskOrder } = req.params;
-  try {
-    const questionsWithOptions = (
-      await getQuestionsFromTaskStage(taskOrder, 1)
-    ).map(({ audioUrl, videoUrl, ...fields }) => fields);
-
-    questionsWithOptions.sort((a, b) => {
-      // move nulls to the end
-      if (!a.topic) return 1;
-      if (!b.topic) return -1;
-      return a.topic.localeCompare(b.topic);
-    });
-    res.status(200).json(questionsWithOptions);
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function getQuestion(
   req: Request<{ taskOrder: number; questionOrder: number }>,
-  res: Response<PretaskQuestionResp>,
-  next: Function
+  res: Response<QuestionPostaskDetailResp>,
+  next: NextFunction
 ) {
-  const { taskOrder, questionOrder } = req.params;
   try {
-    const { id_question, content, type, img_alt, img_url, topic } =
-      await getQuestionByOrder(taskOrder, 1, questionOrder);
+    const { taskOrder, questionOrder } = req.params;
+
+    const {
+      id_question,
+      content,
+      type,
+      topic,
+      img_alt,
+      img_url,
+      audio_url,
+      video_url
+    } = await getQuestionByOrder(taskOrder, 3, questionOrder);
     const options = await getQuestionOptions(id_question);
 
     res.status(200).json({
       content,
       type,
+      topic,
       id: id_question,
       imgAlt: img_alt || "",
       imgUrl: img_url || "",
+      audioUrl: audio_url || "",
+      videoUrl: video_url || "",
       options: options.map(({ id_option, content, correct, feedback }) => ({
         id: id_option,
         content,
         correct,
         feedback: feedback || ""
-      })),
-      topic: topic || null
+      }))
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getQuestions(
+  req: Request<{ taskOrder: number }>,
+  res: Response<QuestionPostaskDetailResp[]>,
+  next: NextFunction
+) {
+  const { taskOrder } = req.params;
+  try {
+    const questionsWithOptions = await getQuestionsFromTaskStage(taskOrder, 3);
+    res.status(200).json(questionsWithOptions);
   } catch (err) {
     next(err);
   }
@@ -90,12 +92,12 @@ export async function getQuestion(
 export async function answer(
   req: Request<{ taskOrder: string; questionOrder: string }>,
   res: Response,
-  next: Function
+  next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
   const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } =
     req.params;
-  const { idOption, answerSeconds, newAttempt } = req.body as AnswerOptionReq;
+  const { idOption, answerSeconds, newAttempt } = req.body as AnswerCreateDto;
 
   const taskOrder = parseInt(taskOrderStr);
   const questionOrder = parseInt(questionOrderStr);
@@ -108,7 +110,7 @@ export async function answer(
     return res.status(400).json({ message: "Bad idOption" });
 
   try {
-    await answerPretask(
+    await answerPostask(
       idStudent,
       taskOrder,
       questionOrder,
@@ -117,23 +119,8 @@ export async function answer(
       newAttempt
     );
     res.status(200).json({
-      message: `Answered question ${questionOrder} of pretask ${taskOrder}`
+      message: `Answered question ${questionOrder} of postask ${taskOrder}`
     });
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function setCompleted(
-  req: Request<{ taskOrder: number }>,
-  res: Response,
-  next: Function
-) {
-  try {
-    const { id: idStudent } = req.user!;
-    const { taskOrder } = req.params;
-    await upgradeStudentTaskProgress(taskOrder, idStudent, 1);
-    res.status(200).json({ message: `Completed pretask ${taskOrder}` });
   } catch (err) {
     next(err);
   }

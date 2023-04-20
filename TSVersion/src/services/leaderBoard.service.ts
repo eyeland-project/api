@@ -1,4 +1,4 @@
-import { emitTo } from "@listeners/namespaces/students";
+import { emitTo } from "@listeners/namespaces/student";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { getQuestionsFromTaskStageByTaskId } from "@services/question.service";
 import { getPlayingTeamsFromCourse } from "@services/team.service";

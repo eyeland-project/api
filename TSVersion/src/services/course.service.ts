@@ -13,9 +13,10 @@ import { Course } from "@interfaces/Course.types";
 import { Namespaces, of } from "@listeners/sockets";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { generateTeamName } from "@utils";
-import { TeamResp as TeamRespTeacher } from "@dto/teacher/team.dto";
-import { TeamResp as TeamRespStudent } from "@dto/student/team.dto";
-import { directory as directoryStudents } from "@listeners/namespaces/students";
+import { TeamDetailDto as TeamDetailDtoGlobal } from "@dto/global/team.dto";
+import { TeamDetailDto as TeamDetailDtoTeacher } from "@dto/teacher/team.dto";
+import { TeamDetailDto as TeamDetailDtoStudent } from "@dto/student/team.dto";
+import { directory as directoryStudents } from "@listeners/namespaces/student";
 import {
   cleanLeaderBoard,
   emitLeaderboard,
@@ -70,7 +71,7 @@ export async function getTeamsFromCourse(
 
 export async function getTeamsFromCourseWithStudents(
   idCourse: number
-): Promise<TeamRespTeacher[]> {
+): Promise<TeamDetailDtoGlobal[]> {
   const teams = await TeamModel.findAll({
     include: [
       {
@@ -125,8 +126,8 @@ export async function getTeamsFromCourseWithStudents(
 }
 
 export function filterTeamsForStudents(
-  teams: TeamRespTeacher[]
-): TeamRespStudent[] {
+  teams: TeamDetailDtoGlobal[]
+): TeamDetailDtoStudent[] {
   return teams
     .filter(({ active, playing }) => active && !playing)
     .map(({ id, code, name, students, taskOrder }) => ({
@@ -171,12 +172,14 @@ export async function notifyCourseOfTeamUpdate(
     courseRoom = courseRoom.except(`t${idTeam}`);
   }
 
-  const teams: TeamRespTeacher[] = await getTeamsFromCourseWithStudents(
+  const teams: TeamDetailDtoTeacher[] = await getTeamsFromCourseWithStudents(
     idCourse
   );
 
-  const dataStudents: TeamRespStudent[] = filterTeamsForStudents(teams);
-  const dataTeachers: TeamRespTeacher[] = teams.filter(({ active }) => active);
+  const dataStudents: TeamDetailDtoStudent[] = filterTeamsForStudents(teams);
+  const dataTeachers: TeamDetailDtoTeacher[] = teams.filter(
+    ({ active }) => active
+  );
 
   courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, dataStudents);
   of(Namespaces.TEACHERS)?.emit(OutgoingEvents.TEAMS_UPDATE, dataTeachers);
@@ -256,7 +259,7 @@ export async function createMissingTeams(
       return {
         students: students.length,
         blindStudents: students.filter(
-          (student) => student.BlindnessAcuityModel.level > 0
+          (student) => student.blindnessAcuityModel.level > 0
         ).length
       };
     });
@@ -292,7 +295,7 @@ export async function createMissingTeams(
       return {
         students: students.length,
         blindStudents: students.filter(
-          (student) => student.BlindnessAcuityModel.level > 0
+          (student) => student.blindnessAcuityModel.level > 0
         ).length
       };
     });

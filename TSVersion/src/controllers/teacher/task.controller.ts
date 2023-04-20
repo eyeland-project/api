@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { getTaskById, getTasks as getTasksServ } from "@services/task.service";
-import { TaskResp, TaskSummResp } from "@dto/teacher/task.dto";
+import { TaskDetailDto, TaskSummaryDto } from "@dto/teacher/task.dto";
 
 export async function getTasks(
   req: Request,
-  res: Response<TaskSummResp[]>,
-  next: Function
+  res: Response<TaskSummaryDto[]>,
+  next: NextFunction
 ) {
   try {
     const tasks = await getTasksServ();
@@ -27,8 +27,8 @@ export async function getTasks(
 
 export async function getTask(
   req: Request<{ idTask: number }>,
-  res: Response<TaskResp>,
-  next: Function
+  res: Response<TaskDetailDto>,
+  next: NextFunction
 ) {
   const { idTask } = req.params;
   try {

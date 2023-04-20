@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   getQuestionByOrder,
   getTaskStageQuestionsCount
@@ -9,7 +9,7 @@ import {
   getTaskStageByOrder
 } from "@services/taskStage.service";
 import { ApiError } from "@middlewares/handleErrors";
-import { getStudCurrTaskAttempt } from "@services/taskAttempt.service";
+import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import {
   separateTranslations,
   distributeOptions,
@@ -17,17 +17,15 @@ import {
   indexPower
 } from "@utils";
 import { getTeammates } from "@services/student.service";
-import { AnswerOptionReq } from "@dto/student/answer.dto";
+import { AnswerCreateDto } from "@dto/student/answer.dto";
 import { answerDuringtask } from "@services/answer.service";
-import {
-  DuringtaskQuestionResp,
-  DuringtaskResp
-} from "@dto/student/question.dto";
+import { QuestionDuringtaskDetailDto } from "@dto/student/question.dto";
+import { DuringtaskDetailDto } from "@dto/student/taskStage.dto";
 
 export async function root(
   req: Request<{ taskOrder: number }>,
-  res: Response<DuringtaskResp>,
-  next: Function
+  res: Response<DuringtaskDetailDto>,
+  next: NextFunction
 ) {
   try {
     const { taskOrder } = req.params;
@@ -47,8 +45,8 @@ export async function root(
 
 export async function getQuestion(
   req: Request<{ taskOrder: number; questionOrder: number }>,
-  res: Response<DuringtaskQuestionResp>,
-  next: Function
+  res: Response<QuestionDuringtaskDetailDto>,
+  next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
   const { taskOrder, questionOrder } = req.params;
@@ -70,7 +68,7 @@ export async function getQuestion(
       preps,
       content: contentParsed
     } = separateTranslations(content);
-    const { id_team, power } = await getStudCurrTaskAttempt(idStudent);
+    const { id_team, power } = await getCurrTaskAttempt(idStudent);
 
     // * If student has no team, send error
     if (!id_team || !power) {
@@ -116,8 +114,8 @@ export async function getQuestion(
 
 export async function getQuestions(
   req: Request<{ taskOrder: number }>,
-  res: Response<DuringtaskQuestionResp[]>,
-  next: Function
+  res: Response<QuestionDuringtaskDetailDto[]>,
+  next: NextFunction
 ) {
   const { taskOrder } = req.params;
   try {
@@ -146,10 +144,10 @@ export async function answer(
   req: Request<
     { taskOrder: number; questionOrder: number },
     any,
-    AnswerOptionReq
+    AnswerCreateDto
   >,
   res: Response,
-  next: Function
+  next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
   const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } =

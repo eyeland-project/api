@@ -3,7 +3,7 @@ import passport from "passport";
 import {
   getCourses,
   createCourse
-} from "@controllers/teachers/course.controller";
+} from "@controllers/teacher/course.controller";
 
 const auth = passport.authenticate("jwt-teacher", { session: false });
 

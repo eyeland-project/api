@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { directory as dirStudents } from "@listeners/namespaces/students";
+import { directory as dirStudents } from "@listeners/namespaces/student";
 import { ApiError } from "@middlewares/handleErrors";
 import { AnswerModel, QuestionModel } from "@models";
 import { Answer } from "@interfaces/Answer.types";
@@ -19,9 +19,9 @@ import {
 import { getTaskByOrder } from "@services/task.service";
 import {
   createTaskAttempt,
-  finishStudTaskAttempts,
-  getStudCurrTaskAttempt,
-  updateStudCurrTaskAttempt
+  finishStudentTaskAttempts,
+  getCurrTaskAttempt,
+  updateCurrTaskAttempt
 } from "@services/taskAttempt.service";
 import { getLastQuestionFromTaskStage } from "@services/taskStage.service";
 import { getMembersFromTeam, updateTeam } from "@services/team.service";
@@ -61,11 +61,11 @@ export async function answerPretask(
   // create task attempt if required
   let taskAttempt;
   if (newAttempt) {
-    await finishStudTaskAttempts(idStudent);
+    await finishStudentTaskAttempts(idStudent);
     taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
   } else {
     try {
-      taskAttempt = await getStudCurrTaskAttempt(idStudent);
+      taskAttempt = await getCurrTaskAttempt(idStudent);
     } catch (err) {
       taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
     }
@@ -121,7 +121,7 @@ export async function answerDuringtask(
   }
 
   // - get student's current task attempt and get student's team id from task attempt
-  const taskAttempt = await getStudCurrTaskAttempt(idStudent);
+  const taskAttempt = await getCurrTaskAttempt(idStudent);
   if (!taskAttempt.id_team) {
     throw new ApiError("Student is not in a team", 400);
   }
@@ -263,11 +263,11 @@ export async function answerPostask(
   // create task attempt if required
   let taskAttempt;
   if (newAttempt) {
-    await finishStudTaskAttempts(idStudent);
+    await finishStudentTaskAttempts(idStudent);
     taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
   } else {
     try {
-      taskAttempt = await getStudCurrTaskAttempt(idStudent);
+      taskAttempt = await getCurrTaskAttempt(idStudent);
     } catch (err) {
       taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
     }
@@ -299,7 +299,7 @@ export async function answerPostask(
     getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
       if (lastQuestion.id_question === question.id_question) {
         upgradeStudentTaskProgress(taskOrder, idStudent, 3);
-        updateStudCurrTaskAttempt(idStudent, { active: false });
+        updateCurrTaskAttempt(idStudent, { active: false });
       }
     });
   }).catch((err) => console.log(err));

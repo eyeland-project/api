@@ -7,7 +7,7 @@ import {
   updateRelease,
   deleteRelease,
   getRelease
-} from "@controllers/teachers/release.controller";
+} from "@controllers/teacher/release.controller";
 
 const router = Router();
 

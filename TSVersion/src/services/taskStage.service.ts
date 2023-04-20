@@ -4,7 +4,7 @@ import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
 import { TaskStage } from "@interfaces/TaskStage.types";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
-import { QuestionResp } from "@dto/student/question.dto";
+import { QuestionDetailDto } from "@dto/global/question.dto";
 
 export async function getTaskStageByOrder(
   taskOrder: number,
@@ -45,7 +45,7 @@ export async function getLastQuestionFromTaskStage(
 export async function getQuestionsFromTaskStage(
   taskOrder: number,
   stageOrder: number
-): Promise<QuestionResp[]> {
+): Promise<QuestionDetailDto[]> {
   const questions = await QuestionModel.findAll({
     include: [
       {

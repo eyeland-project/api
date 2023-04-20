@@ -1,16 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import * as courseService from "@services/course.service";
 import {
-  CourseResp,
-  CourseSummResp,
-  CourseCreateReq,
-  CourseUpdateReq
+  CourseDetailDto,
+  CourseSummaryDto,
+  CourseCreateDto,
+  CourseUpdateDto
 } from "@dto/teacher/course.dto";
 import { getTeacherById } from "@services/teacher.service";
 
 export async function getCourses(
   _: Request,
-  res: Response<CourseSummResp[]>,
+  res: Response<CourseSummaryDto[]>,
   next: NextFunction
 ) {
   try {
@@ -28,7 +28,7 @@ export async function getCourses(
 
 export async function getCourse(
   req: Request<{ idCourse: number }>,
-  res: Response<CourseResp>,
+  res: Response<CourseDetailDto>,
   next: NextFunction
 ) {
   const { idCourse } = req.params;
@@ -51,7 +51,7 @@ export async function createCourse(
   next: NextFunction
 ) {
   const { id: idTeacher } = req.user!;
-  const { name, description } = req.body as CourseCreateReq;
+  const { name, description } = req.body as CourseCreateDto;
   try {
     const { id_institution } = await getTeacherById(idTeacher);
     const { id_course } = await courseService.createCourse({
@@ -72,7 +72,7 @@ export async function updateCourse(
   next: NextFunction
 ) {
   const { idCourse } = req.params;
-  const fields = req.body as Partial<CourseUpdateReq>;
+  const fields = req.body as Partial<CourseUpdateDto>;
 
   if (!Object.keys(fields).length)
     return res.status(400).json({ message: "No fields to update" });

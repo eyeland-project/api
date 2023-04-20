@@ -1,4 +1,4 @@
-export interface TaskSummResp {
+export interface TaskSummaryDto {
   id: number;
   name: string;
   description: string;
@@ -6,12 +6,17 @@ export interface TaskSummResp {
   thumbnailUrl: string;
 }
 
-export interface TaskResp {
+interface TaskStage {
   id: number;
-  name: string;
   description: string;
+  keywords: string[];
+  taskStageOrder: number;
+}
+
+export interface TaskDetailDto extends TaskSummaryDto {
   longDescription: string;
   keywords: string[];
-  taskOrder: number;
-  thumbnailUrl: string;
+  pretask: TaskStage;
+  duringtask: TaskStage;
+  postask: TaskStage;
 }

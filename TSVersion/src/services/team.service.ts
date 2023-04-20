@@ -4,8 +4,8 @@ import { AnswerModel, OptionModel, TaskAttemptModel, TeamModel } from "@models";
 import { Team } from "@interfaces/Team.types";
 import {
   createTaskAttempt,
-  getStudCurrTaskAttempt,
-  updateStudCurrTaskAttempt
+  getCurrTaskAttempt,
+  updateCurrTaskAttempt
 } from "@services/taskAttempt.service";
 import { getTaskByOrder } from "@services/task.service";
 import { ApiError } from "@middlewares/handleErrors";
@@ -13,7 +13,7 @@ import { Student } from "@interfaces/Student.types";
 import { TeamMember } from "@interfaces/Team.types";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
-import { directory as directoryStudents } from "@listeners/namespaces/students";
+import { directory as directoryStudents } from "@listeners/namespaces/student";
 import { TaskAttempt } from "@interfaces/TaskAttempt.types";
 import {
   assignPowerToStudent,
@@ -122,12 +122,12 @@ export async function addStudentToTeam(
 ) {
   let currTaskAttempt;
   try {
-    currTaskAttempt = await getStudCurrTaskAttempt(idStudent);
+    currTaskAttempt = await getCurrTaskAttempt(idStudent);
     // console.log("1. currTaskAttempt", currTaskAttempt);
   } catch (err) {}
 
   if (currTaskAttempt) {
-    await updateStudCurrTaskAttempt(idStudent, { id_team: idTeam });
+    await updateCurrTaskAttempt(idStudent, { id_team: idTeam });
   } else {
     console.log("Student has no task attempt, creating one...");
     const { id_task } = await getTaskByOrder(taskOrder);
@@ -140,9 +140,9 @@ export async function leaveTeam(
   idStudent: number,
   socketStudent: Socket
 ): Promise<void> {
-  const power = (await getStudCurrTaskAttempt(idStudent)).power;
+  const power = (await getCurrTaskAttempt(idStudent)).power;
   const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
-  await removeStudFromTeam(idStudent);
+  await removeStudentFromTeam(idStudent);
 
   new Promise(async () => {
     socketStudent.leave("t" + id_team); // leave student from team socket room
@@ -176,14 +176,14 @@ export async function checkReassignSuperHearing(
   notifyStudentOfTeamUpdate(idNewStudent);
 }
 
-export async function removeStudFromTeam(idStudent: number) {
-  await updateStudCurrTaskAttempt(idStudent, { id_team: null });
+export async function removeStudentFromTeam(idStudent: number) {
+  await updateCurrTaskAttempt(idStudent, { id_team: null });
 }
 
 export async function notifyStudentOfTeamUpdate(idStudent: number) {
   const studentSocket = directoryStudents.get(idStudent);
   if (!studentSocket) return;
-  const { power } = await getStudCurrTaskAttempt(idStudent);
+  const { power } = await getCurrTaskAttempt(idStudent);
   studentSocket.emit(OutgoingEvents.TEAM_UPDATE, {
     power
   });

@@ -1,15 +1,15 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { getTaskByOrder } from "@services/task.service";
 import {
-  TaskResp,
-  TaskIntroResp,
-  TaskProgressResp
+  TaskSummaryDto,
+  TaskDetailDto,
+  TaskProgressDetailDto
 } from "@dto/student/task.dto";
 import {
   getStudentProgressFromTaskByOrder,
   getTasksFromStudentWithCompleted
 } from "@services/studentTask.service";
-import { finishStudTaskAttempts } from "@services/taskAttempt.service";
+import { finishStudentTaskAttempts } from "@services/taskAttempt.service";
 
 // interface UserWithId{
 //     id: number;
@@ -23,8 +23,8 @@ import { finishStudTaskAttempts } from "@services/taskAttempt.service";
 
 export async function root(
   req: Request,
-  res: Response<TaskResp[]>,
-  next: Function
+  res: Response<TaskSummaryDto[]>,
+  next: NextFunction
 ) {
   try {
     const { id: idStudent } = req.user!;
@@ -36,15 +36,15 @@ export async function root(
 
 export async function getIntro(
   req: Request<{ taskOrder: number }>,
-  res: Response<TaskIntroResp>,
-  next: Function
+  res: Response<TaskDetailDto>,
+  next: NextFunction
 ) {
   try {
     const { id: idStudent } = req.user!;
     const { taskOrder } = req.params;
 
     try {
-      await finishStudTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
+      await finishStudentTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
     } catch (err) {
       console.error(err);
     }
@@ -67,8 +67,8 @@ export async function getIntro(
 
 export async function getProgress(
   req: Request<{ taskOrder: number }>,
-  res: Response<TaskProgressResp>,
-  next: Function
+  res: Response<TaskProgressDetailDto>,
+  next: NextFunction
 ) {
   try {
     const { id: idStudent } = req.user!;
@@ -84,11 +84,11 @@ export async function getProgress(
 export async function finishAttempt(
   req: Request<{ taskOrder: number }>,
   res: Response,
-  next: Function
+  next: NextFunction
 ) {
   try {
     const { id: idStudent } = req.user!;
-    await finishStudTaskAttempts(idStudent);
+    await finishStudentTaskAttempts(idStudent);
     res.status(200).json({ message: "OK" });
   } catch (err) {
     next(err);

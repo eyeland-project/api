@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   createMissingTeams,
   getTeamsFromCourseWithStudents
@@ -10,14 +10,18 @@ import {
   updateTeam as updateTeamServ,
   getTaskAttemptsFromTeam
 } from "@services/team.service";
-import { TeamResp, TeamCreateReq, TeamUpdateReq } from "@dto/teacher/team.dto";
+import {
+  TeamDetailDto,
+  TeamCreateDto,
+  TeamUpdateDto
+} from "@dto/teacher/team.dto";
 import { TeamMember } from "@interfaces/Team.types";
 import { getTaskById } from "@services/task.service";
 
 export async function getTeams(
   req: Request<{ idCourse: number }>,
-  res: Response<TeamResp[]>,
-  next: Function
+  res: Response<TeamDetailDto[]>,
+  next: NextFunction
 ) {
   const { idCourse } = req.params;
   const { active } = req.query as { active?: boolean };
@@ -34,8 +38,8 @@ export async function getTeams(
 
 export async function getTeam(
   req: Request<{ idTeam: number }>,
-  res: Response<TeamResp>,
-  next: Function
+  res: Response<TeamDetailDto>,
+  next: NextFunction
 ) {
   const { idTeam } = req.params;
   try {
@@ -89,10 +93,10 @@ export async function getTeam(
 export async function createTeam(
   req: Request<{ idCourse: number }>,
   res: Response<{ id: number }>,
-  next: Function
+  next: NextFunction
 ) {
   const { idCourse } = req.params;
-  const { name } = req.body as TeamCreateReq;
+  const { name } = req.body as TeamCreateDto;
 
   try {
     const { id_team } = await createTeamServ(name, idCourse);
@@ -105,10 +109,10 @@ export async function createTeam(
 export async function updateTeam(
   req: Request<{ idTeam: number }>,
   res: Response,
-  next: Function
+  next: NextFunction
 ) {
   const { idTeam } = req.params;
-  const fields = req.body as Partial<TeamUpdateReq>;
+  const fields = req.body as Partial<TeamUpdateDto>;
   try {
     await updateTeamServ(idTeam, fields);
     res.status(200).json({ message: "Team updated successfully" });
@@ -120,7 +124,7 @@ export async function updateTeam(
 export async function initTeams(
   req: Request<{ idCourse: number }, any, { socketBased: boolean }>,
   res: Response,
-  next: Function
+  next: NextFunction
 ) {
   const { idCourse } = req.params;
   const { socketBased } = req.body;

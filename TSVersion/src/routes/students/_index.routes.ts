@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login, whoami } from "@controllers/students/auth.controller";
+import { login, whoami } from "@controllers/student/auth.controller";
 import passport from "passport";
 import { incrementCounter } from "@utils";
 

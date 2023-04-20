@@ -15,23 +15,23 @@ import {
   leaveTeam as leaveTeamService,
   checkReassignSuperHearing
 } from "@services/team.service";
-import { LoginTeamReq } from "@dto/student/auth.dto";
+import { JoinTeamBodyDto } from "@dto/student/team.dto";
 import {
   filterTeamsForStudents,
   getTeamsFromCourseWithStudents,
   notifyCourseOfTeamUpdate
 } from "@services/course.service";
-import { TeamResp } from "@dto/student/team.dto";
-import { getStudCurrTaskAttempt } from "@services/taskAttempt.service";
+import { TeamDetailDto } from "@dto/student/team.dto";
+import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
-import { directory } from "@listeners/namespaces/students";
+import { directory } from "@listeners/namespaces/student";
 import { getTaskById } from "@services/task.service";
 import { getHighestTaskCompletedFromStudent } from "@services/studentTask.service";
 import { ApiError } from "@middlewares/handleErrors";
 
 export async function getTeams(
   req: Request,
-  res: Response<TeamResp[]>,
+  res: Response<TeamDetailDto[]>,
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
@@ -49,7 +49,7 @@ export async function getTeams(
 
 export async function getCurrentTeam(
   req: Request,
-  res: Response<TeamResp & { myPower?: Power }>,
+  res: Response<TeamDetailDto & { myPower?: Power }>,
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
@@ -61,7 +61,7 @@ export async function getCurrentTeam(
 }
 
 export async function joinTeam(
-  req: Request<LoginTeamReq>,
+  req: Request<JoinTeamBodyDto>,
   res: Response,
   next: NextFunction
 ) {
@@ -71,7 +71,7 @@ export async function joinTeam(
   if (!socket)
     return res.status(400).json({ message: "Student is not connected" });
 
-  const { code, taskOrder } = req.body as LoginTeamReq;
+  const { code, taskOrder } = req.body as JoinTeamBodyDto;
   if (!code || !taskOrder) {
     throw new ApiError("Wrong body", 400);
   }
@@ -91,7 +91,7 @@ export async function joinTeam(
     let prevPower: Power | null | undefined;
     try {
       prevTeamId = (await getTeamFromStudent(idStudent)).id_team; // check if student is already in a team
-      prevPower = (await getStudCurrTaskAttempt(idStudent)).power; // check if student has a power
+      prevPower = (await getCurrTaskAttempt(idStudent)).power; // check if student has a power
     } catch (err) {} // no team found for student (expected)
 
     const team = await getTeamByCode(code);
@@ -114,7 +114,7 @@ export async function joinTeam(
 
     if (teammates.length) {
       // check if the team is already working on a different task
-      const { id_task } = await getStudCurrTaskAttempt(teammates[0].id_student);
+      const { id_task } = await getCurrTaskAttempt(teammates[0].id_student);
       const { task_order: taskOrderTeam } = await getTaskById(id_task);
       if (taskOrderTeam !== taskOrder) {
         throw new ApiError(
@@ -190,7 +190,7 @@ export async function leaveTeam(
 export async function ready(req: Request, res: Response, next: NextFunction) {
   const { id: idStudent } = req.user!;
   try {
-    const { power } = await getStudCurrTaskAttempt(idStudent);
+    const { power } = await getCurrTaskAttempt(idStudent);
     if (!power)
       return res.status(400).json({ message: "You don't have any power" });
     res.status(200).json({ message: "Ok" });
