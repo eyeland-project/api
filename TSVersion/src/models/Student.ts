@@ -25,6 +25,7 @@ class StudentModel extends Model<Student, StudentCreation> {
   declare email: string;
   declare phone_code: string;
   declare phone_number: string;
+  declare deleted: boolean;
   declare blindnessAcuityModel: NonAttribute<BlindnessAcuityModel>;
   declare visualFieldDefectModel: NonAttribute<VisualFieldDefectModel>;
   declare colorDeficiencyModel: NonAttribute<ColorDeficiencyModel>;
@@ -91,6 +92,11 @@ StudentModel.init(
     phone_number: {
       type: DataTypes.STRING(15),
       allowNull: false
+    },
+    deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     comparePassword: {
       type: DataTypes.VIRTUAL

@@ -21,6 +21,7 @@ class TeamModel extends Model<Team, TeamCreation> {
   declare getAnswers: HasManyGetAssociationsMixin<AnswerModel>;
   declare answers: NonAttribute<AnswerModel[]>;
   declare taskAttempts: NonAttribute<TaskAttemptModel[]>;
+  declare course: NonAttribute<CourseModel>;
 }
 
 // model initialization
@@ -77,7 +78,8 @@ CourseModel.hasMany(TeamModel, {
   foreignKey: "id_course"
 });
 TeamModel.belongsTo(CourseModel, {
-  foreignKey: "id_course"
+  foreignKey: "id_course",
+  as: "course"
 });
 
 export default TeamModel;

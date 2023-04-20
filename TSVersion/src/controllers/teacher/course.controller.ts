@@ -6,15 +6,21 @@ import {
   CourseCreateDto,
   CourseUpdateDto
 } from "@dto/teacher/course.dto";
-import { getTeacherById } from "@services/teacher.service";
+import {
+  deleteCourseFromTeacher,
+  getCourseFromTeacher,
+  getCoursesFromTeacher,
+  updateCourseFromTeacher
+} from "@services/teacher.service";
 
 export async function getCourses(
-  _: Request,
+  req: Request,
   res: Response<CourseSummaryDto[]>,
   next: NextFunction
 ) {
+  const { id: idTeacher } = req.user!;
   try {
-    const courses = await courseService.getCourses();
+    const courses = await getCoursesFromTeacher(idTeacher);
     res.status(200).json(
       courses.map(({ id_course, name }) => ({
         id: id_course,
@@ -31,10 +37,13 @@ export async function getCourse(
   res: Response<CourseDetailDto>,
   next: NextFunction
 ) {
+  const { id: idTeacher } = req.user!;
   const { idCourse } = req.params;
   try {
-    const course = await courseService.getCourseById(idCourse);
-    const { id_course, name, session } = course;
+    const { id_course, name, session } = await getCourseFromTeacher(
+      idTeacher,
+      idCourse
+    );
     res.status(200).json({
       id: id_course,
       name,
@@ -51,15 +60,9 @@ export async function createCourse(
   next: NextFunction
 ) {
   const { id: idTeacher } = req.user!;
-  const { name, description } = req.body as CourseCreateDto;
+  const { name } = req.body as CourseCreateDto;
   try {
-    const { id_institution } = await getTeacherById(idTeacher);
-    const { id_course } = await courseService.createCourse({
-      name,
-      description,
-      id_teacher: idTeacher,
-      id_institution
-    });
+    const { id_course } = await courseService.createCourse(idTeacher, name);
     res.status(201).json({ id: id_course });
   } catch (err) {
     next(err);
@@ -71,13 +74,13 @@ export async function updateCourse(
   res: Response,
   next: NextFunction
 ) {
+  const { id: idTeacher } = req.user!;
   const { idCourse } = req.params;
-  const fields = req.body as Partial<CourseUpdateDto>;
-
+  const fields = req.body as CourseUpdateDto;
   if (!Object.keys(fields).length)
     return res.status(400).json({ message: "No fields to update" });
   try {
-    await courseService.updateCourse(idCourse, fields);
+    await updateCourseFromTeacher(idTeacher, idCourse, fields);
     res.status(200).json({ message: "Course updated successfully" });
   } catch (err) {
     next(err);
@@ -89,9 +92,10 @@ export async function deleteCourse(
   res: Response,
   next: NextFunction
 ) {
+  const { id: idTeacher } = req.user!;
   const { idCourse } = req.params;
   try {
-    await courseService.deleteCourse(idCourse);
+    await deleteCourseFromTeacher(idTeacher, idCourse);
     res.status(200).json({ message: "Course deleted successfully" });
   } catch (err) {
     next(err);
@@ -103,9 +107,10 @@ export async function createSession(
   res: Response,
   next: NextFunction
 ) {
+  const { id: idTeacher } = req.user!;
   const { idCourse } = req.params;
   try {
-    await courseService.createSession(idCourse);
+    await courseService.createSession(idTeacher, idCourse);
     res.status(201).json({ message: "Session created successfully" });
   } catch (err) {
     next(err);
@@ -117,9 +122,10 @@ export async function startSession(
   res: Response,
   next: NextFunction
 ) {
+  const { id: idTeacher } = req.user!;
   const { idCourse } = req.params;
   try {
-    await courseService.startSession(idCourse);
+    await courseService.startSession(idTeacher, idCourse);
     res.status(200).json({ message: "Session started successfully" });
   } catch (err) {
     next(err);
@@ -131,9 +137,10 @@ export async function endSession(
   res: Response,
   next: NextFunction
 ) {
+  const { id: idTeacher } = req.user!;
   const { idCourse } = req.params;
   try {
-    await courseService.endSession(idCourse);
+    await courseService.endSession(idTeacher, idCourse);
     res.status(200).json({ message: "Session ended successfully" });
   } catch (err) {
     next(err);

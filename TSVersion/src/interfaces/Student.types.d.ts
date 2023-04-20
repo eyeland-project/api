@@ -14,7 +14,8 @@ export interface Student {
   email: string;
   phone_code: string;
   phone_number: string;
+  deleted: boolean;
   comparePassword: (password: string) => boolean;
 }
 
-export type StudentCreation = Omit<Student, "id_student">;
+export type StudentCreation = Omit<Student, "id_student" | "deleted">;

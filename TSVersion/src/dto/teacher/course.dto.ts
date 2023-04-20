@@ -9,7 +9,11 @@ export interface CourseDetailDto extends CourseSummaryDto {
 
 export interface CourseCreateDto {
   name: string;
-  description: string;
 }
 
-export type CourseUpdateDto = Partial<CourseCreateDto>;
+interface CourseUpdate extends CourseCreateDto {
+  deleted: true;
+  session: boolean;
+}
+
+export type CourseUpdateDto = Partial<CourseUpdate>;

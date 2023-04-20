@@ -163,6 +163,7 @@ CREATE TABLE course (
     id_institution SMALLINT NOT NULL,
     name VARCHAR(50) NOT NULL,
     session BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_course PRIMARY KEY (id_course),
     CONSTRAINT fk_course_teacher FOREIGN KEY (id_teacher) REFERENCES teacher(id_teacher),
@@ -197,6 +198,7 @@ CREATE TABLE student (
     email VARCHAR(320) NOT NULL,
     phone_code VARCHAR(5) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_student PRIMARY KEY (id_student),
     CONSTRAINT fk_student_course FOREIGN KEY (id_course) REFERENCES course(id_course),
@@ -823,17 +825,17 @@ END $$;
 
 -- *INSERTANDO USUARIOS E INSTITUCIONES DE PRUEBA
 -- INSERT INTO institution
-INSERT INTO institution (id_institution, name, nit, address, city, country, phone_code, phone_number, email, website_url) VALUES (1, 'Institución 1', '123456789', 'Cra 45 # 23-67', 'Barranquilla', 'Colombia', '57', '3011231234', 'ied1@test.com', 'https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif');
+INSERT INTO institution (name, nit, address, city, country, phone_code, phone_number, email, website_url) VALUES ('Institución 1', '123456789', 'Cra 45 # 23-67', 'Barranquilla', 'Colombia', '57', '3011231234', 'ied1@test.com', 'https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif');
 
 -- INSERT INTO teacher
-INSERT INTO teacher (id_teacher, id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (1, 1, 'teacher', 'teacher', 'Profesor', 'Prueba', 'teacher1@test.com', '57', '3011231234');
-INSERT INTO teacher (id_teacher, id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (2, 1, 'teacher2', 'teacher2', 'Profesor', 'Prueba', 'teacher2@test.com', '57', '3011231234');
-INSERT INTO teacher (id_teacher, id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (3, 1, 'teacher3', 'teacher3', 'Profesor', 'Prueba', 'teacher3@test.com', '57', '3011231234');
+INSERT INTO teacher (id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (1, 'teacher', 'teacher', 'Profesor', 'Prueba', 'teacher1@test.com', '57', '3011231234');
+INSERT INTO teacher (id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (1, 'teacher2', 'teacher2', 'Profesor', 'Prueba', 'teacher2@test.com', '57', '3011231234');
+INSERT INTO teacher (id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (1, 'teacher3', 'teacher3', 'Profesor', 'Prueba', 'teacher3@test.com', '57', '3011231234');
 
 -- INSERT INTO course
-INSERT INTO course (id_course, id_institution, id_teacher, name, session) VALUES (1, 1, 1, 'Curso 1', FALSE);
-INSERT INTO course (id_course, id_institution, id_teacher, name, session) VALUES (2, 1, 2, 'Curso 2', FALSE);
-INSERT INTO course (id_course, id_institution, id_teacher, name, session) VALUES (3, 1, 3, 'Curso 3', FALSE);
+INSERT INTO course (id_institution, id_teacher, name) VALUES (1, 1, 'Curso 1');
+INSERT INTO course (id_institution, id_teacher, name) VALUES (1, 2, 'Curso 2');
+INSERT INTO course (id_institution, id_teacher, name) VALUES (1, 3, 'Curso 3');
 
 -- INSERT INTO student
 INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (1, 'Estudiante1', 'Apellido', 'student1', 'pass123', 'student1@test.com', '57', '3001231234', 1, 1, 1);
@@ -873,7 +875,7 @@ INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 8', '888888');
 INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 9', '999999');
 
 -- INSERT INTO admin
-INSERT INTO admin (id_admin, first_name, last_name, email, username, password) VALUES (1, 'Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
+INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
 
 -- INSERT INTO release
-INSERT INTO release (id_release, url, version) VALUES (1, 'https://storage.cloud.google.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');
+INSERT INTO release (url, version) VALUES ('https://storage.cloud.google.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');

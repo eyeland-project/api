@@ -11,6 +11,7 @@ class CourseModel extends Model<Course, CourseCreation> {
   declare id_institution: ForeignKey<number>;
   declare name: string;
   declare session: boolean;
+  declare deleted: boolean;
 }
 
 // model initialization
@@ -34,6 +35,11 @@ CourseModel.init(
       allowNull: false
     },
     session: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    deleted: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false

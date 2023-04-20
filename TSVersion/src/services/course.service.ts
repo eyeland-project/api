@@ -28,6 +28,8 @@ import {
   getActiveTeamsFromCourse,
   startPlayingTeams
 } from "@services/team.service";
+import { getCourseFromTeacher, getTeacherById } from "./teacher.service";
+import { CourseUpdateDto } from "@dto/teacher/course.dto";
 
 // COURSE CRUD
 // get many
@@ -42,16 +44,19 @@ export async function getCourseById(idCourse: number): Promise<Course> {
   return course;
 }
 
-export async function createCourse(fields: {
-  name: string;
-  description: string;
-  id_teacher: number;
-  id_institution: number;
-}): Promise<Course> {
-  return await CourseModel.create(fields);
+export async function createCourse(
+  idTeacher: number,
+  name: string
+): Promise<Course> {
+  const { id_institution } = await getTeacherById(idTeacher);
+  return await CourseModel.create({
+    name,
+    id_institution,
+    id_teacher: idTeacher
+  });
 }
 
-export async function updateCourse(idCourse: number, fields: Partial<Course>) {
+export async function updateCourse(idCourse: number, fields: CourseUpdateDto) {
   const result = await CourseModel.update(fields, {
     where: { id_course: idCourse }
   });
@@ -61,12 +66,6 @@ export async function updateCourse(idCourse: number, fields: Partial<Course>) {
 export async function deleteCourse(idCourse: number) {
   const result = await CourseModel.destroy({ where: { id_course: idCourse } });
   if (!result) throw new ApiError("Course not found", 404);
-}
-
-export async function getTeamsFromCourse(
-  idCourse: number
-): Promise<TeamModel[]> {
-  return await TeamModel.findAll({ where: { id_course: idCourse } });
 }
 
 export async function getTeamsFromCourseWithStudents(
@@ -81,7 +80,8 @@ export async function getTeamsFromCourseWithStudents(
             model: StudentModel,
             attributes: ["id_student", "username", "first_name", "last_name"],
             as: "student",
-            required: false
+            required: false,
+            where: { deleted: false }
           },
           {
             model: TaskModel,
@@ -96,6 +96,11 @@ export async function getTeamsFromCourseWithStudents(
         attributes: ["power"],
         as: "taskAttempts",
         required: false
+      },
+      {
+        model: CourseModel,
+        as: "course",
+        where: { deleted: false }
       }
     ],
     where: { id_course: idCourse }
@@ -143,10 +148,15 @@ export function getStudentsFromCourse(
   idCourse: number
 ): Promise<StudentModel[]> {
   return StudentModel.findAll({
-    where: { id_course: idCourse },
+    where: { id_course: idCourse, deleted: false },
     include: [
       {
         model: BlindnessAcuityModel
+      },
+      {
+        model: CourseModel,
+        as: "course",
+        where: { deleted: false }
       }
     ]
   });
@@ -185,11 +195,14 @@ export async function notifyCourseOfTeamUpdate(
   of(Namespaces.TEACHERS)?.emit(OutgoingEvents.TEAMS_UPDATE, dataTeachers);
 }
 
-export async function createSession(idCourse: number) {
+export async function createSession(idTeacher: number, idCourse: number) {
   const nsp = of(Namespaces.STUDENTS);
   if (!nsp) throw new ApiError("Namespace not found", 500);
 
-  const { session, id_course } = await getCourseById(idCourse);
+  const { session, id_course } = await getCourseFromTeacher(
+    idTeacher,
+    idCourse
+  );
   if (session) {
     throw new ApiError("Course already has an active session", 400);
   }
@@ -200,11 +213,14 @@ export async function createSession(idCourse: number) {
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_CREATE);
 }
 
-export async function startSession(idCourse: number) {
+export async function startSession(idTeacher: number, idCourse: number) {
   const nsp = of(Namespaces.STUDENTS);
   if (!nsp) throw new ApiError("Namespace not found", 500);
 
-  const { session, id_course } = await getCourseById(idCourse);
+  const { session, id_course } = await getCourseFromTeacher(
+    idTeacher,
+    idCourse
+  );
   if (!session) {
     throw new ApiError("Course has no active session", 400);
   }
@@ -215,11 +231,14 @@ export async function startSession(idCourse: number) {
   emitLeaderboard(idCourse);
 }
 
-export async function endSession(idCourse: number) {
+export async function endSession(idTeacher: number, idCourse: number) {
   const nsp = of(Namespaces.STUDENTS);
   if (!nsp) throw new ApiError("Namespace not found", 500);
 
-  const { session, id_course } = await getCourseById(idCourse);
+  const { session, id_course } = await getCourseFromTeacher(
+    idTeacher,
+    idCourse
+  );
   if (!session) {
     throw new ApiError("Course has no active session", 400);
   }
@@ -252,9 +271,9 @@ export async function createMissingTeams(
   });
 
   // Get students
-  let StudentsPromise;
+  let studentsPromise;
   if (!socketBased) {
-    StudentsPromise = getStudentsFromCourse(idCourse).then((students) => {
+    studentsPromise = getStudentsFromCourse(idCourse).then((students) => {
       // return the number of students and the number of students with blindness
       return {
         students: students.length,
@@ -264,7 +283,7 @@ export async function createMissingTeams(
       };
     });
   } else {
-    StudentsPromise = StudentModel.findAll({
+    studentsPromise = StudentModel.findAll({
       where: {
         id_course: idCourse,
         id_student: {
@@ -301,7 +320,7 @@ export async function createMissingTeams(
     });
   }
   // Get the results
-  const [teams, students] = await Promise.all([teamsPromise, StudentsPromise]);
+  const [teams, students] = await Promise.all([teamsPromise, studentsPromise]);
 
   // Get the spected number of teams
   let nTeams = Math.ceil(students.students / 3);
