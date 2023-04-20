@@ -1,11 +1,11 @@
 // creating the model for the BlindnessAcuity table
 // imports
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../database/db";
+import sequelize from "@database/db";
 import {
   BlindnessAcuity,
   BlindnessAcuityCreation
-} from "../types/BlindnessAcuity.types";
+} from "@interfaces/BlindnessAcuity.types";
 
 class BlindnessAcuityModel extends Model<
   BlindnessAcuity,

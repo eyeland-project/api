@@ -2,24 +2,17 @@ import { Request, Response } from "express";
 import {
   createMissingTeams,
   getTeamsFromCourseWithStudents
-} from "../../services/course.service";
+} from "@services/course.service";
 import {
   createTeam as createTeamServ,
   getTeamById,
   getMembersFromTeam,
   updateTeam as updateTeamServ,
   getTaskAttemptsFromTeam
-} from "../../services/team.service";
-import {
-  ElementCreatedResp,
-  TeamResp
-} from "../../types/responses/teachers.types";
-import {
-  TeamCreateReq,
-  TeamUpdateReq
-} from "../../types/requests/teachers.types";
-import { TeamMember } from "../../types/Team.types";
-import { getTaskById } from "../../services/task.service";
+} from "@services/team.service";
+import { TeamResp, TeamCreateReq, TeamUpdateReq } from "@dto/teacher/team.dto";
+import { TeamMember } from "@interfaces/Team.types";
+import { getTaskById } from "@services/task.service";
 
 export async function getTeams(
   req: Request<{ idCourse: number }>,
@@ -95,7 +88,7 @@ export async function getTeam(
 
 export async function createTeam(
   req: Request<{ idCourse: number }>,
-  res: Response<ElementCreatedResp>,
+  res: Response<{ id: number }>,
   next: Function
 ) {
   const { idCourse } = req.params;

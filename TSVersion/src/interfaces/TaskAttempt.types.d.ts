@@ -1,5 +1,5 @@
 import { Model, ForeignKey } from "sequelize";
-import { Power } from "./enums";
+import { Power } from "@interfaces/enums/taskAttempt.enum";
 
 export interface TaskAttempt {
   id_task_attempt: number;

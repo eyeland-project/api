@@ -1,10 +1,9 @@
 import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
-import sequelize from "../database/db";
-import TaskStageModel from "./TaskStage";
-import { Question, QuestionCreation } from "../types/Question.types";
-import { ApiError } from "../middlewares/handleErrors";
-import { QuestionTopic, QuestionType } from "../types/enums";
-import OptionModel from "./Option";
+import sequelize from "@database/db";
+import { Question, QuestionCreation } from "@interfaces/Question.types";
+import { ApiError } from "@middlewares/handleErrors";
+import { QuestionTopic, QuestionType } from "@interfaces/enums/question.enum";
+import { OptionModel, TaskStageModel } from "@models";
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {

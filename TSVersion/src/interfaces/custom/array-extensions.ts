@@ -1,4 +1,4 @@
-import { pseudoRandom } from "../../utils";
+import { pseudoRandom } from "@utils";
 // array-extensions.ts
 export {};
 

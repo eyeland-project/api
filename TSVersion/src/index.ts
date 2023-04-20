@@ -1,6 +1,6 @@
-import app from "./app";
-import initSocket from "./listeners/sockets";
-import sequelize from "./database/db";
+import app from "@app";
+import initSocket from "@listeners/sockets";
+import sequelize from "@database/db";
 
 //* start the server
 const server = app.listen(app.get("port"), () => {

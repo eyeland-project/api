@@ -2,27 +2,27 @@ import { Request, Response } from "express";
 import {
   getQuestionByOrder,
   getTaskStageQuestionsCount
-} from "../../services/question.service";
-import {
-  DuringtaskQuestionResp,
-  DuringtaskResp
-} from "../../types/responses/students.types";
-import { getQuestionOptions } from "../../services/option.service";
+} from "@services/question.service";
+import { getQuestionOptions } from "@services/option.service";
 import {
   getQuestionsFromTaskStage,
   getTaskStageByOrder
-} from "../../services/taskStage.service";
-import { ApiError } from "../../middlewares/handleErrors";
-import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
+} from "@services/taskStage.service";
+import { ApiError } from "@middlewares/handleErrors";
+import { getStudCurrTaskAttempt } from "@services/taskAttempt.service";
 import {
   separateTranslations,
   distributeOptions,
   shuffle,
   indexPower
-} from "../../utils";
-import { getTeammates } from "../../services/student.service";
-import { AnswerOptionReq } from "../../types/requests/students.types";
-import { answerDuringtask } from "../../services/answer.service";
+} from "@utils";
+import { getTeammates } from "@services/student.service";
+import { AnswerOptionReq } from "@dto/student/answer.dto";
+import { answerDuringtask } from "@services/answer.service";
+import {
+  DuringtaskQuestionResp,
+  DuringtaskResp
+} from "@dto/student/question.dto";
 
 export async function root(
   req: Request<{ taskOrder: number }>,

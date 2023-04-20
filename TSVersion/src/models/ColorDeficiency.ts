@@ -1,11 +1,11 @@
 // creating the model for the ColorDeficiency table
 // imports
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../database/db";
+import sequelize from "@database/db";
 import {
   ColorDeficiency,
   ColorDeficiencyCreation
-} from "../types/ColorDeficiency.types";
+} from "@interfaces/ColorDeficiency.types";
 
 class ColorDeficiencyModel extends Model<
   ColorDeficiency,

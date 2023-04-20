@@ -4,7 +4,7 @@ import {
   getQuestion,
   getQuestions,
   root
-} from "../../../../controllers/students/postask.controller";
+} from "@controllers/students/postask.controller";
 import passport from "passport";
 
 const auth: RequestHandler = passport.authenticate("jwt-student", {

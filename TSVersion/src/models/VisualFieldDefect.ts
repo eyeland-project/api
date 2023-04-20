@@ -1,11 +1,11 @@
 // creating the model for the VisualFieldDefect table
 // imports
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../database/db";
+import sequelize from "@database/db";
 import {
   VisualFieldDefect,
   VisualFieldDefectCreation
-} from "../types/VisualFieldDefect.types";
+} from "@interfaces/VisualFieldDefect.types";
 
 class VisualFieldDefectModel extends Model<
   VisualFieldDefect,

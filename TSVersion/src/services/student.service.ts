@@ -1,26 +1,26 @@
 import { QueryTypes, Transaction } from "sequelize";
-import sequelize from "../database/db";
-import { ApiError } from "../middlewares/handleErrors";
-import { StudentModel } from "../models";
-import { TeamMember } from "../types/Team.types";
-import { Student } from "../types/Student.types";
-import { Team } from "../types/Team.types";
-import { BlindnessAcuity } from "../types/BlindnessAcuity.types";
+import sequelize from "@database/db";
+import { ApiError } from "@middlewares/handleErrors";
+import { StudentModel } from "@models";
+import { TeamMember } from "@interfaces/Team.types";
+import { Student } from "@interfaces/Student.types";
+import { Team } from "@interfaces/Team.types";
+import { BlindnessAcuity } from "@interfaces/BlindnessAcuity.types";
 import {
   getStudCurrTaskAttempt,
   updateStudCurrTaskAttempt
-} from "./taskAttempt.service";
-import { Power } from "../types/enums";
+} from "@services/taskAttempt.service";
+import { Power } from "@interfaces/enums/taskAttempt.enum";
 import {
   getAvailablePowers,
   getMembersFromTeam,
   notifyStudentOfTeamUpdate
-} from "./team.service";
-import { Course } from "../types/Course.types";
-import { notifyCourseOfTeamUpdate } from "./course.service";
-import { TeamResp as TeamRespStud } from "../types/responses/students.types";
-import { getRandomFloatBetween } from "../utils";
-import { directory } from "../listeners/namespaces/students";
+} from "@services/team.service";
+import { Course } from "@interfaces/Course.types";
+import { notifyCourseOfTeamUpdate } from "@services/course.service";
+import { TeamResp as TeamRespStud } from "@dto/student/team.dto";
+import { getRandomFloatBetween } from "@utils";
+import { directory } from "@listeners/namespaces/students";
 
 export async function getStudentById(id: number): Promise<Student> {
   const student = await StudentModel.findByPk(id);

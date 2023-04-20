@@ -7,7 +7,7 @@ import {
   ready,
   reroll,
   getCurrentTeam
-} from "../../../controllers/students/team.controller";
+} from "@controllers/students/team.controller";
 
 const auth = passport.authenticate("jwt-student", { session: false });
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development ts-node-dev src/index.ts --respawn --transpile-only",
+    "dev": "cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register src/index.ts --respawn --transpile-only",
     "build": "tsc",
     "start": "cross-env NODE_ENV=production node build/index.js",
     "test": "cross-env NODE_ENV=test jest --verbose --silent",
@@ -54,6 +54,7 @@
     "ts-jest": "29.0.3",
     "ts-node": "^10.9.1",
     "ts-node-dev": "2.0.0",
+    "tsconfig-paths": "4.2.0",
     "typescript": "4.9.4"
   }
 }

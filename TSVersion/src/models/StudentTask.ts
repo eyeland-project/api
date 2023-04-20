@@ -1,11 +1,12 @@
 // imports
 import { DataTypes, ForeignKey, Model } from "sequelize";
-import sequelize from "../database/db";
-import TaskModel from "./Task";
-import StudentModel from "./Student";
-import { StudentTask, StudentTaskCreation } from "../types/StudentTask.types";
-import TaskStageModel from "./TaskStage";
-import { ApiError } from "../middlewares/handleErrors";
+import sequelize from "@database/db";
+import { TaskModel, StudentModel } from "@models";
+import {
+  StudentTask,
+  StudentTaskCreation
+} from "@interfaces/StudentTask.types";
+import { ApiError } from "@middlewares/handleErrors";
 
 // model class definition
 class StudentTaskModel extends Model<StudentTask, StudentTaskCreation> {

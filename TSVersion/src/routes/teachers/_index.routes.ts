@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { login } from "../../controllers/teachers/auth.controller";
-import { incrementCounter } from "../../utils";
+import { login } from "@controllers/teachers/auth.controller";
+import { incrementCounter } from "@utils";
 
 const router = Router();
 

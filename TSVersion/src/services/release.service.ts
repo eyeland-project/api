@@ -1,6 +1,6 @@
-import { ApiError } from "../middlewares/handleErrors";
-import { ReleaseModel } from "../models";
-import { Release, ReleaseCreation } from "../types/Release.types";
+import { ApiError } from "@middlewares/handleErrors";
+import { ReleaseModel } from "@models";
+import { Release, ReleaseCreation } from "@interfaces/Release.types";
 
 export async function getLatestRelease(): Promise<Release> {
   const latest = await ReleaseModel.findOne({

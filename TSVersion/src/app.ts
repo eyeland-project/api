@@ -1,4 +1,4 @@
-/// <reference path="./types/custom/customTypes.d.ts" />
+/// <reference path="./interfaces/custom/customTypes.d.ts" />
 //* Charge environmental variables
 import * as dotenv from "dotenv";
 import * as path from "path";
@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 //* Routes
-import indexRoutes from "./routes";
+import indexRoutes from "@routes";
 // console.log(indexRoutes.stack);
 
 app.use("/api", indexRoutes);
@@ -60,10 +60,10 @@ app.get("/", (_, res) => {
 
 //* handlers
 // catch 404 and forward to error handler
-import notFoundHandler from "./middlewares/notFound";
+import notFoundHandler from "@middlewares/notFound";
 app.use(notFoundHandler);
 
-import errorHandler from "./middlewares/handleErrors";
+import errorHandler from "@middlewares/handleErrors";
 app.use(errorHandler);
 
 export default app;

@@ -1,13 +1,14 @@
 // creating the model for the TaskAttempt table
 // imports
 import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
-import sequelize from "../database/db";
-import { TaskAttempt, TaskAttemptCreation } from "../types/TaskAttempt.types";
-import TaskModel from "./Task";
-import TeamModel from "./Team";
-import StudentModel from "./Student";
-import { ApiError } from "../middlewares/handleErrors";
-import { Power } from "../types/enums";
+import sequelize from "@database/db";
+import {
+  TaskAttempt,
+  TaskAttemptCreation
+} from "@interfaces/TaskAttempt.types";
+import { TaskModel, TeamModel, StudentModel } from "@models";
+import { ApiError } from "@middlewares/handleErrors";
+import { Power } from "@interfaces/enums/taskAttempt.enum";
 
 // model class definition
 class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {

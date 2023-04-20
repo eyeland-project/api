@@ -1,11 +1,10 @@
 // imports
 import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
-import sequelize from "../database/db";
-import CourseModel from "./Course";
-import { comparePassword, hashPassword } from "../utils";
-import { Student, StudentCreation } from "../types/Student.types";
-import BlindnessAcuityModel from "./BlindnessAcuity";
-import TaskAttemptModel from "./TaskAttempt";
+import sequelize from "@database/db";
+import { comparePassword, hashPassword } from "@utils";
+import { Student, StudentCreation } from "@interfaces/Student.types";
+import { BlindnessAcuityModel } from "@models";
+import { TaskAttemptModel, CourseModel } from "@models";
 
 // model class definition
 class StudentModel extends Model<Student, StudentCreation> {

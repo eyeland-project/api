@@ -1,7 +1,7 @@
 import { Server as IO } from "socket.io";
 import { Server } from "http";
-import { onConnection as onStudentConnection } from "./namespaces/students";
-import { onConnection as onTeacherConnection } from "./namespaces/teachers";
+import { onConnection as onStudentConnection } from "@listeners/namespaces/students";
+import { onConnection as onTeacherConnection } from "@listeners/namespaces/teachers";
 
 let io: IO;
 

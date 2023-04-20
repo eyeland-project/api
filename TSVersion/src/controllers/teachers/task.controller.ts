@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
-import {
-  getTaskById,
-  getTasks as getTasksServ
-} from "../../services/task.service";
-import { TaskResp, TaskSummResp } from "../../types/responses/teachers.types";
+import { getTaskById, getTasks as getTasksServ } from "@services/task.service";
+import { TaskResp, TaskSummResp } from "@dto/teacher/task.dto";
 
 export async function getTasks(
   req: Request,

@@ -6,7 +6,7 @@ import {
   getStudentById,
   getTeamFromStudent,
   rafflePower
-} from "../../services/student.service";
+} from "@services/student.service";
 import {
   addStudentToTeam,
   getMembersFromTeam,
@@ -14,20 +14,20 @@ import {
   notifyStudentOfTeamUpdate,
   leaveTeam as leaveTeamService,
   checkReassignSuperHearing
-} from "../../services/team.service";
-import { LoginTeamReq } from "../../types/requests/students.types";
+} from "@services/team.service";
+import { LoginTeamReq } from "@dto/student/auth.dto";
 import {
   filterTeamsForStudents,
   getTeamsFromCourseWithStudents,
   notifyCourseOfTeamUpdate
-} from "../../services/course.service";
-import { TeamResp } from "../../types/responses/students.types";
-import { getStudCurrTaskAttempt } from "../../services/taskAttempt.service";
-import { Power } from "../../types/enums";
-import { directory } from "../../listeners/namespaces/students";
-import { getTaskById } from "../../services/task.service";
-import { getHighestTaskCompletedFromStudent } from "../../services/studentTask.service";
-import { ApiError } from "../../middlewares/handleErrors";
+} from "@services/course.service";
+import { TeamResp } from "@dto/student/team.dto";
+import { getStudCurrTaskAttempt } from "@services/taskAttempt.service";
+import { Power } from "@interfaces/enums/taskAttempt.enum";
+import { directory } from "@listeners/namespaces/students";
+import { getTaskById } from "@services/task.service";
+import { getHighestTaskCompletedFromStudent } from "@services/studentTask.service";
+import { ApiError } from "@middlewares/handleErrors";
 
 export async function getTeams(
   req: Request,

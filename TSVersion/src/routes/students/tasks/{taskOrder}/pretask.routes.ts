@@ -6,7 +6,7 @@ import {
   answer,
   setCompleted,
   getQuestions
-} from "../../../../controllers/students/pretask.controller";
+} from "@controllers/students/pretask.controller";
 
 const auth = passport.authenticate("jwt-student", { session: false });
 

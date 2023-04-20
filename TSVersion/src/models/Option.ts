@@ -1,9 +1,9 @@
 // creating the model for the Option table
 // imports
 import { DataTypes, ForeignKey, Model } from "sequelize";
-import sequelize from "../database/db";
-import { Option, OptionCreation } from "../types/Option.types";
-import QuestionModel from "./Question";
+import sequelize from "@database/db";
+import { Option, OptionCreation } from "@interfaces/Option.types";
+import { QuestionModel } from "@models";
 
 // model class definition
 class OptionModel extends Model<Option, OptionCreation> {

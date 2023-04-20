@@ -1,5 +1,5 @@
 import { Model, ForeignKey } from "sequelize";
-import { QuestionTopic, QuestionType } from "./enums";
+import { QuestionTopic, QuestionType } from "@interfaces/enums/question.enum";
 
 export interface Question {
   id_question: number;

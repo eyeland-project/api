@@ -1,26 +1,25 @@
 import { Op, QueryTypes } from "sequelize";
-import sequelize from "../database/db";
-import {
-  AnswerModel,
-  OptionModel,
-  TaskAttemptModel,
-  TeamModel
-} from "../models";
-import { Team } from "../types/Team.types";
+import sequelize from "@database/db";
+import { AnswerModel, OptionModel, TaskAttemptModel, TeamModel } from "@models";
+import { Team } from "@interfaces/Team.types";
 import {
   createTaskAttempt,
   getStudCurrTaskAttempt,
   updateStudCurrTaskAttempt
-} from "./taskAttempt.service";
-import { getTaskByOrder } from "./task.service";
-import { ApiError } from "../middlewares/handleErrors";
-import { Student } from "../types/Student.types";
-import { TeamMember } from "../types/Team.types";
-import { OutgoingEvents, Power } from "../types/enums";
-import { directory as directoryStudents } from "../listeners/namespaces/students";
-import { TaskAttempt } from "../types/TaskAttempt.types";
-import { assignPowerToStudent, getTeamFromStudent } from "./student.service";
-import { notifyCourseOfTeamUpdate } from "./course.service";
+} from "@services/taskAttempt.service";
+import { getTaskByOrder } from "@services/task.service";
+import { ApiError } from "@middlewares/handleErrors";
+import { Student } from "@interfaces/Student.types";
+import { TeamMember } from "@interfaces/Team.types";
+import { Power } from "@interfaces/enums/taskAttempt.enum";
+import { OutgoingEvents } from "@interfaces/enums/socket.enum";
+import { directory as directoryStudents } from "@listeners/namespaces/students";
+import { TaskAttempt } from "@interfaces/TaskAttempt.types";
+import {
+  assignPowerToStudent,
+  getTeamFromStudent
+} from "@services/student.service";
+import { notifyCourseOfTeamUpdate } from "@services/course.service";
 import { Socket } from "socket.io";
 
 export async function getTeamByCode(code: string): Promise<Team> {

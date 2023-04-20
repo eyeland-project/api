@@ -1,20 +1,10 @@
 import { QueryTypes } from "sequelize";
-import sequelize from "../database/db";
-import {
-  OptionModel,
-  QuestionModel,
-  TaskModel,
-  TaskStageModel
-} from "../models";
-import { TaskStage } from "../types/TaskStage.types";
-import { ApiError } from "../middlewares/handleErrors";
-import { Question } from "../types/Question.types";
-import { QuestionTopic, QuestionType } from "../types/enums";
-import { groupBy } from "../utils";
-import {
-  PretaskQuestionResp,
-  QuestionResp
-} from "../types/responses/students.types";
+import sequelize from "@database/db";
+import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
+import { TaskStage } from "@interfaces/TaskStage.types";
+import { ApiError } from "@middlewares/handleErrors";
+import { Question } from "@interfaces/Question.types";
+import { QuestionResp } from "@dto/student/question.dto";
 
 export async function getTaskStageByOrder(
   taskOrder: number,

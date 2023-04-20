@@ -5,7 +5,7 @@ import {
   getQuestion,
   getQuestions,
   root
-} from "../../../../controllers/students/duringtask.controller";
+} from "@controllers/students/duringtask.controller";
 
 const auth = passport.authenticate("jwt-student", { session: false });
 

@@ -1,10 +1,10 @@
 import { Socket } from "socket.io";
-import { deleteSocket, findId, printDirectory } from "../utils";
-import { getCourseFromStudent } from "../../services/student.service";
-import { getCourseById } from "../../services/course.service";
-import { getIdFromToken } from "../../utils";
-import { leaveTeam, verifyTeamStatus } from "../../services/team.service";
-import { Namespaces, of } from "../sockets";
+import { deleteSocket, findId, printDirectory } from "@listeners/utils";
+import { getCourseFromStudent } from "@services/student.service";
+import { getCourseById } from "@services/course.service";
+import { getIdFromToken } from "@utils";
+import { leaveTeam } from "@services/team.service";
+import { Namespaces, of } from "@listeners/sockets";
 
 export const directory = new Map<number, Socket>();
 

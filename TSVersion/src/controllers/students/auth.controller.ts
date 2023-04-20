@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import passport from "passport";
-import { signToken } from "../../utils";
-import { ApiError } from "../../middlewares/handleErrors";
-import { BlindnessAcuityModel, StudentModel } from "../../models";
-import { UserResp } from "../../types/responses/students.types";
+import { signToken } from "@utils";
+import { ApiError } from "@middlewares/handleErrors";
+import { BlindnessAcuityModel, StudentModel } from "@models";
+import { UserResp } from "@dto/student/team.dto";
 
 // login with passport
 export async function login(req: Request, res: Response, next: Function) {

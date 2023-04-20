@@ -1,7 +1,10 @@
 // imports
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../database/db";
-import { Institution, InstitutionCreation } from "../types/Institution.types";
+import sequelize from "@database/db";
+import {
+  Institution,
+  InstitutionCreation
+} from "@interfaces/Institution.types";
 
 // model class definition
 class InstitutionModel extends Model<Institution, InstitutionCreation> {

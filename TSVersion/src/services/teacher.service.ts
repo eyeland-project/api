@@ -1,6 +1,6 @@
-import { ApiError } from "../middlewares/handleErrors";
-import { TeacherModel } from "../models";
-import { Teacher } from "../types/Teacher.types";
+import { ApiError } from "@middlewares/handleErrors";
+import { TeacherModel } from "@models";
+import { Teacher } from "@interfaces/Teacher.types";
 
 export async function getTeacherById(idTeacher: number): Promise<Teacher> {
   const teacher = await TeacherModel.findOne({

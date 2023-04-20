@@ -5,7 +5,7 @@ import {
   getTeam,
   updateTeam,
   initTeams
-} from "../../../../../controllers/teachers/team.controller";
+} from "@controllers/teachers/team.controller";
 
 const auth = passport.authenticate("jwt-teacher", { session: false });
 

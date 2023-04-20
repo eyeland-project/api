@@ -1,8 +1,8 @@
 // creating the model for the Release table
 // imports
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../database/db";
-import { Release, ReleaseCreation } from "../types/Release.types";
+import sequelize from "@database/db";
+import { Release, ReleaseCreation } from "@interfaces/Release.types";
 
 // model class definition
 class ReleaseModel extends Model<Release, ReleaseCreation> {

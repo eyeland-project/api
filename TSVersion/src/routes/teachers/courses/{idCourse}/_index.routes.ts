@@ -4,7 +4,7 @@ import {
   deleteCourse,
   getCourse,
   updateCourse
-} from "../../../../controllers/teachers/course.controller";
+} from "@controllers/teachers/course.controller";
 
 const auth = passport.authenticate("jwt-teacher", { session: false });
 

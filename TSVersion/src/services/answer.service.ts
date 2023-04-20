@@ -1,30 +1,30 @@
 import { Op } from "sequelize";
-import { directory as dirStudents } from "../listeners/namespaces/students";
-import { ApiError } from "../middlewares/handleErrors";
-import { AnswerModel, QuestionModel } from "../models";
-import { Answer } from "../types/Answer.types";
-import { OutgoingEvents } from "../types/enums";
-import { updateLeaderBoard } from "./leaderBoard.service";
-import { getOptionById } from "./option.service";
-import { getQuestionByOrder } from "./question.service";
+import { directory as dirStudents } from "@listeners/namespaces/students";
+import { ApiError } from "@middlewares/handleErrors";
+import { AnswerModel, QuestionModel } from "@models";
+import { Answer } from "@interfaces/Answer.types";
+import { OutgoingEvents } from "@interfaces/enums/socket.enum";
+import { updateLeaderBoard } from "@services/leaderBoard.service";
+import { getOptionById } from "@services/option.service";
+import { getQuestionByOrder } from "@services/question.service";
 import {
   getCourseFromStudent,
   getTeamFromStudent,
   getTeammates
-} from "./student.service";
+} from "@services/student.service";
 import {
   getStudentTaskByOrder,
   upgradeStudentTaskProgress
-} from "./studentTask.service";
-import { getTaskByOrder } from "./task.service";
+} from "@services/studentTask.service";
+import { getTaskByOrder } from "@services/task.service";
 import {
   createTaskAttempt,
   finishStudTaskAttempts,
   getStudCurrTaskAttempt,
   updateStudCurrTaskAttempt
-} from "./taskAttempt.service";
-import { getLastQuestionFromTaskStage } from "./taskStage.service";
-import { getMembersFromTeam, updateTeam } from "./team.service";
+} from "@services/taskAttempt.service";
+import { getLastQuestionFromTaskStage } from "@services/taskStage.service";
+import { getMembersFromTeam, updateTeam } from "@services/team.service";
 
 export async function answerPretask(
   idStudent: number,

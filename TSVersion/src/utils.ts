@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
-import { Power } from "./types/enums";
+import { Power } from "@interfaces/enums/taskAttempt.enum";
 
 // PASSWORDS
 export function comparePassword(password: string, hash: string): boolean {

@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
-import sequelize from "../database/db";
-import { ApiError } from "../middlewares/handleErrors";
+import sequelize from "@database/db";
+import { ApiError } from "@middlewares/handleErrors";
 import {
   BlindnessAcuityModel,
   CourseModel,
@@ -8,25 +8,25 @@ import {
   TaskAttemptModel,
   TaskModel,
   TeamModel
-} from "../models";
-import { Course } from "../types/Course.types";
-import { Namespaces, of } from "../listeners/sockets";
-import { OutgoingEvents } from "../types/enums";
-import { generateTeamName } from "../utils";
-import { TeamResp as TeamRespTeacher } from "../types/responses/teachers.types";
-import { TeamResp as TeamRespStudent } from "../types/responses/students.types";
-import { directory as directoryStudents } from "../listeners/namespaces/students";
+} from "@models";
+import { Course } from "@interfaces/Course.types";
+import { Namespaces, of } from "@listeners/sockets";
+import { OutgoingEvents } from "@interfaces/enums/socket.enum";
+import { generateTeamName } from "@utils";
+import { TeamResp as TeamRespTeacher } from "@dto/teacher/team.dto";
+import { TeamResp as TeamRespStudent } from "@dto/student/team.dto";
+import { directory as directoryStudents } from "@listeners/namespaces/students";
 import {
   cleanLeaderBoard,
   emitLeaderboard,
   updateLeaderBoard
-} from "./leaderBoard.service";
+} from "@services/leaderBoard.service";
 import {
   cleanTeams,
   createTeams,
   getActiveTeamsFromCourse,
   startPlayingTeams
-} from "./team.service";
+} from "@services/team.service";
 
 // COURSE CRUD
 // get many

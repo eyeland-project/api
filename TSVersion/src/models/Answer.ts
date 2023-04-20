@@ -1,12 +1,14 @@
 // creating the model for the Asnwer table
 // imports
 import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
-import sequelize from "../database/db";
-import { Answer, AnswerCreation } from "../types/Answer.types";
-import QuestionModel from "./Question";
-import OptionModel from "./Option";
-import TaskAttemptModel from "./TaskAttempt";
-import TeamModel from "./Team";
+import sequelize from "@database/db";
+import { Answer, AnswerCreation } from "@interfaces/Answer.types";
+import {
+  QuestionModel,
+  OptionModel,
+  TaskAttemptModel,
+  TeamModel
+} from "@models";
 
 // model class definition
 class AnswerModel extends Model<Answer, AnswerCreation> {

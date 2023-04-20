@@ -1,8 +1,8 @@
 // creating the model for the Task table
 // imports
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../database/db";
-import { Task, TaskCreation } from "../types/Task.types";
+import sequelize from "@database/db";
+import { Task, TaskCreation } from "@interfaces/Task.types";
 
 // model class definition
 class TaskModel extends Model<Task, TaskCreation> {

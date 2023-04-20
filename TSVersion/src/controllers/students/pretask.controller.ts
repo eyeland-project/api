@@ -2,19 +2,16 @@ import { Request, Response } from "express";
 import {
   getQuestionByOrder,
   getTaskStageQuestionsCount
-} from "../../services/question.service";
-import {
-  PretaskQuestionResp,
-  PretaskResp
-} from "../../types/responses/students.types";
-import { getQuestionOptions } from "../../services/option.service";
-import { AnswerOptionReq } from "../../types/requests/students.types";
-import { answerPretask } from "../../services/answer.service";
+} from "@services/question.service";
+import { getQuestionOptions } from "@services/option.service";
+import { AnswerOptionReq } from "@dto/student/answer.dto";
+import { answerPretask } from "@services/answer.service";
 import {
   getQuestionsFromTaskStage,
   getTaskStageByOrder
-} from "../../services/taskStage.service";
-import { upgradeStudentTaskProgress } from "../../services/studentTask.service";
+} from "@services/taskStage.service";
+import { upgradeStudentTaskProgress } from "@services/studentTask.service";
+import { PretaskQuestionResp, PretaskResp } from "@dto/student/question.dto";
 
 export async function root(
   req: Request<{ taskOrder: number }>,

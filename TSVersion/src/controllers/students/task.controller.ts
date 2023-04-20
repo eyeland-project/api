@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { getTaskByOrder } from "../../services/task.service";
+import { getTaskByOrder } from "@services/task.service";
 import {
   TaskResp,
   TaskIntroResp,
   TaskProgressResp
-} from "../../types/responses/students.types";
+} from "@dto/student/task.dto";
 import {
   getStudentProgressFromTaskByOrder,
   getTasksFromStudentWithCompleted
-} from "../../services/studentTask.service";
-import { finishStudTaskAttempts } from "../../services/taskAttempt.service";
+} from "@services/studentTask.service";
+import { finishStudTaskAttempts } from "@services/taskAttempt.service";
 
 // interface UserWithId{
 //     id: number;

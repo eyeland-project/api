@@ -1,5 +1,5 @@
 import { Model, ForeignKey } from "sequelize";
-import { Student } from "./Student.types";
+import { Student } from "@interfaces/Student.types";
 
 export interface Team {
   id_team: number;

@@ -1,8 +1,7 @@
-import { QueryTypes, Transaction } from "sequelize";
-import { ApiError } from "../middlewares/handleErrors";
-import { TaskAttemptModel } from "../models";
-import { TaskAttempt } from "../types/TaskAttempt.types";
-import sequelize from "../database/db";
+import { Transaction } from "sequelize";
+import { ApiError } from "@middlewares/handleErrors";
+import { TaskAttemptModel } from "@models";
+import { TaskAttempt } from "@interfaces/TaskAttempt.types";
 
 export async function getStudCurrTaskAttempt(
   idStudent: number

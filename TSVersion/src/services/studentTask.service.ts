@@ -1,11 +1,13 @@
 import { QueryTypes } from "sequelize";
-import sequelize from "../database/db";
-import { TaskProgressResp as TaskProgressRespStud } from "../types/responses/students.types";
-import { StudentTask } from "../types/StudentTask.types";
-import { StudentTaskModel, TaskModel } from "../models";
-import { ApiError } from "../middlewares/handleErrors";
-import { Task } from "../types/Task.types";
-import { TaskResp as TaskRespStudent } from "../types/responses/students.types";
+import sequelize from "@database/db";
+import {
+  TaskProgressResp as TaskProgressRespStud,
+  TaskResp as TaskRespStudent
+} from "@dto/student/task.dto";
+import { StudentTask } from "@interfaces/StudentTask.types";
+import { StudentTaskModel } from "@models";
+import { ApiError } from "@middlewares/handleErrors";
+import { Task } from "@interfaces/Task.types";
 
 export async function getTasksFromStudentWithCompleted(
   idStudent: number

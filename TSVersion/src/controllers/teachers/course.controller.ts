@@ -1,15 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import * as courseService from "../../services/course.service";
+import * as courseService from "@services/course.service";
 import {
   CourseResp,
   CourseSummResp,
-  ElementCreatedResp
-} from "../../types/responses/teachers.types";
-import {
   CourseCreateReq,
   CourseUpdateReq
-} from "../../types/requests/teachers.types";
-import { getTeacherById } from "../../services/teacher.service";
+} from "@dto/teacher/course.dto";
+import { getTeacherById } from "@services/teacher.service";
 
 export async function getCourses(
   _: Request,
@@ -50,7 +47,7 @@ export async function getCourse(
 
 export async function createCourse(
   req: Request,
-  res: Response<ElementCreatedResp>,
+  res: Response<{ id: number }>,
   next: NextFunction
 ) {
   const { id: idTeacher } = req.user!;

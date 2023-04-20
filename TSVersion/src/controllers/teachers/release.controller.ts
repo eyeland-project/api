@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import * as releaseService from "../../services/release.service";
-import { Release, ReleaseCreation } from "../../types/Release.types";
-import { ApiError } from "../../middlewares/handleErrors";
+import * as releaseService from "@services/release.service";
+import { Release, ReleaseCreation } from "@interfaces/Release.types";
+import { ApiError } from "@middlewares/handleErrors";
 
 export async function getLatestRelease(
   _: Request,

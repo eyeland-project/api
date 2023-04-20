@@ -1,7 +1,7 @@
-import { emitTo } from "../listeners/namespaces/students";
-import { OutgoingEvents } from "../types/enums";
-import { getQuestionsFromTaskStageByTaskId } from "./question.service";
-import { getPlayingTeamsFromCourse } from "./team.service";
+import { emitTo } from "@listeners/namespaces/students";
+import { OutgoingEvents } from "@interfaces/enums/socket.enum";
+import { getQuestionsFromTaskStageByTaskId } from "@services/question.service";
+import { getPlayingTeamsFromCourse } from "@services/team.service";
 interface Team {
   id: number;
   name: string;

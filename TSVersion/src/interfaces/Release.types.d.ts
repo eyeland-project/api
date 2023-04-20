@@ -1,5 +1,5 @@
 import { Model } from "sequelize";
-import PartialBy from "./PartialBy";
+import PartialBy from "@interfaces/PartialBy";
 
 export interface Release {
   id_release: number;

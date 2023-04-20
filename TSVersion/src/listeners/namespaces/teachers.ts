@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { deleteSocket, printDirectory } from "../utils";
+import { deleteSocket, printDirectory } from "@listeners/utils";
 
 export const directory = new Map<number, Socket>();
 
