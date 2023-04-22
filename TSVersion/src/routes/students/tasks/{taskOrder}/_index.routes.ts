@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import {
-  getIntro,
+  getTask,
   getProgress,
   finishAttempt
 } from "@controllers/student/task.controller";
@@ -11,7 +11,7 @@ const auth = passport.authenticate("jwt-student", { session: false });
 const router = Router({ mergeParams: true });
 router.use(auth);
 
-router.get("/introduction", getIntro);
+router.get("/introduction", getTask);
 router.get("/progress", getProgress);
 router.delete("/attempt", finishAttempt);
 

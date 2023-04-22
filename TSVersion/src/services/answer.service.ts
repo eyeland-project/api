@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { directory as dirStudents } from "@listeners/namespaces/student";
 import { ApiError } from "@middlewares/handleErrors";
-import { AnswerModel, QuestionModel } from "@models";
+import { AnswerModel, QuestionModel, TaskModel } from "@models";
 import { Answer } from "@interfaces/Answer.types";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { updateLeaderBoard } from "@services/leaderBoard.service";
@@ -16,7 +16,7 @@ import {
   getStudentTaskByOrder,
   upgradeStudentTaskProgress
 } from "@services/studentTask.service";
-import { getTaskByOrder } from "@services/task.service";
+import { getTaskForStudent } from "@services/task.service";
 import {
   createTaskAttempt,
   finishStudentTaskAttempts,
@@ -25,6 +25,7 @@ import {
 } from "@services/taskAttempt.service";
 import { getLastQuestionFromTaskStage } from "@services/taskStage.service";
 import { getMembersFromTeam, updateTeam } from "@services/team.service";
+import * as repositoryService from "@services/repository.service";
 
 export async function answerPretask(
   idStudent: number,
@@ -34,7 +35,11 @@ export async function answerPretask(
   answerSeconds: number,
   newAttempt: boolean | null | undefined
 ): Promise<void> {
-  const task = await getTaskByOrder(taskOrder);
+  const task = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: {
+      task_order: taskOrder
+    }
+  });
 
   if (taskOrder !== 1) {
     const { highest_stage } = await getStudentTaskByOrder(
@@ -105,7 +110,11 @@ export async function answerDuringtask(
     throw new ApiError("Student is not connected", 400);
   }
 
-  const task = await getTaskByOrder(taskOrder);
+  const task = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: {
+      task_order: taskOrder
+    }
+  });
 
   const { session, id_course } = await getCourseFromStudent(idStudent);
   if (!session) {
@@ -236,7 +245,11 @@ export async function answerPostask(
   newAttempt: boolean | undefined | null
 ): Promise<void> {
   // create task_attempt if required
-  const task = await getTaskByOrder(taskOrder);
+  const task = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: {
+      task_order: taskOrder
+    }
+  });
 
   const { session } = await getCourseFromStudent(idStudent);
   if (!session) {

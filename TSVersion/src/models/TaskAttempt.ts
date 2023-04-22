@@ -21,7 +21,7 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
   declare time_stamp: Date;
   declare task: NonAttribute<TaskModel>;
   declare student: NonAttribute<StudentModel>;
-  declare team: NonAttribute<TeamModel>;
+  declare team?: NonAttribute<TeamModel>;
 }
 
 // model initialization

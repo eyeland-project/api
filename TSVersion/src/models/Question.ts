@@ -19,7 +19,7 @@ class QuestionModel extends Model<Question, QuestionCreation> {
   declare topic: QuestionTopic | null;
   declare deleted: boolean;
 
-  declare stage: NonAttribute<TaskStageModel>;
+  declare taskStage: NonAttribute<TaskStageModel>;
   declare options: NonAttribute<OptionModel[]>;
 }
 
@@ -111,7 +111,7 @@ TaskStageModel.hasMany(QuestionModel, {
 });
 QuestionModel.belongsTo(TaskStageModel, {
   foreignKey: "id_task_stage",
-  as: "stage"
+  as: "taskStage"
 });
 
 export default QuestionModel;

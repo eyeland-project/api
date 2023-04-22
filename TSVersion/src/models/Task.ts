@@ -1,8 +1,9 @@
 // creating the model for the Task table
 // imports
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { Task, TaskCreation } from "@interfaces/Task.types";
+import TaskStageModel from "./TaskStage";
 
 // model class definition
 class TaskModel extends Model<Task, TaskCreation> {
@@ -16,6 +17,7 @@ class TaskModel extends Model<Task, TaskCreation> {
   declare thumbnail_alt?: string | null;
   declare coming_soon: boolean;
   declare deleted: boolean;
+  declare taskStages: NonAttribute<TaskStageModel[]>;
 }
 
 // model initialization

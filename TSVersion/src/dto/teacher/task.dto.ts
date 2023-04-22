@@ -10,7 +10,6 @@ interface TaskStage {
   id: number;
   description: string;
   keywords: string[];
-  taskStageOrder: number;
 }
 
 export interface TaskDetailDto extends TaskSummaryDto {

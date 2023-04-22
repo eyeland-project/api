@@ -1,13 +1,20 @@
 import { Op, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
-import { AnswerModel, OptionModel, TaskAttemptModel, TeamModel } from "@models";
+import {
+  AnswerModel,
+  BlindnessAcuityModel,
+  OptionModel,
+  StudentModel,
+  TaskAttemptModel,
+  TaskModel,
+  TeamModel
+} from "@models";
 import { Team } from "@interfaces/Team.types";
 import {
   createTaskAttempt,
   getCurrTaskAttempt,
   updateCurrTaskAttempt
 } from "@services/taskAttempt.service";
-import { getTaskByOrder } from "@services/task.service";
 import { ApiError } from "@middlewares/handleErrors";
 import { Student } from "@interfaces/Student.types";
 import { TeamMember } from "@interfaces/Team.types";
@@ -19,13 +26,207 @@ import {
   assignPowerToStudent,
   getTeamFromStudent
 } from "@services/student.service";
-import { notifyCourseOfTeamUpdate } from "@services/course.service";
+import {
+  filterTeamsForStudents,
+  getTeamsFromCourseWithStudents,
+  notifyCourseOfTeamUpdate
+} from "@services/course.service";
 import { Socket } from "socket.io";
+import * as repositoryService from "@services/repository.service";
+import { getHighestTaskCompletedFromStudent } from "./studentTask.service";
+import { TeamDetailDto as TeamDetailDtoStudent } from "@dto/student/team.dto";
+import { TeamDetailDto as TeamDetailDtoTeacher } from "@dto/teacher/team.dto";
 
-export async function getTeamByCode(code: string): Promise<Team> {
-  const team = await TeamModel.findOne({ where: { code } });
-  if (!team) throw new ApiError("Team not found", 404);
-  return team;
+export async function getTeamsForStudent(
+  idStudent: number
+): Promise<TeamDetailDtoStudent[]> {
+  const { id_course } = await repositoryService.findOne<StudentModel>(
+    StudentModel,
+    { where: { id_student: idStudent } }
+  );
+  return filterTeamsForStudents(
+    await getTeamsFromCourseWithStudents(id_course)
+  );
+}
+
+export async function getTeamsForTeacher(
+  idCourse: number,
+  active: boolean
+): Promise<TeamDetailDtoTeacher[]> {
+  return await getTeamsFromCourseWithStudents(idCourse, { active });
+}
+
+export async function getTeamForTeacher(
+  idCourse: number,
+  idTeam: number
+): Promise<TeamDetailDtoTeacher> {
+  const teams = await getTeamsFromCourseWithStudents(idCourse, {
+    id_team: idTeam
+  });
+  if (teams.length === 0) throw new ApiError("Team not found", 404);
+  return teams[0];
+
+  // const team = await repositoryService.findOne<TeamModel>(TeamModel, {
+  //   where: { id_team: idTeam, id_course: idCourse }
+  // });
+
+  // let taskOrder: number | null = null;
+  // try {
+  //   const taskAttempts = (await getTaskAttemptsFromTeam(idTeam)).filter(
+  //     ({ active }) => active
+  //   );
+  //   if (taskAttempts.length > 0) {
+  //     taskOrder = (
+  //       await repositoryService.findOne<TaskModel>(TaskModel, {
+  //         where: { id_task: taskAttempts[0].id_task }
+  //       })
+  //     ).task_order;
+  //   }
+  // } catch (err) {}
+
+  // const { id_team, name, active, code, playing } = team;
+  // let students: TeamMember[];
+  // try {
+  //   students = await getMembersFromTeam({ idTeam: id_team });
+  // } catch (err) {
+  //   console.log(err);
+  //   students = [];
+  // }
+  // return {
+  //   id: id_team,
+  //   name,
+  //   active,
+  //   playing,
+  //   taskOrder: taskOrder || null,
+  //   code: code || "",
+  //   students: students.map(
+  //     ({
+  //       id_student,
+  //       first_name,
+  //       last_name,
+  //       username,
+  //       task_attempt: { power }
+  //     }) => ({
+  //       id: id_student,
+  //       firstName: first_name,
+  //       lastName: last_name,
+  //       username,
+  //       power
+  //     })
+  //   )
+  // };
+}
+
+export async function joinTeam(
+  idStudent: number,
+  code: string,
+  taskOrder: number
+) {
+  const socket = directoryStudents.get(idStudent);
+  if (!socket) {
+    throw new ApiError("Student is not connected", 400);
+  }
+  const nextTaskOrder =
+    ((await getHighestTaskCompletedFromStudent(idStudent))?.task_order || 0) +
+    1;
+  if (taskOrder > nextTaskOrder) {
+    throw new ApiError(`You should first complete task ${nextTaskOrder}`, 400);
+  }
+
+  let currTaskAttempt: TaskAttemptModel | undefined;
+  try {
+    currTaskAttempt = await repositoryService.findOne<TaskAttemptModel>(
+      TaskAttemptModel,
+      {
+        where: { id_student: idStudent, active: true },
+        include: [
+          {
+            model: TeamModel,
+            as: "team",
+            required: false
+          }
+        ]
+      }
+    );
+  } catch (err) {} // no team found for student (expected)
+
+  const prevTeamId = currTaskAttempt?.team?.id_team;
+  const team = await repositoryService.findOne<TeamModel>(TeamModel, {
+    where: { code }
+  });
+  if (team.id_team === prevTeamId) {
+    throw new ApiError("Student is already in this team", 400);
+  }
+
+  const student = await repositoryService.findOne<StudentModel>(StudentModel, {
+    where: { id_student: idStudent },
+    include: [
+      {
+        model: BlindnessAcuityModel,
+        as: "blindnessAcuity",
+        attributes: ["level"]
+      }
+    ]
+  });
+  if (student.id_course !== team.id_course) {
+    throw new ApiError("Student and team are not in the same course", 400);
+  }
+  if (!team.active) {
+    throw new ApiError("Team is not active", 400);
+  }
+
+  const teammates = await getMembersFromTeam({ idTeam: team.id_team });
+  if (teammates.length >= 3) {
+    throw new ApiError("Team is full", 400);
+  }
+
+  if (teammates.length) {
+    // check if the team is already working on a different task
+    const { id_task } = await getCurrTaskAttempt(teammates[0].id_student);
+    const { task_order: taskOrderTeam } =
+      await repositoryService.findOne<TaskModel>(TaskModel, {
+        where: { id_task }
+      });
+    if (taskOrderTeam !== taskOrder) {
+      throw new ApiError(
+        "This team is already working on a different task",
+        400
+      );
+    }
+  }
+
+  if (currTaskAttempt) {
+    await updateCurrTaskAttempt(idStudent, { id_team: team.id_team });
+  } else {
+    console.log("Student has no task attempt, creating one...");
+    const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
+      where: { task_order: taskOrder }
+    });
+    currTaskAttempt = await createTaskAttempt(idStudent, id_task, team.id_team);
+  }
+
+  new Promise(() => {
+    socket.join("t" + team.id_team); // join student to team socket room
+
+    assignPowerToStudent(
+      idStudent,
+      "auto",
+      teammates,
+      student.blindnessAcuity.level,
+      false
+    )
+      .then(({ yaper }) => {
+        notifyCourseOfTeamUpdate(student.id_course, team.id_team, idStudent);
+        if (yaper) notifyStudentOfTeamUpdate(yaper);
+      })
+      .catch((err) => console.log(err));
+
+    if (prevTeamId && currTaskAttempt) {
+      checkReassignSuperHearing(prevTeamId, currTaskAttempt.power).catch(
+        (err) => console.log(err)
+      );
+    }
+  }).catch((err) => console.log(err));
 }
 
 export async function getMembersFromTeam(teamInfo: {
@@ -115,25 +316,12 @@ export async function updateTeam(idTeam: number, fields: Partial<Team>) {
   await TeamModel.update(fields, { where: { id_team: idTeam } });
 }
 
-export async function addStudentToTeam(
-  idStudent: number,
-  idTeam: number,
-  taskOrder: number
-) {
-  let currTaskAttempt;
-  try {
-    currTaskAttempt = await getCurrTaskAttempt(idStudent);
-    // console.log("1. currTaskAttempt", currTaskAttempt);
-  } catch (err) {}
-
-  if (currTaskAttempt) {
-    await updateCurrTaskAttempt(idStudent, { id_team: idTeam });
-  } else {
-    console.log("Student has no task attempt, creating one...");
-    const { id_task } = await getTaskByOrder(taskOrder);
-    currTaskAttempt = await createTaskAttempt(idStudent, id_task, idTeam);
-    // console.log("Task attempt created", currTaskAttempt);
+export async function leaveTeamService(idStudent: number): Promise<void> {
+  const socketStudent = directoryStudents.get(idStudent);
+  if (!socketStudent) {
+    throw new ApiError("Student is not connected", 400);
   }
+  await leaveTeam(idStudent, socketStudent);
 }
 
 export async function leaveTeam(

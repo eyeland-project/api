@@ -12,11 +12,12 @@ import {
 } from "@models";
 import { Namespaces, of } from "@listeners/sockets";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
-import { generateTeamName, parseUpdateFields } from "@utils";
+import { generateTeamName } from "@utils";
 import { TeamDetailDto as TeamDetailDtoGlobal } from "@dto/global/team.dto";
 import { TeamDetailDto as TeamDetailDtoTeacher } from "@dto/teacher/team.dto";
 import { TeamDetailDto as TeamDetailDtoStudent } from "@dto/student/team.dto";
 import { directory as directoryStudents } from "@listeners/namespaces/student";
+import { directory as directoryTeachers } from "@listeners/namespaces/teacher";
 import {
   cleanLeaderBoard,
   emitLeaderboard,
@@ -35,7 +36,7 @@ import {
   CourseUpdateDto
 } from "@dto/teacher/course.dto";
 import * as repositoryService from "@services/repository.service";
-import { CourseCreation } from "@interfaces/Course.types";
+import { Team } from "@interfaces/Team.types";
 
 export async function getCourses(
   idTeacher: number
@@ -120,7 +121,8 @@ export async function deleteCourse(idTeacher: number, idCourse: number) {
 
 // OTHERS
 export async function getTeamsFromCourseWithStudents(
-  idCourse: number
+  idCourse: number,
+  where?: Partial<Team>
 ): Promise<TeamDetailDtoGlobal[]> {
   const teams = await TeamModel.findAll({
     include: [
@@ -154,7 +156,7 @@ export async function getTeamsFromCourseWithStudents(
         where: { deleted: false }
       }
     ],
-    where: { id_course: idCourse }
+    where: { id_course: idCourse, ...where }
   });
 
   return teams.map(
@@ -238,12 +240,24 @@ export async function notifyCourseOfTeamUpdate(
   );
 
   const dataStudents: TeamDetailDtoStudent[] = filterTeamsForStudents(teams);
-  const dataTeachers: TeamDetailDtoTeacher[] = teams.filter(
-    ({ active }) => active
-  );
-
   courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, dataStudents);
-  of(Namespaces.TEACHERS)?.emit(OutgoingEvents.TEAMS_UPDATE, dataTeachers);
+
+  try {
+    const dataTeachers: TeamDetailDtoTeacher[] = teams.filter(
+      ({ active }) => active
+    );
+    const { id_teacher } = await repositoryService.findOne<CourseModel>(
+      CourseModel,
+      {
+        where: { id_course: idCourse }
+      }
+    );
+    directoryTeachers
+      .get(id_teacher)
+      ?.emit(OutgoingEvents.TEAMS_UPDATE, dataTeachers);
+  } catch (err) {
+    console.log("Could not notify teacher of team update", err);
+  }
 }
 
 export async function createSession(idTeacher: number, idCourse: number) {

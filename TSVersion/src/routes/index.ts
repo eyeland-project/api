@@ -1,8 +1,8 @@
 import fs from "fs";
 import { Router } from "express";
 import { join } from "path";
-import { directory as studentDirectory } from "@listeners/namespaces/student";
-import { directory as teacherDirectory } from "@listeners/namespaces/teacher";
+import { directory as directoryStudents } from "@listeners/namespaces/student";
+import { directory as directoryTeachers } from "@listeners/namespaces/teacher";
 import { Namespaces, of } from "@listeners/sockets";
 
 const router = Router();
@@ -58,11 +58,11 @@ router.get("/", (_, res) => {
 
 router.get("/directories", (_, res) => {
   const students: { id: number; socketId: string }[] = [];
-  for (let [key, value] of studentDirectory) {
+  for (let [key, value] of directoryStudents) {
     students.push({ id: key, socketId: value.id });
   }
   const teachers: { id: number; socketId: string }[] = [];
-  for (let [key, value] of teacherDirectory) {
+  for (let [key, value] of directoryTeachers) {
     teachers.push({ id: key, socketId: value.id });
   }
 

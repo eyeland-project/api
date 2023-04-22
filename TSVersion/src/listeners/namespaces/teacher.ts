@@ -7,12 +7,11 @@ export function onConnection(socket: Socket) {
   console.log("S: New teacher connection", socket.id);
 
   // EVENTS
-  socket.on("id", onId);
-  socket.on("join", onId);
+  socket.on("join", onJoin);
   socket.on("disconnect", onDisconnect);
 
   // FUNCTIONS
-  function onId(id: number) {
+  function onJoin(id: number) {
     console.log("S: teacher id", id);
     if (!validConnection(id)) {
       console.log("S: teacher invalid connection", socket.id);

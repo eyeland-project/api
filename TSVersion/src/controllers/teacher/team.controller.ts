@@ -1,90 +1,41 @@
 import { Request, Response, NextFunction } from "express";
-import {
-  createMissingTeams,
-  getTeamsFromCourseWithStudents
-} from "@services/course.service";
-import {
-  createTeam as createTeamServ,
-  getTeamById,
-  getMembersFromTeam,
-  updateTeam as updateTeamServ,
-  getTaskAttemptsFromTeam
-} from "@services/team.service";
-import {
-  TeamDetailDto,
-  TeamCreateDto,
-  TeamUpdateDto
-} from "@dto/teacher/team.dto";
-import { TeamMember } from "@interfaces/Team.types";
-import { getTaskById } from "@services/task.service";
+import { createMissingTeams } from "@services/course.service";
+import { getTeamsForTeacher, getTeamForTeacher } from "@services/team.service";
+import { TeamDetailDto } from "@dto/teacher/team.dto";
+import { ApiError } from "@middlewares/handleErrors";
 
 export async function getTeams(
-  req: Request<{ idCourse: number }>,
+  req: Request<{ idCourse: string }>,
   res: Response<TeamDetailDto[]>,
   next: NextFunction
 ) {
-  const { idCourse } = req.params;
   const { active } = req.query as { active?: boolean };
+  const idCourse = parseInt(req.params.idCourse);
   try {
-    const teams = (await getTeamsFromCourseWithStudents(idCourse)).filter(
-      ({ active: teamActive }) =>
-        active === undefined ? teamActive === true : teamActive === active
-    );
-    res.status(200).json(teams);
+    if (isNaN(idCourse) || idCourse <= 0) {
+      throw new ApiError("Wrong idCourse", 400);
+    }
+    res.status(200).json(await getTeamsForTeacher(idCourse, active || true));
   } catch (err) {
     next(err);
   }
 }
 
 export async function getTeam(
-  req: Request<{ idTeam: number }>,
+  req: Request<{ idCourse: string; idTeam: string }>,
   res: Response<TeamDetailDto>,
   next: NextFunction
 ) {
-  const { idTeam } = req.params;
+  const idTeam = parseInt(req.params.idTeam);
+  const idCourse = parseInt(req.params.idCourse);
   try {
-    const team = await getTeamById(idTeam);
-    let taskOrder: number | null = null;
-    try {
-      const taskAttempts = (await getTaskAttemptsFromTeam(idTeam)).filter(
-        ({ active }) => active
-      );
-      if (taskAttempts.length > 0) {
-        taskOrder = (await getTaskById(taskAttempts[0].id_task)).task_order;
-      }
-    } catch (err) {}
-
-    const { id_team, name, active, code, playing } = team;
-    let students: TeamMember[];
-    try {
-      students = await getMembersFromTeam({ idTeam: id_team });
-    } catch (err) {
-      console.log(err);
-      students = [];
+    if (isNaN(idCourse) || idCourse <= 0) {
+      throw new ApiError("Wrong idCourse", 400);
     }
-    res.status(200).json({
-      id: id_team,
-      name,
-      active,
-      playing,
-      taskOrder: taskOrder || null,
-      code: code || "",
-      students: students.map(
-        ({
-          id_student,
-          first_name,
-          last_name,
-          username,
-          task_attempt: { power }
-        }) => ({
-          id: id_student,
-          firstName: first_name,
-          lastName: last_name,
-          username,
-          power
-        })
-      )
-    });
+    if (isNaN(idTeam) || idTeam <= 0) {
+      throw new ApiError("Wrong idTeam", 400);
+    }
+    res.status(200).json(await getTeamForTeacher(idCourse, idTeam));
   } catch (err) {
     next(err);
   }

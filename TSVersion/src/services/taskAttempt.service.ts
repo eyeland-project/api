@@ -17,25 +17,22 @@ export async function createTaskAttempt(
   idStudent: number,
   idTask: number,
   idTeam: number | null
-): Promise<TaskAttempt> {
-  const taskAttempt = await TaskAttemptModel.create({
+): Promise<TaskAttemptModel> {
+  return await TaskAttemptModel.create({
     id_student: idStudent,
     id_task: idTask,
     id_team: idTeam
   });
-  return taskAttempt;
 }
 
 export async function updateCurrTaskAttempt(
   idStudent: number,
-  values: Partial<TaskAttempt>,
-  opts: { transaction?: Transaction } = {}
+  values: Partial<TaskAttempt>
 ) {
   if (!Object.keys(values).length)
     throw new ApiError("No values to update TaskAttempt", 400);
   const result = await TaskAttemptModel.update(values, {
-    where: { id_student: idStudent, active: true },
-    ...opts
+    where: { id_student: idStudent, active: true }
   });
   if (!result[0]) throw new ApiError("Task Attempt not found", 404);
 }

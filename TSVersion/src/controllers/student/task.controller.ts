@@ -1,81 +1,58 @@
 import { Request, Response, NextFunction } from "express";
-import { getTaskByOrder } from "@services/task.service";
+import { getTaskForStudent, getTasksForStudent } from "@services/task.service";
 import {
   TaskSummaryDto,
   TaskDetailDto,
   TaskProgressDetailDto
 } from "@dto/student/task.dto";
-import {
-  getStudentProgressFromTaskByOrder,
-  getTasksFromStudentWithCompleted
-} from "@services/studentTask.service";
+import { getStudentProgressFromTask } from "@services/studentTask.service";
 import { finishStudentTaskAttempts } from "@services/taskAttempt.service";
+import { ApiError } from "@middlewares/handleErrors";
 
-// interface UserWithId{
-//     id: number;
-// }
-
-// declare global {
-//     namespace Express {
-//         interface User extends UserWithId {}
-//     }
-// }
-
-export async function root(
+export async function getTasks(
   req: Request,
   res: Response<TaskSummaryDto[]>,
   next: NextFunction
 ) {
   try {
     const { id: idStudent } = req.user!;
-    res.status(200).json(await getTasksFromStudentWithCompleted(idStudent));
+    res.status(200).json(await getTasksForStudent(idStudent));
   } catch (err) {
     next(err);
   }
 }
 
-export async function getIntro(
-  req: Request<{ taskOrder: number }>,
+export async function getTask(
+  req: Request<{ taskOrder: string }>,
   res: Response<TaskDetailDto>,
   next: NextFunction
 ) {
+  const { id: idStudent } = req.user!;
+  const taskOrder = parseInt(req.params.taskOrder);
   try {
-    const { id: idStudent } = req.user!;
-    const { taskOrder } = req.params;
-
-    try {
-      await finishStudentTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
-    } catch (err) {
-      console.error(err);
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid task order", 400);
     }
-
-    const task = await getTaskByOrder(taskOrder);
-    res.status(200).json({
-      id: task.id_task,
-      name: task.name,
-      description: task.description,
-      taskOrder: task.task_order,
-      thumbnailUrl: task.thumbnail_url || "",
-      thumbnailAlt: task.thumbnail_alt || "",
-      keywords: task.keywords,
-      longDescription: task.long_description || ""
-    });
+    res.status(200).json(await getTaskForStudent(idStudent, taskOrder));
   } catch (err) {
     next(err);
   }
 }
 
 export async function getProgress(
-  req: Request<{ taskOrder: number }>,
+  req: Request<{ taskOrder: string }>,
   res: Response<TaskProgressDetailDto>,
   next: NextFunction
 ) {
+  const { id: idStudent } = req.user!;
+  const taskOrder = parseInt(req.params.taskOrder);
   try {
-    const { id: idStudent } = req.user!;
-    const { taskOrder } = req.params;
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid task order", 400);
+    }
     res
       .status(200)
-      .json(await getStudentProgressFromTaskByOrder(taskOrder, idStudent));
+      .json(await getStudentProgressFromTask(taskOrder, idStudent));
   } catch (err) {
     next(err);
   }
@@ -83,7 +60,7 @@ export async function getProgress(
 
 export async function finishAttempt(
   req: Request<{ taskOrder: number }>,
-  res: Response,
+  res: Response<{ message: string }>,
   next: NextFunction
 ) {
   try {

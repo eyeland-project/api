@@ -50,7 +50,7 @@ export async function getQuestionsFromTaskStage(
     include: [
       {
         model: TaskStageModel,
-        as: "stage",
+        as: "taskStage",
         include: [
           {
             model: TaskModel,

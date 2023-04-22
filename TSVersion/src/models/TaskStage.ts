@@ -1,6 +1,6 @@
 // creating the model for the Task table
 // imports
-import { DataTypes, ForeignKey, Model } from "sequelize";
+import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { TaskStage, TaskStageCreation } from "@interfaces/TaskStage.types";
 import { TaskModel } from "@models";
@@ -12,6 +12,7 @@ class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
   declare task_stage_order: number;
   declare description: string;
   declare keywords: string[];
+  declare task: NonAttribute<TaskModel>;
 }
 
 // model initialization
@@ -51,10 +52,12 @@ TaskStageModel.init(
 // model associations
 // task stage and task
 TaskModel.hasMany(TaskStageModel, {
-  foreignKey: "id_task"
+  foreignKey: "id_task",
+  as: "taskStages"
 });
 TaskStageModel.belongsTo(TaskModel, {
-  foreignKey: "id_task"
+  foreignKey: "id_task",
+  as: "task"
 });
 
 export default TaskStageModel;

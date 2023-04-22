@@ -6,51 +6,6 @@ import { StudentTaskModel } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Task } from "@interfaces/Task.types";
 
-export async function getTasksFromStudentWithCompleted(
-  idStudent: number
-): Promise<TaskSummaryDto[]> {
-  interface TaskWithHighestStage extends Task {
-    highest_stage: number;
-  }
-  const tasks = (await sequelize.query(
-    `
-      SELECT t.*, st.highest_stage
-      FROM task t
-      LEFT JOIN student_task st ON t.id_task = st.id_task
-      WHERE st.id_student = ${idStudent}
-      ORDER BY task_order ASC;
-  `,
-    { type: QueryTypes.SELECT }
-  )) as TaskWithHighestStage[];
-
-  return tasks.map(
-    (
-      {
-        id_task,
-        name,
-        description,
-        task_order,
-        highest_stage,
-        thumbnail_url,
-        coming_soon,
-        thumbnail_alt
-      },
-      index
-    ) =>
-      ({
-        id: id_task,
-        name,
-        description,
-        taskOrder: task_order,
-        completed: highest_stage === 3, // 3 is the highest stage
-        blocked: task_order === 1 ? false : tasks[index - 1].highest_stage < 3,
-        thumbnailUrl: thumbnail_url,
-        thumbnailAlt: thumbnail_alt,
-        comingSoon: coming_soon
-      } as TaskSummaryDto)
-  );
-}
-
 export async function getStudentTaskByOrder(
   idStudent: number,
   taskOrder: number
@@ -68,7 +23,7 @@ export async function getStudentTaskByOrder(
   return studentTasks[0];
 }
 
-export async function getStudentProgressFromTaskByOrder(
+export async function getStudentProgressFromTask(
   taskOrder: number,
   idStudent: number
 ): Promise<TaskProgressDetailDto> {

@@ -1,23 +1,173 @@
-import { TaskModel } from "@models";
+import { TaskModel, TaskStageModel } from "@models";
 import { Task } from "@interfaces/Task.types";
 import { ApiError } from "@middlewares/handleErrors";
+import * as repositoryService from "@services/repository.service";
+import {
+  TaskDetailDto as TaskDetailDtoTeacher,
+  TaskSummaryDto as TaskSummaryDtoTeacher
+} from "@dto/teacher/task.dto";
+import {
+  TaskDetailDto as TaskDetailDtoStudent,
+  TaskSummaryDto as TaskSummaryDtoStudent
+} from "@dto/student/task.dto";
+import sequelize from "@database/db";
+import { QueryTypes } from "sequelize";
+import { finishStudentTaskAttempts } from "./taskAttempt.service";
 
-export async function getTaskCount(): Promise<number> {
-  return await TaskModel.count();
+export async function getTasksForStudent(
+  idStudent: number
+): Promise<TaskSummaryDtoStudent[]> {
+  interface TaskWithHighestStage extends Task {
+    highest_stage: number;
+  }
+  const tasks = (await sequelize.query(
+    `
+      SELECT t.*, st.highest_stage
+      FROM task t
+      LEFT JOIN student_task st ON t.id_task = st.id_task
+      WHERE st.id_student = ${idStudent}
+      ORDER BY task_order ASC;
+  `,
+    { type: QueryTypes.SELECT }
+  )) as TaskWithHighestStage[];
+
+  return tasks.map(
+    (
+      {
+        id_task,
+        name,
+        description,
+        task_order,
+        highest_stage,
+        thumbnail_url,
+        coming_soon,
+        thumbnail_alt
+      },
+      index
+    ) =>
+      ({
+        id: id_task,
+        name,
+        description,
+        taskOrder: task_order,
+        completed: highest_stage === 3, // 3 is the highest stage
+        blocked: task_order === 1 ? false : tasks[index - 1].highest_stage < 3,
+        thumbnailUrl: thumbnail_url,
+        thumbnailAlt: thumbnail_alt,
+        comingSoon: coming_soon
+      } as TaskSummaryDtoStudent)
+  );
 }
 
-export async function getTaskByOrder(taskOrder: number): Promise<Task> {
-  const task = await TaskModel.findOne({ where: { task_order: taskOrder } });
-  if (!task) throw new ApiError("Task not found", 404);
-  return task;
+export async function getTaskForStudent(
+  idStudent: number,
+  taskOrder: number
+): Promise<TaskDetailDtoStudent> {
+  try {
+    await finishStudentTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
+  } catch (err) {
+    console.error(err);
+  }
+
+  const {
+    id_task,
+    name,
+    description,
+    thumbnail_url,
+    thumbnail_alt,
+    keywords,
+    long_description
+  } = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: { task_order: taskOrder }
+  });
+  return {
+    id: id_task,
+    name,
+    description,
+    taskOrder,
+    thumbnailUrl: thumbnail_url || "",
+    thumbnailAlt: thumbnail_alt || "",
+    keywords,
+    longDescription: long_description || ""
+  };
 }
 
-export async function getTasks(): Promise<Task[]> {
-  return await TaskModel.findAll({ order: [["task_order", "ASC"]] });
+export async function getTasksForTeacher(): Promise<TaskSummaryDtoTeacher[]> {
+  return (
+    await repositoryService.findAll<TaskModel>(TaskModel, {
+      order: [["task_order", "ASC"]]
+    })
+  ).map(({ id_task, name, description, task_order, thumbnail_url }) => ({
+    id: id_task,
+    name,
+    description,
+    taskOrder: task_order,
+    thumbnailUrl: thumbnail_url || ""
+  }));
 }
 
-export async function getTaskById(idTask: number): Promise<Task> {
-  const task = await TaskModel.findOne({ where: { id_task: idTask } });
-  if (!task) throw new ApiError("Task not found", 404);
-  return task;
+export async function getTaskForTeacher(
+  idTask: number
+): Promise<TaskDetailDtoTeacher> {
+  const {
+    id_task,
+    name,
+    description,
+    task_order,
+    thumbnail_url,
+    long_description,
+    keywords,
+    taskStages: [
+      {
+        description: descriptionPretask,
+        keywords: keywordsPretask,
+        id_task_stage: pretaskId
+      },
+      {
+        description: descriptionDuringtask,
+        keywords: keywordsDuringtask,
+        id_task_stage: duringtaskId
+      },
+      {
+        description: descriptionPostask,
+        keywords: keywordsPostask,
+        id_task_stage: postaskId
+      }
+    ]
+  } = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: { id_task: idTask },
+    include: [
+      {
+        model: TaskStageModel,
+        as: "taskStages",
+        order: [["task_stage_order", "ASC"]],
+        attributes: ["id_task_stage", "description", "keywords"],
+        required: false
+      }
+    ]
+  });
+  return {
+    id: id_task,
+    name,
+    description,
+    taskOrder: task_order,
+    thumbnailUrl: thumbnail_url || "",
+    longDescription: long_description || "",
+    keywords,
+    pretask: {
+      id: pretaskId,
+      description: descriptionPretask,
+      keywords: keywordsPretask
+    },
+    duringtask: {
+      id: duringtaskId,
+      description: descriptionDuringtask,
+      keywords: keywordsDuringtask
+    },
+    postask: {
+      id: postaskId,
+      description: descriptionPostask,
+      keywords: keywordsPostask
+    }
+  };
 }

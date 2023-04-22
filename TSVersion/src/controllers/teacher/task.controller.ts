@@ -1,56 +1,31 @@
 import { Request, Response, NextFunction } from "express";
-import { getTaskById, getTasks as getTasksServ } from "@services/task.service";
 import { TaskDetailDto, TaskSummaryDto } from "@dto/teacher/task.dto";
+import { getTaskForTeacher, getTasksForTeacher } from "@services/task.service";
+import { ApiError } from "@middlewares/handleErrors";
 
 export async function getTasks(
-  req: Request,
+  _: Request,
   res: Response<TaskSummaryDto[]>,
   next: NextFunction
 ) {
   try {
-    const tasks = await getTasksServ();
-    res.status(200).json(
-      tasks.map(
-        ({ id_task, name, description, task_order, thumbnail_url }) => ({
-          id: id_task,
-          name,
-          description,
-          thumbnailUrl: thumbnail_url || "",
-          taskOrder: task_order
-        })
-      )
-    );
+    res.status(200).json(await getTasksForTeacher());
   } catch (err) {
     next(err);
   }
 }
 
 export async function getTask(
-  req: Request<{ idTask: number }>,
+  req: Request<{ idTask: string }>,
   res: Response<TaskDetailDto>,
   next: NextFunction
 ) {
-  const { idTask } = req.params;
+  const idTask = parseInt(req.params.idTask);
   try {
-    const task = await getTaskById(idTask);
-    const {
-      id_task,
-      name,
-      description,
-      long_description,
-      keywords,
-      task_order,
-      thumbnail_url
-    } = task;
-    // res.status(200).json({
-    //   id: id_task,
-    //   name,
-    //   description,
-    //   longDescription: long_description || "",
-    //   keywords,
-    //   taskOrder: task_order,
-    //   thumbnailUrl: thumbnail_url || ""
-    // });
+    if (isNaN(idTask) || idTask <= 0) {
+      throw new ApiError("Invalid task id", 400);
+    }
+    res.status(200).json(await getTaskForTeacher(idTask));
   } catch (err) {
     next(err);
   }
