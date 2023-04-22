@@ -56,7 +56,8 @@ export async function getQuestionsFromTaskStage(
             model: TaskModel,
             where: {
               task_order: taskOrder
-            }
+            },
+            as: "task"
           }
         ],
         where: {
