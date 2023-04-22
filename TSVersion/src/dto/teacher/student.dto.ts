@@ -23,7 +23,7 @@ export interface StudentDetailDto extends StudentSummaryDto {
 }
 
 export interface StudentCreateDto {
-  idCourse: number;
+  // idCourse: number; // since the route is /courses/:idCourse/students, this is not needed
   idBlindnessAcuity: number;
   idVisualFieldDefect: number;
   idColorDeficiency: number;

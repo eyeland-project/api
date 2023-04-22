@@ -53,8 +53,7 @@ export async function whoami(
       firstName: student.first_name,
       lastName: student.last_name,
       username: student.username,
-      visualCondition:
-        student.blindnessAcuityModel?.name || "non-visually impaired"
+      visualCondition: student.blindnessAcuity?.name || "non-visually impaired"
     });
   } catch (err: any) {
     throw new ApiError(err.message, 500);

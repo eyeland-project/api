@@ -13,4 +13,4 @@ export interface Teacher {
   comparePassword: (password: string) => boolean;
 }
 
-export type TeacherCreation = Omit<Teacher, "id_teacher">;
+export type TeacherCreation = Omit<Teacher, "id_teacher" | "comparePassword">;

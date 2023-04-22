@@ -95,12 +95,9 @@ export async function answer(
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
-  const { taskOrder: taskOrderStr, questionOrder: questionOrderStr } =
-    req.params;
   const { idOption, answerSeconds, newAttempt } = req.body as AnswerCreateDto;
-
-  const taskOrder = parseInt(taskOrderStr);
-  const questionOrder = parseInt(questionOrderStr);
+  const taskOrder = parseInt(req.params.taskOrder);
+  const questionOrder = parseInt(req.params.questionOrder);
 
   if (isNaN(taskOrder) || taskOrder < 1)
     return res.status(400).json({ message: "Bad taskOrder" });

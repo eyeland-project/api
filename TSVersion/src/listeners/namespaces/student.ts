@@ -1,10 +1,11 @@
 import { Socket } from "socket.io";
 import { deleteSocket, findId, printDirectory } from "@listeners/utils";
 import { getCourseFromStudent } from "@services/student.service";
-import { getCourseById } from "@services/course.service";
 import { getIdFromToken } from "@utils";
 import { leaveTeam } from "@services/team.service";
 import { Namespaces, of } from "@listeners/sockets";
+import * as repositoryService from "@services/repository.service";
+import { CourseModel } from "@models";
 
 export const directory = new Map<number, Socket>();
 
@@ -71,7 +72,10 @@ export function onConnection(socket: Socket) {
     directory.set(id, socket);
     printStudentsDir();
 
-    const { session } = await getCourseById(idCourse);
+    const { session } = await repositoryService.findOne<CourseModel>(
+      CourseModel,
+      { where: { id_course: idCourse } }
+    );
 
     if (!cb || typeof cb !== "function") return;
     cb({ session });

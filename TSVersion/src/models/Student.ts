@@ -26,9 +26,10 @@ class StudentModel extends Model<Student, StudentCreation> {
   declare phone_code: string;
   declare phone_number: string;
   declare deleted: boolean;
-  declare blindnessAcuityModel: NonAttribute<BlindnessAcuityModel>;
-  declare visualFieldDefectModel: NonAttribute<VisualFieldDefectModel>;
-  declare colorDeficiencyModel: NonAttribute<ColorDeficiencyModel>;
+  declare course: NonAttribute<CourseModel>;
+  declare blindnessAcuity: NonAttribute<BlindnessAcuityModel>;
+  declare visualFieldDefect: NonAttribute<VisualFieldDefectModel>;
+  declare colorDeficiency: NonAttribute<ColorDeficiencyModel>;
   declare taskAttempts: NonAttribute<TaskAttemptModel>;
 
   comparePassword = (password: string): boolean =>
@@ -131,7 +132,8 @@ CourseModel.hasMany(StudentModel, {
   foreignKey: "id_course"
 });
 StudentModel.belongsTo(CourseModel, {
-  foreignKey: "id_course"
+  foreignKey: "id_course",
+  as: "course"
 });
 
 // student and blindness_acuity
@@ -139,7 +141,8 @@ BlindnessAcuityModel.hasMany(StudentModel, {
   foreignKey: "id_blindness_acuity"
 });
 StudentModel.belongsTo(BlindnessAcuityModel, {
-  foreignKey: "id_blindness_acuity"
+  foreignKey: "id_blindness_acuity",
+  as: "blindnessAcuity"
 });
 
 // student and visual_field_defect
@@ -147,7 +150,8 @@ VisualFieldDefectModel.hasMany(StudentModel, {
   foreignKey: "id_visual_field_defect"
 });
 StudentModel.belongsTo(VisualFieldDefectModel, {
-  foreignKey: "id_visual_field_defect"
+  foreignKey: "id_visual_field_defect",
+  as: "visualFieldDefect"
 });
 
 // student and color_deficiency
@@ -155,7 +159,8 @@ ColorDeficiencyModel.hasMany(StudentModel, {
   foreignKey: "id_color_deficiency"
 });
 StudentModel.belongsTo(ColorDeficiencyModel, {
-  foreignKey: "id_color_deficiency"
+  foreignKey: "id_color_deficiency",
+  as: "colorDeficiency"
 });
 
 export default StudentModel;

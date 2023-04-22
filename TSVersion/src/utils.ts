@@ -138,15 +138,6 @@ export function distributeOptions(
 }
 
 // GROUP BY
-// export function groupBy<T, K extends keyof T>(arr: T[], key: K): Record<T[K], T[]> {
-// export function groupBy<T>(arr: T[], fn: (item: T) => any) {
-//     return arr.reduce<Record<string, T[]>>((prev, curr) => {
-//         const groupKey = fn(curr);
-//         const group = prev[groupKey] || [];
-//         group.push(curr);
-//         return { ...prev, [groupKey]: group };
-//     }, {});
-// }
 export function groupBy<T = any>(arr: T[], key: keyof T): T[][] {
   return Object.values(
     arr.reduce<{ [key: string]: T[] }>((groups, item) => {
@@ -209,4 +200,21 @@ export async function generateTeamName(usedTeamName: string[] = []) {
 
 export function getRandomFloatBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
+}
+
+export function parseUpdateFields<T, K>(
+  fields: Partial<T>,
+  map: {
+    [key in keyof T]: keyof K;
+  }
+): Partial<K> {
+  const result: Partial<K> = {};
+  for (const key in fields) {
+    if (map[key]) {
+      result[map[key] as keyof K] = fields[key] as any;
+    } else {
+      result[(<unknown>key) as keyof K] = fields[key] as any;
+    }
+  }
+  return result;
 }

@@ -11,9 +11,4 @@ export interface CourseCreateDto {
   name: string;
 }
 
-interface CourseUpdate extends CourseCreateDto {
-  deleted: true;
-  session: boolean;
-}
-
-export type CourseUpdateDto = Partial<CourseUpdate>;
+export type CourseUpdateDto = Partial<CourseCreateDto>;

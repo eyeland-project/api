@@ -3,7 +3,7 @@ import {
   assignPowerToStudent,
   getBlindnessAcFromStudent,
   getCurrentTeamFromStudent,
-  getStudentById,
+  getStudent,
   getTeamFromStudent,
   rafflePower
 } from "@services/student.service";
@@ -28,6 +28,8 @@ import { directory } from "@listeners/namespaces/student";
 import { getTaskById } from "@services/task.service";
 import { getHighestTaskCompletedFromStudent } from "@services/studentTask.service";
 import { ApiError } from "@middlewares/handleErrors";
+import * as repositoryService from "@services/repository.service";
+import { StudentModel } from "@models";
 
 export async function getTeams(
   req: Request,
@@ -36,7 +38,10 @@ export async function getTeams(
 ) {
   const { id: idStudent } = req.user!;
   try {
-    const { id_course } = await getStudentById(idStudent);
+    const { id_course } = await repositoryService.findOne<StudentModel>(
+      StudentModel,
+      { where: { id_student: idStudent } }
+    );
     res
       .status(200)
       .json(
@@ -99,7 +104,12 @@ export async function joinTeam(
       throw new ApiError("Student is already in this team", 400);
     }
 
-    const student = await getStudentById(idStudent);
+    const student = await repositoryService.findOne<StudentModel>(
+      StudentModel,
+      {
+        where: { id_student: idStudent }
+      }
+    );
     if (student.id_course !== team.id_course) {
       throw new ApiError("Student and team are not in the same course", 400);
     }

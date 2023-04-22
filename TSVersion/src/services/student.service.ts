@@ -1,9 +1,14 @@
 import { QueryTypes, Transaction } from "sequelize";
 import sequelize from "@database/db";
 import { ApiError } from "@middlewares/handleErrors";
-import { StudentModel } from "@models";
+import {
+  BlindnessAcuityModel,
+  ColorDeficiencyModel,
+  CourseModel,
+  StudentModel,
+  VisualFieldDefectModel
+} from "@models";
 import { TeamMember } from "@interfaces/Team.types";
-import { Student } from "@interfaces/Student.types";
 import { Team } from "@interfaces/Team.types";
 import { BlindnessAcuity } from "@interfaces/BlindnessAcuity.types";
 import {
@@ -19,13 +24,221 @@ import {
 import { Course } from "@interfaces/Course.types";
 import { notifyCourseOfTeamUpdate } from "@services/course.service";
 import { TeamDetailDto } from "@dto/student/team.dto";
-import { getRandomFloatBetween } from "@utils";
-import { directory } from "@listeners/namespaces/student";
+import { getRandomFloatBetween, parseUpdateFields } from "@utils";
+import {
+  StudentCreateDto,
+  StudentDetailDto,
+  StudentSummaryDto,
+  StudentUpdateDto
+} from "@dto/teacher/student.dto";
+import * as repositoryService from "@services/repository.service";
+import { StudentCreation } from "@interfaces/Student.types";
 
-export async function getStudentById(id: number): Promise<Student> {
-  const student = await StudentModel.findByPk(id);
-  if (!student) throw new ApiError(`Student with id ${id} not found`, 404);
-  return student;
+export async function getStudent(
+  idTeacher: number,
+  idCourse: number,
+  idStudent: number
+): Promise<StudentDetailDto> {
+  const student = await repositoryService.findOne<StudentModel>(StudentModel, {
+    where: { id_course: idCourse, id_student: idStudent, deleted: false },
+    include: [
+      {
+        model: CourseModel,
+        as: "course",
+        where: { id_teacher: idTeacher, deleted: false }
+      },
+      {
+        model: BlindnessAcuityModel,
+        as: "blindnessAcuity",
+        required: false,
+        attributes: ["id_blindness_acuity", "name", "code"]
+      },
+      {
+        model: VisualFieldDefectModel,
+        as: "visualFieldDefect",
+        required: false,
+        attributes: ["id_visual_field_defect", "name", "code"]
+      },
+      {
+        model: ColorDeficiencyModel,
+        as: "colorDeficiency",
+        required: false,
+        attributes: ["id_color_deficiency", "name", "code"]
+      }
+    ]
+  });
+  if (!student) throw new ApiError("Student not found", 400);
+  const {
+    id_student,
+    first_name,
+    last_name,
+    username,
+    email,
+    phone_code,
+    phone_number,
+    blindnessAcuity: {
+      id_blindness_acuity,
+      name: blindnessAcuityName,
+      code: blindnessAcuityCode
+    },
+    visualFieldDefect: {
+      id_visual_field_defect,
+      name: visualFieldDefectName,
+      code: visualFieldDefectCode
+    },
+    colorDeficiency: {
+      id_color_deficiency,
+      name: colorDeficiencyName,
+      code: colorDeficiencyCode
+    }
+  } = student;
+  return {
+    id: id_student,
+    firstName: first_name,
+    lastName: last_name,
+    username,
+    email,
+    phone: {
+      countryCode: phone_code,
+      number: phone_number
+    },
+    blindnessAcuity: {
+      id: id_blindness_acuity,
+      name: blindnessAcuityName,
+      code: blindnessAcuityCode
+    },
+    visualFieldDefect: {
+      id: id_visual_field_defect,
+      name: visualFieldDefectName,
+      code: visualFieldDefectCode
+    },
+    colorDeficiency: {
+      id: id_color_deficiency,
+      name: colorDeficiencyName,
+      code: colorDeficiencyCode
+    }
+  };
+}
+
+export async function getStudents(
+  idteacher: number,
+  idCourse: number
+): Promise<StudentSummaryDto[]> {
+  const students = await repositoryService.findAll<StudentModel>(StudentModel, {
+    where: { id_course: idCourse, deleted: false },
+    include: [
+      {
+        model: CourseModel,
+        as: "course",
+        where: { id_teacher: idteacher, id_course: idCourse, deleted: false }
+      }
+    ]
+  });
+  return students.map(
+    ({
+      id_student,
+      first_name,
+      last_name,
+      username,
+      email,
+      phone_code,
+      phone_number
+    }) => ({
+      id: id_student,
+      firstName: first_name,
+      lastName: last_name,
+      username: username,
+      email: email,
+      phone: {
+        countryCode: phone_code,
+        number: phone_number
+      }
+    })
+  );
+}
+
+export async function createStudent(
+  idTeacher: number,
+  idCourse: number,
+  fields: StudentCreateDto
+): Promise<{ id: number }> {
+  // check if course exists and belongs to teacher
+  await repositoryService.findOne<CourseModel>(CourseModel, {
+    where: { id_course: idCourse, id_teacher: idTeacher, deleted: false }
+  });
+  const {
+    email,
+    firstName,
+    idBlindnessAcuity,
+    idColorDeficiency,
+    idVisualFieldDefect,
+    lastName,
+    password,
+    phoneCode,
+    phoneNumber,
+    username
+  } = fields;
+  const { id_student } = await repositoryService.create<StudentModel>(
+    StudentModel,
+    {
+      id_blindness_acuity: idBlindnessAcuity,
+      id_color_deficiency: idColorDeficiency,
+      id_visual_field_defect: idVisualFieldDefect,
+      first_name: firstName,
+      last_name: lastName,
+      username,
+      email,
+      phone_code: phoneCode,
+      phone_number: phoneNumber,
+      password,
+      id_course: idCourse
+    }
+  );
+  return { id: id_student };
+}
+
+export async function updateStudent(
+  idTeacher: number,
+  idCourse: number,
+  idStudent: number,
+  fields: StudentUpdateDto
+) {
+  // check if course exists and belongs to teacher
+  await repositoryService.findOne<CourseModel>(CourseModel, {
+    where: { id_course: idCourse, id_teacher: idTeacher, deleted: false }
+  });
+  const parsedFields: Partial<StudentCreation> = parseUpdateFields<
+    StudentUpdateDto,
+    StudentCreation
+  >(fields, {
+    firstName: "first_name",
+    idBlindnessAcuity: "id_blindness_acuity",
+    idColorDeficiency: "id_color_deficiency",
+    idVisualFieldDefect: "id_visual_field_defect",
+    phoneCode: "phone_code",
+    phoneNumber: "phone_number"
+  });
+  await repositoryService.update<StudentModel>(StudentModel, parsedFields, {
+    where: { id_course: idCourse, id_student: idStudent, deleted: false }
+  });
+}
+
+export async function deleteStudent(
+  idTeacher: number,
+  idCourse: number,
+  idStudent: number
+) {
+  // check if course exists and belongs to teacher
+  await repositoryService.findOne<CourseModel>(CourseModel, {
+    where: { id_course: idCourse, id_teacher: idTeacher, deleted: false }
+  });
+  await repositoryService.update<StudentModel>(
+    StudentModel,
+    { deleted: true },
+    {
+      where: { id_course: idCourse, id_student: idStudent, deleted: false }
+    }
+  );
 }
 
 export async function getTeamFromStudent(idStudent: number): Promise<Team> {
@@ -115,7 +328,6 @@ async function assignPower(
 export async function rafflePower(idStudent: number): Promise<false | Power> {
   // * Verify if the student has a visual illness
   const { level } = await getBlindnessAcFromStudent(idStudent);
-  // * get the current power of the student
   const { power } = await getCurrTaskAttempt(idStudent);
 
   // ** if the student has a visual illness and has super-hearing, return false
@@ -127,7 +339,6 @@ export async function rafflePower(idStudent: number): Promise<false | Power> {
   if (powers.length === 0) return false;
 
   // * raffle the powers
-  // ** get a number between -0.5 and the length of the powers array
   const randomIdx = Math.floor(getRandomFloatBetween(-0.5, powers.length));
   // ** if the number is -1, return false
   if (randomIdx === -1) return false;
@@ -242,6 +453,4 @@ export async function getTeammates(
   );
 }
 
-export function hasSocketConnection(idStudent: number) {
-  return !!directory.get(idStudent);
-}
+export function hasSocketConnection(idStudent: number) {}

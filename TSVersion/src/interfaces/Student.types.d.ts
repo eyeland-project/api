@@ -18,4 +18,7 @@ export interface Student {
   comparePassword: (password: string) => boolean;
 }
 
-export type StudentCreation = Omit<Student, "id_student" | "deleted">;
+export type StudentCreation = Omit<
+  Student,
+  "id_student" | "deleted" | "comparePassword"
+>;

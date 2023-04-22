@@ -3,7 +3,6 @@ import passport from "passport";
 import {
   getTeams,
   getTeam,
-  updateTeam,
   initTeams
 } from "@controllers/teacher/team.controller";
 
@@ -14,7 +13,6 @@ router.use(auth);
 
 router.get("/", getTeams);
 router.get("/:idTeam", getTeam);
-router.put("/:idTeam", updateTeam);
 router.post("/init", initTeams);
 
 export default router;

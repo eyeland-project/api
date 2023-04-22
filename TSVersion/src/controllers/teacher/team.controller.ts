@@ -90,37 +90,6 @@ export async function getTeam(
   }
 }
 
-export async function createTeam(
-  req: Request<{ idCourse: number }>,
-  res: Response<{ id: number }>,
-  next: NextFunction
-) {
-  const { idCourse } = req.params;
-  const { name } = req.body as TeamCreateDto;
-
-  try {
-    const { id_team } = await createTeamServ(name, idCourse);
-    res.status(201).json({ id: id_team });
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function updateTeam(
-  req: Request<{ idTeam: number }>,
-  res: Response,
-  next: NextFunction
-) {
-  const { idTeam } = req.params;
-  const fields = req.body as Partial<TeamUpdateDto>;
-  try {
-    await updateTeamServ(idTeam, fields);
-    res.status(200).json({ message: "Team updated successfully" });
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function initTeams(
   req: Request<{ idCourse: number }, any, { socketBased: boolean }>,
   res: Response,
