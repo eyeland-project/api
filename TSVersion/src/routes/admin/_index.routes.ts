@@ -32,16 +32,12 @@ function loadRoutes() {
         const entity = file.split(".")[0];
 
         const resource = entity + "s";
-        const controllerName = entity[0].toUpperCase() + entity.slice(1);
 
-        routerDyn.get(`/${resource}/:id`, controllers[`get${controllerName}`]);
-        routerDyn.get(`/${resource}/`, controllers[`get${controllerName}s`]);
-        routerDyn.post(`/${resource}/`, controllers[`create${controllerName}`]);
-        routerDyn.put(`/${resource}/`, controllers[`update${controllerName}`]);
-        routerDyn.delete(
-          `/${resource}/`,
-          controllers[`delete${controllerName}`]
-        );
+        routerDyn.get(`/${resource}/:id`, controllers["getElement"]);
+        routerDyn.get(`/${resource}/`, controllers["getElements"]);
+        routerDyn.post(`/${resource}/`, controllers["createElement"]);
+        routerDyn.put(`/${resource}/`, controllers["updateElement"]);
+        routerDyn.delete(`/${resource}/`, controllers["deleteElement"]);
       })
       .catch((err) => {
         console.log(`Error reading admin routes: ${file}`, err);
