@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import { deleteSocket, printDirectory } from "@listeners/utils";
+import { getCourses } from "@services/course.service";
 
 export const directory = new Map<number, Socket>();
 
@@ -11,7 +12,7 @@ export function onConnection(socket: Socket) {
   socket.on("disconnect", onDisconnect);
 
   // FUNCTIONS
-  function onJoin(id: number) {
+  async function onJoin(id: number) {
     console.log("S: teacher id", id);
     if (!validConnection(id)) {
       console.log("S: teacher invalid connection", socket.id);
@@ -19,6 +20,17 @@ export function onConnection(socket: Socket) {
       return;
     }
     directory.set(id, socket);
+
+    try {
+      const coursesIds = (await getCourses(id)).map((course) => course.id);
+
+      // join courses rooms
+      coursesIds.forEach((courseId) => {
+        socket.join(`c${courseId}`);
+      });
+    } catch (err) {
+      console.log("S: error on join course", err);
+    }
     printTeachersDir();
   }
 

@@ -52,6 +52,11 @@ export function onConnection(socket: Socket) {
     const prevSocket = directory.get(id);
     if (prevSocket) {
       console.log("S: student already connected", socket.id);
+      try {
+        await leaveTeam(id, socket); // leave team room is done in leaveTeam function
+      } catch (err) {
+        console.log("S: error on leave team", err);
+      }
       prevSocket.disconnect();
     }
 
