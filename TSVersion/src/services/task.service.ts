@@ -12,7 +12,7 @@ import {
 } from "@dto/student/task.dto";
 import sequelize from "@database/db";
 import { QueryTypes } from "sequelize";
-import { finishStudentTaskAttempts } from "./taskAttempt.service";
+import { finishStudentTaskAttempts } from "@services/taskAttempt.service";
 
 export async function getTasksForStudent(
   idStudent: number

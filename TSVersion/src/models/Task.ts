@@ -3,7 +3,7 @@
 import { DataTypes, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { Task, TaskCreation } from "@interfaces/Task.types";
-import TaskStageModel from "./TaskStage";
+import { TaskStageModel } from "@models";
 
 // model class definition
 class TaskModel extends Model<Task, TaskCreation> {
