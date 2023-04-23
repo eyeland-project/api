@@ -204,7 +204,8 @@ export function getStudentsFromCourse(
     where: { id_course: idCourse, deleted: false },
     include: [
       {
-        model: BlindnessAcuityModel
+        model: BlindnessAcuityModel,
+        as: "blindnessAcuity"
       },
       {
         model: CourseModel,
