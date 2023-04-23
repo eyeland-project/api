@@ -1,12 +1,12 @@
 import { Router } from "express";
 import passport from "passport";
-import { getTasks } from "@controllers/teacher/task.controller";
+import { getTask } from "@controllers/teacher/task.controller";
 
 const auth = passport.authenticate("jwt-teacher", { session: false });
 
-const router = Router();
+const router = Router({ mergeParams: true });
 router.use(auth);
 
-router.get("/", getTasks);
+router.get("/", getTask);
 
 export default router;

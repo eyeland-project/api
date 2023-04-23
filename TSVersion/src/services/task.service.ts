@@ -97,12 +97,10 @@ export async function getTasksForTeacher(): Promise<TaskSummaryDtoTeacher[]> {
     await repositoryService.findAll<TaskModel>(TaskModel, {
       order: [["task_order", "ASC"]]
     })
-  ).map(({ id_task, name, description, task_order, thumbnail_url }) => ({
+  ).map(({ id_task, name, task_order }) => ({
     id: id_task,
     name,
-    description,
-    taskOrder: task_order,
-    thumbnailUrl: thumbnail_url || ""
+    taskOrder: task_order
   }));
 }
 
@@ -116,35 +114,9 @@ export async function getTaskForTeacher(
     task_order,
     thumbnail_url,
     long_description,
-    keywords,
-    taskStages: [
-      {
-        description: descriptionPretask,
-        keywords: keywordsPretask,
-        id_task_stage: pretaskId
-      },
-      {
-        description: descriptionDuringtask,
-        keywords: keywordsDuringtask,
-        id_task_stage: duringtaskId
-      },
-      {
-        description: descriptionPostask,
-        keywords: keywordsPostask,
-        id_task_stage: postaskId
-      }
-    ]
+    keywords
   } = await repositoryService.findOne<TaskModel>(TaskModel, {
-    where: { id_task: idTask },
-    include: [
-      {
-        model: TaskStageModel,
-        as: "taskStages",
-        order: [["task_stage_order", "ASC"]],
-        attributes: ["id_task_stage", "description", "keywords"],
-        required: false
-      }
-    ]
+    where: { id_task: idTask }
   });
   return {
     id: id_task,
@@ -153,21 +125,6 @@ export async function getTaskForTeacher(
     taskOrder: task_order,
     thumbnailUrl: thumbnail_url || "",
     longDescription: long_description || "",
-    keywords,
-    pretask: {
-      id: pretaskId,
-      description: descriptionPretask,
-      keywords: keywordsPretask
-    },
-    duringtask: {
-      id: duringtaskId,
-      description: descriptionDuringtask,
-      keywords: keywordsDuringtask
-    },
-    postask: {
-      id: postaskId,
-      description: descriptionPostask,
-      keywords: keywordsPostask
-    }
+    keywords
   };
 }

@@ -107,7 +107,8 @@ QuestionModel.init(
 // model associations
 // question and task stage
 TaskStageModel.hasMany(QuestionModel, {
-  foreignKey: "id_task_stage"
+  foreignKey: "id_task_stage",
+  as: "questions"
 });
 QuestionModel.belongsTo(TaskStageModel, {
   foreignKey: "id_task_stage",

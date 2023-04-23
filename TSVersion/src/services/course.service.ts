@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { FindOptions, Op, Options } from "sequelize";
 import sequelize from "@database/db";
 import { ApiError } from "@middlewares/handleErrors";
 import {
@@ -122,7 +122,8 @@ export async function deleteCourse(idTeacher: number, idCourse: number) {
 // OTHERS
 export async function getTeamsFromCourseWithStudents(
   idCourse: number,
-  where?: Partial<Team>
+  where?: Partial<Team>,
+  options?: FindOptions
 ): Promise<TeamDetailDtoGlobal[]> {
   const teams = await TeamModel.findAll({
     include: [
@@ -156,7 +157,8 @@ export async function getTeamsFromCourseWithStudents(
         where: { deleted: false }
       }
     ],
-    where: { id_course: idCourse, ...where }
+    where: { id_course: idCourse, ...where },
+    ...options
   });
 
   return teams.map(

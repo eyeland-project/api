@@ -1,5 +1,7 @@
 export interface TaskStageDetailDto {
-  description: string;
+  id: number;
+  taskStageOrder: number;
   keywords: string[];
+  description: string;
   numQuestions: number;
 }

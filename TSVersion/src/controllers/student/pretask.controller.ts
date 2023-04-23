@@ -1,88 +1,65 @@
 import { Request, Response, NextFunction } from "express";
 import {
-  getQuestionByOrder,
-  getTaskStageQuestionsCount
+  getQuestionFromPretaskForStudent,
+  getQuestionsFromPretaskForStudent
 } from "@services/question.service";
-import { getQuestionOptions } from "@services/option.service";
 import { AnswerCreateDto } from "@dto/student/answer.dto";
 import { answerPretask } from "@services/answer.service";
-import {
-  getQuestionsFromTaskStage,
-  getTaskStageByOrder
-} from "@services/taskStage.service";
+import { getPretaskForStudent } from "@services/taskStage.service";
 import { upgradeStudentTaskProgress } from "@services/studentTask.service";
 import { QuestionPretaskDetailDto } from "@dto/student/question.dto";
-import { PretaskDetailDto } from "@dto/student/taskStage.dto";
+import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
+import { ApiError } from "@middlewares/handleErrors";
 
-export async function root(
-  req: Request<{ taskOrder: number }>,
-  res: Response<PretaskDetailDto>,
+export async function getPretask(
+  req: Request<{ taskOrder: string }>,
+  res: Response<TaskStageDetailDto>,
   next: NextFunction
 ) {
+  const taskOrder = parseInt(req.params.taskOrder);
   try {
-    const { taskOrder } = req.params;
-    const { description, keywords, id_task_stage } = await getTaskStageByOrder(
-      taskOrder,
-      1
-    );
-    res.status(200).json({
-      description: description,
-      keywords: keywords,
-      numQuestions: await getTaskStageQuestionsCount(id_task_stage)
-    });
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid taskOrder");
+    }
+    res.status(200).json(await getPretaskForStudent(taskOrder));
   } catch (err) {
     next(err);
   }
 }
 
 export async function getQuestions(
-  req: Request<{ taskOrder: number }>,
+  req: Request<{ taskOrder: string }>,
   res: Response<QuestionPretaskDetailDto[]>,
   next: NextFunction
 ) {
-  const { taskOrder } = req.params;
+  const taskOrder = parseInt(req.params.taskOrder);
   try {
-    const questionsWithOptions = (
-      await getQuestionsFromTaskStage(taskOrder, 1)
-    ).map(({ audioUrl, videoUrl, ...fields }) => fields);
-
-    questionsWithOptions.sort((a, b) => {
-      // move nulls to the end
-      if (!a.topic) return 1;
-      if (!b.topic) return -1;
-      return a.topic.localeCompare(b.topic);
-    });
-    res.status(200).json(questionsWithOptions);
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid taskOrder");
+    }
+    res.status(200).json(await getQuestionsFromPretaskForStudent(taskOrder));
   } catch (err) {
     next(err);
   }
 }
 
 export async function getQuestion(
-  req: Request<{ taskOrder: number; questionOrder: number }>,
+  req: Request<{ taskOrder: string; questionOrder: string }>,
   res: Response<QuestionPretaskDetailDto>,
   next: NextFunction
 ) {
-  const { taskOrder, questionOrder } = req.params;
+  const taskOrder = parseInt(req.params.taskOrder);
+  const questionOrder = parseInt(req.params.questionOrder);
   try {
-    const { id_question, content, type, img_alt, img_url, topic } =
-      await getQuestionByOrder(taskOrder, 1, questionOrder);
-    const options = await getQuestionOptions(id_question);
-
-    res.status(200).json({
-      content,
-      type,
-      id: id_question,
-      imgAlt: img_alt || "",
-      imgUrl: img_url || "",
-      options: options.map(({ id_option, content, correct, feedback }) => ({
-        id: id_option,
-        content,
-        correct,
-        feedback: feedback || ""
-      })),
-      topic: topic || null
-    });
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid taskOrder");
+    }
+    if (isNaN(questionOrder) || questionOrder <= 0) {
+      throw new ApiError("Invalid questionOrder");
+    }
+    res
+      .status(200)
+      .json(await getQuestionFromPretaskForStudent(taskOrder, questionOrder));
   } catch (err) {
     next(err);
   }
@@ -90,23 +67,25 @@ export async function getQuestion(
 
 export async function answer(
   req: Request<{ taskOrder: string; questionOrder: string }>,
-  res: Response,
+  res: Response<{ message: string }>,
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
   const { idOption, answerSeconds, newAttempt } = req.body as AnswerCreateDto;
-
   const taskOrder = parseInt(req.params.taskOrder);
   const questionOrder = parseInt(req.params.questionOrder);
 
-  if (isNaN(taskOrder) || taskOrder < 1)
-    return res.status(400).json({ message: "Bad taskOrder" });
-  if (isNaN(questionOrder) || questionOrder < 1)
-    return res.status(400).json({ message: "Bad questionOrder" });
-  if (!idOption || idOption < 1)
-    return res.status(400).json({ message: "Bad idOption" });
-
   try {
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid taskOrder");
+    }
+    if (isNaN(questionOrder) || questionOrder <= 0) {
+      throw new ApiError("Invalid questionOrder");
+    }
+    if (idOption <= 0) {
+      throw new ApiError("Invalid idOption");
+    }
+
     await answerPretask(
       idStudent,
       taskOrder,
@@ -125,7 +104,7 @@ export async function answer(
 
 export async function setCompleted(
   req: Request<{ taskOrder: number }>,
-  res: Response,
+  res: Response<{ message: string }>,
   next: NextFunction
 ) {
   try {

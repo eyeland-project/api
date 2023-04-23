@@ -1,6 +1,6 @@
 import {
   QuestionDuringtaskDetailDto as QuestionDuringtaskDetailDtoGlobal,
-  QuestionPostaskDetailDto as QuestionPostaskDetailRespGlobal,
+  QuestionPostaskDetailDto as QuestionPostaskDetailDtoGlobal,
   QuestionPretaskDetailDto as QuestionPretaskDetailDtoGlobal
 } from "@dto/global/question.dto";
 
@@ -9,5 +9,5 @@ export type QuestionPretaskDetailDto = QuestionPretaskDetailDtoGlobal;
 export interface QuestionDuringtaskDetailDto
   extends QuestionDuringtaskDetailDtoGlobal {}
 
-export interface QuestionPostaskDetailResp
-  extends QuestionPostaskDetailRespGlobal {}
+export interface QuestionPostaskDetailDto
+  extends QuestionPostaskDetailDtoGlobal {}

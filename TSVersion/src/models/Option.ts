@@ -59,7 +59,8 @@ QuestionModel.hasMany(OptionModel, {
   as: "options"
 });
 OptionModel.belongsTo(QuestionModel, {
-  foreignKey: "id_question"
+  foreignKey: "id_question",
+  as: "question"
 });
 
 export default OptionModel;

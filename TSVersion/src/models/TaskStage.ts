@@ -3,7 +3,7 @@
 import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { TaskStage, TaskStageCreation } from "@interfaces/TaskStage.types";
-import { TaskModel } from "@models";
+import { QuestionModel, TaskModel } from "@models";
 
 // model class definition
 class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
@@ -13,6 +13,8 @@ class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
   declare description: string;
   declare keywords: string[];
   declare task: NonAttribute<TaskModel>;
+
+  declare questions: NonAttribute<QuestionModel[]>;
 }
 
 // model initialization

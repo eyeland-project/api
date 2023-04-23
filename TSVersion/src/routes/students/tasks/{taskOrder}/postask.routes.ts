@@ -2,8 +2,7 @@ import { RequestHandler, Router } from "express";
 import {
   answer,
   getQuestion,
-  getQuestions,
-  root
+  getPostask
 } from "@controllers/student/postask.controller";
 import passport from "passport";
 
@@ -14,8 +13,7 @@ const auth: RequestHandler = passport.authenticate("jwt-student", {
 const router = Router({ mergeParams: true });
 router.use(auth);
 
-router.get("/", root);
-router.get("/questions", getQuestions);
+router.get("/", getPostask);
 router.get("/questions/:questionOrder", getQuestion);
 router.post("/questions/:questionOrder", answer);
 

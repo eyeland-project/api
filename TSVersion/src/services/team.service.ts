@@ -62,59 +62,9 @@ export async function getTeamForTeacher(
 ): Promise<TeamDetailDtoTeacher> {
   const teams = await getTeamsFromCourseWithStudents(idCourse, {
     id_team: idTeam
-  });
+  }, { limit: 1 });
   if (teams.length === 0) throw new ApiError("Team not found", 404);
   return teams[0];
-
-  // const team = await repositoryService.findOne<TeamModel>(TeamModel, {
-  //   where: { id_team: idTeam, id_course: idCourse }
-  // });
-
-  // let taskOrder: number | null = null;
-  // try {
-  //   const taskAttempts = (await getTaskAttemptsFromTeam(idTeam)).filter(
-  //     ({ active }) => active
-  //   );
-  //   if (taskAttempts.length > 0) {
-  //     taskOrder = (
-  //       await repositoryService.findOne<TaskModel>(TaskModel, {
-  //         where: { id_task: taskAttempts[0].id_task }
-  //       })
-  //     ).task_order;
-  //   }
-  // } catch (err) {}
-
-  // const { id_team, name, active, code, playing } = team;
-  // let students: TeamMember[];
-  // try {
-  //   students = await getMembersFromTeam({ idTeam: id_team });
-  // } catch (err) {
-  //   console.log(err);
-  //   students = [];
-  // }
-  // return {
-  //   id: id_team,
-  //   name,
-  //   active,
-  //   playing,
-  //   taskOrder: taskOrder || null,
-  //   code: code || "",
-  //   students: students.map(
-  //     ({
-  //       id_student,
-  //       first_name,
-  //       last_name,
-  //       username,
-  //       task_attempt: { power }
-  //     }) => ({
-  //       id: id_student,
-  //       firstName: first_name,
-  //       lastName: last_name,
-  //       username,
-  //       power
-  //     })
-  //   )
-  // };
 }
 
 export async function joinTeam(

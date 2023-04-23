@@ -1,10 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
-import {
-  answer,
-  getQuestion,
-  getDuringtask
-} from "@controllers/student/duringtask.controller";
+import { getDuringtask } from "@controllers/teacher/taskStage.controller";
+import { getDuringtaskQuestions } from "@controllers/teacher/question.controller";
 
 const auth = passport.authenticate("jwt-student", { session: false });
 
@@ -12,7 +9,6 @@ const router = Router({ mergeParams: true });
 router.use(auth);
 
 router.get("/", getDuringtask);
-router.get("/questions/:questionOrder", getQuestion);
-router.post("/questions/:questionOrder", answer);
+router.get("/questions", getDuringtaskQuestions);
 
 export default router;

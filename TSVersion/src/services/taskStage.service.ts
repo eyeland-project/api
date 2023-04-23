@@ -1,26 +1,47 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
-import { TaskStage } from "@interfaces/TaskStage.types";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
 import { QuestionDetailDto } from "@dto/global/question.dto";
+import { TaskStageDetailDto as TaskStageDetailDtoTeacher } from "@dto/teacher/taskStage.dto";
+import { TaskStageDetailDto as TaskStageDetailDtoStudent } from "@dto/student/taskStage.dto";
+import * as repositoryService from "@services/repository.service";
 
-export async function getTaskStageByOrder(
-  taskOrder: number,
-  taskStageOrder: number
-): Promise<TaskStage> {
-  const taskStages = (await sequelize.query(
-    `
-        SELECT ts.* FROM task_stage ts
-        JOIN task t ON ts.id_task = t.id_task
-        WHERE t.task_order = ${taskOrder} AND ts.task_stage_order = ${taskStageOrder}
-        LIMIT 1;
-    `,
-    { type: QueryTypes.SELECT }
-  )) as TaskStage[];
-  if (!taskStages.length) throw new ApiError("TaskStage not found", 404);
-  return taskStages[0];
+export async function getPretaskForTeacher(
+  idTask: number
+): Promise<TaskStageDetailDtoTeacher> {
+  return await getTaskStageForTeacher(idTask, 1);
+}
+
+export async function getDuringtaskForTeacher(
+  idTask: number
+): Promise<TaskStageDetailDtoTeacher> {
+  return await getTaskStageForTeacher(idTask, 2);
+}
+
+export async function getPostaskForTeacher(
+  idTask: number
+): Promise<TaskStageDetailDtoTeacher> {
+  return await getTaskStageForTeacher(idTask, 3);
+}
+
+export async function getPretaskForStudent(
+  taskOrder: number
+): Promise<TaskStageDetailDtoStudent> {
+  return await getTaskStageForStudent(taskOrder, 1);
+}
+
+export async function getDuringtaskForStudent(
+  taskOrder: number
+): Promise<TaskStageDetailDtoStudent> {
+  return await getTaskStageForStudent(taskOrder, 2);
+}
+
+export async function getPostaskForStudent(
+  taskOrder: number
+): Promise<TaskStageDetailDtoStudent> {
+  return await getTaskStageForStudent(taskOrder, 3);
 }
 
 export async function getLastQuestionFromTaskStage(
@@ -44,7 +65,7 @@ export async function getLastQuestionFromTaskStage(
 
 export async function getQuestionsFromTaskStage(
   taskOrder: number,
-  stageOrder: number
+  taskStageOrder: number
 ): Promise<QuestionDetailDto[]> {
   const questions = await QuestionModel.findAll({
     include: [
@@ -61,17 +82,17 @@ export async function getQuestionsFromTaskStage(
           }
         ],
         where: {
-          task_stage_order: stageOrder
+          task_stage_order: taskStageOrder
         }
       },
       {
         model: OptionModel,
-        required: true,
+        // required: true,
         as: "options"
       }
     ],
-    limit: stageOrder === 1 ? 10 : undefined,
-    order: stageOrder === 1 ? sequelize.random() : undefined
+    limit: taskStageOrder === 1 ? 10 : undefined,
+    order: taskStageOrder === 1 ? sequelize.random() : undefined
   });
 
   return questions.map(
@@ -105,4 +126,68 @@ export async function getQuestionsFromTaskStage(
       })
     })
   );
+}
+
+async function getTaskStageForTeacher(
+  idTask: number,
+  taskStageOrder: number
+): Promise<TaskStageDetailDtoTeacher> {
+  const { description, keywords, id_task_stage, task_stage_order, questions } =
+    await getTaskStage({ idTask }, taskStageOrder);
+  return {
+    id: id_task_stage,
+    taskStageOrder: task_stage_order,
+    description,
+    keywords,
+    numQuestions: questions.length
+  };
+}
+
+async function getTaskStageForStudent(
+  taskOrder: number,
+  taskStageOrder: number
+): Promise<TaskStageDetailDtoStudent> {
+  const { description, keywords, questions } = await getTaskStage(
+    { taskOrder },
+    taskStageOrder
+  );
+  return {
+    description,
+    keywords,
+    numQuestions: questions.length
+  };
+}
+
+async function getTaskStage(
+  { idTask, taskOrder }: { idTask?: number; taskOrder?: number },
+  taskStageOrder: number
+): Promise<TaskStageModel> {
+  if (idTask === undefined && taskOrder === undefined)
+    throw new ApiError("idTask or taskOrder is required", 400);
+  return await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+    where: {
+      task_stage_order: taskStageOrder
+    },
+    include: [
+      {
+        model: QuestionModel,
+        as: "questions",
+        attributes: ["id_question"],
+        required: false
+      },
+      {
+        model: TaskModel,
+        as: "task",
+        where: {
+          ...(idTask !== undefined
+            ? {
+                id_task: idTask
+              }
+            : {
+                task_order: taskOrder
+              })
+        }
+      }
+    ]
+  });
 }
