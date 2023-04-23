@@ -33,6 +33,16 @@ export async function findOne<T extends Model>(
   return element;
 }
 
+// get one
+// export async function findByPk<T extends Model>(
+//   model: ModelStatic<T>,
+//   id: number
+// ): Promise<T> {
+//   const element = await model.findByPk(id);
+//   if (!element) throw new ApiError(`${model.tableName} not found`, 404);
+//   return element;
+// }
+
 // create
 export async function create<T extends Model>(
   model: ModelStatic<T>,

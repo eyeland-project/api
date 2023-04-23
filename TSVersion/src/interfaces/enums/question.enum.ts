@@ -3,7 +3,9 @@ export enum QuestionType {
   FILL = "fill",
   ORDER = "order",
   SELECT = "select",
-  AUDIO = "audio"
+  AUDIO = "audio",
+  AUDIO_ORDER = "audio_order",
+  AUDIO_SELECT = "audio_select"
 }
 
 export enum QuestionTopic {

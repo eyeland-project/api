@@ -33,7 +33,7 @@ import {
 } from "@services/course.service";
 import { Socket } from "socket.io";
 import * as repositoryService from "@services/repository.service";
-import { getHighestTaskCompletedFromStudent } from "./studentTask.service";
+import { getHighestTaskCompletedFromStudent } from "@services/studentTask.service";
 import { TeamDetailDto as TeamDetailDtoStudent } from "@dto/student/team.dto";
 import { TeamDetailDto as TeamDetailDtoTeacher } from "@dto/teacher/team.dto";
 

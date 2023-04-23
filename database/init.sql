@@ -929,7 +929,7 @@ INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 8', '888888');
 INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 9', '999999');
 
 -- INSERT INTO admin
-INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Administrador', 'Prueba', 'admin@test.com', 'admin', 'pass123');
+INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Brunner', 'Hurtador', 'carlbrunner@hurtador.com', 'brunner', 'cocacola');
 
 -- INSERT INTO release
 INSERT INTO release (url, version) VALUES ('https://storage.cloud.google.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');
