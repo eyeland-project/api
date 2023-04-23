@@ -243,22 +243,13 @@ export async function notifyCourseOfTeamUpdate(
   const dataStudents: TeamDetailDtoStudent[] = filterTeamsForStudents(teams);
   courseRoom.emit(OutgoingEvents.TEAMS_UPDATE, dataStudents);
 
-  try {
-    const dataTeachers: TeamDetailDtoTeacher[] = teams.filter(
-      ({ active }) => active
-    );
-    const { id_teacher } = await repositoryService.findOne<CourseModel>(
-      CourseModel,
-      {
-        where: { id_course: idCourse }
-      }
-    );
-    directoryTeachers
-      .get(id_teacher)
-      ?.emit(OutgoingEvents.TEAMS_UPDATE, dataTeachers);
-  } catch (err) {
-    console.log("Could not notify teacher of team update", err);
-  }
+  const dataTeachers: TeamDetailDtoTeacher[] = teams.filter(
+    ({ active }) => active
+  );
+
+  of(Namespaces.TEACHERS)
+    ?.to(`c${idCourse}`)
+    .emit(OutgoingEvents.TEAMS_UPDATE, dataTeachers);
 }
 
 export async function createSession(idTeacher: number, idCourse: number) {
