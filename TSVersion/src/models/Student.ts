@@ -22,9 +22,9 @@ class StudentModel extends Model<Student, StudentCreation> {
   declare last_name: string;
   declare username: string;
   declare password: string;
-  declare email: string;
-  declare phone_code: string;
-  declare phone_number: string;
+  declare email?: string | null;
+  declare phone_code?: string | null;
+  declare phone_number?: string | null;
   declare deleted: boolean;
   declare course: NonAttribute<CourseModel>;
   declare blindnessAcuity: NonAttribute<BlindnessAcuityModel>;
@@ -83,16 +83,13 @@ StudentModel.init(
     },
     email: {
       type: DataTypes.STRING(320),
-      unique: true,
-      allowNull: false
+      unique: true
     },
     phone_code: {
-      type: DataTypes.STRING(5),
-      allowNull: false
+      type: DataTypes.STRING(5)
     },
     phone_number: {
-      type: DataTypes.STRING(15),
-      allowNull: false
+      type: DataTypes.STRING(15)
     },
     deleted: {
       type: DataTypes.BOOLEAN,

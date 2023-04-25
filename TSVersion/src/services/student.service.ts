@@ -97,11 +97,13 @@ export async function getStudent(
     firstName: first_name,
     lastName: last_name,
     username,
-    email,
-    phone: {
-      countryCode: phone_code,
-      number: phone_number
-    },
+    email: email || null,
+    phone: phone_number
+      ? {
+          countryCode: phone_code || null,
+          number: phone_number
+        }
+      : null,
     blindnessAcuity: {
       id: id_blindness_acuity,
       name: blindnessAcuityName,
@@ -148,11 +150,13 @@ export async function getStudents(
       firstName: first_name,
       lastName: last_name,
       username: username,
-      email: email,
-      phone: {
-        countryCode: phone_code,
-        number: phone_number
-      }
+      email: email || null,
+      phone: phone_number
+        ? {
+            countryCode: phone_code || null,
+            number: phone_number
+          }
+        : null
     })
   );
 }
@@ -169,21 +173,43 @@ export async function createStudent(
   const {
     email,
     firstName,
-    idBlindnessAcuity,
-    idColorDeficiency,
-    idVisualFieldDefect,
+    blindnessAcuityCode,
+    colorDeficiencyCode,
+    visualFieldDefectCode,
     lastName,
     password,
     phoneCode,
     phoneNumber,
     username
   } = fields;
+  const { id_blindness_acuity } =
+    await repositoryService.findOne<BlindnessAcuityModel>(
+      BlindnessAcuityModel,
+      {
+        where: { code: blindnessAcuityCode }
+      }
+    );
+  const { id_color_deficiency } =
+    await repositoryService.findOne<ColorDeficiencyModel>(
+      ColorDeficiencyModel,
+      {
+        where: { code: colorDeficiencyCode }
+      }
+    );
+  const { id_visual_field_defect } =
+    await repositoryService.findOne<VisualFieldDefectModel>(
+      VisualFieldDefectModel,
+      {
+        where: { code: visualFieldDefectCode }
+      }
+    );
+
   const { id_student } = await repositoryService.create<StudentModel>(
     StudentModel,
     {
-      id_blindness_acuity: idBlindnessAcuity,
-      id_color_deficiency: idColorDeficiency,
-      id_visual_field_defect: idVisualFieldDefect,
+      id_blindness_acuity,
+      id_color_deficiency,
+      id_visual_field_defect,
       first_name: firstName,
       last_name: lastName,
       username,
@@ -207,14 +233,66 @@ export async function updateStudent(
   await repositoryService.findOne<CourseModel>(CourseModel, {
     where: { id_course: idCourse, id_teacher: idTeacher, deleted: false }
   });
+
+  // first we add the id fields (we use ids instead of codes) for the visual impairments
+  interface StudentUpdateInterface extends StudentUpdateDto {
+    id_blindness_acuity?: number;
+    id_color_deficiency?: number;
+    id_visual_field_defect?: number;
+  }
+
+  // then we remove the codes from the fields
+  type StudentUpdate = Omit<
+    StudentUpdateInterface,
+    "blindnessAcuityCode" | "colorDeficiencyCode" | "visualFieldDefectCode"
+  >;
+
+  // then we take the fields but the codes
+  const {
+    blindnessAcuityCode,
+    colorDeficiencyCode,
+    visualFieldDefectCode,
+    ...otherFields
+  } = fields;
+  const theFields: StudentUpdate = otherFields;
+
+  // if some visual impairment code is present, we add the id to the fields
+  if (blindnessAcuityCode !== undefined) {
+    theFields.id_blindness_acuity = (
+      await repositoryService.findOne<BlindnessAcuityModel>(
+        BlindnessAcuityModel,
+        {
+          where: { code: blindnessAcuityCode }
+        }
+      )
+    ).id_blindness_acuity;
+  }
+  if (colorDeficiencyCode !== undefined) {
+    theFields.id_color_deficiency = (
+      await repositoryService.findOne<ColorDeficiencyModel>(
+        ColorDeficiencyModel,
+        {
+          where: { code: colorDeficiencyCode }
+        }
+      )
+    ).id_color_deficiency;
+  }
+  if (visualFieldDefectCode !== undefined) {
+    theFields.id_visual_field_defect = (
+      await repositoryService.findOne<VisualFieldDefectModel>(
+        VisualFieldDefectModel,
+        {
+          where: { code: visualFieldDefectCode }
+        }
+      )
+    ).id_visual_field_defect;
+  }
+
   const parsedFields: Partial<StudentCreation> = parseUpdateFields<
-    StudentUpdateDto,
+    StudentUpdate,
     StudentCreation
-  >(fields, {
+  >(theFields, {
     firstName: "first_name",
-    idBlindnessAcuity: "id_blindness_acuity",
-    idColorDeficiency: "id_color_deficiency",
-    idVisualFieldDefect: "id_visual_field_defect",
     phoneCode: "phone_code",
     phoneNumber: "phone_number"
   });

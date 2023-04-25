@@ -11,9 +11,9 @@ export interface Student {
   last_name: string;
   username: string;
   password: string;
-  email: string;
-  phone_code: string;
-  phone_number: string;
+  email?: string | null;
+  phone_code?: string | null;
+  phone_number?: string | null;
   deleted: boolean;
   comparePassword: (password: string) => boolean;
 }

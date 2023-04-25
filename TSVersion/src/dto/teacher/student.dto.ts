@@ -3,11 +3,11 @@ export interface StudentSummaryDto {
   firstName: string;
   lastName: string;
   username: string;
-  email: string;
+  email: string | null;
   phone: {
-    countryCode: string;
+    countryCode: string | null;
     number: string;
-  };
+  } | null;
 }
 
 interface VisualDisease {
@@ -24,16 +24,16 @@ export interface StudentDetailDto extends StudentSummaryDto {
 
 export interface StudentCreateDto {
   // idCourse: number; // since the route is /courses/:idCourse/students, this is not needed
-  idBlindnessAcuity: number;
-  idVisualFieldDefect: number;
-  idColorDeficiency: number;
+  blindnessAcuityCode: string;
+  visualFieldDefectCode: string;
+  colorDeficiencyCode: string;
   firstName: string;
   lastName: string;
   username: string;
   password: string;
-  email: string;
-  phoneCode: string;
-  phoneNumber: string;
+  email?: string;
+  phoneCode?: string;
+  phoneNumber?: string;
 }
 
 export type StudentUpdateDto = Partial<StudentCreateDto>;
