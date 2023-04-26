@@ -1,7 +1,8 @@
-import { Transaction } from "sequelize";
+import { QueryTypes, Transaction } from "sequelize";
 import { ApiError } from "@middlewares/handleErrors";
 import { TaskAttemptModel } from "@models";
 import { TaskAttempt } from "@interfaces/TaskAttempt.types";
+import sequelize from "@database/db";
 
 export async function getCurrTaskAttempt(
   idStudent: number
@@ -42,4 +43,16 @@ export async function finishStudentTaskAttempts(idStudent: number) {
     { active: false },
     { where: { id_student: idStudent, active: true } }
   );
+}
+
+export async function finishCourseTaskAttempts(idCourse: number) {
+  sequelize.query(`
+    UPDATE task_attempt
+    SET active = false
+    WHERE id_student IN (
+      SELECT id_student
+      FROM student
+      WHERE id_course = ${idCourse}
+    ) AND active = true;
+    `, { type: QueryTypes.UPDATE }).catch(() => {});
 }

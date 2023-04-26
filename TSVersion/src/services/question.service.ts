@@ -1,4 +1,4 @@
-import { FindOptions, QueryTypes, WhereOptions } from "sequelize";
+import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
 import { Question } from "@interfaces/Question.types";

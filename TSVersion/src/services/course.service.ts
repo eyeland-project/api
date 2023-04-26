@@ -1,4 +1,4 @@
-import { FindOptions, Op, Options } from "sequelize";
+import { FindOptions, Op, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import { ApiError } from "@middlewares/handleErrors";
 import {
@@ -37,6 +37,7 @@ import {
 } from "@dto/teacher/course.dto";
 import * as repositoryService from "@services/repository.service";
 import { Team } from "@interfaces/Team.types";
+import { finishCourseTaskAttempts } from "./taskAttempt.service";
 
 export async function getCourses(
   idTeacher: number
@@ -259,10 +260,6 @@ export async function createSession(idTeacher: number, idCourse: number) {
   const nsp = of(Namespaces.STUDENTS);
   if (!nsp) throw new ApiError("Namespace not found", 500);
 
-  // const { session, id_course } = await getCourseFromTeacher(
-  //   idTeacher,
-  //   idCourse
-  // );
   const { session, id_course } = await repositoryService.findOne<CourseModel>(
     CourseModel,
     {
@@ -275,7 +272,9 @@ export async function createSession(idTeacher: number, idCourse: number) {
 
   await initializeTeams(idCourse);
   await cleanLeaderBoard(idCourse);
-  // await updateCourse({ id_course: idCourse }, { session: true });
+  try {
+    await finishCourseTaskAttempts(idCourse);
+  } catch (e) {}
   await repositoryService.update<CourseModel>(
     CourseModel,
     { session: true },
@@ -288,10 +287,6 @@ export async function startSession(idTeacher: number, idCourse: number) {
   const nsp = of(Namespaces.STUDENTS);
   if (!nsp) throw new ApiError("Namespace not found", 500);
 
-  // const { session, id_course } = await getCourseFromTeacher(
-  //   idTeacher,
-  //   idCourse
-  // );
   const { session, id_course } = await repositoryService.findOne<CourseModel>(
     CourseModel,
     {
@@ -312,10 +307,6 @@ export async function endSession(idTeacher: number, idCourse: number) {
   const nsp = of(Namespaces.STUDENTS);
   if (!nsp) throw new ApiError("Namespace not found", 500);
 
-  // const { session, id_course } = await getCourseFromTeacher(
-  //   idTeacher,
-  //   idCourse
-  // );
   const { session, id_course } = await repositoryService.findOne<CourseModel>(
     CourseModel,
     {
@@ -326,7 +317,6 @@ export async function endSession(idTeacher: number, idCourse: number) {
     throw new ApiError("Course has no active session", 400);
   }
 
-  // await updateCourse({ id_course: idCourse }, { session: false });
   await repositoryService.update<CourseModel>(
     CourseModel,
     { session: false },
@@ -334,6 +324,14 @@ export async function endSession(idTeacher: number, idCourse: number) {
   );
   await cleanLeaderBoard(idCourse);
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_END);
+  Promise.allSettled([
+    repositoryService.update<TeamModel>(
+      TeamModel,
+      { playing: false, active: false },
+      { where: { id_course: idCourse, playing: true } }
+    ),
+    finishCourseTaskAttempts(idCourse)
+  ]).catch(() => {});
 }
 
 export async function initializeTeams(idCourse: number) {
