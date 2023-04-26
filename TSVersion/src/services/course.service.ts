@@ -223,10 +223,11 @@ export async function notifyCourseOfTeamUpdate(
   idTeam?: number,
   idStudent?: number
 ): Promise<void> {
-  let courseRoom;
+  let courseRoom, studentSocket;
   if (idStudent) {
-    const studentSocket = directoryStudents.get(idStudent);
-    if (!studentSocket) return;
+    studentSocket = directoryStudents.get(idStudent);
+  }
+  if (studentSocket) {
     courseRoom = studentSocket.broadcast.to(`c${idCourse}`);
   } else {
     const channelStudents = of(Namespaces.STUDENTS);
@@ -302,9 +303,9 @@ export async function startSession(idTeacher: number, idCourse: number) {
   }
 
   await startPlayingTeams(idCourse);
-  updateLeaderBoard(idCourse);
+  updateLeaderBoard(idCourse).catch(() => {});
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_START);
-  emitLeaderboard(idCourse);
+  emitLeaderboard(idCourse).catch(() => {});
 }
 
 export async function endSession(idTeacher: number, idCourse: number) {

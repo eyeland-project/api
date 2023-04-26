@@ -60,9 +60,13 @@ export async function getTeamForTeacher(
   idCourse: number,
   idTeam: number
 ): Promise<TeamDetailDtoTeacher> {
-  const teams = await getTeamsFromCourseWithStudents(idCourse, {
-    id_team: idTeam
-  }, { limit: 1 });
+  const teams = await getTeamsFromCourseWithStudents(
+    idCourse,
+    {
+      id_team: idTeam
+    },
+    { limit: 1 }
+  );
   if (teams.length === 0) throw new ApiError("Team not found", 404);
   return teams[0];
 }
@@ -166,7 +170,11 @@ export async function joinTeam(
       false
     )
       .then(({ yaper }) => {
-        notifyCourseOfTeamUpdate(student.id_course, team.id_team, idStudent);
+        notifyCourseOfTeamUpdate(
+          student.id_course,
+          team.id_team,
+          idStudent
+        ).catch(() => {});
         if (yaper) notifyStudentOfTeamUpdate(yaper);
       })
       .catch((err) => console.log(err));
@@ -278,7 +286,7 @@ export async function leaveTeam(
   idStudent: number,
   socketStudent: Socket
 ): Promise<void> {
-  const power = (await getCurrTaskAttempt(idStudent)).power;
+  const { power } = await getCurrTaskAttempt(idStudent);
   const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
   await removeStudentFromTeam(idStudent);
 
@@ -288,9 +296,8 @@ export async function leaveTeam(
     checkReassignSuperHearing(id_team, power).catch((err) => {
       console.log(err);
     });
-
     await verifyTeamStatus(id_team);
-    notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
+    await notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
   }).catch((err) => console.log(err));
 }
 

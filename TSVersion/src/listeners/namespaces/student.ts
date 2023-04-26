@@ -45,8 +45,6 @@ export function onConnection(socket: Socket) {
     }
 
     console.log("S: Student id", id);
-    // console.log('S: id type', typeof id);
-    // id = typeof id === 'object'? id.id : Number(id);
 
     // check if student is already in directory
     const prevSocket = directory.get(id);
@@ -89,6 +87,7 @@ export function onConnection(socket: Socket) {
   async function onDisconnect() {
     console.log("S: student disconnected", socket.id);
     const idStudent = findId(socket, directory);
+    if (idStudent === -1) return;
     try {
       await leaveTeam(idStudent, socket); // leave team room is done in leaveTeam function
     } catch (err) {

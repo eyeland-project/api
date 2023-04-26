@@ -30,8 +30,8 @@ function loadRoutes() {
     import(filePath)
       .then((controllers) => {
         const entity = file.split(".")[0];
-
-        const resource = entity + "s";
+        const resource =
+          entity.at(-1)! === "y" ? entity.slice(0, -1) + "ies" : entity + "s";
 
         routerDyn.get(`/${resource}/:id`, controllers["getElement"]);
         routerDyn.get(`/${resource}/`, controllers["getElements"]);

@@ -22,11 +22,10 @@ export function onConnection(socket: Socket) {
     directory.set(id, socket);
 
     try {
-      const coursesIds = (await getCourses(id)).map((course) => course.id);
-
-      // join courses rooms
-      coursesIds.forEach((courseId) => {
-        socket.join(`c${courseId}`);
+      // join all courses
+      (await getCourses(id)).forEach(({ id }) => {
+        console.log("S: teacher join course", id);
+        socket.join(`c${id}`);
       });
     } catch (err) {
       console.log("S: error on join course", err);

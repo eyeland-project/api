@@ -423,8 +423,8 @@ export async function rafflePower(idStudent: number): Promise<false | Power> {
   // ** else, assign the power to the student
   await assignPower(idStudent, powers[randomIdx]);
 
-  notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
-  notifyStudentOfTeamUpdate(idStudent);
+  notifyCourseOfTeamUpdate(id_course, id_team, idStudent).catch(() => {});
+  notifyStudentOfTeamUpdate(idStudent).catch(() => {});
 
   // * return the power
   return powers[randomIdx];
