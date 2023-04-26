@@ -16,7 +16,6 @@ import {
   getStudentTaskByOrder,
   upgradeStudentTaskProgress
 } from "@services/studentTask.service";
-import { getTaskForStudent } from "@services/task.service";
 import {
   createTaskAttempt,
   finishStudentTaskAttempts,
@@ -111,9 +110,7 @@ export async function answerDuringtask(
   }
 
   const task = await repositoryService.findOne<TaskModel>(TaskModel, {
-    where: {
-      task_order: taskOrder
-    }
+    where: { task_order: taskOrder }
   });
 
   const { session, id_course } = await getCourseFromStudent(idStudent);
@@ -156,7 +153,7 @@ export async function answerDuringtask(
     const teamMembers = await getMembersFromTeam({
       idTeam: taskAttempt.id_team
     });
-    idsTaskAttempts = teamMembers.map((member) => member.task_attempt.id);
+    idsTaskAttempts = teamMembers.map(({ task_attempt: { id } }) => id);
   } catch (err) {
     idsTaskAttempts = [taskAttempt.id_task_attempt];
   }
@@ -169,7 +166,7 @@ export async function answerDuringtask(
     },
     include: {
       model: QuestionModel,
-      attributes: ["question_order"],
+      // attributes: ["question_order"],
       as: "question"
     }
   });

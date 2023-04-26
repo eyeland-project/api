@@ -328,7 +328,7 @@ export async function endSession(idTeacher: number, idCourse: number) {
     repositoryService.update<TeamModel>(
       TeamModel,
       { playing: false, active: false },
-      { where: { id_course: idCourse, playing: true } }
+      { where: { id_course: idCourse } }
     ),
     finishCourseTaskAttempts(idCourse)
   ]).catch(() => {});
