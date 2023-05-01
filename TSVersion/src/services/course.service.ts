@@ -37,7 +37,7 @@ import {
 } from "@dto/teacher/course.dto";
 import * as repositoryService from "@services/repository.service";
 import { Team } from "@interfaces/Team.types";
-import { finishCourseTaskAttempts } from "./taskAttempt.service";
+import { finishCourseTaskAttempts } from "@services/taskAttempt.service";
 
 export async function getCourses(
   idTeacher: number

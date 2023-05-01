@@ -25,14 +25,16 @@ import {
 import { getLastQuestionFromTaskStage } from "@services/taskStage.service";
 import { getMembersFromTeam, updateTeam } from "@services/team.service";
 import * as repositoryService from "@services/repository.service";
+import { getStorageBucket } from "@config/storage";
+import { format } from "util";
 
 export async function answerPretask(
   idStudent: number,
   taskOrder: number,
   questionOrder: number,
   idOption: number,
-  answerSeconds: number,
-  newAttempt: boolean | null | undefined
+  newAttempt?: boolean | null,
+  answerSeconds?: number
 ): Promise<void> {
   const task = await repositoryService.findOne<TaskModel>(TaskModel, {
     where: {
@@ -89,12 +91,13 @@ export async function answerPretask(
     throw new ApiError("Question already answered in this attempt", 400);
   } catch (err) {}
 
-  await createAnswer(
-    question.id_question,
-    idOption,
-    answerSeconds,
-    taskAttempt.id_task_attempt
-  );
+  await AnswerModel.create({
+    id_question: question.id_question,
+    id_task_attempt: taskAttempt.id_task_attempt,
+    id_option: idOption,
+    answer_seconds: answerSeconds,
+    id_team: null
+  });
 }
 
 export async function answerDuringtask(
@@ -102,7 +105,7 @@ export async function answerDuringtask(
   taskOrder: number,
   questionOrder: number,
   idOption: number,
-  answerSeconds: number
+  answerSeconds?: number
 ): Promise<{ alreadyAnswered: boolean; nextQuestionOrder: number }> {
   const socket = dirStudents.get(idStudent);
   if (!socket) {
@@ -183,13 +186,13 @@ export async function answerDuringtask(
     );
     nextQuestionOrder = highestAnsweredQuestionOrder + 1;
   } else {
-    await createAnswer(
-      question.id_question,
-      idOption,
-      answerSeconds,
-      taskAttempt.id_task_attempt,
-      taskAttempt.id_team
-    );
+    await AnswerModel.create({
+      id_question: question.id_question,
+      id_task_attempt: taskAttempt.id_task_attempt,
+      id_option: idOption,
+      answer_seconds: answerSeconds,
+      id_team: taskAttempt.id_team
+    });
     nextQuestionOrder = questionOrder + 1;
   }
 
@@ -237,12 +240,17 @@ export async function answerPostask(
   idStudent: number,
   taskOrder: number,
   questionOrder: number,
-  idOption: number,
-  answerSeconds: number,
-  newAttempt: boolean | undefined | null
+  idOption?: number,
+  newAttempt?: boolean | null,
+  answerSeconds?: number,
+  audio?: Express.Multer.File
 ): Promise<void> {
+  if (idOption === undefined && audio === undefined) {
+    throw new ApiError("Must provide an answer", 400);
+  }
+
   // create task_attempt if required
-  const task = await repositoryService.findOne<TaskModel>(TaskModel, {
+  const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
     where: {
       task_order: taskOrder
     }
@@ -250,7 +258,7 @@ export async function answerPostask(
 
   const { session } = await getCourseFromStudent(idStudent);
   if (!session) {
-    throw new ApiError("Course session not started", 403);
+    throw new ApiError("Course session not created", 403);
   }
 
   const { highest_stage } = await getStudentTaskByOrder(idStudent, taskOrder);
@@ -262,28 +270,30 @@ export async function answerPostask(
   }
 
   // verify question exists
-  const question = await getQuestionByOrder(taskOrder, 3, questionOrder);
+  const { id_question } = await getQuestionByOrder(taskOrder, 3, questionOrder);
 
   // verify option belongs to question
-  const option = await getOptionById(idOption);
-  if (question.id_question !== option.id_question) {
-    throw new ApiError("Option does not belong to question", 400);
+  if (idOption !== undefined) {
+    const option = await getOptionById(idOption);
+    if (id_question !== option.id_question) {
+      throw new ApiError("Option does not belong to question", 400);
+    }
   }
 
   // create task attempt if required
   let taskAttempt;
   if (newAttempt) {
     await finishStudentTaskAttempts(idStudent);
-    taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
+    taskAttempt = await createTaskAttempt(idStudent, id_task, null);
   } else {
     try {
       taskAttempt = await getCurrTaskAttempt(idStudent);
     } catch (err) {
-      taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
+      taskAttempt = await createTaskAttempt(idStudent, id_task, null);
     }
   }
 
-  if (taskAttempt.id_task !== task.id_task) {
+  if (taskAttempt.id_task !== id_task) {
     throw new ApiError("Current Task attempt is from another task", 400);
   }
 
@@ -291,23 +301,31 @@ export async function answerPostask(
     await AnswerModel.findOne({
       where: {
         id_task_attempt: taskAttempt.id_task_attempt,
-        id_question: question.id_question
+        id_question: id_question
       }
     });
     throw new ApiError("Question already answered in this attempt", 400);
   } catch (err) {}
 
-  await createAnswer(
-    question.id_question,
-    idOption,
-    answerSeconds,
-    taskAttempt.id_task_attempt
-  );
+  const { id_answer } = await AnswerModel.create({
+    id_question,
+    id_task_attempt: taskAttempt.id_task_attempt,
+    id_option: idOption,
+    answer_seconds: answerSeconds,
+    id_team: null
+  });
 
-  // additional logic to upgrade student_task progress
+  // if (audio) {
+  //   try {
+  //     await uploadAudio(audio, id_answer);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
+
   new Promise(() => {
     getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
-      if (lastQuestion.id_question === question.id_question) {
+      if (lastQuestion.id_question === id_question) {
         upgradeStudentTaskProgress(taskOrder, idStudent, 3);
         updateCurrTaskAttempt(idStudent, { active: false });
       }
@@ -315,18 +333,43 @@ export async function answerPostask(
   }).catch((err) => console.log(err));
 }
 
-export async function createAnswer(
-  idQuestion: number,
-  idOption: number,
-  answerSeconds: number,
-  idTaskAttempt: number,
-  idTeam?: number
-): Promise<Answer> {
-  return await AnswerModel.create({
-    id_question: idQuestion,
-    id_task_attempt: idTaskAttempt,
-    id_option: idOption,
-    answer_seconds: answerSeconds,
-    id_team: idTeam ?? null
+async function uploadAudio(
+  audio: Express.Multer.File,
+  id_answer: number
+): Promise<{ message: string; url: string }> {
+  return new Promise((resolve) => {
+    const bucket = getStorageBucket();
+    const blob = bucket.file(audio.originalname);
+    const blobStream = blob.createWriteStream({
+      resumable: false,
+      gzip: true
+    });
+
+    blobStream.on("error", (err) => {
+      throw new ApiError(err.message, 500);
+    });
+
+    blobStream.on("finish", async () => {
+      // Create URL for directly file access via HTTP.
+      const publicUrl = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+      );
+
+      try {
+        // Make the file public
+        await bucket.file(audio.originalname).makePublic();
+        blobStream.end(audio.buffer);
+        resolve({
+          message: "Uploaded the file successfully: " + audio.originalname,
+          url: publicUrl
+        });
+      } catch {
+        blobStream.end(audio.buffer);
+        resolve({
+          message: `Uploaded the file successfully: ${audio.originalname}, but public access is denied!`,
+          url: publicUrl
+        });
+      }
+    });
   });
 }

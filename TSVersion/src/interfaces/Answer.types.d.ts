@@ -6,7 +6,7 @@ export interface Answer {
   id_option?: ForeignKey<number> | null;
   id_team?: ForeignKey<number> | null;
   id_task_attempt: ForeignKey<number>;
-  answer_seconds: number;
+  answer_seconds?: number | null;
   audio_url?: string | null;
 }
 

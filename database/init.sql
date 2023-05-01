@@ -251,7 +251,7 @@ CREATE TABLE answer (
     id_option INTEGER,
     id_task_attempt INTEGER NOT NULL,
     id_team INTEGER,
-    answer_seconds INTEGER NOT NULL,
+    answer_seconds INTEGER,
     audio_url VARCHAR(2048),
     -- CONSTRAINTS
     CONSTRAINT pk_answer PRIMARY KEY (id_answer),
@@ -1023,5 +1023,5 @@ INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 9', '999999');
 INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Brunner', 'Hurtador', 'carlbrunner@hurtador.com', 'brunner', 'cocacola');
 
 -- INSERT INTO release
-INSERT INTO release (url, version) VALUES ('https://storage.cloud.google.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');
-INSERT INTO release (url, version) VALUES ('https://storage.cloud.google.com/eyeland-0/app/dist/v/eyeland-3.6.apk', '3.6');
+INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');
+INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.6.apk', '3.6');

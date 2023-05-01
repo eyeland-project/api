@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { getQuestionFromPostaskForStudent } from "@services/question.service";
 import { answerPostask } from "@services/answer.service";
-import { AnswerCreateDto } from "@dto/student/answer.dto";
+import {
+  AnswerAudioCreateDto,
+  AnswerOptionCreateDto
+} from "@dto/student/answer.dto";
 import { getPostaskForStudent } from "@services/taskStage.service";
 import { QuestionPostaskDetailDto } from "@dto/student/question.dto";
 import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
 import { ApiError } from "@middlewares/handleErrors";
+import { getStorageBucket } from "@config/storage";
+import { uploadFile } from "@config/multer";
+import { format } from "util";
 
 export async function getPostask(
   req: Request<{ taskOrder: string }>,
@@ -46,12 +52,16 @@ export async function getQuestion(
 }
 
 export async function answer(
-  req: Request<{ taskOrder: string; questionOrder: string }>,
+  req: Request<
+    { taskOrder: string; questionOrder: string },
+    any,
+    AnswerAudioCreateDto
+  >,
   res: Response,
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
-  const { idOption, answerSeconds, newAttempt } = req.body as AnswerCreateDto;
+  const { idOption, answerSeconds, newAttempt } = req.body;
   const taskOrder = parseInt(req.params.taskOrder);
   const questionOrder = parseInt(req.params.questionOrder);
   try {
@@ -61,13 +71,16 @@ export async function answer(
     if (isNaN(questionOrder) || questionOrder <= 0) {
       throw new ApiError("Invalid questionOrder");
     }
+    await uploadFile("audio")(req, res);
+
     await answerPostask(
       idStudent,
       taskOrder,
       questionOrder,
       idOption,
+      newAttempt,
       answerSeconds,
-      newAttempt
+      req.file
     );
     res.status(200).json({
       message: `Answered question ${questionOrder} of postask ${taskOrder}`
