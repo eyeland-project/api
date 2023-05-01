@@ -10,7 +10,8 @@ import {
   getStudents as getStudentsService,
   createStudent as createStudentService,
   updateStudent as updateStudentService,
-  deleteStudent as deleteStudentService
+  deleteStudent as deleteStudentService,
+  createStudentFromCsv as createStudentFromCsvService
 } from "@services/student.service";
 import { ApiError } from "@middlewares/handleErrors";
 
@@ -68,6 +69,30 @@ export async function createStudent(
     res
       .status(201)
       .json(await createStudentService(idTeacher, idCourse, req.body));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function createBulkStudent(
+  req: Request<{ idCourse: string }, any, StudentCreateDto>,
+  res: Response<{ id: number } | { id: number }[]>,
+  next: NextFunction
+) {
+  const { id: idTeacher } = req.user!;
+  const idCourse = parseInt(req.params.idCourse);
+  try {
+    if (isNaN(idCourse) || idCourse <= 0) {
+      throw new ApiError("Invalid course id", 400);
+    }
+    if (!req.file) {
+      throw new ApiError("No file provided", 400);
+    }
+    res
+      .status(201)
+      .json(
+        await createStudentFromCsvService(idTeacher, idCourse, req.file.buffer)
+      );
   } catch (err) {
     next(err);
   }
