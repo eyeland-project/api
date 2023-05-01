@@ -1,7 +1,7 @@
 import multer, { memoryStorage } from "multer";
 import { promisify } from "util";
 
-export function uploadFile(fieldName: string, fileSize?: number) {
+export function uploadFileToServer(fieldName: string, fileSize?: number) {
   return promisify(
     multer({
       storage: memoryStorage(),

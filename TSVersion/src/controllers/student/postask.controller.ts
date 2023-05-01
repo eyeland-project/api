@@ -10,7 +10,7 @@ import { QuestionPostaskDetailDto } from "@dto/student/question.dto";
 import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
 import { ApiError } from "@middlewares/handleErrors";
 import { getStorageBucket } from "@config/storage";
-import { uploadFile } from "@config/multer";
+import { uploadFileToServer } from "@config/multer";
 import { format } from "util";
 
 export async function getPostask(
@@ -71,19 +71,21 @@ export async function answer(
     if (isNaN(questionOrder) || questionOrder <= 0) {
       throw new ApiError("Invalid questionOrder");
     }
-    await uploadFile("audio")(req, res);
+    await uploadFileToServer("audio")(req, res);
+    const audio = req.file;
 
-    await answerPostask(
+    const result = await answerPostask(
       idStudent,
       taskOrder,
       questionOrder,
       idOption,
       newAttempt,
       answerSeconds,
-      req.file
+      audio
     );
     res.status(200).json({
-      message: `Answered question ${questionOrder} of postask ${taskOrder}`
+      message: `Answered question ${questionOrder} of postask ${taskOrder}`,
+      result: audio ? result : undefined
     });
   } catch (err) {
     next(err);

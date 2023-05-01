@@ -244,7 +244,7 @@ export async function answerPostask(
   newAttempt?: boolean | null,
   answerSeconds?: number,
   audio?: Express.Multer.File
-): Promise<void> {
+): Promise<string | null> {
   if (idOption === undefined && audio === undefined) {
     throw new ApiError("Must provide an answer", 400);
   }
@@ -307,21 +307,23 @@ export async function answerPostask(
     throw new ApiError("Question already answered in this attempt", 400);
   } catch (err) {}
 
-  const { id_answer } = await AnswerModel.create({
+  let uploadResult: { message: string; url: string } | undefined = undefined;
+  if (audio) {
+    try {
+      uploadResult = await uploadAudio(audio);
+      console.log(uploadResult.message);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  await AnswerModel.create({
     id_question,
     id_task_attempt: taskAttempt.id_task_attempt,
     id_option: idOption,
     answer_seconds: answerSeconds,
-    id_team: null
+    id_team: null,
+    audio_url: uploadResult?.url || null
   });
-
-  // if (audio) {
-  //   try {
-  //     await uploadAudio(audio, id_answer);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
 
   new Promise(() => {
     getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
@@ -331,45 +333,52 @@ export async function answerPostask(
       }
     });
   }).catch((err) => console.log(err));
+
+  return uploadResult?.message || null;
 }
 
 async function uploadAudio(
-  audio: Express.Multer.File,
-  id_answer: number
+  audio: Express.Multer.File
 ): Promise<{ message: string; url: string }> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const bucket = getStorageBucket();
-    const blob = bucket.file(audio.originalname);
+    const name = `user_content/learning/submission/audio/${`${new Date().getTime()}_${
+      audio.originalname
+    }`}`;
+    const blob = bucket.file(name);
     const blobStream = blob.createWriteStream({
-      resumable: false,
-      gzip: true
+      resumable: false
     });
 
     blobStream.on("error", (err) => {
-      throw new ApiError(err.message, 500);
+      reject(new ApiError(err.message, 500));
     });
 
     blobStream.on("finish", async () => {
       // Create URL for directly file access via HTTP.
       const publicUrl = format(
-        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+        `https://storage.googleapis.com/${bucket.name}/${name}`
       );
 
-      try {
-        // Make the file public
-        await bucket.file(audio.originalname).makePublic();
-        blobStream.end(audio.buffer);
-        resolve({
-          message: "Uploaded the file successfully: " + audio.originalname,
-          url: publicUrl
-        });
-      } catch {
-        blobStream.end(audio.buffer);
-        resolve({
-          message: `Uploaded the file successfully: ${audio.originalname}, but public access is denied!`,
-          url: publicUrl
-        });
-      }
+      resolve({
+        message: "Uploaded the file successfully: " + audio.originalname,
+        url: publicUrl
+      });
+      // try {
+      //   // Make the file public
+      //   await bucket.file(name).makePublic();
+      //   resolve({
+      //     message: "Uploaded the file successfully: " + audio.originalname,
+      //     url: publicUrl
+      //   });
+      // } catch (err) {
+      //   resolve({
+      //     message: `Uploaded the file successfully: ${audio.originalname}, but public access is denied!`,
+      //     url: publicUrl
+      //   });
+      // }
     });
+
+    blobStream.end(audio.buffer);
   });
 }

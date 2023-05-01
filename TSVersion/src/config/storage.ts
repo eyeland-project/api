@@ -46,9 +46,9 @@ export function getStorageBucket(): Bucket {
 function getCredentias(): Credentials | null {
   const credentials = process.env.CLOUD_STORAGE_CREDENTIALS;
   if (!credentials) return null;
-  return Buffer.from(credentials, "base64").toString(
-    "utf8"
-  ) as unknown as Credentials;
+  return JSON.parse(
+    Buffer.from(credentials, "base64").toString("utf8")
+  ) as Credentials;
 }
 
 interface Credentials {
