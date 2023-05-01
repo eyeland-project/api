@@ -48,13 +48,15 @@ export async function whoami(
     if (!student) {
       return next(new ApiError("Student not found", 404));
     }
-    // console.log(student)
+    const { id_student, first_name, last_name, username, blindnessAcuity } =
+      student;
+
     res.status(200).json({
-      id: student.id_student,
-      firstName: student.first_name,
-      lastName: student.last_name,
-      username: student.username,
-      visualCondition: student.blindnessAcuity?.name || "non-visually impaired"
+      id: id_student,
+      firstName: first_name,
+      lastName: last_name,
+      username,
+      visualCondition: blindnessAcuity.name
     });
   } catch (err: any) {
     throw new ApiError(err.message, 500);

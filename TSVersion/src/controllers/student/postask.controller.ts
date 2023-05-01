@@ -60,6 +60,8 @@ export async function answer(
   res: Response,
   next: NextFunction
 ) {
+  console.log(req.body);
+
   const { id: idStudent } = req.user!;
   const { idOption, answerSeconds, newAttempt } = req.body;
   const taskOrder = parseInt(req.params.taskOrder);
@@ -73,6 +75,9 @@ export async function answer(
     }
     await uploadFileToServer("audio")(req, res);
     const audio = req.file;
+    console.log(audio);
+
+    console.log("idOption in controller", idOption);
 
     const result = await answerPostask(
       idStudent,

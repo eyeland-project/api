@@ -233,6 +233,8 @@ export async function answerPostask(
   answerSeconds?: number,
   audio?: Express.Multer.File
 ): Promise<string | null> {
+  console.log("idOption in service", idOption);
+
   if (idOption === undefined && audio === undefined) {
     throw new ApiError("Must provide an answer", 400);
   }
