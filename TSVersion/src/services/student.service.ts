@@ -33,6 +33,7 @@ import {
 } from "@dto/teacher/student.dto";
 import * as repositoryService from "@services/repository.service";
 import { StudentCreation } from "@interfaces/Student.types";
+import { parse as parseCsv } from "csv-parse";
 
 export async function getStudent(
   idTeacher: number,
@@ -159,6 +160,50 @@ export async function getStudents(
         : null
     })
   );
+}
+
+export async function createStudentFromCsv(
+  idTeacher: number,
+  idCourse: number,
+  fields: Buffer
+): Promise<{ id: number }[]> {
+  const StudentIds = new Promise<{ id: number }[]>((resolve, reject) => {
+    const StudentIds: Promise<{ id: number }>[] = [];
+
+    parseCsv(fields, { columns: true, delimiter: [";", ","], bom: true })
+      .on("data", (row) => {
+        const student = {
+          firstName: row.firstName,
+          lastName: row.lastName,
+          username: row.username,
+          password: row.password,
+          email: row.email,
+          phoneCountryCode: row.phoneCountryCode,
+          phoneNumber: row.phoneNumber,
+          blindnessAcuityCode: row.blindnessAcuityCode,
+          colorDeficiencyCode: row.colorDeficiencyCode,
+          visualFieldDefectCode: row.visualFieldDefectCode
+        };
+
+        console.log(student);
+
+        StudentIds.push(createStudent(idTeacher, idCourse, student));
+      })
+      .on("end", () => {
+        resolve(Promise.all(StudentIds));
+      })
+      .on("error", (err) => {
+        console.error(err);
+        reject(err);
+      });
+  });
+
+  try {
+    return await StudentIds;
+  } catch (err) {
+    console.error(err);
+    throw new ApiError("Error creating students", 400);
+  }
 }
 
 export async function createStudent(
