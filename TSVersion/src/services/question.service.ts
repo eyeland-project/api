@@ -21,8 +21,8 @@ import {
   separateTranslations,
   shuffle
 } from "@utils";
-import { getCurrTaskAttempt } from "./taskAttempt.service";
-import { getTeammates } from "./student.service";
+import { getCurrTaskAttempt } from "@services/taskAttempt.service";
+import { getTeammates } from "@services/student.service";
 
 export async function getQuestionsFromPretaskForTeacher(
   idTask: number

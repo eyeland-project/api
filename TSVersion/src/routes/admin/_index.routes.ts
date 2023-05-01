@@ -36,8 +36,8 @@ function loadRoutes() {
         routerDyn.get(`/${resource}/:id`, controllers["getElement"]);
         routerDyn.get(`/${resource}/`, controllers["getElements"]);
         routerDyn.post(`/${resource}/`, controllers["createElement"]);
-        routerDyn.put(`/${resource}/`, controllers["updateElement"]);
-        routerDyn.delete(`/${resource}/`, controllers["deleteElement"]);
+        routerDyn.put(`/${resource}/:id`, controllers["updateElement"]);
+        routerDyn.delete(`/${resource}/:id`, controllers["deleteElement"]);
       })
       .catch((err) => {
         console.log(`Error reading admin routes: ${file}`, err);

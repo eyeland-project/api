@@ -74,7 +74,7 @@ export async function createStudent(
 }
 
 export async function updateStudent(
-  req: Request<{ idCourse: string; idStudent: string }>,
+  req: Request<{ idCourse: string; idStudent: string }, any, StudentUpdateDto>,
   res: Response<{ message: string }>,
   next: NextFunction
 ) {
@@ -88,7 +88,7 @@ export async function updateStudent(
     if (isNaN(idCourse) || idCourse <= 0) {
       throw new ApiError("Invalid course id", 400);
     }
-    const fields = req.body as StudentUpdateDto;
+    const fields = req.body;
     if (!Object.keys(fields).length) {
       throw new ApiError("No fields to update", 400);
     }

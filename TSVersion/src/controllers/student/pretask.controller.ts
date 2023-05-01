@@ -3,7 +3,7 @@ import {
   getQuestionFromPretaskForStudent,
   getQuestionsFromPretaskForStudent
 } from "@services/question.service";
-import { AnswerCreateDto } from "@dto/student/answer.dto";
+import { AnswerOptionCreateDto } from "@dto/student/answer.dto";
 import { answerPretask } from "@services/answer.service";
 import { getPretaskForStudent } from "@services/taskStage.service";
 import { upgradeStudentTaskProgress } from "@services/studentTask.service";
@@ -71,7 +71,8 @@ export async function answer(
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
-  const { idOption, answerSeconds, newAttempt } = req.body as AnswerCreateDto;
+  const { idOption, answerSeconds, newAttempt } =
+    req.body as AnswerOptionCreateDto;
   const taskOrder = parseInt(req.params.taskOrder);
   const questionOrder = parseInt(req.params.questionOrder);
 
@@ -91,8 +92,8 @@ export async function answer(
       taskOrder,
       questionOrder,
       idOption,
-      answerSeconds,
-      newAttempt
+      newAttempt,
+      answerSeconds
     );
     res.status(200).json({
       message: `Answered question ${questionOrder} of pretask ${taskOrder}`

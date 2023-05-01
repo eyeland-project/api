@@ -63,7 +63,7 @@ export async function createCourse(
 }
 
 export async function updateCourse(
-  req: Request<{ idCourse: string }>,
+  req: Request<{ idCourse: string }, any, CourseUpdateDto>,
   res: Response<{ message: string }>,
   next: NextFunction
 ) {
@@ -73,7 +73,7 @@ export async function updateCourse(
     if (isNaN(idCourse) || idCourse <= 0) {
       throw new ApiError("Invalid course id", 400);
     }
-    const fields = req.body as CourseUpdateDto;
+    const fields = req.body;
     if (!Object.keys(fields).length) {
       throw new ApiError("No fields to update", 400);
     }
