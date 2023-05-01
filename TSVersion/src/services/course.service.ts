@@ -146,7 +146,7 @@ export async function getTeamsFromCourseWithStudents(
           }
         ],
         where: {
-          active: sequelize.col("TeamModel.active")
+          active: where?.active ?? sequelize.col("TeamModel.active")
         },
         attributes: ["power"],
         as: "taskAttempts",
