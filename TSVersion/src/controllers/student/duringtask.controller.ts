@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { getQuestionFromDuringtaskForStudent } from "@services/question.service";
+import {
+  getNextQuestionFromDuringtaskForStudent,
+  getQuestionFromDuringtaskForStudent
+} from "@services/question.service";
 import { getDuringtaskForStudent } from "@services/taskStage.service";
 import { ApiError } from "@middlewares/handleErrors";
 import { AnswerOptionCreateDto } from "@dto/student/answer.dto";
@@ -15,7 +18,7 @@ export async function getDuringtask(
   const taskOrder = parseInt(req.params.taskOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     res.status(200).json(await getDuringtaskForStudent(taskOrder));
   } catch (err) {
@@ -33,10 +36,10 @@ export async function getQuestion(
   const questionOrder = parseInt(req.params.questionOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder");
+      throw new ApiError("Invalid questionOrder", 400);
     }
     res
       .status(200)
@@ -46,6 +49,27 @@ export async function getQuestion(
           taskOrder,
           questionOrder
         )
+      );
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getNextQuestion(
+  req: Request<{ taskOrder: string }>,
+  res: Response<QuestionDuringtaskDetailDto>,
+  next: NextFunction
+) {
+  const { id: idStudent } = req.user!;
+  const taskOrder = parseInt(req.params.taskOrder);
+  try {
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid taskOrder", 400);
+    }
+    res
+      .status(200)
+      .json(
+        await getNextQuestionFromDuringtaskForStudent(idStudent, taskOrder)
       );
   } catch (err) {
     next(err);
@@ -67,10 +91,10 @@ export async function answer(
   const questionOrder = parseInt(req.params.questionOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder");
+      throw new ApiError("Invalid questionOrder", 400);
     }
     const { alreadyAnswered } = await answerDuringtask(
       idStudent,

@@ -3,6 +3,7 @@ import passport from "passport";
 import {
   answer,
   getQuestion,
+  getNextQuestion,
   getDuringtask
 } from "@controllers/student/duringtask.controller";
 
@@ -12,6 +13,7 @@ const router = Router({ mergeParams: true });
 router.use(auth);
 
 router.get("/", getDuringtask);
+router.get("/questions/next", getNextQuestion);
 router.get("/questions/:questionOrder", getQuestion);
 router.post("/questions/:questionOrder", answer);
 

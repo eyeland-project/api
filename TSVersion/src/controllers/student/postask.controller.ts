@@ -21,7 +21,7 @@ export async function getPostask(
   const taskOrder = parseInt(req.params.taskOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     res.status(200).json(await getPostaskForStudent(taskOrder));
   } catch (err) {
@@ -38,10 +38,10 @@ export async function getQuestion(
   const questionOrder = parseInt(req.params.questionOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder");
+      throw new ApiError("Invalid questionOrder", 400);
     }
     res
       .status(200)
@@ -66,10 +66,10 @@ export async function answer(
   const questionOrder = parseInt(req.params.questionOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder");
+      throw new ApiError("Invalid questionOrder", 400);
     }
     await uploadFileToServer("audio")(req, res);
     const audio = req.file;

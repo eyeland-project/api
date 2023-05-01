@@ -6,6 +6,7 @@ import { leaveTeam } from "@services/team.service";
 import { Namespaces, of } from "@listeners/sockets";
 import * as repositoryService from "@services/repository.service";
 import { CourseModel } from "@models";
+import { finishStudentTaskAttempts } from "@services/taskAttempt.service";
 
 export const directory = new Map<number, Socket>();
 
@@ -90,6 +91,7 @@ export function onConnection(socket: Socket) {
     if (idStudent === -1) return;
     try {
       await leaveTeam(idStudent, socket); // leave team room is done in leaveTeam function
+      await finishStudentTaskAttempts(idStudent);
     } catch (err) {
       console.log("S: error on leave team", err);
     }

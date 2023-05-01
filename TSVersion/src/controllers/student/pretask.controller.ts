@@ -19,7 +19,7 @@ export async function getPretask(
   const taskOrder = parseInt(req.params.taskOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     res.status(200).json(await getPretaskForStudent(taskOrder));
   } catch (err) {
@@ -35,7 +35,7 @@ export async function getQuestions(
   const taskOrder = parseInt(req.params.taskOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     res.status(200).json(await getQuestionsFromPretaskForStudent(taskOrder));
   } catch (err) {
@@ -52,10 +52,10 @@ export async function getQuestion(
   const questionOrder = parseInt(req.params.questionOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder");
+      throw new ApiError("Invalid questionOrder", 400);
     }
     res
       .status(200)
@@ -78,10 +78,10 @@ export async function answer(
 
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder");
+      throw new ApiError("Invalid taskOrder", 400);
     }
     if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder");
+      throw new ApiError("Invalid questionOrder", 400);
     }
     if (idOption <= 0) {
       throw new ApiError("Invalid idOption");

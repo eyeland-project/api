@@ -1,6 +1,12 @@
-import { FindOptions, QueryTypes } from "sequelize";
+import { FindOptions, Op, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
-import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
+import {
+  AnswerModel,
+  OptionModel,
+  QuestionModel,
+  TaskModel,
+  TaskStageModel
+} from "@models";
 import { Question } from "@interfaces/Question.types";
 import { ApiError } from "@middlewares/handleErrors";
 import { QuestionDetailDto } from "@dto/global/question.dto";
@@ -23,6 +29,7 @@ import {
 } from "@utils";
 import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getTeammates } from "@services/student.service";
+import { getMembersFromTeam } from "./team.service";
 
 export async function getQuestionsFromPretaskForTeacher(
   idTask: number
@@ -103,11 +110,11 @@ export async function getQuestionFromDuringtaskForStudent(
   if (!id_team || !power) {
     throw new ApiError("No team or power found", 400);
   }
-  const members = (await getTeammates(idStudent, { idTeam: id_team })).map(
+  const powers = (await getTeammates(idStudent, { idTeam: id_team })).map(
     ({ task_attempt }) => task_attempt.power
   );
-  members.push(power);
-  members.sort((a, b) => indexPower(a) - indexPower(b));
+  powers.push(power);
+  powers.sort((a, b) => indexPower(a) - indexPower(b));
 
   const questions = (
     await getQuestionsFromTaskStage(
@@ -128,8 +135,82 @@ export async function getQuestionFromDuringtaskForStudent(
     // * distribute options based on power
     options = distributeOptions(
       options,
-      members.indexOf(power) + 1,
-      members.length
+      powers.indexOf(power) + 1,
+      powers.length
+    );
+    return {
+      id,
+      content: contentParsed,
+      ...fields,
+      nounTranslation: nouns,
+      prepositionTranslation: preps,
+      options
+    };
+  });
+  if (!questions.length) throw new ApiError("Question not found", 404);
+  return questions[0];
+}
+
+export async function getNextQuestionFromDuringtaskForStudent(
+  idStudent: number,
+  taskOrder: number
+): Promise<QuestionDuringtaskDetailDtoStudent> {
+  const { id_team, power } = await getCurrTaskAttempt(idStudent);
+  if (!id_team || !power) {
+    throw new ApiError("No team or power found", 400);
+  }
+  const members = await getMembersFromTeam({ idTeam: id_team });
+  const highestAnswer = (
+    await repositoryService.findAll<AnswerModel>(AnswerModel, {
+      where: {
+        [Op.or]: members.map(({ task_attempt: { id } }) => ({
+          id_task_attempt: id
+        }))
+      },
+      include: {
+        model: QuestionModel,
+        attributes: ["question_order"],
+        as: "question",
+        include: [
+          {
+            model: TaskStageModel,
+            attributes: [],
+            as: "taskStage",
+            where: {
+              task_stage_order: 2
+            }
+          }
+        ]
+      },
+      order: [["question", "question_order", "DESC"]],
+      limit: 1
+    })
+  )[0];
+  const nextQuestionOrder = highestAnswer?.question.question_order + 1 || 1;
+  const powers = members.map(({ task_attempt: { power } }) => power);
+  powers.sort((a, b) => indexPower(a) - indexPower(b));
+
+  const questions = (
+    await getQuestionsFromTaskStage(
+      { taskOrder },
+      2,
+      { question_order: nextQuestionOrder },
+      { limit: 1 }
+    )
+  ).map(({ content, options, id, ...fields }) => {
+    const {
+      nouns,
+      preps,
+      content: contentParsed
+    } = separateTranslations(content);
+
+    // * shuffle options
+    options = shuffle(options, (id_team + 1) * (id + 2));
+    // * distribute options based on power
+    options = distributeOptions(
+      options,
+      powers.indexOf(power) + 1,
+      powers.length
     );
     return {
       id,
@@ -240,6 +321,7 @@ async function getQuestionsFromTaskStage(
   return questions.map(
     ({
       id_question,
+      question_order,
       content,
       type,
       topic,
@@ -250,6 +332,7 @@ async function getQuestionsFromTaskStage(
       options
     }) => ({
       id: id_question,
+      questionOrder: question_order,
       content,
       type,
       topic,

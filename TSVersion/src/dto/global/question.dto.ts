@@ -2,6 +2,7 @@ import { QuestionTopic, QuestionType } from "@interfaces/enums/question.enum";
 
 export interface QuestionDetailDto {
   id: number;
+  questionOrder: number;
   content: string;
   type: QuestionType;
   topic: QuestionTopic | null;
@@ -23,6 +24,7 @@ export type QuestionPretaskDetailDto = Omit<
 >;
 
 export interface QuestionDuringtaskDetailDto extends QuestionDetailDto {
+  questionOrder: number;
   nounTranslation: string[];
   prepositionTranslation: string[];
 }

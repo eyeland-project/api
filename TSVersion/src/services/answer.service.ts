@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { directory as dirStudents } from "@listeners/namespaces/student";
 import { ApiError } from "@middlewares/handleErrors";
-import { AnswerModel, QuestionModel, TaskModel } from "@models";
+import { AnswerModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
 import { Answer } from "@interfaces/Answer.types";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { updateLeaderBoard } from "@services/leaderBoard.service";
@@ -106,7 +106,7 @@ export async function answerDuringtask(
   questionOrder: number,
   idOption: number,
   answerSeconds?: number
-): Promise<{ alreadyAnswered: boolean; nextQuestionOrder: number }> {
+): Promise<{ alreadyAnswered: boolean }> {
   const socket = dirStudents.get(idStudent);
   if (!socket) {
     throw new ApiError("Student is not connected", 400);
@@ -143,11 +143,11 @@ export async function answerDuringtask(
   await getTeamFromStudent(idStudent);
 
   // - Check if question exists and is in the correct task stage, and get question_id
-  const question = await getQuestionByOrder(taskOrder, 2, questionOrder);
+  const { id_question } = await getQuestionByOrder(taskOrder, 2, questionOrder);
 
   // - Check if option exists and is in the correct question
   const option = await getOptionById(idOption);
-  if (question.id_question !== option.id_question) {
+  if (id_question !== option.id_question) {
     throw new ApiError("Option does not belong to question", 400);
   }
 
@@ -161,40 +161,32 @@ export async function answerDuringtask(
     idsTaskAttempts = [taskAttempt.id_task_attempt];
   }
 
-  const anwersSession = await AnswerModel.findAll({
-    where: {
-      [Op.or]: idsTaskAttempts.map((id) => ({
-        id_task_attempt: id
-      }))
-    },
-    include: {
-      model: QuestionModel,
-      // attributes: ["question_order"],
-      as: "question"
-    }
-  });
-
-  let nextQuestionOrder: number;
-
-  const answered = anwersSession.find(
-    ({ id_question }) => id_question === question.id_question
-  );
-  if (answered) {
-    // if question was already answered
-    const highestAnsweredQuestionOrder = Math.max(
-      ...anwersSession.map(({ question }) => question.question_order)
-    );
-    nextQuestionOrder = highestAnsweredQuestionOrder + 1;
-  } else {
-    await AnswerModel.create({
-      id_question: question.id_question,
-      id_task_attempt: taskAttempt.id_task_attempt,
-      id_option: idOption,
-      answer_seconds: answerSeconds,
-      id_team: taskAttempt.id_team
+  try {
+    await repositoryService.findOne<AnswerModel>(AnswerModel, {
+      where: {
+        [Op.or]: idsTaskAttempts.map((id) => ({
+          id_task_attempt: id
+        }))
+      },
+      include: {
+        model: QuestionModel,
+        attributes: ["question_order"],
+        as: "question",
+        where: {
+          id_question: id_question
+        }
+      }
     });
-    nextQuestionOrder = questionOrder + 1;
-  }
+    return { alreadyAnswered: true };
+  } catch (err) {}
+
+  await AnswerModel.create({
+    id_question,
+    id_task_attempt: taskAttempt.id_task_attempt,
+    id_option: idOption,
+    answer_seconds: answerSeconds,
+    id_team: taskAttempt.id_team
+  });
 
   // additional logic to upgrade student's task progress and do socket stuff
   new Promise(async () => {
@@ -202,13 +194,12 @@ export async function answerDuringtask(
     updateLeaderBoard(id_course).catch((err) => console.log(err));
 
     socket.broadcast.to(`t${taskAttempt.id_team}`).emit(OutgoingEvents.ANSWER, {
-      correct: option.correct,
-      nextQuestion: questionOrder + 1
+      correct: option.correct
     });
     console.log("answer emitted to team", taskAttempt.id_team);
 
     getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
-      if (lastQuestion.id_question === question.id_question) {
+      if (lastQuestion.id_question === id_question) {
         upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
           console.log(err)
         );
@@ -230,10 +221,7 @@ export async function answerDuringtask(
     });
   }).catch((err) => console.log(err));
 
-  return {
-    alreadyAnswered: !!answered,
-    nextQuestionOrder
-  };
+  return { alreadyAnswered: false };
 }
 
 export async function answerPostask(

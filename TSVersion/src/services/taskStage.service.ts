@@ -99,6 +99,7 @@ export async function getQuestionsFromTaskStage(
     ({
       content,
       id_question,
+      question_order,
       img_alt,
       img_url,
       topic,
@@ -108,6 +109,7 @@ export async function getQuestionsFromTaskStage(
       video_url
     }) => ({
       id: id_question,
+      questionOrder: question_order,
       content,
       topic,
       type,
