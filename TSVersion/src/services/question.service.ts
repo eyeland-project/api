@@ -196,7 +196,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
     })
   ).filter(({ content, answers }) => {
     console.log("content:", content);
-    console.log("answers:", answers);
+    // console.log("answers:", answers);
     console.log(
       "options:",
       answers.map(({ option }) => ({
