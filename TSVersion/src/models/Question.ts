@@ -3,7 +3,7 @@ import sequelize from "@database/db";
 import { Question, QuestionCreation } from "@interfaces/Question.types";
 import { ApiError } from "@middlewares/handleErrors";
 import { QuestionTopic, QuestionType } from "@interfaces/enums/question.enum";
-import { OptionModel, TaskStageModel } from "@models";
+import { AnswerModel, OptionModel, TaskStageModel } from "@models";
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {
@@ -21,6 +21,7 @@ class QuestionModel extends Model<Question, QuestionCreation> {
 
   declare taskStage: NonAttribute<TaskStageModel>;
   declare options: NonAttribute<OptionModel[]>;
+  declare answers: NonAttribute<AnswerModel[]>;
 }
 
 // model initialization
