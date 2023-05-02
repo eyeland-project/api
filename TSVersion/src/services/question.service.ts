@@ -155,7 +155,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
   idStudent: number,
   taskOrder: number
 ): Promise<QuestionDuringtaskDetailDtoStudent> {
-  const { id_team, power } = await getCurrTaskAttempt(idStudent);
+  const { id_team, power, id_task } = await getCurrTaskAttempt(idStudent);
 
   // * Validations
   if (!id_team || !power) {
@@ -187,7 +187,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
           as: "taskStage",
           attributes: [],
           where: {
-            task_stage_order: 2
+            task_stage_order: 2,
+            id_task
           },
           required: true
         }
