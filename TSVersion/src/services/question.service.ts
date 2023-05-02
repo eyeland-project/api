@@ -194,7 +194,16 @@ export async function getNextQuestionFromDuringtaskForStudent(
         }
       ]
     })
-  ).filter(({ answers }) => {
+  ).filter(({ content, answers }) => {
+    console.log("content:", content);
+    console.log("answers:", answers);
+    console.log(
+      "options:",
+      answers.map(({ option }) => ({
+        content: option.content,
+        correct: option.correct
+      }))
+    );
     return answers.every(({ option }) => !option.correct);
   });
 
