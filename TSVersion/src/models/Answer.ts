@@ -21,7 +21,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
   declare audio_url?: string | null;
 
   declare question: NonAttribute<QuestionModel>;
-  declare option: NonAttribute<OptionModel>;
+  declare option?: NonAttribute<OptionModel>;
 }
 
 // model initialization

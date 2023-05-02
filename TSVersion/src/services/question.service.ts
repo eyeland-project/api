@@ -170,9 +170,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
         {
           model: AnswerModel,
           as: "answers",
-          where: {
-            id_team
-          },
+          where: { id_team },
           required: false,
           include: [
             {
@@ -194,7 +192,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
         }
       ]
     })
-  ).filter(({ content, answers }) => {
+  ).filter(({ answers }) => {
     // console.log("content:", content);
     // // console.log("answers:", answers);
     // console.log(
@@ -204,10 +202,10 @@ export async function getNextQuestionFromDuringtaskForStudent(
     //     correct: option.correct
     //   }))
     // );
-    return answers.every(({ option }) => !option.correct);
+    return answers.every(({ option }) => !option!.correct);
   });
 
-  console.log(missingQuestions.map(({ content: id }) => id));
+  console.log(missingQuestions.map(({ content }) => content));
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
   missingQuestions.sort((a, b) => {
