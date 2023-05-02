@@ -198,27 +198,29 @@ export async function answerDuringtask(
     });
     console.log("answer emitted to team", taskAttempt.id_team);
 
-    getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
-      if (lastQuestion.id_question === id_question) {
-        upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
-          console.log(err)
-        );
-        getTeammates(idStudent, { idTeam: taskAttempt.id_team! })
-          .then((teammates) => {
-            teammates.forEach(({ id_student }) => {
-              upgradeStudentTaskProgress(taskOrder, id_student, 2).catch(
-                (err) => console.log(err)
-              );
-            });
-          })
-          .catch((err) => console.log(err));
+    // TODO: Plan new update method
+    //! THIS IS VERY IMPORTANT
+    // getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
+    //   if (lastQuestion.id_question === id_question) {
+    //     upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
+    //       console.log(err)
+    //     );
+    //     getTeammates(idStudent, { idTeam: taskAttempt.id_team! })
+    //       .then((teammates) => {
+    //         teammates.forEach(({ id_student }) => {
+    //           upgradeStudentTaskProgress(taskOrder, id_student, 2).catch(
+    //             (err) => console.log(err)
+    //           );
+    //         });
+    //       })
+    //       .catch((err) => console.log(err));
 
-        updateTeam(taskAttempt.id_team!, {
-          active: false,
-          playing: false
-        }).catch((err) => console.log(err));
-      }
-    });
+    //     updateTeam(taskAttempt.id_team!, {
+    //       active: false,
+    //       playing: false
+    //     }).catch((err) => console.log(err));
+    //   }
+    // });
   }).catch((err) => console.log(err));
 
   return { alreadyAnswered: false };
