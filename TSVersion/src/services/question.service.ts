@@ -187,7 +187,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
           as: "taskStage",
           where: {
             task_order: taskOrder,
-            stage_order: 2
+            attributes: [],
+            task_stage_order: 2
           },
           required: true
         }
