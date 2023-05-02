@@ -1,7 +1,3 @@
-export interface LoginDto {
-  token: string;
-}
-
 export interface UserDto {
   id: number;
   firstName: string;

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import { signToken } from "@utils";
 import { ApiError } from "@middlewares/handleErrors";
+import { Role } from "@interfaces/enums/role.enum";
 
 // login with passport
 export async function login(req: Request, res: Response, next: NextFunction) {
@@ -14,7 +15,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       }
       req.login(id, { session: false }, async (err) => {
         if (err) return next(err);
-        const token = signToken({ id });
+        const token = signToken({ id, role: Role.TEACHER });
         res.status(200).json({ token });
       });
     } catch (err) {

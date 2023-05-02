@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
+import { TokenPayload } from "@dto/global/auth.dto";
 
 // PASSWORDS
 export function comparePassword(password: string, hash: string): boolean {
@@ -13,7 +14,7 @@ export function hashPassword(password: string): string {
 }
 
 // JWT
-export function signToken(payload: Object): string {
+export function signToken(payload: TokenPayload): string {
   return jwt.sign(payload, process.env.JWT_SECRET || " top secret ");
 }
 

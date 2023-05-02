@@ -172,9 +172,7 @@ export async function answerDuringtask(
         model: QuestionModel,
         attributes: [],
         as: "question",
-        where: {
-          id_question: id_question
-        }
+        where: { id_question }
       }
     });
     return { alreadyAnswered: true };
@@ -352,19 +350,6 @@ async function uploadAudio(
         message: "Uploaded the file successfully: " + audio.originalname,
         url: publicUrl
       });
-      // try {
-      //   // Make the file public
-      //   await bucket.file(name).makePublic();
-      //   resolve({
-      //     message: "Uploaded the file successfully: " + audio.originalname,
-      //     url: publicUrl
-      //   });
-      // } catch (err) {
-      //   resolve({
-      //     message: `Uploaded the file successfully: ${audio.originalname}, but public access is denied!`,
-      //     url: publicUrl
-      //   });
-      // }
     });
 
     blobStream.end(audio.buffer);

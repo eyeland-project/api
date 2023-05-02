@@ -4,9 +4,15 @@ import { signToken } from "@utils";
 import { ApiError } from "@middlewares/handleErrors";
 import { BlindnessAcuityModel, StudentModel } from "@models";
 import { UserDto } from "@dto/student/auth.dto";
+import { LoginDto, TokenPayload } from "@dto/global/auth.dto";
+import { Role } from "@interfaces/enums/role.enum";
 
 // login with passport
-export async function login(req: Request, res: Response, next: NextFunction) {
+export async function login(
+  req: Request,
+  res: Response<LoginDto>,
+  next: NextFunction
+) {
   passport.authenticate("login-student", async (err, { id }, _info) => {
     try {
       if (err) {
@@ -16,7 +22,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       }
       req.login(id, { session: false }, async (err) => {
         if (err) return next(err);
-        const token = signToken({ id });
+        const token = signToken({ id, role: Role.STUDENT });
         res.status(200).json({ token });
       });
     } catch (err) {
