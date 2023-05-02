@@ -46,24 +46,22 @@ export async function getStudent(
       {
         model: CourseModel,
         as: "course",
+        attributes: [],
         where: { id_teacher: idTeacher, deleted: false }
       },
       {
         model: BlindnessAcuityModel,
         as: "blindnessAcuity",
-        required: false,
         attributes: ["id_blindness_acuity", "name", "code"]
       },
       {
         model: VisualFieldDefectModel,
         as: "visualFieldDefect",
-        required: false,
         attributes: ["id_visual_field_defect", "name", "code"]
       },
       {
         model: ColorDeficiencyModel,
         as: "colorDeficiency",
-        required: false,
         attributes: ["id_color_deficiency", "name", "code"]
       }
     ]
@@ -133,6 +131,7 @@ export async function getStudents(
       {
         model: CourseModel,
         as: "course",
+        attributes: [],
         where: { id_teacher: idteacher, id_course: idCourse, deleted: false }
       }
     ]

@@ -72,22 +72,23 @@ export async function getQuestionsFromTaskStage(
       {
         model: TaskStageModel,
         as: "taskStage",
+        attributes: [],
+        where: {
+          task_stage_order: taskStageOrder
+        },
         include: [
           {
             model: TaskModel,
+            as: "task",
+            attributes: [],
             where: {
               task_order: taskOrder
-            },
-            as: "task"
+            }
           }
-        ],
-        where: {
-          task_stage_order: taskStageOrder
-        }
+        ]
       },
       {
         model: OptionModel,
-        // required: true,
         as: "options"
       }
     ],

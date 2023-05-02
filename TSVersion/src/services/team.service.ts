@@ -100,6 +100,7 @@ export async function joinTeam(
           {
             model: TeamModel,
             as: "team",
+            attributes: ["id_team"],
             required: false
           }
         ]
@@ -373,22 +374,21 @@ export async function getPlayingTeamsFromCourse(
 }
 
 export async function verifyTeamStatus(teamId: number) {
-  const team = await TeamModel.findOne({
+  const team = await repositoryService.findOne<TeamModel>(TeamModel, {
     where: { id_team: teamId },
     include: [
       {
         model: TaskAttemptModel,
-        as: "taskAttempts"
+        as: "taskAttempts",
+        attributes: ["active"]
       },
       {
         model: AnswerModel,
-        as: "answers"
+        as: "answers",
+        attributes: ["id_answer"]
       }
     ]
   });
-
-  if (!team) return;
-
   if (!team.active) return;
 
   const hasActiveTaskAttempt = team.taskAttempts.some(
@@ -438,11 +438,13 @@ export async function cleanTeams(idCourse: number) {
           model: TaskAttemptModel,
           as: "taskAttempts",
           where: { active: true },
-          required: false
+          required: false,
+          attributes: ["active", "id_student"]
         },
         {
           model: AnswerModel,
-          as: "answers"
+          as: "answers",
+          attributes: ["id_answer"]
         }
       ]
     })

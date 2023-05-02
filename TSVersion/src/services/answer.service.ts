@@ -170,7 +170,7 @@ export async function answerDuringtask(
       },
       include: {
         model: QuestionModel,
-        attributes: ["question_order"],
+        attributes: [],
         as: "question",
         where: {
           id_question: id_question
@@ -233,8 +233,6 @@ export async function answerPostask(
   answerSeconds?: number,
   audio?: Express.Multer.File
 ): Promise<string | null> {
-  console.log("idOption in service", idOption);
-
   if (idOption === undefined && audio === undefined) {
     throw new ApiError("Must provide an answer", 400);
   }

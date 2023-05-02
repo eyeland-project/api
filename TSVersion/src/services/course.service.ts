@@ -154,6 +154,7 @@ export async function getTeamsFromCourseWithStudents(
       },
       {
         model: CourseModel,
+        attributes: [],
         as: "course",
         where: { deleted: false }
       }
@@ -198,25 +199,6 @@ export function filterTeamsForStudents(
       taskOrder,
       students
     }));
-}
-
-export function getStudentsFromCourse(
-  idCourse: number
-): Promise<StudentModel[]> {
-  return StudentModel.findAll({
-    where: { id_course: idCourse, deleted: false },
-    include: [
-      {
-        model: BlindnessAcuityModel,
-        as: "blindnessAcuity"
-      },
-      {
-        model: CourseModel,
-        as: "course",
-        where: { deleted: false }
-      }
-    ]
-  });
 }
 
 export async function notifyCourseOfTeamUpdate(
@@ -359,15 +341,32 @@ export async function createMissingTeams(
   // Get students
   let studentsPromise;
   if (!socketBased) {
-    studentsPromise = getStudentsFromCourse(idCourse).then((students) => {
-      // return the number of students and the number of students with blindness
-      return {
-        students: students.length,
-        blindStudents: students.filter(
-          (student) => student.blindnessAcuity.level > 0
-        ).length
-      };
-    });
+    studentsPromise = repositoryService
+      .findAll<StudentModel>(StudentModel, {
+        where: { id_course: idCourse, deleted: false },
+        include: [
+          {
+            model: BlindnessAcuityModel,
+            attributes: ["level"],
+            as: "blindnessAcuity"
+          },
+          {
+            model: CourseModel,
+            as: "course",
+            where: { deleted: false },
+            attributes: []
+          }
+        ]
+      })
+      .then((students) => {
+        // return the number of students and the number of students with blindness
+        return {
+          students: students.length,
+          blindStudents: students.filter(
+            (student) => student.blindnessAcuity.level > 0
+          ).length
+        };
+      });
   } else {
     studentsPromise = StudentModel.findAll({
       where: {
@@ -380,18 +379,16 @@ export async function createMissingTeams(
         {
           model: TaskAttemptModel,
           as: "taskAttempts",
-          where: {
-            active: true
-          },
+          attributes: [],
           required: false,
+          where: { active: true },
           include: [
             {
               model: TeamModel,
               as: "team",
-              where: {
-                playing: false
-              },
-              required: false
+              attributes: [],
+              required: false,
+              where: { playing: false }
             }
           ]
         }
