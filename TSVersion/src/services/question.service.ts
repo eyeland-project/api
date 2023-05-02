@@ -181,6 +181,15 @@ export async function getNextQuestionFromDuringtaskForStudent(
               required: true
             }
           ]
+        },
+        {
+          model: TaskStageModel,
+          as: "taskStage",
+          where: {
+            task_order: taskOrder,
+            stage_order: 2
+          },
+          required: true
         }
       ]
     })
