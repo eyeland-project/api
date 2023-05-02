@@ -196,9 +196,9 @@ export async function getNextQuestionFromDuringtaskForStudent(
         }
       ]
     })
-  ).filter(({ content, answers }) => {
+  ).filter(({ answers }) => {
     const answersCount = answers.length;
-    const haveCorrectAnswer = answers.some(({ option }) => option?.correct);
+    const haveCorrectAnswer = answers.some(({ option }) => option!.correct);
 
     if (answersCount > maxAnswers) {
       maxAnswers = answersCount;
@@ -212,7 +212,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
   });
 
   const questionLeft = maxIncorrectAnswers < maxAnswers;
-  console.log(missingQuestions.map(({ content: id }) => id));
+  console.log(missingQuestions.map(({ content }) => content));
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
   missingQuestions.sort((a, b) => {
