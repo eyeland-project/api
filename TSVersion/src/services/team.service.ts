@@ -45,7 +45,10 @@ export async function getTeamsForStudent(
     { where: { id_student: idStudent } }
   );
   return filterTeamsForStudents(
-    await getTeamsFromCourseWithStudents(id_course)
+    await getTeamsFromCourseWithStudents(id_course, {
+      active: true,
+      playing: false
+    })
   );
 }
 
