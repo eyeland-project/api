@@ -42,7 +42,7 @@ export async function updateLeaderBoard(idCourse: number): Promise<void> {
       // The maximum score is 100 when all (or all - 1) answers are correct and the time is 0
       // const score = team.answers.reduce((acc, answer) => {
       const score = team.answers.reduce((acc, answer) => {
-        const correct = answer.option.correct;
+        const correct = answer.option?.correct;
 
         return acc + (correct ? 100 / numQuestions : 0);
       }, 0);

@@ -66,10 +66,10 @@ StudentTaskModel.belongsTo(StudentModel, {
 
 // student task and task
 TaskModel.hasMany(StudentTaskModel, {
-  foreignKey: "id_team"
+  foreignKey: "id_task"
 });
 StudentTaskModel.belongsTo(TaskModel, {
-  foreignKey: "id_team"
+  foreignKey: "id_task"
 });
 
 export default StudentTaskModel;

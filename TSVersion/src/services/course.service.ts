@@ -445,4 +445,5 @@ export async function createBunchOfTeams(
   }
 
   await createTeams(teams, idCourse);
+  notifyCourseOfTeamUpdate(idCourse).catch(console.log);
 }

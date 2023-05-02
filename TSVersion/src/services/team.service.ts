@@ -181,14 +181,14 @@ export async function joinTeam(
         ).catch(() => {});
         if (yaper) notifyStudentOfTeamUpdate(yaper);
       })
-      .catch((err) => console.log(err));
+      .catch(console.log);
 
     if (prevTeamId && currTaskAttempt) {
       checkReassignSuperHearing(prevTeamId, currTaskAttempt.power).catch(
-        (err) => console.log(err)
+        console.log
       );
     }
-  }).catch((err) => console.log(err));
+  }).catch(console.log);
 }
 
 export async function getMembersFromTeam(teamInfo: {
@@ -302,7 +302,7 @@ export async function leaveTeam(
     });
     await verifyTeamStatus(id_team);
     await notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
-  }).catch((err) => console.log(err));
+  }).catch(console.log);
 }
 
 export async function checkReassignSuperHearing(

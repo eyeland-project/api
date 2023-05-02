@@ -126,7 +126,8 @@ StudentModel.init(
 // model associations
 // student and course
 CourseModel.hasMany(StudentModel, {
-  foreignKey: "id_course"
+  foreignKey: "id_course",
+  as: "students"
 });
 StudentModel.belongsTo(CourseModel, {
   foreignKey: "id_course",

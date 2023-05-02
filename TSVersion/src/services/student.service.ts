@@ -34,6 +34,7 @@ import {
 import * as repositoryService from "@services/repository.service";
 import { StudentCreation } from "@interfaces/Student.types";
 import { parse as parseCsv } from "csv-parse";
+import { UserDto } from "@dto/student/auth.dto";
 
 export async function getStudent(
   idTeacher: number,
@@ -575,4 +576,25 @@ export async function getTeammates(
   );
 }
 
-export function hasSocketConnection(idStudent: number) {}
+export async function whoami(id: number): Promise<UserDto> {
+  const student = await repositoryService.findOne<StudentModel>(StudentModel, {
+    where: { id_student: id },
+    attributes: ["id_student", "first_name", "last_name", "username"],
+    include: [
+      {
+        model: BlindnessAcuityModel,
+        attributes: ["name"],
+        as: "blindnessAcuity"
+      }
+    ]
+  });
+  const { id_student, first_name, last_name, username, blindnessAcuity } =
+    student;
+  return {
+    id: id_student,
+    firstName: first_name,
+    lastName: last_name,
+    username,
+    visualCondition: blindnessAcuity.name
+  };
+}

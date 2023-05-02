@@ -174,9 +174,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
         {
           model: AnswerModel,
           as: "answers",
-          where: {
-            id_team
-          },
+          where: { id_team },
           required: false,
           include: [
             {
@@ -200,7 +198,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
     })
   ).filter(({ content, answers }) => {
     const answersCount = answers.length;
-    const haveCorrectAnswer = answers.some(({ option }) => option.correct);
+    const haveCorrectAnswer = answers.some(({ option }) => option?.correct);
 
     if (answersCount > maxAnswers) {
       maxAnswers = answersCount;

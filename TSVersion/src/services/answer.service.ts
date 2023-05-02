@@ -1,17 +1,19 @@
 import { Op } from "sequelize";
 import { directory as dirStudents } from "@listeners/namespaces/student";
 import { ApiError } from "@middlewares/handleErrors";
-import { AnswerModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
-import { Answer } from "@interfaces/Answer.types";
+import {
+  AnswerModel,
+  OptionModel,
+  QuestionModel,
+  StudentTaskModel,
+  TaskModel,
+  TaskStageModel
+} from "@models";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { updateLeaderBoard } from "@services/leaderBoard.service";
 import { getOptionById } from "@services/option.service";
 import { getQuestionByOrder } from "@services/question.service";
-import {
-  getCourseFromStudent,
-  getTeamFromStudent,
-  getTeammates
-} from "@services/student.service";
+import { getCourseFromStudent } from "@services/student.service";
 import {
   getStudentTaskByOrder,
   upgradeStudentTaskProgress
@@ -112,9 +114,17 @@ export async function answerDuringtask(
     throw new ApiError("Student is not connected", 400);
   }
 
-  const task = await repositoryService.findOne<TaskModel>(TaskModel, {
-    where: { task_order: taskOrder }
-  });
+  // - get student's current task attempt and get student's team id from task attempt
+  const taskAttempt = await getCurrTaskAttempt(idStudent);
+  if (!taskAttempt.id_team) {
+    throw new ApiError("Student is not in a team", 400);
+  }
+
+  // - Check if team exists
+  // await getTeamFromStudent(idStudent);
+  if (taskAttempt.id_team === null) {
+    throw new ApiError("Student is not in a team", 400);
+  }
 
   const { session, id_course } = await getCourseFromStudent(idStudent);
   if (!session) {
@@ -129,100 +139,125 @@ export async function answerDuringtask(
     );
   }
 
-  // - get student's current task attempt and get student's team id from task attempt
-  const taskAttempt = await getCurrTaskAttempt(idStudent);
-  if (!taskAttempt.id_team) {
-    throw new ApiError("Student is not in a team", 400);
+  // if (taskAttempt.id_task !== questionsFromStage[0].taskStage.id_task) {
+  //   throw new ApiError("Current Task attempt is from another task", 400);
+  // }
+
+  const questionsFromStage = await repositoryService.findAll<QuestionModel>(
+    QuestionModel,
+    {
+      attributes: ["id_question", "question_order"],
+      include: [
+        {
+          model: TaskStageModel,
+          attributes: ["id_task"],
+          as: "taskStage",
+          where: {
+            task_stage_order: 2,
+            id_task: taskAttempt.id_task
+          }
+          // include: [
+          //   {
+          //     model: TaskModel,
+          //     attributes: ["id_task"],
+          //     as: "task",
+          //     where: {
+          //       task_order: taskOrder
+          //     }
+          //   }
+          // ]
+        }
+      ]
+    }
+  );
+
+  const question = questionsFromStage.find(
+    (q) => q.question_order === questionOrder
+  );
+  if (!question) {
+    throw new ApiError("Question not found", 400);
   }
-
-  if (taskAttempt.id_task !== task.id_task) {
-    throw new ApiError("Current Task attempt is from another task", 400);
-  }
-
-  // - Check if team exists
-  await getTeamFromStudent(idStudent);
-
-  // - Check if question exists and is in the correct task stage, and get question_id
-  const { id_question } = await getQuestionByOrder(taskOrder, 2, questionOrder);
 
   // - Check if option exists and is in the correct question
   const option = await getOptionById(idOption);
-  if (id_question !== option.id_question) {
+  if (question.id_question !== option.id_question) {
     throw new ApiError("Option does not belong to question", 400);
   }
 
-  let idsTaskAttempts: number[];
-  try {
-    const teamMembers = await getMembersFromTeam({
-      idTeam: taskAttempt.id_team
+  const prevCorrectAnswers = await repositoryService.findAll<AnswerModel>(
+    AnswerModel,
+    {
+      attributes: ["id_answer"],
+      where: { id_team: taskAttempt.id_team },
+      include: [
+        {
+          model: OptionModel,
+          attributes: ["id_option"],
+          as: "option",
+          where: { correct: true }
+        },
+        {
+          model: QuestionModel,
+          attributes: ["id_question"],
+          as: "question"
+        }
+      ]
+    }
+  );
+
+  if (
+    prevCorrectAnswers.find(
+      (answer) => answer.question.id_question === question.id_question
+    )
+  ) {
+    return { alreadyAnswered: true };
+  } else {
+    await AnswerModel.create({
+      id_question: question.id_question,
+      id_task_attempt: taskAttempt.id_task_attempt,
+      id_option: idOption,
+      answer_seconds: answerSeconds,
+      id_team: taskAttempt.id_team
     });
-    idsTaskAttempts = teamMembers.map(({ task_attempt: { id } }) => id);
-  } catch (err) {
-    idsTaskAttempts = [taskAttempt.id_task_attempt];
   }
-
-  //? Is it ok to comment this?
-  // try {
-  //   await repositoryService.findOne<AnswerModel>(AnswerModel, {
-  //     where: {
-  //       [Op.or]: idsTaskAttempts.map((id) => ({
-  //         id_task_attempt: id
-  //       }))
-  //     },
-  //     include: {
-  //       model: QuestionModel,
-  //       attributes: [],
-  //       as: "question",
-  //       where: {
-  //         id_question: id_question
-  //       }
-  //     }
-  //   });
-  //   return { alreadyAnswered: true };
-  // } catch (err) {}
-
-  await AnswerModel.create({
-    id_question,
-    id_task_attempt: taskAttempt.id_task_attempt,
-    id_option: idOption,
-    answer_seconds: answerSeconds,
-    id_team: taskAttempt.id_team
-  });
 
   // additional logic to upgrade student's task progress and do socket stuff
   new Promise(async () => {
-    // * Updating Leaderboard
-    updateLeaderBoard(id_course).catch((err) => console.log(err));
-
     socket.broadcast.to(`t${taskAttempt.id_team}`).emit(OutgoingEvents.ANSWER, {
       correct: option.correct
     });
     console.log("answer emitted to team", taskAttempt.id_team);
 
-    // TODO: Plan new update method
-    //! THIS IS VERY IMPORTANT
-    // getLastQuestionFromTaskStage(taskOrder, 2).then((lastQuestion) => {
-    //   if (lastQuestion.id_question === id_question) {
-    //     upgradeStudentTaskProgress(taskOrder, idStudent, 2).catch((err) =>
-    //       console.log(err)
-    //     );
-    //     getTeammates(idStudent, { idTeam: taskAttempt.id_team! })
-    //       .then((teammates) => {
-    //         teammates.forEach(({ id_student }) => {
-    //           upgradeStudentTaskProgress(taskOrder, id_student, 2).catch(
-    //             (err) => console.log(err)
-    //           );
-    //         });
-    //       })
-    //       .catch((err) => console.log(err));
+    // * Updating Leaderboard
+    updateLeaderBoard(id_course).catch(console.log);
 
-    //     updateTeam(taskAttempt.id_team!, {
-    //       active: false,
-    //       playing: false
-    //     }).catch((err) => console.log(err));
-    //   }
-    // });
-  }).catch((err) => console.log(err));
+    const numCorrectAnswers = prevCorrectAnswers.length + +option.correct;
+    if (numCorrectAnswers >= questionsFromStage.length - 1) {
+      // students must answer n-1 questions correctly to finish the task
+      getMembersFromTeam({
+        idTeam: taskAttempt.id_team!
+      }).then((members) => {
+        repositoryService.update<StudentTaskModel>(
+          StudentTaskModel,
+          { highest_stage: 2 },
+          {
+            where: {
+              id_student: {
+                [Op.in]: members.map(({ id_student }) => id_student)
+              },
+              id_task: taskAttempt.id_task,
+              highest_stage: { [Op.lt]: 3 }
+            }
+          }
+        );
+      });
+
+      updateTeam(taskAttempt.id_team!, {
+        active: false,
+        playing: false
+      }).catch(console.log);
+    }
+  }).catch(console.log);
 
   return { alreadyAnswered: false };
 }
@@ -323,7 +358,7 @@ export async function answerPostask(
         updateCurrTaskAttempt(idStudent, { active: false });
       }
     });
-  }).catch((err) => console.log(err));
+  }).catch(console.log);
 
   return uploadResult?.message || null;
 }
@@ -355,19 +390,6 @@ async function uploadAudio(
         message: "Uploaded the file successfully: " + audio.originalname,
         url: publicUrl
       });
-      // try {
-      //   // Make the file public
-      //   await bucket.file(name).makePublic();
-      //   resolve({
-      //     message: "Uploaded the file successfully: " + audio.originalname,
-      //     url: publicUrl
-      //   });
-      // } catch (err) {
-      //   resolve({
-      //     message: `Uploaded the file successfully: ${audio.originalname}, but public access is denied!`,
-      //     url: publicUrl
-      //   });
-      // }
     });
 
     blobStream.end(audio.buffer);
