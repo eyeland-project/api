@@ -64,7 +64,8 @@ AnswerModel.init(
 // model associations
 // answer and question
 QuestionModel.hasMany(AnswerModel, {
-  foreignKey: "id_question"
+  foreignKey: "id_question",
+  as: "answers"
 });
 AnswerModel.belongsTo(QuestionModel, {
   foreignKey: "id_question",

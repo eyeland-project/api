@@ -156,37 +156,83 @@ export async function getNextQuestionFromDuringtaskForStudent(
   taskOrder: number
 ): Promise<QuestionDuringtaskDetailDtoStudent> {
   const { id_team, power } = await getCurrTaskAttempt(idStudent);
+
+  // * Validations
   if (!id_team || !power) {
     throw new ApiError("No team or power found", 400);
   }
   const members = await getMembersFromTeam({ idTeam: id_team });
-  const highestAnswer = (
-    await repositoryService.findAll<AnswerModel>(AnswerModel, {
-      where: {
-        [Op.or]: members.map(({ task_attempt: { id } }) => ({
-          id_task_attempt: id
-        }))
-      },
-      include: {
-        model: QuestionModel,
-        attributes: ["question_order"],
-        as: "question",
-        include: [
-          {
-            model: TaskStageModel,
-            attributes: [],
-            as: "taskStage",
-            where: {
-              task_stage_order: 2
+
+  // * Get all questios that have been not answered or answered incorrectly
+  const missingQuestions = (
+    await repositoryService.findAll<QuestionModel>(QuestionModel, {
+      include: [
+        {
+          model: AnswerModel,
+          as: "answers",
+          where: {
+            id_team
+          },
+          required: false,
+          include: [
+            {
+              model: OptionModel,
+              as: "option",
+              required: true
             }
-          }
-        ]
-      },
-      order: [["question", "question_order", "DESC"]],
-      limit: 1
+          ]
+        }
+      ]
     })
-  )[0];
-  const nextQuestionOrder = highestAnswer?.question.question_order + 1 || 1;
+  ).filter(({ answers }) => {
+    return answers.every(({ option }) => !option.correct);
+  });
+
+  // * Sort from the less answered to the most answered and from the lowest order to the highest order
+  missingQuestions.sort((a, b) => {
+    const aAnswers = a.answers.length;
+    const bAnswers = b.answers.length;
+    if (aAnswers !== bAnswers) {
+      return aAnswers - bAnswers;
+    }
+    return a.question_order - b.question_order;
+  });
+
+  const nextQuestion =
+    missingQuestions.length === 0 || //* If all questions have been answered
+    (missingQuestions.length === 1 && missingQuestions[0].answers?.length > 0) //* or there is only one question and it has been answered before (it is a retry)
+      ? []
+      : [missingQuestions[0]];
+
+  const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
+
+  // const highestAnswer = (
+  //   await repositoryService.findAll<AnswerModel>(AnswerModel, {
+  //     where: {
+  //       [Op.or]: members.map(({ task_attempt: { id } }) => ({
+  //         id_task_attempt: id
+  //       }))
+  //     },
+  //     include: {
+  //       model: QuestionModel,
+  //       attributes: ["question_order"],
+  //       as: "question",
+  //       include: [
+  //         {
+  //           model: TaskStageModel,
+  //           attributes: [],
+  //           as: "taskStage",
+  //           where: {
+  //             task_stage_order: 2
+  //           }
+  //         }
+  //       ]
+  //     },
+  //     order: [["question", "question_order", "DESC"]],
+  //     limit: 1
+  //   })
+  // )[0];
+  // const nextQuestionOrder = highestAnswer?.question.question_order + 1 || 1;
   const powers = members.map(({ task_attempt: { power } }) => power);
   powers.sort((a, b) => indexPower(a) - indexPower(b));
 
