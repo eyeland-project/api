@@ -1,7 +1,6 @@
 export enum IncommingEvents {
   CONNECTION = "connection",
   DISCONNECT = "disconnect",
-  ERROR = "error",
   JOIN = "join"
 }
 
@@ -16,4 +15,12 @@ export enum OutgoingEvents {
   ANSWER = "team:student:answer",
 
   LEADER_BOARD_UPDATE = "course:leaderboard:update"
+}
+
+export enum ErrorMessages {
+  ALREADY_CONNECTED = "error:already_connected",
+  INVALID_CONNECTION = "error:invalid_connection",
+  INVALID_ID = "error:invalid_id",
+  SERVER_ERROR = "error:server_error",
+  STUDENT_NOT_FOUND = "error:student_not_found"
 }

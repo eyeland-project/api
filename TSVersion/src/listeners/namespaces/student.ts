@@ -5,8 +5,10 @@ import { getIdFromToken } from "@utils";
 import { leaveTeam } from "@services/team.service";
 import { Namespaces, of } from "@listeners/sockets";
 import * as repositoryService from "@services/repository.service";
-import { CourseModel } from "@models";
+import { CourseModel, StudentModel } from "@models";
 import { finishStudentTaskAttempts } from "@services/taskAttempt.service";
+import { IncommingEvents, ErrorMessages } from "@interfaces/enums/socket.enum";
+import { Student } from "@interfaces/Student.types";
 
 export const directory = new Map<number, Socket>();
 
@@ -14,21 +16,26 @@ export function onConnection(socket: Socket) {
   console.log("S: New student connection", socket.id);
 
   // EVENTS
-  socket.on("join", onJoin);
-  socket.on("disconnect", onDisconnect);
+  socket.on(IncommingEvents.JOIN, onJoin);
+  socket.on(IncommingEvents.DISCONNECT, onDisconnect);
   socket.handshake.auth;
 
   // FUNCTIONS
   async function onJoin(
     id: number | string,
-    cb?: (session: { session: boolean }) => void
+    cb?: (info: {
+      session?: boolean;
+      error?: {
+        message: ErrorMessages;
+      };
+    }) => void
   ) {
     // check if id is string
     if (typeof id === "string") {
       // check if id is a number
-      if (isNaN(Number(id))) {
+      const idNumber = parseInt(id);
+      if (isNaN(idNumber)) {
         // then it's a token
-        //* console.log('S: student token', id);
         // Check and get id from token
         id = getIdFromToken(id);
         if (id === -1) {
@@ -37,11 +44,19 @@ export function onConnection(socket: Socket) {
           return;
         }
       } else {
-        id = Number(id);
+        id = idNumber;
       }
     } else if (typeof id !== "number") {
       console.log("S: student invalid id", id);
-      socket.disconnect();
+      if (typeof cb === "function") {
+        cb({
+          error: {
+            message: ErrorMessages.INVALID_ID
+          }
+        });
+      } else {
+        socket.disconnect();
+      }
       return;
     }
 
@@ -50,39 +65,50 @@ export function onConnection(socket: Socket) {
     // check if student is already in directory
     const prevSocket = directory.get(id);
     if (prevSocket) {
-      console.log("S: student already connected", socket.id);
-      try {
-        await leaveTeam(id, socket); // leave team room is done in leaveTeam function
-      } catch (err) {
-        console.log("S: error on leave team", err);
+      if (typeof cb === "function") {
+        cb({
+          error: {
+            message: ErrorMessages.ALREADY_CONNECTED
+          }
+        });
+      } else {
+        socket.disconnect();
       }
-      prevSocket.disconnect();
+      return;
     }
 
     // check if student is in a course
-    let idCourse;
+    let student: StudentModel;
     try {
-      idCourse = (await getCourseFromStudent(id)).id_course;
+      student = await repositoryService.findOne<StudentModel>(StudentModel, {
+        where: { id_student: id, deleted: false },
+        attributes: ["id_course"],
+        include: [
+          {
+            model: CourseModel,
+            as: "course",
+            attributes: ["session"],
+            where: { deleted: false }
+          }
+        ]
+      });
     } catch (err) {
+      if (typeof cb === "function") {
+        cb({
+          error: {
+            message: ErrorMessages.STUDENT_NOT_FOUND
+          }
+        });
+      } else {
+        socket.disconnect();
+      }
       return;
     }
 
-    if (idCourse === -1) {
-      console.log("S: student invalid connection", socket.id);
-      socket.disconnect();
-      return;
-    }
-    socket.join("c" + idCourse);
+    socket.join("c" + student.id_course);
     directory.set(id, socket);
+    if (typeof cb === "function") cb({ session: student.course.session });
     printStudentsDir();
-
-    const { session } = await repositoryService.findOne<CourseModel>(
-      CourseModel,
-      { where: { id_course: idCourse } }
-    );
-
-    if (!cb || typeof cb !== "function") return;
-    cb({ session });
   }
 
   async function onDisconnect() {
