@@ -188,6 +188,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
     return answers.every(({ option }) => !option.correct);
   });
 
+  console.log(missingQuestions.map(({ content: id }) => id));
+
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
   missingQuestions.sort((a, b) => {
     const aAnswers = a.answers.length;
