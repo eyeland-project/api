@@ -39,7 +39,7 @@ export async function whoami(
       include: [
         {
           model: BlindnessAcuityModel,
-          attributes: ["id_blindness_acuity", "name"],
+          attributes: ["name"],
           as: "blindnessAcuity"
         }
       ]

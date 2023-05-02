@@ -312,7 +312,8 @@ async function getQuestionsFromTaskStage(
         },
         {
           model: OptionModel,
-          as: "options"
+          as: "options",
+          required: false
         }
       ],
       ...options
