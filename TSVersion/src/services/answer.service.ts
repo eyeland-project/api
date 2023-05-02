@@ -161,24 +161,25 @@ export async function answerDuringtask(
     idsTaskAttempts = [taskAttempt.id_task_attempt];
   }
 
-  try {
-    await repositoryService.findOne<AnswerModel>(AnswerModel, {
-      where: {
-        [Op.or]: idsTaskAttempts.map((id) => ({
-          id_task_attempt: id
-        }))
-      },
-      include: {
-        model: QuestionModel,
-        attributes: [],
-        as: "question",
-        where: {
-          id_question: id_question
-        }
-      }
-    });
-    return { alreadyAnswered: true };
-  } catch (err) {}
+  //? Is it ok to comment this?
+  // try {
+  //   await repositoryService.findOne<AnswerModel>(AnswerModel, {
+  //     where: {
+  //       [Op.or]: idsTaskAttempts.map((id) => ({
+  //         id_task_attempt: id
+  //       }))
+  //     },
+  //     include: {
+  //       model: QuestionModel,
+  //       attributes: [],
+  //       as: "question",
+  //       where: {
+  //         id_question: id_question
+  //       }
+  //     }
+  //   });
+  //   return { alreadyAnswered: true };
+  // } catch (err) {}
 
   await AnswerModel.create({
     id_question,
