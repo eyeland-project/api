@@ -166,7 +166,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
 
   //* auxiliar variables to check if there are questions left
   let maxAnswers = -1;
-  let maxIncorrectAnswers = -1;
+  // let maxIncorrectAnswers = -1;
   // * Get all questios that have been not answered or answered incorrectly
   const missingQuestions = (
     await repositoryService.findAll<QuestionModel>(QuestionModel, {
@@ -203,15 +203,15 @@ export async function getNextQuestionFromDuringtaskForStudent(
     if (answersCount > maxAnswers) {
       maxAnswers = answersCount;
     }
-    if (!haveCorrectAnswer && answersCount > maxIncorrectAnswers) {
-      maxIncorrectAnswers = answersCount;
-    }
+    // if (!haveCorrectAnswer && answersCount > maxIncorrectAnswers) {
+    //   maxIncorrectAnswers = answersCount;
+    // }
 
     // return answers.every(({ option }) => !option.correct);
     return !haveCorrectAnswer;
   });
 
-  const questionLeft = maxIncorrectAnswers < maxAnswers;
+  // const questionLeft = maxIncorrectAnswers < maxAnswers;
   console.log(missingQuestions.map(({ content }) => content));
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
@@ -228,7 +228,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
     missingQuestions.length === 0 || //* If all questions have been answered
     (missingQuestions.length === 1 &&
       missingQuestions[0].answers?.length > 0 &&
-      !questionLeft) //* or there is only one question and it has been answered before (it is a retry)
+      missingQuestions[0].answers.length >= maxAnswers) //* or there is only one question and it has been answered before (it is a retry)
       ? []
       : [missingQuestions[0]];
 
