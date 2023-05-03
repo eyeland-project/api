@@ -247,9 +247,11 @@ export async function answerDuringtask(
 
     const numCorrectAnswers = prevCorrectAnswers.length + +option.correct;
     if (
+      missingQuestions.every((q) => q.answers.length >= 1) && //? podría ser sub[0]
       numCorrectAnswers >= questionsFromStage.length - 1 &&
       ((option.correct &&
         missingQuestions.every(
+          //? podría ser sub[0]
           (q) => q.answers.length >= question.answers.length + 1
         )) ||
         !option.correct)
