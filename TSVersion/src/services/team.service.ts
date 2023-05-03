@@ -428,11 +428,11 @@ export async function startPlayingTeams(idCourse: number) {
   // return teams;
   await sequelize.query(
     `
-    UPDATE teams
+    UPDATE team
     SET playing = true
     WHERE id_team IN (
       SELECT id_team
-      FROM task_attempts
+      FROM task_attempt
       WHERE id_team IS NOT NULL
       AND active = true
     )
