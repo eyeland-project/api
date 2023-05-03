@@ -161,8 +161,12 @@ export async function getNextQuestionFromDuringtaskForStudent(
   if (!id_team || !power) {
     throw new ApiError("No team or power found", 400);
   }
+
   const members = await getMembersFromTeam({ idTeam: id_team });
 
+  //* auxiliar variables to check if there are questions left
+  let maxAnswers = -1;
+  // let maxIncorrectAnswers = -1;
   // * Get all questios that have been not answered or answered incorrectly
   const missingQuestions = (
     await repositoryService.findAll<QuestionModel>(QuestionModel, {
@@ -193,18 +197,21 @@ export async function getNextQuestionFromDuringtaskForStudent(
       ]
     })
   ).filter(({ answers }) => {
-    // console.log("content:", content);
-    // // console.log("answers:", answers);
-    // console.log(
-    //   "options:",
-    //   answers.map(({ option }) => ({
-    //     content: option.content,
-    //     correct: option.correct
-    //   }))
-    // );
-    return answers.every(({ option }) => !option!.correct);
+    const answersCount = answers.length;
+    const haveCorrectAnswer = answers.some(({ option }) => option!.correct);
+
+    if (answersCount > maxAnswers) {
+      maxAnswers = answersCount;
+    }
+    // if (!haveCorrectAnswer && answersCount > maxIncorrectAnswers) {
+    //   maxIncorrectAnswers = answersCount;
+    // }
+
+    // return answers.every(({ option }) => !option.correct);
+    return !haveCorrectAnswer;
   });
 
+  // const questionLeft = maxIncorrectAnswers < maxAnswers;
   console.log(missingQuestions.map(({ content }) => content));
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
@@ -219,39 +226,43 @@ export async function getNextQuestionFromDuringtaskForStudent(
 
   const nextQuestion =
     missingQuestions.length === 0 || //* If all questions have been answered
-    (missingQuestions.length === 1 && missingQuestions[0].answers?.length > 0) //* or there is only one question and it has been answered before (it is a retry)
+    (missingQuestions.length === 1 &&
+      missingQuestions[0].answers?.length > 0 &&
+      missingQuestions[0].answers.length >= maxAnswers) //* or there is only one question and it has been answered before (it is a retry)
       ? []
       : [missingQuestions[0]];
 
   const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
 
-  // const highestAnswer = (
-  //   await repositoryService.findAll<AnswerModel>(AnswerModel, {
-  //     where: {
-  //       [Op.or]: members.map(({ task_attempt: { id } }) => ({
-  //         id_task_attempt: id
-  //       }))
-  //     },
-  //     include: {
-  //       model: QuestionModel,
-  //       attributes: ["question_order"],
-  //       as: "question",
-  //       include: [
-  //         {
-  //           model: TaskStageModel,
-  //           attributes: [],
-  //           as: "taskStage",
-  //           where: {
-  //             task_stage_order: 2
-  //           }
-  //         }
-  //       ]
-  //     },
-  //     order: [["question", "question_order", "DESC"]],
-  //     limit: 1
-  //   })
-  // )[0];
-  // const nextQuestionOrder = highestAnswer?.question.question_order + 1 || 1;
+  {
+    // const highestAnswer = (
+    //   await repositoryService.findAll<AnswerModel>(AnswerModel, {
+    //     where: {
+    //       [Op.or]: members.map(({ task_attempt: { id } }) => ({
+    //         id_task_attempt: id
+    //       }))
+    //     },
+    //     include: {
+    //       model: QuestionModel,
+    //       attributes: ["question_order"],
+    //       as: "question",
+    //       include: [
+    //         {
+    //           model: TaskStageModel,
+    //           attributes: [],
+    //           as: "taskStage",
+    //           where: {
+    //             task_stage_order: 2
+    //           }
+    //         }
+    //       ]
+    //     },
+    //     order: [["question", "question_order", "DESC"]],
+    //     limit: 1
+    //   })
+    // )[0];
+    // const nextQuestionOrder = highestAnswer?.question.question_order + 1 || 1;
+  }
   const powers = members.map(({ task_attempt: { power } }) => power);
   powers.sort((a, b) => indexPower(a) - indexPower(b));
 
