@@ -141,7 +141,7 @@ export function getNamespace() {
   return of(Namespaces.STUDENTS)!;
 }
 
-export function emitTo(room: string, event: string, data: any) {
+export function emitTo(room: string, event: string, data?: any) {
   getNamespace().to(room).emit(event, data);
   console.log("S: Emitting", event, data);
 }

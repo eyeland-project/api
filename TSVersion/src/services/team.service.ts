@@ -20,11 +20,15 @@ import { Student } from "@interfaces/Student.types";
 import { TeamMember } from "@interfaces/Team.types";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
-import { directory as directoryStudents } from "@listeners/namespaces/student";
+import {
+  directory as directoryStudents,
+  emitTo as toStudentRoom
+} from "@listeners/namespaces/student";
 import { TaskAttempt } from "@interfaces/TaskAttempt.types";
 import {
   assignPowerToStudent,
-  getTeamFromStudent
+  getTeamFromStudent,
+  whoami
 } from "@services/student.service";
 import {
   filterTeamsForStudents,
@@ -291,18 +295,31 @@ export async function leaveTeam(
   socketStudent: Socket
 ): Promise<void> {
   const { power } = await getCurrTaskAttempt(idStudent);
-  const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
+  const { id_team, id_course, playing } = await getTeamFromStudent(idStudent); // check if student is already in a team
   await removeStudentFromTeam(idStudent);
 
   new Promise(async () => {
     socketStudent.leave("t" + id_team); // leave student from team socket room
     // check if this student had super_hearing to assign it to another student
-    checkReassignSuperHearing(id_team, power).catch((err) => {
-      console.log(err);
-    });
+    if (!playing) {
+      checkReassignSuperHearing(id_team, power).catch((err) => {
+        console.log(err);
+      });
+    } else {
+      notifyDisconnection(id_team, idStudent);
+    }
     await verifyTeamStatus(id_team);
+
     await notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
   }).catch(console.log);
+}
+
+async function notifyDisconnection(id_team: number, id_student: number) {
+  const { firstName } = await whoami(id_student);
+
+  toStudentRoom(`t${id_team}`, OutgoingEvents.STUDENT_LEAVE, {
+    name: firstName
+  });
 }
 
 export async function checkReassignSuperHearing(
