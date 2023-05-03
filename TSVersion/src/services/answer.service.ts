@@ -166,6 +166,13 @@ export async function answerDuringtask(
           //     }
           //   }
           // ]
+        },
+        {
+          model: AnswerModel,
+          as: "answers",
+          attributes: ["id_answer"],
+          where: { id_team: taskAttempt.id_team },
+          required: false
         }
       ]
     }
@@ -205,6 +212,13 @@ export async function answerDuringtask(
     }
   );
 
+  const missingQuestions = questionsFromStage.filter(
+    (ques) =>
+      !prevCorrectAnswers.find(
+        (answer) => answer.question.id_question === ques.id_question
+      ) && ques.id_question !== question.id_question
+  );
+
   if (
     prevCorrectAnswers.find(
       (answer) => answer.question.id_question === question.id_question
@@ -232,7 +246,14 @@ export async function answerDuringtask(
     updateLeaderBoard(id_course).catch(console.log);
 
     const numCorrectAnswers = prevCorrectAnswers.length + +option.correct;
-    if (numCorrectAnswers >= questionsFromStage.length - 1) {
+    if (
+      numCorrectAnswers >= questionsFromStage.length - 1 &&
+      ((option.correct &&
+        missingQuestions.every(
+          (q) => q.answers.length >= question.answers.length + 1
+        )) ||
+        !option.correct)
+    ) {
       // students must answer n-1 questions correctly to finish the task
       getMembersFromTeam({
         idTeam: taskAttempt.id_team!
