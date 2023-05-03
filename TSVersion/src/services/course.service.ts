@@ -280,9 +280,15 @@ export async function startSession(idTeacher: number, idCourse: number) {
   }
 
   await startPlayingTeams(idCourse);
-  updateLeaderBoard(idCourse).catch(() => {});
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_START);
-  emitLeaderboard(idCourse).catch(() => {});
+  new Promise(async () => {
+    try {
+      await updateLeaderBoard(idCourse);
+    } catch (e) {}
+    try {
+      await emitLeaderboard(idCourse);
+    } catch (e) {}
+  }).catch(console.log);
 }
 
 export async function endSession(idTeacher: number, idCourse: number) {
@@ -304,7 +310,6 @@ export async function endSession(idTeacher: number, idCourse: number) {
     { session: false },
     { where: { id_course: idCourse } }
   );
-  await cleanLeaderBoard(idCourse);
   nsp.to("c" + id_course).emit(OutgoingEvents.SESSION_END);
   Promise.allSettled([
     repositoryService.update<TeamModel>(
@@ -312,14 +317,14 @@ export async function endSession(idTeacher: number, idCourse: number) {
       { playing: false, active: false },
       { where: { id_course: idCourse } }
     ),
-    finishCourseTaskAttempts(idCourse)
-  ]).catch(() => {});
+    finishCourseTaskAttempts(idCourse),
+    cleanLeaderBoard(idCourse)
+  ]).catch(console.log);
 }
 
 export async function initializeTeams(idCourse: number) {
   // Clean used teams
   await cleanTeams(idCourse);
-
   await createMissingTeams(idCourse);
 }
 

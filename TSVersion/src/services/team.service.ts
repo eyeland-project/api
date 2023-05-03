@@ -178,7 +178,7 @@ export async function joinTeam(
           student.id_course,
           team.id_team,
           idStudent
-        ).catch(() => {});
+        ).catch(console.log);
         if (yaper) notifyStudentOfTeamUpdate(yaper);
       })
       .catch(console.log);
@@ -290,16 +290,17 @@ export async function leaveTeam(
   idStudent: number,
   socketStudent: Socket
 ): Promise<void> {
-  const { power } = await getCurrTaskAttempt(idStudent);
+  let power: Power | null | undefined;
+  try {
+    power = (await getCurrTaskAttempt(idStudent)).power;
+  } catch (err) {}
   const { id_team, id_course } = await getTeamFromStudent(idStudent); // check if student is already in a team
   await removeStudentFromTeam(idStudent);
 
   new Promise(async () => {
     socketStudent.leave("t" + id_team); // leave student from team socket room
     // check if this student had super_hearing to assign it to another student
-    checkReassignSuperHearing(id_team, power).catch((err) => {
-      console.log(err);
-    });
+    checkReassignSuperHearing(id_team, power).catch(console.log);
     await verifyTeamStatus(id_team);
     await notifyCourseOfTeamUpdate(id_course, id_team, idStudent);
   }).catch(console.log);
@@ -407,24 +408,39 @@ export async function verifyTeamStatus(teamId: number) {
 
 export async function startPlayingTeams(idCourse: number) {
   // update all teams that have at least one student with an active task attempt
-  const teams = await TeamModel.findAll({
-    where: { id_course: idCourse, active: true },
-    include: [
-      {
-        model: TaskAttemptModel,
-        required: true,
-        where: { id_team: { [Op.ne]: null }, active: true },
-        as: "taskAttempts"
-      }
-    ]
-  });
+  // const teams = await TeamModel.findAll({
+  //   where: { id_course: idCourse, active: true },
+  //   include: [
+  //     {
+  //       model: TaskAttemptModel,
+  //       required: true,
+  //       where: { id_team: { [Op.ne]: null }, active: true },
+  //       as: "taskAttempts"
+  //     }
+  //   ]
+  // });
 
-  for (const team of teams) {
-    team.playing = true;
-    await team.save();
-  }
+  // for (const team of teams) {
+  //   team.playing = true;
+  //   await team.save();
+  // }
 
-  return teams;
+  // return teams;
+  await sequelize.query(
+    `
+    UPDATE teams
+    SET playing = true
+    WHERE id_team IN (
+      SELECT id_team
+      FROM task_attempts
+      WHERE id_team IS NOT NULL
+      AND active = true
+    )
+    AND id_course = ${idCourse}
+    AND active = true;
+  `,
+    { type: QueryTypes.UPDATE }
+  );
 }
 
 export async function cleanTeams(idCourse: number) {
