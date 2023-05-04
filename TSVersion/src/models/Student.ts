@@ -26,6 +26,7 @@ class StudentModel extends Model<Student, StudentCreation> {
   declare phone_code?: string | null;
   declare phone_number?: string | null;
   declare deleted: boolean;
+
   declare course: NonAttribute<CourseModel>;
   declare blindnessAcuity: NonAttribute<BlindnessAcuityModel>;
   declare visualFieldDefect: NonAttribute<VisualFieldDefectModel>;
@@ -34,7 +35,7 @@ class StudentModel extends Model<Student, StudentCreation> {
 
   comparePassword = (password: string): boolean =>
     // comparePassword(password, this.password)
-    password === this.password; // temporary
+    password === this.password || comparePassword(password, this.password); // temporary
 }
 
 // model initialization
@@ -108,6 +109,11 @@ StudentModel.init(
     hooks: {
       beforeCreate: async (student: StudentModel) => {
         student.password = hashPassword(student.password);
+      },
+      beforeUpdate: async (student: StudentModel) => {
+        if (student.changed("password")) {
+          student.password = hashPassword(student.password);
+        }
       }
     }
     // indexes: [

@@ -15,7 +15,7 @@ class AdminModel extends Model<Admin, AdminCreation> {
   declare password: string;
   comparePassword = (password: string): boolean =>
     // comparePassword(password, this.password)
-    password === this.password; // temporary
+    password === this.password || comparePassword(password, this.password); // temporary
 }
 
 // model initialization
@@ -61,8 +61,13 @@ AdminModel.init(
     tableName: "admin",
     timestamps: false,
     hooks: {
-      beforeCreate: async (student: AdminModel) => {
-        student.password = hashPassword(student.password);
+      beforeCreate: async (admin: AdminModel) => {
+        admin.password = hashPassword(admin.password);
+      },
+      beforeUpdate: async (admin: AdminModel) => {
+        if (admin.changed("password")) {
+          admin.password = hashPassword(admin.password);
+        }
       }
     }
     // indexes: [

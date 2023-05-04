@@ -46,7 +46,9 @@ export async function finishStudentTaskAttempts(idStudent: number) {
 }
 
 export async function finishCourseTaskAttempts(idCourse: number) {
-  sequelize.query(`
+  await sequelize
+    .query(
+      `
     UPDATE task_attempt
     SET active = false
     WHERE id_student IN (
@@ -54,5 +56,8 @@ export async function finishCourseTaskAttempts(idCourse: number) {
       FROM student
       WHERE id_course = ${idCourse}
     ) AND active = true;
-    `, { type: QueryTypes.UPDATE }).catch(() => {});
+    `,
+      { type: QueryTypes.UPDATE }
+    )
+    .catch(console.log);
 }

@@ -19,7 +19,7 @@ class TeacherModel extends Model<Teacher, TeacherCreation> {
   declare institution: NonAttribute<InstitutionModel>;
   comparePassword = (password: string): boolean =>
     // comparePassword(password, this.password)
-    password === this.password; // temporary
+    password === this.password || comparePassword(password, this.password); // temporary
 }
 
 // model initialization
@@ -76,6 +76,11 @@ TeacherModel.init(
     hooks: {
       beforeCreate: async (teacher: TeacherModel) => {
         teacher.password = hashPassword(teacher.password);
+      },
+      beforeUpdate: async (teacher: TeacherModel) => {
+        if (teacher.changed("password")) {
+          teacher.password = hashPassword(teacher.password);
+        }
       }
     }
   }
