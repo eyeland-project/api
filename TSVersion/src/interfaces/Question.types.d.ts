@@ -15,4 +15,4 @@ export interface Question {
   deleted: boolean;
 }
 
-export type QuestionCreation = Omit<Question, "id_question">;
+export type QuestionCreation = Omit<Question, "id_question", "deleted">;

@@ -9,4 +9,4 @@ export interface Option {
   deleted: boolean;
 }
 
-export type OptionCreation = Omit<Option, "id_option">;
+export type OptionCreation = Omit<Option, "id_option", "deleted">;
