@@ -71,8 +71,9 @@ CREATE TABLE task_stage (
     CONSTRAINT check_task_stage_order CHECK (task_stage_order IN (1, 2, 3)) -- 1: pretask, 2: duringtask, 3: posttask
 );
 
-CREATE TYPE valid_question_type AS ENUM ('flashcard', 'fill', 'order', 'select', 'audio', 'audio_select', 'audio_order', 'audio_speaking');
-CREATE TYPE valid_question_topic AS ENUM ('vocabulary', 'prepositions');
+CREATE TYPE valid_question_character AS ENUM ('beto', 'valery', 'alex', 'chucho');
+CREATE TYPE valid_question_type AS ENUM ('flashcard', 'fill', 'order', 'select', 'audio_select', 'audio_order', 'audio_speaking', 'select_speaking', 'select&speaking', 'open', 'order-word', 'audio_order-word');
+CREATE TYPE valid_question_topic AS ENUM ('vocabulary', 'prepositions', 'personal_presentation');
 
 -- CREATING TABLE question
 CREATE TABLE question (
@@ -83,9 +84,11 @@ CREATE TABLE question (
     audio_url VARCHAR(2048),
     video_url VARCHAR(2048),
     type VALID_QUESTION_TYPE NOT NULL,
-    img_alt VARCHAR(50),
+    img_alt VARCHAR(100),
     img_url VARCHAR(2048),
     topic VALID_QUESTION_TOPIC,
+    character VALID_QUESTION_CHARACTER,
+    hint VARCHAR (200),
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_question PRIMARY KEY (id_question),

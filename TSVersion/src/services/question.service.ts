@@ -28,9 +28,9 @@ import {
   shuffle
 } from "@utils";
 import { getCurrTaskAttempt } from "@services/taskAttempt.service";
-import { getTeammates } from "@services/student.service";
 import { getMembersFromTeam } from "./team.service";
 
+// for teachers
 export async function getQuestionsFromPretaskForTeacher(
   idTask: number
 ): Promise<QuestionPretaskDetailDtoTeacher[]> {
@@ -45,15 +45,15 @@ export async function getQuestionsFromDuringtaskForTeacher(
   return (await getQuestionsFromTaskStage({ idTask }, 2)).map(
     ({ content, ...fields }) => {
       const {
-        nouns,
-        preps,
+        memoryPro: nouns,
+        superRadar: preps,
         content: contentParsed
       } = separateTranslations(content);
       return {
         ...fields,
         content: contentParsed,
-        nounTranslation: nouns,
-        prepositionTranslation: preps
+        memoryPro: nouns,
+        superRadar: preps
       };
     }
   );
@@ -65,90 +65,13 @@ export async function getQuestionsFromPostaskForTeacher(
   return await getQuestionsFromTaskStage({ idTask }, 3);
 }
 
+// for students
 export async function getQuestionsFromPretaskForStudent(
   taskOrder: number
 ): Promise<QuestionPretaskDetailDtoStudent[]> {
-  const questions = (
-    await getQuestionsFromTaskStage(
-      { taskOrder },
-      1,
-      {},
-      { limit: 10, order: sequelize.random() }
-    )
-  ).map(({ audioUrl, videoUrl, ...fields }) => fields);
-  questions.sort((a, b) => {
-    // move nulls to the end
-    if (!a.topic) return 1;
-    if (!b.topic) return -1;
-    return a.topic.localeCompare(b.topic);
-  });
-  return questions;
-}
-
-export async function getQuestionFromPretaskForStudent(
-  taskOrder: number,
-  questionOrder: number
-): Promise<QuestionPretaskDetailDtoStudent> {
-  const questions = (
-    await getQuestionsFromTaskStage(
-      { taskOrder },
-      1,
-      { question_order: questionOrder },
-      { limit: 1 }
-    )
-  ).map(({ audioUrl, videoUrl, ...fields }) => fields);
-  if (!questions.length) throw new ApiError("Question not found", 404);
-  return questions[0];
-}
-
-export async function getQuestionFromDuringtaskForStudent(
-  idStudent: number,
-  taskOrder: number,
-  questionOrder: number
-): Promise<QuestionDuringtaskDetailDtoStudent> {
-  const { id_team, power } = await getCurrTaskAttempt(idStudent);
-  if (!id_team || !power) {
-    throw new ApiError("No team or power found", 400);
-  }
-  const powers = (await getTeammates(idStudent, { idTeam: id_team })).map(
-    ({ task_attempt }) => task_attempt.power
+  return (await getQuestionsFromTaskStage({ taskOrder }, 1)).map(
+    ({ audioUrl, videoUrl, ...fields }) => fields
   );
-  powers.push(power);
-  powers.sort((a, b) => indexPower(a) - indexPower(b));
-
-  const questions = (
-    await getQuestionsFromTaskStage(
-      { taskOrder },
-      2,
-      { question_order: questionOrder },
-      { limit: 1 }
-    )
-  ).map(({ content, options, id, ...fields }) => {
-    const {
-      nouns,
-      preps,
-      content: contentParsed
-    } = separateTranslations(content);
-
-    // * shuffle options
-    options = shuffle(options, (id_team + 1) * (id + 2));
-    // * distribute options based on power
-    options = distributeOptions(
-      options,
-      powers.indexOf(power) + 1,
-      powers.length
-    );
-    return {
-      id,
-      content: contentParsed,
-      ...fields,
-      nounTranslation: nouns,
-      prepositionTranslation: preps,
-      options
-    };
-  });
-  if (!questions.length) throw new ApiError("Question not found", 404);
-  return questions[0];
 }
 
 export async function getNextQuestionFromDuringtaskForStudent(
@@ -233,36 +156,6 @@ export async function getNextQuestionFromDuringtaskForStudent(
       : [missingQuestions[0]];
 
   const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
-
-  {
-    // const highestAnswer = (
-    //   await repositoryService.findAll<AnswerModel>(AnswerModel, {
-    //     where: {
-    //       [Op.or]: members.map(({ task_attempt: { id } }) => ({
-    //         id_task_attempt: id
-    //       }))
-    //     },
-    //     include: {
-    //       model: QuestionModel,
-    //       attributes: ["question_order"],
-    //       as: "question",
-    //       include: [
-    //         {
-    //           model: TaskStageModel,
-    //           attributes: [],
-    //           as: "taskStage",
-    //           where: {
-    //             task_stage_order: 2
-    //           }
-    //         }
-    //       ]
-    //     },
-    //     order: [["question", "question_order", "DESC"]],
-    //     limit: 1
-    //   })
-    // )[0];
-    // const nextQuestionOrder = highestAnswer?.question.question_order + 1 || 1;
-  }
   const powers = members.map(({ task_attempt: { power } }) => power);
   powers.sort((a, b) => indexPower(a) - indexPower(b));
 
@@ -275,8 +168,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
     )
   ).map(({ content, options, id, ...fields }) => {
     const {
-      nouns,
-      preps,
+      memoryPro: nouns,
+      superRadar: preps,
       content: contentParsed
     } = separateTranslations(content);
 
@@ -292,8 +185,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
       id,
       content: contentParsed,
       ...fields,
-      nounTranslation: nouns,
-      prepositionTranslation: preps,
+      memoryPro: nouns,
+      superRadar: preps,
       options
     };
   });
@@ -301,18 +194,10 @@ export async function getNextQuestionFromDuringtaskForStudent(
   return questions[0];
 }
 
-export async function getQuestionFromPostaskForStudent(
-  taskOrder: number,
-  questionOrder: number
-): Promise<QuestionPostaskDetailDtoStudent> {
-  const questions = await getQuestionsFromTaskStage(
-    { taskOrder },
-    3,
-    { question_order: questionOrder },
-    { limit: 1 }
-  );
-  if (!questions.length) throw new ApiError("Question not found", 404);
-  return questions[0];
+export async function getQuestionsFromPostaskForStudent(
+  taskOrder: number
+): Promise<QuestionPostaskDetailDtoStudent[]> {
+  return await getQuestionsFromTaskStage({ taskOrder }, 3);
 }
 
 export async function getQuestionByOrder(
@@ -406,17 +291,21 @@ async function getQuestionsFromTaskStage(
       img_url,
       audio_url,
       video_url,
+      hint,
+      character,
       options
     }) => ({
       id: id_question,
       questionOrder: question_order,
       content,
       type,
-      topic,
+      topic: topic || null,
       imgAlt: img_alt || null,
       imgUrl: img_url || null,
       audioUrl: audio_url || null,
       videoUrl: video_url || null,
+      hint: hint || null,
+      character: character || null,
       options: options.map(({ id_option, content, correct, feedback }) => ({
         id: id_option,
         content,

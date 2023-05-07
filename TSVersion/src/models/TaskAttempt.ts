@@ -43,7 +43,7 @@ TaskAttemptModel.init(
       type: DataTypes.INTEGER
     },
     power: {
-      type: DataTypes.STRING(20)
+      type: DataTypes.ENUM(...Object.values(Power))
     },
     active: {
       type: DataTypes.BOOLEAN,

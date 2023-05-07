@@ -3,13 +3,23 @@ export enum QuestionType {
   FILL = "fill",
   ORDER = "order",
   SELECT = "select",
-  AUDIO = "audio",
-  AUDIO_ORDER = "audio_order",
   AUDIO_SELECT = "audio_select",
-  AUDIO_SPEAKING = "audio_speaking"
+  AUDIO_ORDER = "audio_order",
+  AUDIO_SPEAKING = "audio_speaking",
+  SELECT_AND_SPEAKING = "select&speaking",
+  OPEN = "open",
+  ORDERWORD = "order-word",
+  AUDIO_ORDERWORD = "audio_order-word"
 }
 
 export enum QuestionTopic {
   VOCABULARY = "vocabulary",
   PREPOSITIONS = "prepositions"
+}
+
+export enum QuestionCharacter {
+  BETO = "beto",
+  VALERY = "valery",
+  CHUCHO = "chucho",
+  ALEX = "alex"
 }

@@ -2,7 +2,6 @@ import { Router } from "express";
 import passport from "passport";
 import {
   getPretask,
-  getQuestion,
   answer,
   setCompleted,
   getQuestions
@@ -15,7 +14,6 @@ router.use(auth);
 
 router.get("/", getPretask);
 router.get("/questions", getQuestions);
-router.get("/questions/:questionOrder", getQuestion);
 router.post("/questions/:questionOrder", answer);
 router.post("/complete", setCompleted);
 

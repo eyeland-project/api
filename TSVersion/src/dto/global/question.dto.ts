@@ -1,4 +1,8 @@
-import { QuestionTopic, QuestionType } from "@interfaces/enums/question.enum";
+import {
+  QuestionCharacter,
+  QuestionTopic,
+  QuestionType
+} from "@interfaces/enums/question.enum";
 
 export interface QuestionDetailDto {
   id: number;
@@ -10,6 +14,8 @@ export interface QuestionDetailDto {
   imgUrl: string | null;
   audioUrl: string | null;
   videoUrl: string | null;
+  hint: string | null;
+  character: QuestionCharacter | null;
   options: {
     id: number;
     content: string;
@@ -24,9 +30,8 @@ export type QuestionPretaskDetailDto = Omit<
 >;
 
 export interface QuestionDuringtaskDetailDto extends QuestionDetailDto {
-  questionOrder: number;
-  nounTranslation: string[];
-  prepositionTranslation: string[];
+  memoryPro: string[];
+  superRadar: string[];
 }
 
 export interface QuestionPostaskDetailDto extends QuestionDetailDto {}

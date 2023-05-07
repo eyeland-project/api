@@ -26,23 +26,23 @@ export function genTeamCode(teamId?: number) {
 
 export function separateTranslations(content: string): {
   content: string;
-  nouns: string[];
-  preps: string[];
+  memoryPro: string[];
+  superRadar: string[];
 } {
   const regex = /(\{[^\|]*\|[^\}]*\})|(\[[^\|]*\|[^\]]*\])/g;
   const matches = content.match(regex);
-  if (!matches) return { content, nouns: [], preps: [] };
+  if (!matches) return { content, memoryPro: [], superRadar: [] };
 
-  const nouns: string[] = [];
-  const preps: string[] = [];
+  const memoryPro: string[] = [];
+  const superRadar: string[] = [];
 
   matches.forEach((match) => {
     const transl = match.slice(1, match.length - 1).split("|")[1];
-    (match[0] === "{" ? nouns : preps).push(transl);
+    (match[0] === "{" ? memoryPro : superRadar).push(transl);
     content = content.replace(match, match.replace(/\|.*/, "") + match.at(-1));
   });
 
-  return { content, nouns, preps };
+  return { content, memoryPro, superRadar };
 }
 
 export function pseudoRandom(seed: number): number {

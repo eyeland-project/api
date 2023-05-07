@@ -1,17 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { getQuestionFromPostaskForStudent } from "@services/question.service";
+import { getQuestionsFromPostaskForStudent } from "@services/question.service";
 import { answerPostask } from "@services/answer.service";
-import {
-  AnswerAudioCreateDto,
-  AnswerOptionCreateDto
-} from "@dto/student/answer.dto";
+import { AnswerAudioCreateDto } from "@dto/student/answer.dto";
 import { getPostaskForStudent } from "@services/taskStage.service";
 import { QuestionPostaskDetailDto } from "@dto/student/question.dto";
 import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
 import { ApiError } from "@middlewares/handleErrors";
-import { getStorageBucket } from "@config/storage";
 import { uploadFileToServer } from "@config/multer";
-import { format } from "util";
 
 export async function getPostask(
   req: Request<{ taskOrder: string }>,
@@ -29,23 +24,17 @@ export async function getPostask(
   }
 }
 
-export async function getQuestion(
-  req: Request<{ taskOrder: string; questionOrder: string }>,
-  res: Response<QuestionPostaskDetailDto>,
+export async function getQuestions(
+  req: Request<{ taskOrder: string }>,
+  res: Response<QuestionPostaskDetailDto[]>,
   next: NextFunction
 ) {
   const taskOrder = parseInt(req.params.taskOrder);
-  const questionOrder = parseInt(req.params.questionOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
       throw new ApiError("Invalid taskOrder", 400);
     }
-    if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder", 400);
-    }
-    res
-      .status(200)
-      .json(await getQuestionFromPostaskForStudent(taskOrder, questionOrder));
+    res.status(200).json(await getQuestionsFromPostaskForStudent(taskOrder));
   } catch (err) {
     next(err);
   }

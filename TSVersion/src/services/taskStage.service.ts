@@ -107,17 +107,21 @@ export async function getQuestionsFromTaskStage(
       type,
       options,
       audio_url,
-      video_url
+      video_url,
+      hint,
+      character
     }) => ({
       id: id_question,
       questionOrder: question_order,
       content,
-      topic,
+      topic: topic || null,
       type,
       imgAlt: img_alt || null,
       imgUrl: img_url || null,
       audioUrl: audio_url || null,
       videoUrl: video_url || null,
+      hint: hint || null,
+      character: character || null,
       options: options.map((option) => {
         const { content, correct, feedback, id_option } = option;
         return {

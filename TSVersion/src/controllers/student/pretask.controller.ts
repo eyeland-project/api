@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import {
-  getQuestionFromPretaskForStudent,
-  getQuestionsFromPretaskForStudent
-} from "@services/question.service";
+import { getQuestionsFromPretaskForStudent } from "@services/question.service";
 import { AnswerOptionCreateDto } from "@dto/student/answer.dto";
 import { answerPretask } from "@services/answer.service";
 import { getPretaskForStudent } from "@services/taskStage.service";
@@ -38,28 +35,6 @@ export async function getQuestions(
       throw new ApiError("Invalid taskOrder", 400);
     }
     res.status(200).json(await getQuestionsFromPretaskForStudent(taskOrder));
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function getQuestion(
-  req: Request<{ taskOrder: string; questionOrder: string }>,
-  res: Response<QuestionPretaskDetailDto>,
-  next: NextFunction
-) {
-  const taskOrder = parseInt(req.params.taskOrder);
-  const questionOrder = parseInt(req.params.questionOrder);
-  try {
-    if (isNaN(taskOrder) || taskOrder <= 0) {
-      throw new ApiError("Invalid taskOrder", 400);
-    }
-    if (isNaN(questionOrder) || questionOrder <= 0) {
-      throw new ApiError("Invalid questionOrder", 400);
-    }
-    res
-      .status(200)
-      .json(await getQuestionFromPretaskForStudent(taskOrder, questionOrder));
   } catch (err) {
     next(err);
   }

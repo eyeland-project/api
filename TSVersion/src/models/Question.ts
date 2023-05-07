@@ -2,7 +2,11 @@ import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { Question, QuestionCreation } from "@interfaces/Question.types";
 import { ApiError } from "@middlewares/handleErrors";
-import { QuestionTopic, QuestionType } from "@interfaces/enums/question.enum";
+import {
+  QuestionCharacter,
+  QuestionTopic,
+  QuestionType
+} from "@interfaces/enums/question.enum";
 import { AnswerModel, OptionModel, TaskStageModel } from "@models";
 
 // model class definition
@@ -16,7 +20,9 @@ class QuestionModel extends Model<Question, QuestionCreation> {
   declare type: QuestionType;
   declare img_alt?: string | null;
   declare img_url?: string | null;
-  declare topic: QuestionTopic | null;
+  declare topic?: QuestionTopic | null;
+  declare hint?: string | null;
+  declare character?: QuestionCharacter | null;
   declare deleted: boolean;
 
   declare taskStage: NonAttribute<TaskStageModel>;
@@ -37,7 +43,7 @@ QuestionModel.init(
       allowNull: false
     },
     content: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(200),
       allowNull: false
     },
     audio_url: {
@@ -55,13 +61,19 @@ QuestionModel.init(
       allowNull: false
     },
     img_alt: {
-      type: DataTypes.STRING(50)
+      type: DataTypes.STRING(100)
     },
     img_url: {
       type: DataTypes.STRING(2048)
     },
     topic: {
       type: DataTypes.ENUM(...Object.values(QuestionTopic))
+    },
+    character: {
+      type: DataTypes.ENUM(...Object.values(QuestionCharacter))
+    },
+    hint: {
+      type: DataTypes.STRING(200)
     },
     deleted: {
       type: DataTypes.BOOLEAN,
