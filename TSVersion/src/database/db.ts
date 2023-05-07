@@ -22,7 +22,7 @@ if (process.env.DB_URL) {
   conf = [
     process.env.DB_NAME || "mydb",
     process.env.DB_USER || "myuser",
-    process.env.DB_PASSWORD || "mypass",
+    process.env.DB_PASSWORD || "pass",
     {
       host: process.env.DB_HOST || "localhost",
       dialect: "postgres",

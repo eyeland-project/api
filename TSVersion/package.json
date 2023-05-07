@@ -8,7 +8,8 @@
     "build": "tsc && tsc-alias",
     "start": "cross-env NODE_ENV=production node build/index.js",
     "test": "cross-env NODE_ENV=test jest --verbose --silent",
-    "test:watch": "npm run test -- --watch"
+    "test:watch": "npm run test -- --watch",
+    "migrate": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register src/migrations/run.ts"
   },
   "author": "IEEE EPICS TEAM",
   "license": "ISC",
