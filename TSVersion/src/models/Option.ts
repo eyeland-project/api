@@ -28,7 +28,7 @@ OptionModel.init(
       allowNull: false
     },
     feedback: {
-      type: DataTypes.STRING(100)
+      type: DataTypes.STRING(200)
     },
     content: {
       type: DataTypes.STRING(1000),

@@ -43,7 +43,7 @@ QuestionModel.init(
       allowNull: false
     },
     content: {
-      type: DataTypes.STRING(200),
+      type: DataTypes.STRING(400),
       allowNull: false
     },
     audio_url: {
@@ -61,7 +61,7 @@ QuestionModel.init(
       allowNull: false
     },
     img_alt: {
-      type: DataTypes.STRING(100)
+      type: DataTypes.STRING(200)
     },
     img_url: {
       type: DataTypes.STRING(2048)
