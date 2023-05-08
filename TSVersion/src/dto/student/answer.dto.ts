@@ -1,12 +1,17 @@
-export interface AnswerOptionCreateDto {
+export interface AnswerSelectCreateDto {
   idOption: number;
   answerSeconds?: number;
   newAttempt?: boolean | null;
 }
 
-export interface AnswerAudioCreateDto {
-  idOption?: number;
+export interface AnswerSelectSpeakingCreateDto {
+  idOption: number;
   answerSeconds?: number;
-  // audio?: Buffer;
   newAttempt?: boolean | null;
+}
+
+export interface AnswerOpenCreateDto {
+  answerSeconds?: number;
+  newAttempt?: boolean | null;
+  text?: string;
 }

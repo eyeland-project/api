@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { getQuestionsFromPretaskForStudent } from "@services/question.service";
-import { AnswerOptionCreateDto } from "@dto/student/answer.dto";
+import { AnswerSelectCreateDto } from "@dto/student/answer.dto";
 import { answerPretask } from "@services/answer.service";
 import { getPretaskForStudent } from "@services/taskStage.service";
-import { upgradeStudentTaskProgress } from "@services/studentTask.service";
+import { completePretask } from "@services/studentTask.service";
 import { QuestionPretaskDetailDto } from "@dto/student/question.dto";
 import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
 import { ApiError } from "@middlewares/handleErrors";
@@ -47,7 +47,7 @@ export async function answer(
 ) {
   const { id: idStudent } = req.user!;
   const { idOption, answerSeconds, newAttempt } =
-    req.body as AnswerOptionCreateDto;
+    req.body as AnswerSelectCreateDto;
   const taskOrder = parseInt(req.params.taskOrder);
   const questionOrder = parseInt(req.params.questionOrder);
 
@@ -79,14 +79,17 @@ export async function answer(
 }
 
 export async function setCompleted(
-  req: Request<{ taskOrder: number }>,
+  req: Request<{ taskOrder: string }>,
   res: Response<{ message: string }>,
   next: NextFunction
 ) {
+  const { id: idStudent } = req.user!;
+  const taskOrder = parseInt(req.params.taskOrder);
   try {
-    const { id: idStudent } = req.user!;
-    const { taskOrder } = req.params;
-    await upgradeStudentTaskProgress(taskOrder, idStudent, 1);
+    if (isNaN(taskOrder) || taskOrder <= 0) {
+      throw new ApiError("Invalid taskOrder", 400);
+    }
+    await completePretask(taskOrder, idStudent);
     res.status(200).json({ message: `Completed pretask ${taskOrder}` });
   } catch (err) {
     next(err);

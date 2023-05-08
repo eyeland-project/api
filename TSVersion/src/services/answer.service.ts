@@ -12,23 +12,22 @@ import {
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { updateLeaderBoard } from "@services/leaderBoard.service";
 import { getOptionById } from "@services/option.service";
-import { getQuestionByOrder } from "@services/question.service";
+import { getQuestionsFromTaskStage } from "@services/question.service";
 import { getCourseFromStudent } from "@services/student.service";
-import {
-  getStudentTaskByOrder,
-  upgradeStudentTaskProgress
-} from "@services/studentTask.service";
+import { getStudentTaskByOrder } from "@services/studentTask.service";
 import {
   createTaskAttempt,
   finishStudentTaskAttempts,
-  getCurrTaskAttempt,
-  updateCurrTaskAttempt
+  getCurrTaskAttempt
 } from "@services/taskAttempt.service";
-import { getLastQuestionFromTaskStage } from "@services/taskStage.service";
 import { getMembersFromTeam, updateTeam } from "@services/team.service";
 import * as repositoryService from "@services/repository.service";
 import { getStorageBucket } from "@config/storage";
 import { format } from "util";
+import {
+  AnswerOpenCreateDto,
+  AnswerSelectSpeakingCreateDto
+} from "@dto/student/answer.dto";
 
 export async function answerPretask(
   idStudent: number,
@@ -38,7 +37,7 @@ export async function answerPretask(
   newAttempt?: boolean | null,
   answerSeconds?: number
 ): Promise<void> {
-  const task = await repositoryService.findOne<TaskModel>(TaskModel, {
+  const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
     where: {
       task_order: taskOrder
     }
@@ -58,28 +57,39 @@ export async function answerPretask(
   }
 
   // verify question exists
-  const question = await getQuestionByOrder(taskOrder, 1, questionOrder);
+  const question = (
+    await getQuestionsFromTaskStage(
+      { idTask: id_task },
+      1,
+      { question_order: questionOrder },
+      { limit: 1 }
+    )
+  )[0];
+  if (!question) {
+    throw new ApiError("Question does not exist", 400);
+  }
 
   // verify option belongs to question
-  const option = await getOptionById(idOption);
-  if (question.id_question !== option.id_question) {
-    throw new ApiError("Option does not belong to question", 400);
+  if (idOption !== undefined) {
+    if (!question.options.some(({ id }) => id === idOption)) {
+      throw new ApiError("Option does not belong to question", 400);
+    }
   }
 
   // create task attempt if required
   let taskAttempt;
   if (newAttempt) {
     await finishStudentTaskAttempts(idStudent);
-    taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
+    taskAttempt = await createTaskAttempt(idStudent, id_task, null);
   } else {
     try {
       taskAttempt = await getCurrTaskAttempt(idStudent);
     } catch (err) {
-      taskAttempt = await createTaskAttempt(idStudent, task.id_task, null);
+      taskAttempt = await createTaskAttempt(idStudent, id_task, null);
     }
   }
 
-  if (taskAttempt.id_task !== task.id_task) {
+  if (taskAttempt.id_task !== id_task) {
     throw new ApiError("Current Task attempt is from another task", 400);
   }
 
@@ -87,14 +97,14 @@ export async function answerPretask(
     await AnswerModel.findOne({
       where: {
         id_task_attempt: taskAttempt.id_task_attempt,
-        id_question: question.id_question
+        id_question: question.id
       }
     });
     throw new ApiError("Question already answered in this attempt", 400);
   } catch (err) {}
 
   await AnswerModel.create({
-    id_question: question.id_question,
+    id_question: question.id,
     id_task_attempt: taskAttempt.id_task_attempt,
     id_option: idOption,
     answer_seconds: answerSeconds,
@@ -116,13 +126,10 @@ export async function answerDuringtask(
 
   // - get student's current task attempt and get student's team id from task attempt
   const taskAttempt = await getCurrTaskAttempt(idStudent);
-  if (!taskAttempt.id_team) {
-    throw new ApiError("Student is not in a team", 400);
-  }
 
   // - Check if team exists
   // await getTeamFromStudent(idStudent);
-  if (taskAttempt.id_team === null) {
+  if (taskAttempt.id_team === null || taskAttempt.id_team === undefined) {
     throw new ApiError("Student is not in a team", 400);
   }
 
@@ -139,10 +146,6 @@ export async function answerDuringtask(
     );
   }
 
-  // if (taskAttempt.id_task !== questionsFromStage[0].taskStage.id_task) {
-  //   throw new ApiError("Current Task attempt is from another task", 400);
-  // }
-
   const questionsFromStage = await repositoryService.findAll<QuestionModel>(
     QuestionModel,
     {
@@ -156,16 +159,6 @@ export async function answerDuringtask(
             task_stage_order: 2,
             id_task: taskAttempt.id_task
           }
-          // include: [
-          //   {
-          //     model: TaskModel,
-          //     attributes: ["id_task"],
-          //     as: "task",
-          //     where: {
-          //       task_order: taskOrder
-          //     }
-          //   }
-          // ]
         },
         {
           model: AnswerModel,
@@ -289,26 +282,20 @@ export async function answerPostask(
   idStudent: number,
   taskOrder: number,
   questionOrder: number,
-  idOption?: number,
-  newAttempt?: boolean | null,
-  answerSeconds?: number,
+  body: AnswerSelectSpeakingCreateDto | AnswerOpenCreateDto,
   audio?: Express.Multer.File
 ): Promise<string | null> {
-  if (idOption === undefined && audio === undefined) {
-    throw new ApiError("Must provide an answer", 400);
-  }
-
-  // create task_attempt if required
-  const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
-    where: {
-      task_order: taskOrder
-    }
-  });
+  const { answerSeconds, newAttempt } = body;
 
   const { session } = await getCourseFromStudent(idStudent);
   if (!session) {
     throw new ApiError("Course session not created", 403);
   }
+
+  // create task_attempt if required
+  const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: { task_order: taskOrder }
+  });
 
   const { highest_stage } = await getStudentTaskByOrder(idStudent, taskOrder);
   if (highest_stage < 2) {
@@ -319,14 +306,16 @@ export async function answerPostask(
   }
 
   // verify question exists
-  const { id_question } = await getQuestionByOrder(taskOrder, 3, questionOrder);
-
-  // verify option belongs to question
-  if (idOption !== undefined) {
-    const option = await getOptionById(idOption);
-    if (id_question !== option.id_question) {
-      throw new ApiError("Option does not belong to question", 400);
-    }
+  const question = (
+    await getQuestionsFromTaskStage(
+      { idTask: id_task },
+      3,
+      { question_order: questionOrder },
+      { limit: 1 }
+    )
+  )[0];
+  if (!question) {
+    throw new ApiError("Question does not exist", 400);
   }
 
   // create task attempt if required
@@ -346,15 +335,64 @@ export async function answerPostask(
     throw new ApiError("Current Task attempt is from another task", 400);
   }
 
-  try {
-    await AnswerModel.findOne({
-      where: {
-        id_task_attempt: taskAttempt.id_task_attempt,
-        id_question: id_question
-      }
+  const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>body;
+  const { idOption } = answerSelectSpeaking;
+
+  if (idOption !== undefined) {
+    return await answerPostaskSelectSpeaking({
+      idQuestion: question.id,
+      options: question.options,
+      idOption,
+      idTaskAttempt: taskAttempt.id_task_attempt,
+      answerSeconds,
+      audio
     });
-    throw new ApiError("Question already answered in this attempt", 400);
-  } catch (err) {}
+  } else {
+    const { text } = <AnswerOpenCreateDto>body;
+    return await answerPostaskOpen({
+      idQuestion: question.id,
+      idTaskAttempt: taskAttempt.id_task_attempt,
+      text,
+      answerSeconds,
+      audio
+    });
+  }
+
+  // new Promise(() => {
+  //   getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
+  //     if (lastQuestion.id_question === id_question) {
+  //       upgradeStudentTaskProgress(taskOrder, idStudent, 3);
+  //       updateCurrTaskAttempt(idStudent, { active: false });
+  //     }
+  //   });
+  // }).catch(console.log);
+}
+
+export async function answerPostaskSelectSpeaking({
+  idQuestion,
+  options,
+  idOption,
+  idTaskAttempt,
+  answerSeconds,
+  audio
+}: {
+  idQuestion: number;
+  options: { id: number }[];
+  idOption?: number;
+  idTaskAttempt: number;
+  answerSeconds?: number;
+  audio?: Express.Multer.File;
+}) {
+  if (idOption === undefined && audio === undefined) {
+    throw new ApiError("Must provide an answer", 400);
+  }
+
+  // verify option belongs to question
+  if (idOption !== undefined) {
+    if (!options.some(({ id }) => id === idOption)) {
+      throw new ApiError("Option does not belong to question", 400);
+    }
+  }
 
   let uploadResult: { message: string; url: string } | undefined = undefined;
   if (audio) {
@@ -366,24 +404,62 @@ export async function answerPostask(
     }
   }
   await AnswerModel.create({
-    id_question,
-    id_task_attempt: taskAttempt.id_task_attempt,
+    id_question: idQuestion,
+    id_task_attempt: idTaskAttempt,
     id_option: idOption,
     answer_seconds: answerSeconds,
     id_team: null,
     audio_url: uploadResult?.url || null
   });
 
-  new Promise(() => {
-    getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
-      if (lastQuestion.id_question === id_question) {
-        upgradeStudentTaskProgress(taskOrder, idStudent, 3);
-        updateCurrTaskAttempt(idStudent, { active: false });
-      }
-    });
-  }).catch(console.log);
-
   return uploadResult?.message || null;
+}
+
+export async function answerPostaskOpen({
+  idQuestion,
+  idTaskAttempt,
+  text,
+  answerSeconds,
+  audio
+}: {
+  idQuestion: number;
+  idTaskAttempt: number;
+  text?: string;
+  answerSeconds?: number;
+  audio?: Express.Multer.File;
+}): Promise<string | null> {
+  if (text === undefined && audio === undefined) {
+    throw new ApiError("Must provide an answer", 400);
+  }
+
+  if (text !== undefined) {
+    await AnswerModel.create({
+      id_question: idQuestion,
+      id_task_attempt: idTaskAttempt,
+      text: text,
+      answer_seconds: answerSeconds,
+      id_team: null,
+      audio_url: null
+    });
+  } else if (audio !== undefined) {
+    let uploadResult: { message: string; url: string } | undefined = undefined;
+    try {
+      uploadResult = await uploadAudio(audio);
+      console.log(uploadResult.message);
+    } catch (err) {
+      console.log(err);
+    }
+    await AnswerModel.create({
+      id_question: idQuestion,
+      id_task_attempt: idTaskAttempt,
+      answer_seconds: answerSeconds,
+      id_team: null,
+      audio_url: uploadResult?.url || null
+    });
+
+    return uploadResult?.message || null;
+  }
+  return null;
 }
 
 async function uploadAudio(

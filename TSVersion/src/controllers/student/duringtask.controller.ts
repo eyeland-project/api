@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { getNextQuestionFromDuringtaskForStudent } from "@services/question.service";
 import { getDuringtaskForStudent } from "@services/taskStage.service";
 import { ApiError } from "@middlewares/handleErrors";
-import { AnswerOptionCreateDto } from "@dto/student/answer.dto";
+import { AnswerSelectCreateDto } from "@dto/student/answer.dto";
 import { answerDuringtask } from "@services/answer.service";
 import { QuestionDuringtaskDetailDto } from "@dto/student/question.dto";
 import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
@@ -48,7 +48,7 @@ export async function answer(
   req: Request<
     { taskOrder: string; questionOrder: string },
     any,
-    AnswerOptionCreateDto
+    AnswerSelectCreateDto
   >,
   res: Response<{ message: string }>,
   next: NextFunction

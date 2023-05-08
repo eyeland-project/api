@@ -256,6 +256,7 @@ CREATE TABLE answer (
     id_team INTEGER,
     answer_seconds INTEGER,
     audio_url VARCHAR(2048),
+    text VARCHAR(2048),
     -- CONSTRAINTS
     CONSTRAINT pk_answer PRIMARY KEY (id_answer),
     CONSTRAINT fk_answer_question FOREIGN KEY (id_question) REFERENCES question(id_question),

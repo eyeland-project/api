@@ -34,9 +34,7 @@ import { getMembersFromTeam } from "./team.service";
 export async function getQuestionsFromPretaskForTeacher(
   idTask: number
 ): Promise<QuestionPretaskDetailDtoTeacher[]> {
-  return (await getQuestionsFromTaskStage({ idTask }, 1)).map(
-    ({ audioUrl, videoUrl, ...fields }) => fields
-  );
+  return await getQuestionsFromTaskStage({ idTask }, 1);
 }
 
 export async function getQuestionsFromDuringtaskForTeacher(
@@ -69,9 +67,7 @@ export async function getQuestionsFromPostaskForTeacher(
 export async function getQuestionsFromPretaskForStudent(
   taskOrder: number
 ): Promise<QuestionPretaskDetailDtoStudent[]> {
-  return (await getQuestionsFromTaskStage({ taskOrder }, 1)).map(
-    ({ audioUrl, videoUrl, ...fields }) => fields
-  );
+  return await getQuestionsFromTaskStage({ taskOrder }, 1);
 }
 
 export async function getNextQuestionFromDuringtaskForStudent(
@@ -200,25 +196,6 @@ export async function getQuestionsFromPostaskForStudent(
   return await getQuestionsFromTaskStage({ taskOrder }, 3);
 }
 
-export async function getQuestionByOrder(
-  taskOrder: number,
-  taskStageOrder: number,
-  questionOrder: number
-): Promise<Question> {
-  const questions = (await sequelize.query(
-    `
-        SELECT q.* FROM question q
-        JOIN task_stage ts ON q.id_task_stage = ts.id_task_stage
-        JOIN task t ON ts.id_task = t.id_task
-        WHERE t.task_order = ${taskOrder} AND ts.task_stage_order = ${taskStageOrder} AND q.question_order = ${questionOrder}
-        LIMIT 1;
-    `,
-    { type: QueryTypes.SELECT }
-  )) as Question[];
-  if (!questions.length) throw new ApiError("Question not found", 404);
-  return questions[0];
-}
-
 export async function getQuestionsFromTaskStageByTaskId(
   idTask: number,
   taskStageOrder: number
@@ -234,7 +211,7 @@ export async function getQuestionsFromTaskStageByTaskId(
   return questions;
 }
 
-async function getQuestionsFromTaskStage(
+export async function getQuestionsFromTaskStage(
   { idTask, taskOrder }: { idTask?: number; taskOrder?: number },
   taskStageOrder: number,
   where?: Partial<Question>,

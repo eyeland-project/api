@@ -19,6 +19,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
   declare id_team?: ForeignKey<number> | null;
   declare answer_seconds?: number | null;
   declare audio_url?: string | null;
+  declare text?: string | null;
 
   declare question: NonAttribute<QuestionModel>;
   declare option?: NonAttribute<OptionModel>;
@@ -50,6 +51,9 @@ AnswerModel.init(
       type: DataTypes.INTEGER
     },
     audio_url: {
+      type: DataTypes.STRING(2048)
+    },
+    text: {
       type: DataTypes.STRING(2048)
     }
   },

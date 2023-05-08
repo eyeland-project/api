@@ -1,6 +1,6 @@
 import { QueryTypes } from "sequelize";
 import sequelize from "@database/db";
-import { TaskProgressDetailDto, TaskSummaryDto } from "@dto/student/task.dto";
+import { TaskProgressDetailDto } from "@dto/student/task.dto";
 import { StudentTask } from "@interfaces/StudentTask.types";
 import { StudentTaskModel } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
@@ -56,6 +56,18 @@ export async function getStudentProgressFromTask(
       blocked: highestStage < 2
     }
   };
+}
+
+export async function completePretask(taskOrder: number, idStudent: number) {
+  return await upgradeStudentTaskProgress(taskOrder, idStudent, 1);
+}
+
+export async function completeDuringtask(taskOrder: number, idStudent: number) {
+  return await upgradeStudentTaskProgress(taskOrder, idStudent, 2);
+}
+
+export async function completePostask(taskOrder: number, idStudent: number) {
+  return await upgradeStudentTaskProgress(taskOrder, idStudent, 3);
 }
 
 export async function upgradeStudentTaskProgress(

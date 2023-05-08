@@ -24,10 +24,7 @@ export interface QuestionDetailDto {
   }[];
 }
 
-export type QuestionPretaskDetailDto = Omit<
-  QuestionDetailDto,
-  "audioUrl" | "videoUrl"
->;
+export interface QuestionPretaskDetailDto extends QuestionDetailDto {}
 
 export interface QuestionDuringtaskDetailDto extends QuestionDetailDto {
   memoryPro: string[];

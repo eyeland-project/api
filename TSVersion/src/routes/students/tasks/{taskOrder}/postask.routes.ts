@@ -2,7 +2,8 @@ import { RequestHandler, Router } from "express";
 import {
   answer,
   getQuestions,
-  getPostask
+  getPostask,
+  setCompleted
 } from "@controllers/student/postask.controller";
 import passport from "passport";
 
@@ -16,5 +17,6 @@ router.use(auth);
 router.get("/", getPostask);
 router.get("/questions", getQuestions);
 router.post("/questions/:questionOrder", answer);
+router.post("/complete", setCompleted);
 
 export default router;
