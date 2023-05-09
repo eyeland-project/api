@@ -183,13 +183,36 @@ export async function getNextQuestionFromDuringtaskForStudent(
     } = separateTranslations(content);
 
     // * shuffle options
-    options = shuffle(options, (id_team + 1) * (id + 2));
-    // * distribute options based on power
-    options = distributeOptions(
-      options,
-      powers.indexOf(power) + 1,
-      powers.length
+    const seed = (id_team + 1) * (id + 2);
+    options = shuffle(options, seed);
+
+    // * select the number of options based on the powers length (the correct option is always chosen)
+    options = shuffle(
+      [
+        options.filter(({ correct }) => correct)[0],
+        ...options
+          .filter(({ correct }) => !correct)
+          .slice(0, powers.length * 2 - 1)
+      ],
+      seed
     );
+
+    // * group options in groups of 2
+    options = options.reduce((acc, curr, i) => {
+      if (i % 2 === 0) {
+        acc.push([curr]);
+      } else {
+        acc[acc.length - 1].push(curr);
+      }
+      return acc;
+    }, [] as (typeof options)[])[powers.indexOf(power)];
+
+    //// // * distribute options based on power
+    //// options = distributeOptions(
+    ////   options,
+    ////   powers.indexOf(power) + 1,
+    ////   powers.length
+    //// );
     return {
       id,
       content: contentParsed,
