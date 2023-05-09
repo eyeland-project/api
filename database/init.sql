@@ -455,7 +455,7 @@ INSERT INTO task (task_order, name, description, long_description, keywords, thu
 -- Foto de icon0.com: https://www.pexels.com/es-es/foto/madera-paisaje-naturaleza-verano-726298/
 INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (4, 'Local Culture', 'Descubre la cultura local y las tradiciones de las comunidades que rodean el Parque Isla Salamanca, aprendiendo sobre comida, música, danza y artesanía.', '¡Descubramos la cultura local y las tradiciones de las comunidades que rodean el Parque Isla Salamanca! Aprenderemos a decir hola y cómo estás en inglés, y también aprenderemos sobre la deliciosa comida, la música divertida, el baile colorido y las hermosas artesanías que hacen que este lugar sea especial. ¡Incluso podrás practicar algunas expresiones en inglés y tener una conversación virtual con un amigo local!', '{ "local culture", "traditions", "food", "music", "dance", "crafts", "greetings", "expressions", "social interaction" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_4/thumbnail_1.jpg', 'Imagen de la task', TRUE);
 -- Foto de Marcel Kodama: https://www.pexels.com/es-es/foto/bosque-de-bambu-con-hilera-de-arboles-en-un-dia-soleado-3632689/
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (5, 'The Great Challenge', 'Usa todo tu dominio del inglés para resolver un misterio o completar un rompecabezas relacionado con los manglares, consolidando tu aprendizaje y divirtiéndote.', '¿Estás listo para el último desafío? En esta tarea final, deberás usar todas tus habilidades en inglés para resolver un misterio o completar un rompecabezas relacionado con la historia, geografía y ecología de los manglares. Te divertirás y aprenderás al mismo tiempo, mientras consolidas todos los conocimientos adquiridos durante las tareas anteriores. ¿Tienes lo que se necesita para ser un gran estudiante de inglés?', '{ "English skills", "mystery", "puzzle", "mangroves", "learning", "fun" }', 'https://storag.googleapis.com/eyeland-0/app/content/task_5/thumbnail_1.jpg', 'Imagen de la task', TRUE);
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (5, 'The Great Challenge', 'Usa todo tu dominio del inglés para resolver un misterio o completar un rompecabezas relacionado con los manglares, consolidando tu aprendizaje y divirtiéndote.', '¿Estás listo para el último desafío? En esta tarea final, deberás usar todas tus habilidades en inglés para resolver un misterio o completar un rompecabezas relacionado con la historia, geografía y ecología de los manglares. Te divertirás y aprenderás al mismo tiempo, mientras consolidas todos los conocimientos adquiridos durante las tareas anteriores. ¿Tienes lo que se necesita para ser un gran estudiante de inglés?', '{ "English skills", "mystery", "puzzle", "mangroves", "learning", "fun" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_5/thumbnail_1.jpg', 'Imagen de la task', TRUE);
 
 -- INSERT INTO question and option
 -- square brackets: super_radar; curly braces: memory_pro
@@ -540,7 +540,7 @@ BEGIN
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (2, 4, 'Luego de pasar por un hotel, estamos en el peaje Laureano Gómez. La siguiente parada será la granja Terranova.\Where is Laureano Gomez {toll|peaje}?', NULL, NULL, 'select', 'Imagen de un peaje entre un hotel y una granja', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/toll_1.jpg', NULL, 'beto', 'La imagen muestra un peaje entre un hotel y una granja.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the hotel and Terranova farm', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the beach and the river', 'Incorrect', FALSE);    
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the beach and the river', 'Incorrect', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the toll and the road', 'Incorrect', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the bridge and the river', 'Incorrect', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'It is between the beach and the road', 'Incorrect', FALSE);
@@ -594,52 +594,54 @@ BEGIN
     -- questions from task 2
     -- pretask 2
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 1, '¿Cuál es el animal de la imagen?', NULL, NULL, 'flashcard', 'Imagen de una gaviota.', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/seagull_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Seagull', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Duck', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Monkey', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Seagull', '!Uy! ¡Casi! Era correcto.', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Duck', '!Uy! ¡Casi! Es una gaviota.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Monkey', '!Uy! Ese no es el animal de la imagen.', FALSE);
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 2, '¿Cuál es el animal de la imagen?', NULL, NULL, 'flashcard', 'Imagen de un caimán', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/alligator_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Alligator', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Frog', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Turtle', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Alligator', '!Uy! ¿Seguro de que no es un caimán?', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Frog', '!Uy! Revisa la imagen.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Turtle', '!Uy! ¿Estás seguro?', FALSE);
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 3, '¿Cuál es el animal de la imagen?', NULL, NULL, 'flashcard', 'Imagen de un ocelote', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/ocelot_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocelot', 'Correct', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocelot', '!Uy! Este sí es un ocelote.', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Cat', '!Uy! No es del todo un gato.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Puma', '!Uy! ¿Estás seguro?', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 4, '¿Cuál es el animal de la imagen?', NULL, NULL, 'flashcard', 'Imagen de un zorrochucho', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/common_opossum_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Common opossum', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Dog', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Fox', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Common opossum', '!Uy! Este sí es un zorrochucho.', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Dog', '!Uy! No es un perro.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Fox', '!Uy! Casi, pero no.', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 5, '¿Cuál es el hábitat de un águila pescadora?', NULL, NULL, 'select', 'Imagen de un águila pescadora', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/osprey_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Aerial', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Terrestrial', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Aquatic', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Terrestrial', '!Uy! ¿Estás seguro?', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Aquatic', '!Uy! Aunque se alimenta de peces, no vive en el agua.', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 6, 'Alligator', NULL, NULL, 'audio_order-word', 'Imagen de un caimán', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/alligator_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Alligator', 'Correct', TRUE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 7, '¿Cuál es el animal de la imagen?', NULL, NULL, 'flashcard', 'Imagen de un manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/manatee_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Manatee', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Dolphin', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Whale', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Manatee', '!Uy! Este sí es un manatí.', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Dolphin', '!Uy! No es un delfín.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Whale', '!Uy! No hay ballenas en este hábitat.', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 8, '¿Cuál es el hábitat de un róbalo?', NULL, NULL, 'select', 'Imagen de un róbalo bajo el agua', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/seabass_1.jpg', 'vocabulary', NULL, NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Aquatic', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Terrestrial', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Aerial', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Terrestrial', '!Uy! ¿Estás seguro?', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Aerial', '!Uy! No todos los peces vuelan.', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 9, '¿Qué se dice al encontrarse con alguien por primera vez?', NULL, NULL, 'select', 'Imagen de personas conociéndose', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/personal_presentation_1.jpg', 'personal_presentation', NULL, NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Nice to meet you', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'See you later', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'How are you?', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'See you later', 'No deberías despedirte si acabas de conocer a alguien', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'How are you?', 'No es una presentación', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 10, '¿Cómo se pregunta a alguien de dónde es?', NULL, NULL, 'select', 'Imagen de una persona preguntando a otra de dónde es', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/personal_presentation_2.jpg', 'personal_presentation', NULL, NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Where are you from?', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'How are you?', 'Incorrect', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'What do you do?', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'How are you?', '"How are you?" significa "¿Cómo estás?"', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'What do you do?', '"What do you do?" significa "¿Qué haces?"', FALSE);
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 11, '¿Cómo se dice en inglés "Tengo 14 años"?', NULL, NULL, 'order', 'Imagen de una persona diciendo su edad', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/personal_presentation_3.jpg', 'personal_presentation', NULL, NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 11, 'Tengo 14 años', NULL, NULL, 'order', 'Imagen de una persona diciendo su edad', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/personal_presentation_3.jpg', 'personal_presentation', NULL, NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'I am 14 years old', 'Correct', TRUE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (4, 12, 'I''m from Colombia', NULL, NULL, 'audio_speaking', 'Imagen de una persona diciendo que es de Colombia', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/personal_presentation_4.jpg', 'personal_presentation', NULL, NULL) RETURNING id_question INTO last_question_id;
@@ -702,7 +704,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'I eats fish', 'Incorrect', FALSE);
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (5, 8, '¡Miren ese róbalo saltando en el agua!\The {sea bass|robalo} jumps [out of|fuera de] the {water|agua}. Can you jump high?', NULL, NULL, 'select', 'Imagen de un robalo saltando', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/seabass_2.jpg', NULL, 'valery', NULL) RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, can', 'Correct', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, I can', 'Correct', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, I can''t', 'Incorrect', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, I can', 'Incorrect', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, I do', 'Incorrect', FALSE);

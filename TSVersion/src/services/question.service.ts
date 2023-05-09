@@ -67,12 +67,17 @@ export async function getQuestionsFromPostaskForTeacher(
 export async function getQuestionsFromPretaskForStudent(
   taskOrder: number
 ): Promise<QuestionPretaskDetailDtoStudent[]> {
-  return (await getQuestionsFromTaskStage({ taskOrder }, 1)).map(
-    ({ options, ...fields }) => ({
-      ...fields,
-      options: shuffle(options)
-    })
-  );
+  return (
+    await getQuestionsFromTaskStage(
+      { taskOrder },
+      1,
+      {},
+      { order: [["question_order", "DESC"]] }
+    )
+  ).map(({ options, ...fields }) => ({
+    ...fields,
+    options: shuffle(options)
+  }));
 }
 
 export async function getNextQuestionFromDuringtaskForStudent(
@@ -198,12 +203,17 @@ export async function getNextQuestionFromDuringtaskForStudent(
 export async function getQuestionsFromPostaskForStudent(
   taskOrder: number
 ): Promise<QuestionPostaskDetailDtoStudent[]> {
-  return (await getQuestionsFromTaskStage({ taskOrder }, 3)).map(
-    ({ options, ...fields }) => ({
-      ...fields,
-      options: shuffle(options)
-    })
-  );
+  return (
+    await getQuestionsFromTaskStage(
+      { taskOrder },
+      3,
+      {},
+      { order: [["question_order", "DESC"]] }
+    )
+  ).map(({ options, ...fields }) => ({
+    ...fields,
+    options: shuffle(options)
+  }));
 }
 
 export async function getQuestionsFromTaskStageByTaskId(
