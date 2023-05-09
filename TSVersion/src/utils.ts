@@ -55,7 +55,8 @@ export function shuffle<T>(array: T[], seed?: number): T[] {
   const shuffled = [...array];
 
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(pseudoRandom(seed) * (i + 1));
+    const j = Math.floor(pseudoRandom(seed++) * (i + 1));
+    seed = (seed * 100 + (pseudoRandom(seed++) - 0.5) * 100) / 100;
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
 
