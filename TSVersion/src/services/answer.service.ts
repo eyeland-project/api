@@ -290,7 +290,9 @@ export async function answerPostask(
   body: AnswerSelectSpeakingCreateDto | AnswerOpenCreateDto,
   audio?: Express.Multer.File
 ): Promise<string | null> {
-  const { answerSeconds, newAttempt } = body;
+  // const { answerSeconds, newAttempt } = body;
+  const answerSeconds = parseInt(String(body.answerSeconds));
+  const newAttempt = String(body.newAttempt) === "true";
 
   const { session } = await getCourseFromStudent(idStudent);
   if (!session) {
@@ -341,7 +343,7 @@ export async function answerPostask(
   }
 
   const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>body;
-  const { idOption } = answerSelectSpeaking;
+  const idOption = parseInt(String(answerSelectSpeaking.idOption));
 
   let result;
   if (idOption !== undefined) {
