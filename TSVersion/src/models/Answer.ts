@@ -25,6 +25,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
   declare question: NonAttribute<QuestionModel>;
   declare option?: NonAttribute<OptionModel>;
   declare gradeAnswers: NonAttribute<GradeAnswerModel[]>;
+  declare team?: NonAttribute<TeamModel>;
 }
 
 // model initialization
@@ -104,7 +105,8 @@ AnswerModel.belongsTo(TeamModel, {
   foreignKey: {
     name: "id_team",
     allowNull: true
-  }
+  },
+  as: "team"
 });
 
 export default AnswerModel;

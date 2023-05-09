@@ -19,6 +19,7 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
   declare power?: Power | null;
   declare active: boolean;
   declare time_stamp: Date;
+
   declare task: NonAttribute<TaskModel>;
   declare student: NonAttribute<StudentModel>;
   declare team?: NonAttribute<TeamModel>;

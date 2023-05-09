@@ -1,8 +1,39 @@
-import { QueryTypes, Transaction } from "sequelize";
+import { FindOptions, QueryTypes, Transaction } from "sequelize";
 import { ApiError } from "@middlewares/handleErrors";
-import { TaskAttemptModel } from "@models";
+import {
+  CourseModel,
+  StudentModel,
+  TaskAttemptModel,
+  TaskModel
+} from "@models";
 import { TaskAttempt } from "@interfaces/TaskAttempt.types";
 import sequelize from "@database/db";
+import { TaskAttemptSubmissionDetailDto } from "@dto/teacher/taskAttempt.dto";
+import * as repositoryService from "@services/repository.service";
+
+export async function getTaskAttemptsFromCourseForTeacher(
+  idTeacher: number,
+  idCourse: number
+): Promise<TaskAttemptSubmissionDetailDto[]> {
+  return await getTaskAttemptsFromCourse(idTeacher, idCourse);
+}
+
+export async function getTaskAttemptFromCourseForTeacher(
+  idTeacher: number,
+  idCourse: number,
+  idTaskAttempt: number
+): Promise<TaskAttemptSubmissionDetailDto> {
+  const taskAttempt = (
+    await getTaskAttemptsFromCourse(
+      idTeacher,
+      idCourse,
+      { id_task_attempt: idTaskAttempt },
+      { limit: 1 }
+    )
+  )[0];
+  if (!taskAttempt) throw new ApiError("TaskAttempt not found", 404);
+  return taskAttempt;
+}
 
 export async function getCurrTaskAttempt(
   idStudent: number
@@ -45,7 +76,7 @@ export async function finishStudentTaskAttempts(idStudent: number) {
   );
 }
 
-export async function finishCourseTaskAttempts(idCourse: number) {
+export async function finishTaskAttemptsFromCourse(idCourse: number) {
   await sequelize
     .query(
       `
@@ -60,4 +91,55 @@ export async function finishCourseTaskAttempts(idCourse: number) {
       { type: QueryTypes.UPDATE }
     )
     .catch(console.log);
+}
+
+async function getTaskAttemptsFromCourse(
+  idTeacher: number,
+  idCourse: number,
+  where?: Partial<TaskAttempt>,
+  options?: FindOptions
+) {
+  return (
+    await repositoryService.findAll<TaskAttemptModel>(TaskAttemptModel, {
+      attributes: ["id_task_attempt", "time_stamp"],
+      where: { active: false, ...where },
+      order: [["time_stamp", "DESC"]],
+      include: [
+        {
+          model: TaskModel,
+          attributes: ["id_task", "task_order", "name"],
+          as: "task"
+        },
+        {
+          model: StudentModel,
+          attributes: ["id_student", "firstName", "lastName", "username"],
+          as: "student",
+          where: { id_course: idCourse, deleted: false },
+          include: [
+            {
+              model: CourseModel,
+              attributes: [],
+              as: "course",
+              where: { id_teacher: idTeacher, deleted: false }
+            }
+          ]
+        }
+      ],
+      ...options
+    })
+  ).map(({ id_task_attempt, time_stamp, student, task }) => ({
+    id: id_task_attempt,
+    student: {
+      id: student.id_student,
+      firstName: student.first_name,
+      lastName: student.last_name,
+      username: student.username
+    },
+    task: {
+      id: task.id_task,
+      name: task.name,
+      taskOrder: task.task_order
+    },
+    timeStamp: time_stamp
+  }));
 }

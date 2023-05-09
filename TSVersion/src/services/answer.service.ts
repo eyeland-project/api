@@ -3,11 +3,14 @@ import { directory as dirStudents } from "@listeners/namespaces/student";
 import { ApiError } from "@middlewares/handleErrors";
 import {
   AnswerModel,
+  GradeAnswerModel,
   OptionModel,
   QuestionModel,
   StudentTaskModel,
+  TaskAttemptModel,
   TaskModel,
-  TaskStageModel
+  TaskStageModel,
+  TeamModel
 } from "@models";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { updateLeaderBoard } from "@services/leaderBoard.service";
@@ -33,6 +36,12 @@ import {
   AnswerSelectSpeakingCreateDto
 } from "@dto/student/answer.dto";
 import { getLastQuestionFromTaskStage } from "./taskStage.service";
+import {
+  QuestionSubmissionDetailDuringtaskDto,
+  QuestionSubmissionDetailPostaskDto,
+  QuestionSubmissionDetailPretaskDto
+} from "@dto/teacher/answer.dto";
+import { separateTranslations } from "@utils";
 
 export async function answerPretask(
   idStudent: number,
@@ -503,4 +512,180 @@ async function uploadAudio(
 
     blobStream.end(audio.buffer);
   });
+}
+
+export async function getAnswersFromPretaskForTeacher(
+  idTeacher: number,
+  idCourse: number,
+  idTaskAttempt: number
+): Promise<QuestionSubmissionDetailPretaskDto[]> {
+  return await getAnswersFromTaskStageForTeacher(
+    idTeacher,
+    idCourse,
+    idTaskAttempt,
+    1
+  );
+}
+
+export async function getAnswersFromDuringtaskForTeacher(
+  idTeacher: number,
+  idCourse: number,
+  idTaskAttempt: number
+): Promise<QuestionSubmissionDetailDuringtaskDto[]> {
+  return (
+    await getAnswersFromTaskStageForTeacher(
+      idTeacher,
+      idCourse,
+      idTaskAttempt,
+      2
+    )
+  ).map(({ content, ...fields }) => {
+    const {
+      memoryPro: nouns,
+      superRadar: preps,
+      content: contentParsed
+    } = separateTranslations(content);
+    return {
+      ...fields,
+      content: contentParsed,
+      memoryPro: nouns,
+      superRadar: preps
+    };
+  });
+}
+
+export async function getAnswersFromPostaskForTeacher(
+  idTeacher: number,
+  idCourse: number,
+  idTaskAttempt: number
+): Promise<QuestionSubmissionDetailPostaskDto[]> {
+  return await getAnswersFromTaskStageForTeacher(
+    idTeacher,
+    idCourse,
+    idTaskAttempt,
+    3
+  );
+}
+
+async function getAnswersFromTaskStageForTeacher(
+  idTeacher: number,
+  idCourse: number,
+  idTaskAttempt: number,
+  taskStageOrder: number
+): Promise<QuestionSubmissionDetailPretaskDto[]> {
+  const { id_task, id_team } =
+    await repositoryService.findOne<TaskAttemptModel>(TaskAttemptModel, {
+      where: { id_task_attempt: idTaskAttempt }
+    });
+  const questions = await repositoryService.findAll<QuestionModel>(
+    QuestionModel,
+    {
+      include: [
+        {
+          model: TaskStageModel,
+          as: "taskStage",
+          attributes: [],
+          where: { task_stage_order: taskStageOrder, id_task }
+        },
+        {
+          model: OptionModel,
+          as: "options",
+          required: false
+        },
+        {
+          model: AnswerModel,
+          as: "answers",
+          where: { [Op.or]: [{ id_team }, { id_task_attempt: idTaskAttempt }] },
+          attributes: [
+            "id_answer",
+            "id_option",
+            "text",
+            "audio_url",
+            "answer_seconds"
+          ],
+          include: [
+            {
+              model: TeamModel,
+              as: "team",
+              attributes: ["id_team", "name"],
+              required: false
+            },
+            {
+              model: GradeAnswerModel,
+              as: "gradeAnswer",
+              attributes: ["id_grade_answer", "grade", "comment"],
+              where: { id_teacher: idTeacher },
+              required: false
+            }
+          ]
+        }
+      ]
+    }
+  );
+
+  return questions.map(
+    ({
+      id_question,
+      question_order,
+      content,
+      type,
+      topic,
+      img_alt,
+      img_url,
+      audio_url,
+      video_url,
+      hint,
+      character,
+      options,
+      answers
+    }) => ({
+      id: id_question,
+      questionOrder: question_order,
+      content,
+      type,
+      topic: topic || null,
+      imgAlt: img_alt || null,
+      imgUrl: img_url || null,
+      audioUrl: audio_url || null,
+      videoUrl: video_url || null,
+      hint: hint || null,
+      character: character || null,
+      options: options.map(({ id_option, content, correct, feedback }) => ({
+        id: id_option,
+        content,
+        correct,
+        feedback: feedback || ""
+      })),
+      answers: answers.map(
+        ({
+          id_answer,
+          id_option,
+          answer_seconds,
+          audio_url,
+          text,
+          gradeAnswers,
+          team
+        }) => ({
+          id: id_answer,
+          idOption: id_option || null,
+          answerSeconds: answer_seconds || null,
+          audioUrl: audio_url || null,
+          text: text || null,
+          gradeAnswers: gradeAnswers.map(
+            ({ id_grade_answer, grade, comment }) => ({
+              id: id_grade_answer,
+              grade,
+              comment: comment || null
+            })
+          ),
+          team: team
+            ? {
+                id: team.id_team,
+                name: team.name
+              }
+            : null
+        })
+      )
+    })
+  );
 }

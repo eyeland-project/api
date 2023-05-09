@@ -17,7 +17,6 @@ import { TeamDetailDto as TeamDetailDtoGlobal } from "@dto/global/team.dto";
 import { TeamDetailDto as TeamDetailDtoTeacher } from "@dto/teacher/team.dto";
 import { TeamDetailDto as TeamDetailDtoStudent } from "@dto/student/team.dto";
 import { directory as directoryStudents } from "@listeners/namespaces/student";
-import { directory as directoryTeachers } from "@listeners/namespaces/teacher";
 import {
   cleanLeaderBoard,
   emitLeaderboard,
@@ -37,7 +36,7 @@ import {
 } from "@dto/teacher/course.dto";
 import * as repositoryService from "@services/repository.service";
 import { Team } from "@interfaces/Team.types";
-import { finishCourseTaskAttempts } from "@services/taskAttempt.service";
+import { finishTaskAttemptsFromCourse } from "@services/taskAttempt.service";
 
 export async function getCourses(
   idTeacher: number
@@ -255,7 +254,7 @@ export async function createSession(idTeacher: number, idCourse: number) {
   await initializeTeams(idCourse);
   await cleanLeaderBoard(idCourse);
   try {
-    await finishCourseTaskAttempts(idCourse);
+    await finishTaskAttemptsFromCourse(idCourse);
   } catch (e) {}
   await repositoryService.update<CourseModel>(
     CourseModel,
@@ -317,7 +316,7 @@ export async function endSession(idTeacher: number, idCourse: number) {
       { playing: false, active: false },
       { where: { id_course: idCourse } }
     ),
-    finishCourseTaskAttempts(idCourse),
+    finishTaskAttemptsFromCourse(idCourse),
     cleanLeaderBoard(idCourse)
   ]).catch(console.log);
 }
