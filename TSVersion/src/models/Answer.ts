@@ -26,6 +26,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
   declare option?: NonAttribute<OptionModel>;
   declare gradeAnswers: NonAttribute<GradeAnswerModel[]>;
   declare team?: NonAttribute<TeamModel>;
+  declare taskAttempt: NonAttribute<TaskAttemptModel>;
 }
 
 // model initialization
@@ -90,10 +91,12 @@ AnswerModel.belongsTo(OptionModel, {
 
 // answer and task attempt
 TaskAttemptModel.hasMany(AnswerModel, {
-  foreignKey: "id_task_attempt"
+  foreignKey: "id_task_attempt",
+  as: "answers"
 });
 AnswerModel.belongsTo(TaskAttemptModel, {
-  foreignKey: "id_task_attempt"
+  foreignKey: "id_task_attempt",
+  as: "taskAttempt"
 });
 
 // answer and team

@@ -94,10 +94,6 @@ export async function updateCourse(
   idCourse: number,
   fields: CourseUpdateDto
 ) {
-  // check if course exists and belongs to teacher
-  await repositoryService.findOne<CourseModel>(CourseModel, {
-    where: { id_course: idCourse, id_teacher: idTeacher, deleted: false }
-  });
   // update course
   await repositoryService.update<CourseModel>(CourseModel, fields, {
     where: { id_course: idCourse }
@@ -105,17 +101,11 @@ export async function updateCourse(
 }
 
 export async function deleteCourse(idTeacher: number, idCourse: number) {
-  // check if course exists and belongs to teacher
-  await repositoryService.findOne<CourseModel>(CourseModel, {
-    where: { id_course: idCourse, id_teacher: idTeacher, deleted: false }
-  });
   // delete course
   await repositoryService.update<CourseModel>(
     CourseModel,
     { deleted: true },
-    {
-      where: { id_course: idCourse }
-    }
+    { where: { id_course: idCourse, id_teacher: idTeacher, deleted: false } }
   );
 }
 

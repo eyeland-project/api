@@ -625,7 +625,7 @@ async function getAnswersFromTaskStageForTeacher(
             },
             {
               model: GradeAnswerModel,
-              as: "gradeAnswer",
+              as: "gradeAnswers",
               attributes: ["id_grade_answer", "grade", "comment"],
               where: { id_teacher: idTeacher },
               required: false

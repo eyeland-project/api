@@ -112,7 +112,7 @@ async function getTaskAttemptsFromCourse(
         },
         {
           model: StudentModel,
-          attributes: ["id_student", "firstName", "lastName", "username"],
+          attributes: ["id_student", "first_name", "last_name", "username"],
           as: "student",
           where: { id_course: idCourse, deleted: false },
           include: [
