@@ -2,8 +2,10 @@ import { FindOptions, Op, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import {
   AnswerModel,
+  BlindnessAcuityModel,
   OptionModel,
   QuestionModel,
+  StudentModel,
   TaskModel,
   TaskStageModel
 } from "@models";
@@ -29,6 +31,7 @@ import {
 } from "@utils";
 import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getMembersFromTeam } from "./team.service";
+import { QuestionType } from "@interfaces/enums/question.enum";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -224,8 +227,22 @@ export async function getNextQuestionFromDuringtaskForStudent(
 }
 
 export async function getQuestionsFromPostaskForStudent(
-  taskOrder: number
+  taskOrder: number,
+  idStudent: number
 ): Promise<QuestionPostaskDetailDtoStudent[]> {
+  const {
+    blindnessAcuity: { level }
+  } = await repositoryService.findOne<StudentModel>(StudentModel, {
+    where: { id_student: idStudent, deleted: false },
+    attributes: ["id_student"],
+    include: [
+      {
+        model: BlindnessAcuityModel,
+        as: "blindnessAcuity",
+        attributes: ["id_blindness_acuity", "level"]
+      }
+    ]
+  });
   return (
     await getQuestionsFromTaskStage(
       { taskOrder },
@@ -233,8 +250,9 @@ export async function getQuestionsFromPostaskForStudent(
       {},
       { order: [["question_order", "ASC"]] }
     )
-  ).map(({ options, ...fields }) => ({
+  ).map(({ options, type, ...fields }) => ({
     ...fields,
+    type: level < 2 ? type : QuestionType.SELECT_AND_SPEAKING, // if blindnessAcuity is too high, only speaking questions
     options: shuffle(options)
   }));
 }
@@ -271,9 +289,7 @@ export async function getQuestionsFromTaskStage(
           model: TaskStageModel,
           as: "taskStage",
           attributes: [],
-          where: {
-            task_stage_order: taskStageOrder
-          },
+          where: { task_stage_order: taskStageOrder },
           include: [
             {
               model: TaskModel,
@@ -281,12 +297,8 @@ export async function getQuestionsFromTaskStage(
               attributes: [],
               where: {
                 ...(idTask !== undefined
-                  ? {
-                      id_task: idTask
-                    }
-                  : {
-                      task_order: taskOrder
-                    })
+                  ? { id_task: idTask }
+                  : { task_order: taskOrder })
               }
             }
           ]

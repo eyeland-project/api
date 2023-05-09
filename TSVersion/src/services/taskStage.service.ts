@@ -1,12 +1,16 @@
-import { QueryTypes } from "sequelize";
+import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
 import { QuestionDetailDto } from "@dto/global/question.dto";
-import { TaskStageDetailDto as TaskStageDetailDtoTeacher } from "@dto/teacher/taskStage.dto";
+import {
+  TaskStageDetailDto as TaskStageDetailDtoTeacher,
+  TaskStagesDetailDto as TaskStagesDetailDtoTeacher
+} from "@dto/teacher/taskStage.dto";
 import { TaskStageDetailDto as TaskStageDetailDtoStudent } from "@dto/student/taskStage.dto";
 import * as repositoryService from "@services/repository.service";
+import { TaskStage } from "@interfaces/TaskStage.types";
 
 export async function getPretaskForTeacher(
   idTask: number
@@ -24,6 +28,37 @@ export async function getPostaskForTeacher(
   idTask: number
 ): Promise<TaskStageDetailDtoTeacher> {
   return await getTaskStageForTeacher(idTask, 3);
+}
+
+export async function getTaskStagesForTeacher(
+  idTask: number
+): Promise<TaskStagesDetailDtoTeacher> {
+  const taskStages = await getTaskStages(
+    { idTask },
+    {},
+    { order: [["task_stage_order", "ASC"]] }
+  );
+  const parseTaskAttempt = (index: number): TaskStageDetailDtoTeacher => {
+    const {
+      id_task_stage,
+      keywords,
+      task_stage_order,
+      description,
+      questions
+    } = taskStages[index];
+    return {
+      id: id_task_stage,
+      keywords,
+      taskStageOrder: task_stage_order,
+      description,
+      numQuestions: questions.length
+    };
+  };
+  return {
+    pretask: parseTaskAttempt(0),
+    duringtask: parseTaskAttempt(1),
+    postask: parseTaskAttempt(2)
+  };
 }
 
 export async function getPretaskForStudent(
@@ -63,84 +98,21 @@ export async function getLastQuestionFromTaskStage(
   return questions[0];
 }
 
-export async function getQuestionsFromTaskStage(
-  taskOrder: number,
-  taskStageOrder: number
-): Promise<QuestionDetailDto[]> {
-  const questions = await QuestionModel.findAll({
-    include: [
-      {
-        model: TaskStageModel,
-        as: "taskStage",
-        attributes: [],
-        where: {
-          task_stage_order: taskStageOrder
-        },
-        include: [
-          {
-            model: TaskModel,
-            as: "task",
-            attributes: [],
-            where: {
-              task_order: taskOrder
-            }
-          }
-        ]
-      },
-      {
-        model: OptionModel,
-        as: "options"
-      }
-    ],
-    limit: taskStageOrder === 1 ? 10 : undefined,
-    order: taskStageOrder === 1 ? sequelize.random() : undefined
-  });
-
-  return questions.map(
-    ({
-      content,
-      id_question,
-      question_order,
-      img_alt,
-      img_url,
-      topic,
-      type,
-      options,
-      audio_url,
-      video_url,
-      hint,
-      character
-    }) => ({
-      id: id_question,
-      questionOrder: question_order,
-      content,
-      topic: topic || null,
-      type,
-      imgAlt: img_alt || null,
-      imgUrl: img_url || null,
-      audioUrl: audio_url || null,
-      videoUrl: video_url || null,
-      hint: hint || null,
-      character: character || null,
-      options: options.map((option) => {
-        const { content, correct, feedback, id_option } = option;
-        return {
-          id: id_option,
-          content,
-          feedback: feedback!,
-          correct
-        };
-      })
-    })
-  );
-}
-
 async function getTaskStageForTeacher(
   idTask: number,
   taskStageOrder: number
 ): Promise<TaskStageDetailDtoTeacher> {
+  const taskStage = (
+    await getTaskStages(
+      { idTask },
+      { task_stage_order: taskStageOrder },
+      { limit: 1 }
+    )
+  )[0];
+  if (!taskStage) throw new ApiError("Task stage not found", 404);
+
   const { description, keywords, id_task_stage, task_stage_order, questions } =
-    await getTaskStage({ idTask }, taskStageOrder);
+    taskStage;
   return {
     id: id_task_stage,
     taskStageOrder: task_stage_order,
@@ -154,10 +126,15 @@ async function getTaskStageForStudent(
   taskOrder: number,
   taskStageOrder: number
 ): Promise<TaskStageDetailDtoStudent> {
-  const { description, keywords, questions } = await getTaskStage(
-    { taskOrder },
-    taskStageOrder
-  );
+  const taskStage = (
+    await getTaskStages(
+      { taskOrder },
+      { task_stage_order: taskStageOrder },
+      { limit: 1 }
+    )
+  )[0];
+  if (!taskStage) throw new ApiError("Task stage not found", 404);
+  const { description, keywords, questions } = taskStage;
   return {
     description,
     keywords,
@@ -165,16 +142,17 @@ async function getTaskStageForStudent(
   };
 }
 
-async function getTaskStage(
+async function getTaskStages(
   { idTask, taskOrder }: { idTask?: number; taskOrder?: number },
-  taskStageOrder: number
-): Promise<TaskStageModel> {
-  if (idTask === undefined && taskOrder === undefined)
+  where?: Partial<TaskStage>,
+  options?: FindOptions
+): Promise<TaskStageModel[]> {
+  if (idTask === undefined && taskOrder === undefined) {
     throw new ApiError("idTask or taskOrder is required", 400);
-  return await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
-    where: {
-      task_stage_order: taskStageOrder
-    },
+  }
+
+  return await repositoryService.findAll<TaskStageModel>(TaskStageModel, {
+    where,
     include: [
       {
         model: QuestionModel,
@@ -195,6 +173,7 @@ async function getTaskStage(
               })
         }
       }
-    ]
+    ],
+    ...options
   });
 }

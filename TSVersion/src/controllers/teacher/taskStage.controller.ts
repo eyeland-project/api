@@ -1,9 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import { TaskStageDetailDto } from "@dto/teacher/taskStage.dto";
+import {
+  TaskStageDetailDto,
+  TaskStagesDetailDto
+} from "@dto/teacher/taskStage.dto";
 import {
   getDuringtaskForTeacher,
   getPostaskForTeacher,
-  getPretaskForTeacher
+  getPretaskForTeacher,
+  getTaskStagesForTeacher
 } from "@services/taskStage.service";
 import { ApiError } from "@middlewares/handleErrors";
 
@@ -37,6 +41,7 @@ export async function getDuringtask(
     next(err);
   }
 }
+
 export async function getPostask(
   req: Request<{ idTask: string }>,
   res: Response<TaskStageDetailDto>,
@@ -48,6 +53,22 @@ export async function getPostask(
       throw new ApiError("Invalid task id", 400);
     }
     res.status(200).json(await getPostaskForTeacher(idTask));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getTaskStages(
+  req: Request<{ idTask: string }>,
+  res: Response<TaskStagesDetailDto>,
+  next: NextFunction
+) {
+  const idTask = parseInt(req.params.idTask);
+  try {
+    if (isNaN(idTask) || idTask <= 0) {
+      throw new ApiError("Invalid task id", 400);
+    }
+    res.status(200).json(await getTaskStagesForTeacher(idTask));
   } catch (err) {
     next(err);
   }

@@ -5,3 +5,9 @@ export interface TaskStageDetailDto {
   description: string;
   numQuestions: number;
 }
+
+export interface TaskStagesDetailDto {
+  pretask: TaskStageDetailDto;
+  duringtask: TaskStageDetailDto;
+  postask: TaskStageDetailDto;
+}
