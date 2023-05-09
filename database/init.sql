@@ -266,6 +266,21 @@ CREATE TABLE answer (
     -- CONSTRAINT uk_answer UNIQUE (id_task_attempt, id_question, id_option) -- a student can only answer a question once per task_attempt
 );
 
+-- CREATING TABLE grade_answer
+CREATE TABLE grade_answer (
+    id_grade_answer SERIAL NOT NULL,
+    id_answer INTEGER NOT NULL,
+    id_teacher INTEGER NOT NULL,
+    grade INTEGER NOT NULL,
+    comment VARCHAR(2048),
+    -- CONSTRAINTS
+    CONSTRAINT pk_grade_answer PRIMARY KEY (id_grade_answer),
+    CONSTRAINT fk_grade_answer_answer FOREIGN KEY (id_answer) REFERENCES answer(id_answer),
+    CONSTRAINT fk_grade_answer_teacher FOREIGN KEY (id_teacher) REFERENCES teacher(id_teacher),
+    CONSTRAINT check_grade_answer_grade CHECK (grade >= 0 AND grade <= 100),
+    CONSTRAINT uk_grade_answer UNIQUE (id_answer, id_teacher) -- a teacher can only grade an answer once
+);
+
 -- CREATING TABLE release (mobile app releases)
 CREATE TABLE release (
     id_release SMALLSERIAL NOT NULL,
@@ -432,9 +447,9 @@ INSERT INTO visual_field_defect (code, name, description) VALUES ('hemianopia_he
 
 -- INSERT INTO task
 -- <a href="https://www.freepik.es/foto-gratis/puente-cable-murom-traves-oka_1469557.htm#page=2&query=bridge&position=0&from_view=search&track=sph">Imagen de bearfotos</a> en Freepik
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (1, 'Journey to the Mangroves', 'Únete a un viaje virtual al Parque Isla Salamanca, mientras aprendes frases básicas en inglés relacionadas con los viajes y la naturaleza.', '¡Prepárate para un divertido viaje desde Barranquilla hasta el Parque Isla Salamanca! Cruzaremos un gran puente y el mar, mientras aprendemos a decir hola, adiós y gracias en inglés. También aprenderá nuevas palabras y frases relacionadas con los viajes y la naturaleza, como "barco", "playa", "montaña" y "árbol". ¿Estás emocionado?', '{ "travel", "nature", "vocabulary", "phrases", "basic English", "bridge", "sea" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/thumbnail_1.jpg', 'Imagen de la task', FALSE);
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (1, 'Journey to the Mangroves', 'Únete a un viaje virtual al Parque Isla Salamanca, mientras aprendes frases básicas en inglés relacionadas con los viajes y la naturaleza.', '¡Prepárate para un divertido viaje desde Barranquilla hasta el Parque Isla Salamanca! Aprenderemos nuevas palabras y frases relacionadas con los viajes y la naturaleza, como "camino", "puente", "manglar" y "parque natural". ¿Estás emocionado?', '{ "vocabulary", "prepositions", "journey", "nature" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/thumbnail_1.jpg', 'Imagen de la task', FALSE);
 -- <a href="https://www.freepik.es/foto-gratis/ancho-rio-cerca-rio-negro-jamaica-paisaje-exotico-manglares_14875432.htm#query=mangrove%20swamp&position=33&from_view=search&track=ais">Imagen de mb-photoarts</a> en Freepik
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (2, 'Meet the Animals', 'Explora la vida silvestre de los manglares, aprendiendo nombres de animales, hábitos y hábitats.', '¡Exploremos la increíble vida salvaje de los manglares! Conoceremos diferentes animales, como pájaros, cangrejos y reptiles, y aprenderemos a decir sus nombres y dónde viven. También aprenderemos algunos datos interesantes sobre sus hábitos y cómo sobreviven en los manglares. ¡Prepárate para divertirte y aprender cosas nuevas!', '{ "wildlife", "animals", "names", "habits", "habitats", "birds", "crabs", "reptiles" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/thumbnail_1.jpg', 'Imagen de la task', FALSE);
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (2, 'Meet the Animals', 'Explora la vida silvestre de los manglares, aprendiendo nombres de animales, hábitos y hábitats.', '¡Exploremos la increíble vida salvaje de los manglares! Conoceremos diferentes animales, como aves, mamíferos y reptiles, y aprenderemos a decir sus nombres y dónde viven. ¡Prepárate para divertirte y aprender cosas nuevas!', '{ "personal presentation", "sounds", "nature", "animals", "habitats" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/thumbnail_1.jpg', 'Imagen de la task', FALSE);
 -- Foto de Tom Fisk: https://www.pexels.com/es-es/foto/arboles-verdes-2666806/
 INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (3, 'Eco Adventures', 'Embárcate en aventuras ecológicas, como caminatas, kayak y pesca, mientras practicas frases en inglés relacionadas con actividades al aire libre y conciencia ambiental.', '¡Es hora de algunas aventuras ecológicas en los manglares! Haremos senderismo, kayak y pesca, mientras aprendemos nuevas frases en inglés relacionadas con actividades al aire libre, como "¡vamos!", "Me estoy divirtiendo" y "esto es hermoso". También aprenderemos cómo cuidar el medio ambiente y por qué es importante proteger los manglares. ¿Estás preparado para el reto?', '{ "eco-friendly", "adventures", "hiking", "kayaking", "fishing", "phrases", "outdoor activities", "environmental awareness" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/thumbnail_1.jpg', 'Imagen de la task', TRUE);
 -- Foto de icon0.com: https://www.pexels.com/es-es/foto/madera-paisaje-naturaleza-verano-726298/
@@ -457,13 +472,13 @@ BEGIN
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 2, 'Describe la imagen', NULL, NULL, 'select', 'Imagen de un parque natural', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/natural_park_2.jpg', 'vocabulary', NULL, 'La imagen muestra un parque natural.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Natural park', '¡Muy bien! La imagen muestra un parque natural.', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Bridge', '¡Uy!, no es correcto. La imagen muestra un parque natural, no un puente.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Farm', '¡Uy!, no es correcto. La imagen muestra un parque natural, no un puente.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'River', '¡Uy!, no es correcto. La imagen muestra un parque natural, no un río.', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 3, 'Bridge', NULL, NULL, 'audio_select', 'Imagen de un puente', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/bridge_1.jpg', 'vocabulary', NULL, 'La imagen muestra un puente.') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Bridge', '¡Muy bien! La imagen muestra un puente.', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Toll', '¡Uy!, no es correcto. La imagen muestra un puente, no un peaje.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Farm', '¡Uy!, no es correcto. La imagen muestra un puente, no una granja.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Bridge', '¡Muy bien!.', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Toll', '¡Uy!, no es correcto. Vuelve a escuchar atentamente.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Farm', '¡Uy!, no es correcto. Vuelve a escuchar atentamente.', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 4, 'The road is _ the natural park', NULL, NULL, 'fill', 'Imagen de un camino al lado de un parque natural', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/road_natural_park_1.jpg', 'prepositions', NULL, 'La imagen muestra un camino al lado de un parque natural.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'next to', '¡Excelente! "Next to" es la respuesta correcta, indica que el camino está al lado del parque natural.', TRUE);
@@ -477,7 +492,7 @@ BEGIN
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 6, 'The mangrove is _ the water', NULL, NULL, 'fill', 'Imagen de un manglar en el agua', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/mangrove_water_1.jpg', 'prepositions', NULL, 'La imagen muestra un manglar en el agua.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'on', '¡Correcto! La respuesta es "on".', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'on', 'Incorecto, "In" se usa para indicar que algo está en o dentro de otra cosa. La respuesta correcta es "on".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'in', 'Incorecto, "In" se usa para indicar que algo está en o dentro de otra cosa. La respuesta correcta es "on".', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'at', 'Incorrecto, "At" se usa para indicar que algo está en un lugar específico. La respuesta correcta es "on".', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 7, 'Describe la imagen', NULL, NULL, 'select', 'Imagen de un pantano', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/swamp_1.jpg', 'vocabulary', NULL, 'La imagen muestra un pantano.') RETURNING id_question INTO last_question_id;
@@ -564,7 +579,7 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'A house', 'Incorrect', FALSE);
     
     -- postask 1
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (3, 1, '¡Hemos llegado al final! Revisemos lo aprendido con unas preguntas.\Are there boats next to the road?', NULL, NULL, 'select&speaking', NULL, NULL, NULL, 'beto', NULL) RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (3, 1, '¡Hemos llegado al final! Revisemos lo aprendido con unas preguntas. Are there boats next to the road?', NULL, NULL, 'select&speaking', NULL, NULL, NULL, 'beto', NULL) RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Yes, there are.', 'Correct', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'No, there aren''t.', 'Incorrect', FALSE);
 

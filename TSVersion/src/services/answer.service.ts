@@ -14,11 +14,15 @@ import { updateLeaderBoard } from "@services/leaderBoard.service";
 import { getOptionById } from "@services/option.service";
 import { getQuestionsFromTaskStage } from "@services/question.service";
 import { getCourseFromStudent } from "@services/student.service";
-import { getStudentTaskByOrder } from "@services/studentTask.service";
+import {
+  getStudentTaskByOrder,
+  upgradeStudentTaskProgress
+} from "@services/studentTask.service";
 import {
   createTaskAttempt,
   finishStudentTaskAttempts,
-  getCurrTaskAttempt
+  getCurrTaskAttempt,
+  updateCurrTaskAttempt
 } from "@services/taskAttempt.service";
 import { getMembersFromTeam, updateTeam } from "@services/team.service";
 import * as repositoryService from "@services/repository.service";
@@ -28,6 +32,7 @@ import {
   AnswerOpenCreateDto,
   AnswerSelectSpeakingCreateDto
 } from "@dto/student/answer.dto";
+import { getLastQuestionFromTaskStage } from "./taskStage.service";
 
 export async function answerPretask(
   idStudent: number,
@@ -338,8 +343,9 @@ export async function answerPostask(
   const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>body;
   const { idOption } = answerSelectSpeaking;
 
+  let result;
   if (idOption !== undefined) {
-    return await answerPostaskSelectSpeaking({
+    result = await answerPostaskSelectSpeaking({
       idQuestion: question.id,
       options: question.options,
       idOption,
@@ -349,7 +355,7 @@ export async function answerPostask(
     });
   } else {
     const { text } = <AnswerOpenCreateDto>body;
-    return await answerPostaskOpen({
+    result = await answerPostaskOpen({
       idQuestion: question.id,
       idTaskAttempt: taskAttempt.id_task_attempt,
       text,
@@ -358,14 +364,16 @@ export async function answerPostask(
     });
   }
 
-  // new Promise(() => {
-  //   getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
-  //     if (lastQuestion.id_question === id_question) {
-  //       upgradeStudentTaskProgress(taskOrder, idStudent, 3);
-  //       updateCurrTaskAttempt(idStudent, { active: false });
-  //     }
-  //   });
-  // }).catch(console.log);
+  new Promise(() => {
+    getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
+      if (lastQuestion.id_question === question.id) {
+        upgradeStudentTaskProgress(taskOrder, idStudent, 3);
+        updateCurrTaskAttempt(idStudent, { active: false });
+      }
+    });
+  }).catch(console.log);
+
+  return result;
 }
 
 export async function answerPostaskSelectSpeaking({

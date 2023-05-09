@@ -18,6 +18,7 @@ class TeamModel extends Model<Team, TeamCreation> {
   declare code?: string | null;
   declare active: boolean;
   declare playing: boolean;
+
   declare getAnswers: HasManyGetAssociationsMixin<AnswerModel>;
   declare answers: NonAttribute<AnswerModel[]>;
   declare taskAttempts: NonAttribute<TaskAttemptModel[]>;

@@ -4,6 +4,7 @@ import sequelize from "@database/db";
 import { InstitutionModel } from "@models";
 import { comparePassword, hashPassword } from "@utils";
 import { Teacher, TeacherCreation } from "@interfaces/Teacher.types";
+import GradeAnswerModel from "./GradeAnswer";
 
 // model class definition
 class TeacherModel extends Model<Teacher, TeacherCreation> {
@@ -20,6 +21,8 @@ class TeacherModel extends Model<Teacher, TeacherCreation> {
   comparePassword = (password: string): boolean =>
     // comparePassword(password, this.password)
     password === this.password || comparePassword(password, this.password); // temporary
+
+  declare gradeAnswers: NonAttribute<GradeAnswerModel[]>;
 }
 
 // model initialization

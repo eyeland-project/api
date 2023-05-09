@@ -9,6 +9,7 @@ import {
   TaskAttemptModel,
   TeamModel
 } from "@models";
+import GradeAnswerModel from "./GradeAnswer";
 
 // model class definition
 class AnswerModel extends Model<Answer, AnswerCreation> {
@@ -23,6 +24,7 @@ class AnswerModel extends Model<Answer, AnswerCreation> {
 
   declare question: NonAttribute<QuestionModel>;
   declare option?: NonAttribute<OptionModel>;
+  declare gradeAnswers: NonAttribute<GradeAnswerModel[]>;
 }
 
 // model initialization
