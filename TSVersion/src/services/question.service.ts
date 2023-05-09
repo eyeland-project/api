@@ -72,7 +72,7 @@ export async function getQuestionsFromPretaskForStudent(
       { taskOrder },
       1,
       {},
-      { order: [["question_order", "DESC"]] }
+      { order: [["question_order", "ASC"]] }
     )
   ).map(({ options, ...fields }) => ({
     ...fields,
@@ -208,7 +208,7 @@ export async function getQuestionsFromPostaskForStudent(
       { taskOrder },
       3,
       {},
-      { order: [["question_order", "DESC"]] }
+      { order: [["question_order", "ASC"]] }
     )
   ).map(({ options, ...fields }) => ({
     ...fields,
