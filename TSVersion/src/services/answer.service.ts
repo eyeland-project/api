@@ -6,6 +6,7 @@ import {
   GradeAnswerModel,
   OptionModel,
   QuestionModel,
+  StudentModel,
   StudentTaskModel,
   TaskAttemptModel,
   TaskModel,
@@ -267,19 +268,21 @@ export async function answerDuringtask(
       getMembersFromTeam({
         idTeam: taskAttempt.id_team!
       }).then((members) => {
-        repositoryService.update<StudentTaskModel>(
-          StudentTaskModel,
-          { highest_stage: 2 },
-          {
-            where: {
-              id_student: {
-                [Op.in]: members.map(({ id_student }) => id_student)
-              },
-              id_task: taskAttempt.id_task,
-              highest_stage: { [Op.lt]: 3 }
+        repositoryService
+          .update<StudentTaskModel>(
+            StudentTaskModel,
+            { highest_stage: 2 },
+            {
+              where: {
+                id_student: {
+                  [Op.in]: members.map(({ id_student }) => id_student)
+                },
+                id_task: taskAttempt.id_task,
+                highest_stage: { [Op.lt]: 3 }
+              }
             }
-          }
-        );
+          )
+          .catch(() => {});
       });
 
       updateTeam(taskAttempt.id_team!, {
@@ -573,10 +576,20 @@ async function getAnswersFromTaskStageForTeacher(
   idTaskAttempt: number,
   taskStageOrder: number
 ): Promise<QuestionSubmissionDetailPretaskDto[]> {
-  const { id_task, id_team } =
+  const { id_task, id_team, student } =
     await repositoryService.findOne<TaskAttemptModel>(TaskAttemptModel, {
-      where: { id_task_attempt: idTaskAttempt }
+      where: { id_task_attempt: idTaskAttempt },
+      include: [
+        {
+          model: StudentModel,
+          as: "student",
+          attributes: ["id_course"]
+        }
+      ]
     });
+  if (idCourse !== student.id_course) {
+    throw new ApiError("Student does not belong to course", 400);
+  }
   const questions = await repositoryService.findAll<QuestionModel>(
     QuestionModel,
     {
