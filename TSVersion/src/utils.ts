@@ -186,7 +186,19 @@ export function incrementCounter(): number {
   return counter++;
 }
 
-const teamNamesConst = ["Equipo"];
+const teamNamesConst = [
+  "Ocelots",
+  "Manatees",
+  "Seagulls",
+  "Herons",
+  "Alligators",
+  "Ducks",
+  "Ospreys",
+  "Opossums",
+  "Lizard",
+  "Sea bass",
+  "Hummingbird"
+];
 
 export async function generateTeamName(usedTeamName: string[] = []) {
   let count = 1;

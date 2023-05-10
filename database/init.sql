@@ -505,7 +505,7 @@ BEGIN
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 9, 'Describe la imagen', NULL, NULL, 'select', 'Imagen de un bote', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/boat_1.jpg', 'vocabulary', NULL, 'La imagen muestra un bote.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Boat', '¡Muy bien! La imagen muestra un bote.', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Water', '¡Uy!, no es correcto. La imagen muestra agua, pero también un bote sobre ella.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Hotel', '¡Uy!, no es correcto. La imagen muestra agua, pero también un bote sobre ella.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Beach', '¡Uy!, no es correcto. La imagen muestra un bote, no una playa.', FALSE);
     
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 10, 'The bridge is over the water', NULL, NULL, 'audio_order', 'Imagen de un puente sobre el agua', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/bridge_river_1.jpg', 'prepositions', NULL, 'La imagen muestra un puente sobre el agua.') RETURNING id_question INTO last_question_id;
@@ -736,17 +736,20 @@ END $$;
 -- *INSERTANDO USUARIOS E INSTITUCIONES DE PRUEBA
 -- INSERT INTO institution
 INSERT INTO institution (name, nit, address, city, country, phone_code, phone_number, email, website_url) VALUES ('Institución 1', '123456789', 'Cra 45 # 23-67', 'Barranquilla', 'Colombia', '57', '3011231234', 'ied1@test.com', 'https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif');
+INSERT INTO institution (name, nit, address, city, country, phone_code, phone_number, email, website_url) VALUES ('Institución Educativa Distrital La Magdalena', '000000000', 'Calle 41 #7-07', 'Barranquilla', 'Colombia', '57', '3008153396', 'info@insedmag.edu.co', 'https://insedmag.edu.co/institucional/');
 
 -- INSERT INTO teacher
 INSERT INTO teacher (id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (1, 'teacher', 'teacher', 'Profesor', 'Prueba', 'teacher1@test.com', '57', '3011231234');
 INSERT INTO teacher (id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (1, 'teacher2', 'teacher2', 'Profesor', 'Prueba', 'teacher2@test.com', '57', '3011231234');
 INSERT INTO teacher (id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (1, 'teacher3', 'teacher3', 'Profesor', 'Prueba', 'teacher3@test.com', '57', '3011231234');
+INSERT INTO teacher (id_institution, username, password, first_name, last_name, email, phone_code, phone_number) VALUES (2, 'professor', '123', 'Invitado', 'De Prueba', 'professor@eyeland.com', '57', '3011231234');
 
 -- INSERT INTO course
 INSERT INTO course (id_institution, id_teacher, name) VALUES (1, 1, 'Curso 1');
 INSERT INTO course (id_institution, id_teacher, name) VALUES (1, 1, 'Curso 2');
 INSERT INTO course (id_institution, id_teacher, name) VALUES (1, 2, 'Curso 1');
 INSERT INTO course (id_institution, id_teacher, name) VALUES (1, 3, 'Curso 1');
+INSERT INTO course (id_institution, id_teacher, name) VALUES (2, 4, 'Noveno');
 
 -- INSERT INTO student
 INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (1, 'Estudiante1', 'Apellido', 'student1', 'pass123', 'student1@test.com', '57', '3001231234', 1, 1, 1);
@@ -774,6 +777,27 @@ INSERT INTO student (id_course, first_name, last_name, username, password, email
 INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (3, 'Estudiante7', 'Apellido', 'student38', 'pass123', 'student38@test.com', '57', '3001231234', 1, 1, 8);
 INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (3, 'Estudiante7', 'Apellido', 'student39', 'pass123', 'student39@test.com', '57', '3001231234', 1, 1, 9);
 
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Dreamer', 'Apellido1 Apellido2', 'dreamer', '123', 'student_dreamer@eyeland.com', '57', '3001231234', 3, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Ninja', 'Apellido1 Apellido2', 'ninja', '123', 'student_ninja@eyeland.com', '57', '3001231234', 3, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Wolf', 'Apellido1 Apellido2', 'wolf', '123', 'student_wolf@eyeland.com', '57', '3001231234', 4, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Star', 'Apellido1 Apellido2', 'star', '123', 'student_star@eyeland.com', '57', '3001231234', 7, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Explorer', 'Apellido1 Apellido2', 'explorer', '123', 'student_explorer@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Artist', 'Apellido1 Apellido2', 'artist', '123', 'student_artist@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Leader', 'Apellido1 Apellido2', 'leader', '123', 'student_leader@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Astronaut', 'Apellido1 Apellido2', 'astronaut', '123', 'student_astronaut@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Phoenix', 'Apellido1 Apellido2', 'phoenix', '123', 'student_phoenix@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Sunset', 'Apellido1 Apellido2', 'sunset', '123', 'student_sunset@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Python', 'Apellido1 Apellido2', 'python', '123', 'student_python@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Guide', 'Apellido1 Apellido2', 'guide', '123', 'student_guide@eyeland.com', '57', '3001231234', 1, 1, 1);
+
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Fortran', 'Apellido1 Apellido2', 'fortran', '123', 'student_fortran@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Cobol', 'Apellido1 Apellido2', 'cobol', '123', 'student_cobol@eyeland.com', '57', '3001231234', 1, 1, 1);
+
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Brunner Hurtador', 'Apellido1 Apellido2', 'brunner', '123', 'student_brunner@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Harry Potter', 'Apellido1 Apellido2', 'not_redo', '123', 'student_not_redo@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Milos', 'Apellido1 Apellido2', 'wilson', '123', 'student_wilson@eyeland.com', '57', '3001231234', 1, 1, 1);
+INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Air-e', 'Apellido1 Apellido2', 'miau', '123', 'student_miau@eyeland.com', '57', '3001231234', 1, 1, 1);
+
 -- INSERT INTO team
 INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 1', '111111');
 INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 2', '222222');
@@ -786,10 +810,7 @@ INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 8', '888888');
 INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 9', '999999');
 
 -- INSERT INTO admin
-INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Brunner', 'Hurtador', 'carlbrunner@hurtador.com', 'brunner', 'cocacola');
+INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Brunner', 'Hurtador', 'carlbrunner@hurtador.com', 'hurtador', 'cocacola');
 
 -- INSERT INTO release
-INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');
-INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.6.apk', '3.6');
-INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/application-alpha-3.5.6.apk', '3.6');
 INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.5.6.1.apk', '3.5.6.1');
