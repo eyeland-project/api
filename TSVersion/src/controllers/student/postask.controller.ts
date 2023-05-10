@@ -33,15 +33,12 @@ export async function getQuestions(
   res: Response<QuestionPostaskDetailDto[]>,
   next: NextFunction
 ) {
-  const { id: idStudent } = req.user!;
   const taskOrder = parseInt(req.params.taskOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
       throw new ApiError("Invalid taskOrder", 400);
     }
-    res
-      .status(200)
-      .json(await getQuestionsFromPostaskForStudent(taskOrder, idStudent));
+    res.status(200).json(await getQuestionsFromPostaskForStudent(taskOrder));
   } catch (err) {
     next(err);
   }

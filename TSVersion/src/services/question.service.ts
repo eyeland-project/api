@@ -227,22 +227,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
 }
 
 export async function getQuestionsFromPostaskForStudent(
-  taskOrder: number,
-  idStudent: number
+  taskOrder: number
 ): Promise<QuestionPostaskDetailDtoStudent[]> {
-  const {
-    blindnessAcuity: { level }
-  } = await repositoryService.findOne<StudentModel>(StudentModel, {
-    where: { id_student: idStudent, deleted: false },
-    attributes: ["id_student"],
-    include: [
-      {
-        model: BlindnessAcuityModel,
-        as: "blindnessAcuity",
-        attributes: ["id_blindness_acuity", "level"]
-      }
-    ]
-  });
   return (
     await getQuestionsFromTaskStage(
       { taskOrder },
@@ -250,9 +236,8 @@ export async function getQuestionsFromPostaskForStudent(
       {},
       { order: [["question_order", "ASC"]] }
     )
-  ).map(({ options, type, ...fields }) => ({
+  ).map(({ options, ...fields }) => ({
     ...fields,
-    type: level < 2 ? type : QuestionType.SELECT_AND_SPEAKING, // if blindnessAcuity is too high, only speaking questions
     options: shuffle(options)
   }));
 }

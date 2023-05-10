@@ -792,3 +792,4 @@ INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Br
 INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.5.apk', '3.5');
 INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.6.apk', '3.6');
 INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/application-alpha-3.5.6.apk', '3.6');
+INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.5.6.1.apk', '3.5.6.1');
