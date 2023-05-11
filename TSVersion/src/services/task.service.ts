@@ -63,11 +63,11 @@ export async function getTaskForStudent(
   idStudent: number,
   taskOrder: number
 ): Promise<TaskDetailDtoStudent> {
-  try {
-    await finishStudentTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
-  } catch (err) {
-    console.error(err);
-  }
+  // try {
+  //   await finishStudentTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
+  // } catch (err) {
+  //   console.error(err);
+  // }
 
   const {
     id_task,
