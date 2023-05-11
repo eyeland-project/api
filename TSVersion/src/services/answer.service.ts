@@ -313,9 +313,7 @@ export async function answerPostask(
   body: AnswerSelectSpeakingCreateDto | AnswerOpenCreateDto,
   audio?: Express.Multer.File
 ): Promise<string | null> {
-  // const { answerSeconds, newAttempt } = body;
-  const answerSeconds = parseInt(String(body.answerSeconds));
-  const newAttempt = String(body.newAttempt) === "true";
+  const { answerSeconds, newAttempt } = body;
 
   const { session } = await getCourseFromStudent(idStudent);
   if (!session) {
@@ -369,8 +367,7 @@ export async function answerPostask(
     throw new ApiError("Current Task attempt is from another task", 400);
   }
 
-  const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>body;
-  const idOption = parseInt(String(answerSelectSpeaking.idOption));
+  const idOption = (<AnswerSelectSpeakingCreateDto>body).idOption;
 
   let result;
   if (idOption !== undefined) {
