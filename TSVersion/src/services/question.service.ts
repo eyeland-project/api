@@ -144,7 +144,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
   });
 
   // const questionLeft = maxIncorrectAnswers < maxAnswers;
-  console.log(missingQuestions.map(({ content }) => content));
+  // console.log(missingQuestions.map(({ content }) => content));
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
   missingQuestions.sort((a, b) => {

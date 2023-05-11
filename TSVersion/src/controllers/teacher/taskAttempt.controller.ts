@@ -2,6 +2,7 @@ import { TaskAttemptSubmissionDetailDto } from "@dto/teacher/taskAttempt.dto";
 import { ApiError } from "@middlewares/handleErrors";
 import {
   getTaskAttemptFromCourseForTeacher,
+  getTaskAttemptSubmissionsFromCourse,
   getTaskAttemptsFromCourseForTeacher
 } from "@services/taskAttempt.service";
 import { NextFunction, Request, Response } from "express";
@@ -20,6 +21,25 @@ export async function getTaskAttempts(
     res
       .status(200)
       .json(await getTaskAttemptsFromCourseForTeacher(idTeacher, idCourse));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getTaskAttemptSubmissions(
+  req: Request<{ idCourse: string }>,
+  res: Response<TaskAttemptSubmissionDetailDto[]>,
+  next: NextFunction
+) {
+  const { id: idTeacher } = req.user!;
+  const idCourse = parseInt(req.params.idCourse);
+  try {
+    if (isNaN(idCourse) || idCourse <= 0) {
+      throw new ApiError("Invalid course id", 400);
+    }
+    res
+      .status(200)
+      .json(await getTaskAttemptSubmissionsFromCourse(idTeacher, idCourse));
   } catch (err) {
     next(err);
   }

@@ -6,7 +6,7 @@ import {
   TaskAttempt,
   TaskAttemptCreation
 } from "@interfaces/TaskAttempt.types";
-import { TaskModel, TeamModel, StudentModel } from "@models";
+import { TaskModel, TeamModel, StudentModel, AnswerModel } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
 
@@ -23,6 +23,7 @@ class TaskAttemptModel extends Model<TaskAttempt, TaskAttemptCreation> {
   declare task: NonAttribute<TaskModel>;
   declare student: NonAttribute<StudentModel>;
   declare team?: NonAttribute<TeamModel>;
+  declare answers: NonAttribute<AnswerModel[]>;
 }
 
 // model initialization

@@ -5,6 +5,7 @@ import {
   getCourse,
   updateCourse
 } from "@controllers/teacher/course.controller";
+import { getTaskAttemptSubmissions } from "@controllers/teacher/taskAttempt.controller";
 
 const auth = passport.authenticate("jwt-teacher", { session: false });
 
@@ -14,5 +15,6 @@ router.use(auth);
 router.get("/", getCourse);
 router.put("/", updateCourse);
 router.delete("/", deleteCourse);
+router.get("/submissions", getTaskAttemptSubmissions);
 
 export default router;
