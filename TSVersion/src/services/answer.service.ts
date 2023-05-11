@@ -393,14 +393,15 @@ export async function answerPostask(
     });
   }
 
-  new Promise(() => {
-    getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
-      if (lastQuestion.id_question === question.id) {
-        upgradeStudentTaskProgress(taskOrder, idStudent, 3);
-        updateCurrTaskAttempt(idStudent, { active: false });
-      }
-    });
-  }).catch(console.log);
+  // new Promise(() => {
+  //   getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
+  //     if (lastQuestion.id_question === question.id) {
+  //       console.log("last question answered");
+  //       upgradeStudentTaskProgress(taskOrder, idStudent, 3).catch(console.log);
+  //       finishStudentTaskAttempts(idStudent).catch(console.log);
+  //     }
+  //   });
+  // }).catch(console.log);
 
   return result;
 }
