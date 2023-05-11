@@ -67,13 +67,12 @@ export async function answer(
 
     await uploadFileToServer("audio")(req, res);
     const audio = req.file;
-    console.log("req.body", req.body);
 
     if (
       req.body.answerSeconds !== undefined &&
       typeof req.body.answerSeconds !== "number"
     ) {
-      req.body.answerSeconds = parseInt(req.body.answerSeconds);
+      req.body.answerSeconds = parseInt(req.body.answerSeconds) || undefined;
     }
 
     if (
@@ -90,8 +89,8 @@ export async function answer(
       answerSelectSpeaking.idOption !== undefined &&
       typeof answerSelectSpeaking.idOption !== "number"
     ) {
-      answerSelectSpeaking.idOption = parseInt(answerSelectSpeaking.idOption);
-      console.log("req.body", req.body);
+      answerSelectSpeaking.idOption =
+        parseInt(answerSelectSpeaking.idOption) || undefined!;
     }
 
     if (
