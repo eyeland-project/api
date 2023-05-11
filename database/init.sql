@@ -490,10 +490,10 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Beach', '¡Uy!, no es correcto. La imagen muestra un manglar, no una playa.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Farm', '¡Uy!, no es correcto. La imagen muestra un manglar, no una granja.', FALSE);
     
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 6, 'The mangrove is _ the water', NULL, NULL, 'fill', 'Imagen de un manglar en el agua', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/mangrove_water_1.jpg', 'prepositions', NULL, 'La imagen muestra un manglar en el agua.') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'on', '¡Correcto! La respuesta es "on".', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'in', 'Incorecto, "In" se usa para indicar que algo está en o dentro de otra cosa. La respuesta correcta es "on".', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'at', 'Incorrecto, "At" se usa para indicar que algo está en un lugar específico. La respuesta correcta es "on".', FALSE);
+    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 6, 'The mangrove is _ the natural park', NULL, NULL, 'fill', 'Imagen de un manglar en un parque natural', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/mangrove_water_1.jpg', 'prepositions', NULL, 'La imagen muestra un manglar en el agua.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'in', '¡Correcto! La respuesta es "in".', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'on', 'Incorecto, "On" se usa para indicar que algo está sobre una superficie. La respuesta correcta es "in".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'at', 'Incorrecto, "At" se usa para indicar que algo está en un lugar específico. La respuesta correcta es "in".', FALSE);
 
     INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (1, 7, 'Describe la imagen', NULL, NULL, 'select', 'Imagen de un pantano', 'https://storage.googleapis.com/eyeland-0/app/content/task_1/swamp_1.jpg', 'vocabulary', NULL, 'La imagen muestra un pantano.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swamp', '¡Muy bien! La imagen muestra un pantano.', TRUE);
@@ -799,15 +799,15 @@ INSERT INTO student (id_course, first_name, last_name, username, password, email
 INSERT INTO student (id_course, first_name, last_name, username, password, email, phone_code, phone_number, id_blindness_acuity, id_visual_field_defect, id_color_deficiency) VALUES (5, 'Air-e', 'Apellido1 Apellido2', 'miau', '123', 'student_miau@eyeland.com', '57', '3001231234', 1, 1, 1);
 
 -- INSERT INTO team
-INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 1', '111111');
-INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 2', '222222');
-INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 3', '333333');
-INSERT INTO team (id_course, name, code) VALUES (2, 'Equipo 4', '444444');
-INSERT INTO team (id_course, name, code) VALUES (2, 'Equipo 5', '555555');
-INSERT INTO team (id_course, name, code) VALUES (2, 'Equipo 6', '666666');
-INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 7', '777777');
-INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 8', '888888');
-INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 9', '999999');
+-- INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 1', '111111');
+-- INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 2', '222222');
+-- INSERT INTO team (id_course, name, code) VALUES (1, 'Equipo 3', '333333');
+-- INSERT INTO team (id_course, name, code) VALUES (2, 'Equipo 4', '444444');
+-- INSERT INTO team (id_course, name, code) VALUES (2, 'Equipo 5', '555555');
+-- INSERT INTO team (id_course, name, code) VALUES (2, 'Equipo 6', '666666');
+-- INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 7', '777777');
+-- INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 8', '888888');
+-- INSERT INTO team (id_course, name, code) VALUES (3, 'Equipo 9', '999999');
 
 -- INSERT INTO admin
 INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Brunner', 'Hurtador', 'carlbrunner@hurtador.com', 'hurtador', 'cocacola');

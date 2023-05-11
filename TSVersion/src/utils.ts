@@ -195,7 +195,7 @@ const teamNamesConst = [
   "Ducks",
   "Ospreys",
   "Opossums",
-  "Lizard",
+  "Lizards",
   "Sea bass",
   "Hummingbird"
 ];
