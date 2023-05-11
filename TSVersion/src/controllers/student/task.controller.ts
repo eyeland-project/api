@@ -6,7 +6,6 @@ import {
   TaskProgressDetailDto
 } from "@dto/student/task.dto";
 import { getStudentProgressFromTask } from "@services/studentTask.service";
-import { finishStudentTaskAttempts } from "@services/taskAttempt.service";
 import { ApiError } from "@middlewares/handleErrors";
 
 export async function getTasks(
@@ -33,7 +32,7 @@ export async function getTask(
     if (isNaN(taskOrder) || taskOrder <= 0) {
       throw new ApiError("Invalid task order", 400);
     }
-    res.status(200).json(await getTaskForStudent(idStudent, taskOrder));
+    res.status(200).json(await getTaskForStudent(taskOrder));
   } catch (err) {
     next(err);
   }
@@ -53,20 +52,6 @@ export async function getProgress(
     res
       .status(200)
       .json(await getStudentProgressFromTask(taskOrder, idStudent));
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function finishAttempt(
-  req: Request<{ taskOrder: number }>,
-  res: Response<{ message: string }>,
-  next: NextFunction
-) {
-  try {
-    const { id: idStudent } = req.user!;
-    await finishStudentTaskAttempts(idStudent);
-    res.status(200).json({ message: "OK" });
   } catch (err) {
     next(err);
   }
