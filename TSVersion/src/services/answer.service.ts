@@ -606,6 +606,7 @@ async function getAnswersFromTaskStageForTeacher(
   const questions = await repositoryService.findAll<QuestionModel>(
     QuestionModel,
     {
+      order: [["question_order", "ASC"]],
       include: [
         {
           model: TaskStageModel,
@@ -697,13 +698,12 @@ async function getAnswersFromTaskStageForTeacher(
           answerSeconds: answer_seconds || null,
           audioUrl: audio_url || null,
           text: text || null,
-          gradeAnswers: gradeAnswers.map(
-            ({ id_grade_answer, grade, comment }) => ({
+          gradeAnswer:
+            gradeAnswers.map(({ id_grade_answer, grade, comment }) => ({
               id: id_grade_answer,
               grade,
               comment: comment || null
-            })
-          ),
+            }))[0] || null,
           team: team
             ? {
                 id: team.id_team,
