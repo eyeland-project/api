@@ -368,6 +368,7 @@ export async function answerPostask(
   }
 
   const idOption = (<AnswerSelectSpeakingCreateDto>body).idOption;
+  console.log("idOption", idOption);
 
   let result;
   if (idOption !== undefined) {
