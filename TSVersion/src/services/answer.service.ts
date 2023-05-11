@@ -102,6 +102,10 @@ export async function answerPretask(
     } catch (err) {
       taskAttempt = await createTaskAttempt(idStudent, id_task, null);
     }
+    if (taskAttempt.id_task !== id_task) {
+      await finishStudentTaskAttempts(idStudent);
+      taskAttempt = await createTaskAttempt(idStudent, id_task, null);
+    }
   }
 
   if (taskAttempt.id_task !== id_task) {
@@ -140,7 +144,14 @@ export async function answerDuringtask(
   }
 
   // - get student's current task attempt and get student's team id from task attempt
-  const taskAttempt = await getCurrTaskAttempt(idStudent);
+  let taskAttempt = await getCurrTaskAttempt(idStudent);
+  const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: { task_order: taskOrder }
+  });
+  if (taskAttempt.id_task !== id_task) {
+    await finishStudentTaskAttempts(idStudent);
+    taskAttempt = await createTaskAttempt(idStudent, id_task, null);
+  }
 
   // - Check if team exists
   // await getTeamFromStudent(idStudent);
@@ -346,6 +357,10 @@ export async function answerPostask(
     try {
       taskAttempt = await getCurrTaskAttempt(idStudent);
     } catch (err) {
+      taskAttempt = await createTaskAttempt(idStudent, id_task, null);
+    }
+    if (taskAttempt.id_task !== id_task) {
+      await finishStudentTaskAttempts(idStudent);
       taskAttempt = await createTaskAttempt(idStudent, id_task, null);
     }
   }
