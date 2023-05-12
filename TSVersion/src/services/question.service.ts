@@ -68,16 +68,43 @@ export async function getQuestionsFromPostaskForTeacher(
 
 // for students
 export async function getQuestionsFromPretaskForStudent(
+  idStudent: number,
   taskOrder: number
 ): Promise<QuestionPretaskDetailDtoStudent[]> {
-  return (
-    await getQuestionsFromTaskStage(
-      { taskOrder },
-      1,
-      {},
-      { order: [["question_order", "ASC"]] }
-    )
-  ).map(({ options, ...fields }) => ({
+  let blindAcuityLevel: number | undefined;
+  try {
+    blindAcuityLevel = (
+      await repositoryService.findOne<StudentModel>(StudentModel, {
+        where: { id_student: idStudent, deleted: false },
+        attributes: [],
+        include: [
+          {
+            model: BlindnessAcuityModel,
+            as: "blindnessAcuity",
+            attributes: ["level"]
+          }
+        ]
+      })
+    ).blindnessAcuity.level;
+  } catch (err) {
+    console.log(err);
+  }
+  let questions = await getQuestionsFromTaskStage(
+    { taskOrder },
+    1,
+    {},
+    { order: [["question_order", "ASC"]] }
+  );
+  if (blindAcuityLevel !== undefined && blindAcuityLevel > 2) {
+    questions = questions.filter(
+      ({ type }) =>
+        type !== QuestionType.ORDER &&
+        type !== QuestionType.ORDERWORD &&
+        type !== QuestionType.AUDIO_ORDERWORD &&
+        type !== QuestionType.AUDIO_ORDER
+    );
+  }
+  return questions.map(({ options, ...fields }) => ({
     ...fields,
     options: shuffle(options)
   }));

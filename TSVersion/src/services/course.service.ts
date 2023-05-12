@@ -134,9 +134,14 @@ export async function getTeamsFromCourseWithStudents(
             required: false
           }
         ],
-        where: {
-          active: where?.active ?? sequelize.col("TeamModel.active")
-        },
+        where:
+          where?.active !== undefined
+            ? {
+                active: where.active
+              }
+            : {
+                "%task_attempt.active%": sequelize.col("TeamModel.active")
+              },
         attributes: ["power"],
         as: "taskAttempts",
         required: false
@@ -439,5 +444,25 @@ export async function createBunchOfTeams(
   }
 
   await createTeams(teams, idCourse);
-  notifyCourseOfTeamUpdate(idCourse).catch(console.log);
+  checkEmptyPlayingActiveTeams(idCourse)
+    .catch(console.log)
+    .finally(() => notifyCourseOfTeamUpdate(idCourse))
+    .catch(console.log);
+}
+
+async function checkEmptyPlayingActiveTeams(idCourse: number) {
+  const teamsIds = (
+    await getTeamsFromCourseWithStudents(idCourse, {
+      active: true,
+      playing: true
+    })
+  )
+    .filter(({ students }) => !students.length)
+    .map(({ id }) => id);
+  if (!teamsIds.length) return;
+  return await repositoryService.update<TeamModel>(
+    TeamModel,
+    { playing: false, active: false },
+    { where: { id_team: { [Op.in]: teamsIds } } }
+  );
 }

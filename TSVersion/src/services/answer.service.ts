@@ -18,15 +18,11 @@ import { updateLeaderBoard } from "@services/leaderBoard.service";
 import { getOptionById } from "@services/option.service";
 import { getQuestionsFromTaskStage } from "@services/question.service";
 import { getCourseFromStudent } from "@services/student.service";
-import {
-  getStudentTaskByOrder,
-  upgradeStudentTaskProgress
-} from "@services/studentTask.service";
+import { getStudentTaskByOrder } from "@services/studentTask.service";
 import {
   createTaskAttempt,
   finishStudentTaskAttempts,
-  getCurrTaskAttempt,
-  updateCurrTaskAttempt
+  getCurrTaskAttempt
 } from "@services/taskAttempt.service";
 import { getMembersFromTeam, updateTeam } from "@services/team.service";
 import * as repositoryService from "@services/repository.service";
@@ -36,13 +32,13 @@ import {
   AnswerOpenCreateDto,
   AnswerSelectSpeakingCreateDto
 } from "@dto/student/answer.dto";
-import { getLastQuestionFromTaskStage } from "./taskStage.service";
 import {
   QuestionSubmissionDetailDuringtaskDto,
   QuestionSubmissionDetailPostaskDto,
   QuestionSubmissionDetailPretaskDto
 } from "@dto/teacher/answer.dto";
 import { separateTranslations } from "@utils";
+import { notifyCourseOfTeamUpdate } from "./course.service";
 
 export async function answerPretask(
   idStudent: number,
@@ -255,7 +251,7 @@ export async function answerDuringtask(
   }
 
   // additional logic to upgrade student's task progress and do socket stuff
-  new Promise(async () => {
+  new Promise(() => {
     socket.broadcast.to(`t${taskAttempt.id_team}`).emit(OutgoingEvents.ANSWER, {
       correct: option.correct
     });
@@ -299,7 +295,12 @@ export async function answerDuringtask(
       updateTeam(taskAttempt.id_team!, {
         active: false,
         playing: false
-      }).catch(console.log);
+      })
+        .catch(console.log)
+        .finally(() =>
+          notifyCourseOfTeamUpdate(id_course, taskAttempt.id_team!, idStudent)
+        )
+        .catch(console.log);
     }
   }).catch(console.log);
 

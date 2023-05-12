@@ -29,12 +29,15 @@ export async function getQuestions(
   res: Response<QuestionPretaskDetailDto[]>,
   next: NextFunction
 ) {
+  const { id: idStudent } = req.user!;
   const taskOrder = parseInt(req.params.taskOrder);
   try {
     if (isNaN(taskOrder) || taskOrder <= 0) {
       throw new ApiError("Invalid taskOrder", 400);
     }
-    res.status(200).json(await getQuestionsFromPretaskForStudent(taskOrder));
+    res
+      .status(200)
+      .json(await getQuestionsFromPretaskForStudent(idStudent, taskOrder));
   } catch (err) {
     next(err);
   }

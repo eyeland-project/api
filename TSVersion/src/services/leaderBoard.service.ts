@@ -2,6 +2,7 @@ import { emitTo } from "@listeners/namespaces/student";
 import { OutgoingEvents } from "@interfaces/enums/socket.enum";
 import { getQuestionsFromTaskStageByTaskId } from "@services/question.service";
 import { getPlayingTeamsFromCourse } from "@services/team.service";
+import { Namespaces, of } from "@listeners/sockets";
 interface Team {
   id: number;
   name: string;
@@ -145,13 +146,15 @@ export async function emitLeaderboard(idCourse: number): Promise<void> {
     return;
   }
 
-  emitTo(
-    `c${idCourse}`,
-    OutgoingEvents.LEADER_BOARD_UPDATE,
-    leaderBoards[idCourse].map((team) => ({
-      id: team.id,
-      name: team.name,
-      position: team.position
-    }))
-  );
+  const data = leaderBoards[idCourse].map((team) => ({
+    id: team.id,
+    name: team.name,
+    position: team.position
+  }));
+
+  emitTo(`c${idCourse}`, OutgoingEvents.LEADER_BOARD_UPDATE, data);
+
+  of(Namespaces.TEACHERS)
+    ?.to(`c${idCourse}`)
+    .emit(OutgoingEvents.LEADER_BOARD_UPDATE, data);
 }
