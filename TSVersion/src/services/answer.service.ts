@@ -623,7 +623,12 @@ async function getAnswersFromTaskStageForTeacher(
         {
           model: AnswerModel,
           as: "answers",
-          where: { [Op.or]: [{ id_team }, { id_task_attempt: idTaskAttempt }] },
+          where: {
+            [Op.or]: [
+              { id_task_attempt: idTaskAttempt },
+              { [Op.and]: [{ id_team }, { id_team: { [Op.ne]: null } }] }
+            ]
+          },
           attributes: [
             "id_answer",
             "id_option",
