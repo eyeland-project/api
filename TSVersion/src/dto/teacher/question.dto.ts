@@ -11,3 +11,9 @@ export interface QuestionDuringtaskDetailDto
 
 export interface QuestionPostaskDetailDto
   extends QuestionPostaskDetailDtoGlobal {}
+
+export interface QuestionsTaskDetailDto {
+  pretask: QuestionPretaskDetailDto[];
+  duringtask: QuestionDuringtaskDetailDto[];
+  postask: QuestionPostaskDetailDto[];
+}
