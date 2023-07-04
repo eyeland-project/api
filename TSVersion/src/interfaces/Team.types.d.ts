@@ -1,9 +1,9 @@
-import { Model, ForeignKey } from "sequelize";
 import { Student } from "@interfaces/Student.types";
 
 export interface Team {
   id_team: number;
   id_course: number;
+  id_team_name?: number | null;
   name: string;
   code?: string | null;
   active: boolean;

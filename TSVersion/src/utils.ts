@@ -186,32 +186,6 @@ export function incrementCounter(): number {
   return counter++;
 }
 
-const teamNamesConst = [
-  "Ocelots",
-  "Manatees",
-  "Seagulls",
-  "Herons",
-  "Alligators",
-  "Ducks",
-  "Ospreys",
-  "Opossums",
-  "Lizards",
-  "Sea bass",
-  "Hummingbird"
-];
-
-export async function generateTeamName(usedTeamName: string[] = []) {
-  let count = 1;
-  const teamNameBase =
-    teamNamesConst[Math.floor(Math.random() * teamNamesConst.length)];
-  let teamName = teamNameBase + ` ${count}`;
-  while (usedTeamName.includes(teamName)) {
-    count++;
-    teamName = teamNameBase + ` ${count}`;
-  }
-  return teamName;
-}
-
 export function getRandomFloatBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }

@@ -1,9 +1,13 @@
 import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
-import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
+import {
+  QuestionGroupModel,
+  QuestionModel,
+  TaskModel,
+  TaskStageModel
+} from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
-import { QuestionDetailDto } from "@dto/global/question.dto";
 import {
   TaskStageDetailDto as TaskStageDetailDtoTeacher,
   TaskStagesDetailDto as TaskStagesDetailDtoTeacher
@@ -44,14 +48,18 @@ export async function getTaskStagesForTeacher(
       keywords,
       task_stage_order,
       description,
-      questions
+      questionGroups
     } = taskStages[index];
     return {
       id: id_task_stage,
       keywords,
       taskStageOrder: task_stage_order,
       description,
-      numQuestions: questions.length
+      numQuestions:
+        questionGroups?.reduce(
+          (acc: number, { questions }) => acc + questions.length,
+          0
+        ) || 0
     };
   };
   return {
@@ -111,14 +119,23 @@ async function getTaskStageForTeacher(
   )[0];
   if (!taskStage) throw new ApiError("Task stage not found", 404);
 
-  const { description, keywords, id_task_stage, task_stage_order, questions } =
-    taskStage;
+  const {
+    description,
+    keywords,
+    id_task_stage,
+    task_stage_order,
+    questionGroups
+  } = taskStage;
   return {
     id: id_task_stage,
     taskStageOrder: task_stage_order,
     description,
     keywords,
-    numQuestions: questions.length
+    numQuestions:
+      questionGroups?.reduce(
+        (acc: number, { questions }) => acc + questions.length,
+        0
+      ) || 0
   };
 }
 
@@ -134,11 +151,15 @@ async function getTaskStageForStudent(
     )
   )[0];
   if (!taskStage) throw new ApiError("Task stage not found", 404);
-  const { description, keywords, questions } = taskStage;
+  const { description, keywords, questionGroups } = taskStage;
   return {
     description,
     keywords,
-    numQuestions: questions.length
+    numQuestions:
+      questionGroups?.reduce(
+        (acc: number, { questions }) => acc + questions.length,
+        0
+      ) || 0
   };
 }
 
@@ -155,10 +176,18 @@ async function getTaskStages(
     where,
     include: [
       {
-        model: QuestionModel,
-        as: "questions",
-        attributes: ["id_question"],
-        required: false
+        model: QuestionGroupModel,
+        as: "questionGroups",
+        attributes: ["id_question_group"],
+        required: false,
+        include: [
+          {
+            model: QuestionModel,
+            as: "questions",
+            attributes: ["id_question"],
+            required: false
+          }
+        ]
       },
       {
         model: TaskModel,

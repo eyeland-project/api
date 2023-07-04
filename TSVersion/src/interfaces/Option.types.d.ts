@@ -1,4 +1,4 @@
-import { Model, ForeignKey } from "sequelize";
+import { ForeignKey } from "sequelize";
 
 export interface Option {
   id_option: number;

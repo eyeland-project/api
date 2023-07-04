@@ -1,13 +1,15 @@
-import { FindOptions, Op, QueryTypes } from "sequelize";
+import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import {
   AnswerModel,
   BlindnessAcuityModel,
   OptionModel,
+  QuestionGroupModel,
   QuestionModel,
   StudentModel,
   TaskModel,
-  TaskStageModel
+  TaskStageModel,
+  TeamModel
 } from "@models";
 import { Question } from "@interfaces/Question.types";
 import { ApiError } from "@middlewares/handleErrors";
@@ -33,6 +35,8 @@ import {
 import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getMembersFromTeam } from "./team.service";
 import { QuestionType } from "@interfaces/enums/question.enum";
+import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
+import { Team } from "@interfaces/Team.types";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -65,7 +69,7 @@ export async function getQuestionsFromTaskForTeacher(
   const postask: QuestionModel[] = [];
 
   questions.forEach(async (question) => {
-    const taskStageOrder = question.taskStage.task_stage_order;
+    const taskStageOrder = question.questionGroup.taskStage.task_stage_order;
     (taskStageOrder === 1
       ? pretask
       : taskStageOrder === 2
@@ -105,6 +109,7 @@ export async function getQuestionsFromPretaskForStudent(
     console.log(err);
   }
   let questions = await getQuestionsFromTaskStage({ taskOrder }, 1);
+
   if (blindAcuityLevel !== undefined && blindAcuityLevel > 2) {
     questions = questions.filter(
       ({ type }) =>
@@ -131,6 +136,24 @@ export async function getNextQuestionFromDuringtaskForStudent(
     throw new ApiError("No team or power found", 400);
   }
 
+  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+    TaskStageModel,
+    { where: { task_stage_order: 2, id_task } }
+  );
+
+  let idTeamName: number | undefined;
+  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
+    idTeamName =
+      (
+        await repositoryService.findOne<TeamModel>(TeamModel, {
+          where: { id_team }
+        })
+      )?.id_team_name || undefined;
+    if (!idTeamName) {
+      throw new ApiError("No team name found", 400);
+    }
+  }
+
   const members = await getMembersFromTeam({ idTeam: id_team });
 
   //* auxiliar variables to check if there are questions left
@@ -154,14 +177,21 @@ export async function getNextQuestionFromDuringtaskForStudent(
           ]
         },
         {
-          model: TaskStageModel,
-          as: "taskStage",
-          attributes: [],
-          where: {
-            task_stage_order: 2,
-            id_task
-          },
-          required: true
+          model: QuestionGroupModel,
+          as: "questionGroup",
+          attributes: ["id_question_group"],
+          required: true,
+          where:
+            idTeamName !== undefined ? { id_team_name: idTeamName } : undefined,
+          include: [
+            {
+              model: TaskStageModel,
+              as: "taskStage",
+              attributes: [],
+              where: { task_stage_order: 2, id_task },
+              required: true
+            }
+          ]
         }
       ]
     })
@@ -181,7 +211,6 @@ export async function getNextQuestionFromDuringtaskForStudent(
   });
 
   // const questionLeft = maxIncorrectAnswers < maxAnswers;
-  // console.log(missingQuestions.map(({ content }) => content));
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
   missingQuestions.sort((a, b) => {
@@ -204,10 +233,11 @@ export async function getNextQuestionFromDuringtaskForStudent(
   const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
   const powers = members.map(({ task_attempt: { power } }) => power);
   powers.sort((a, b) => indexPower(a) - indexPower(b));
+  console.log("nextQuestionOrder", nextQuestionOrder);
 
   const questions = (
     await getQuestionsFromTaskStage(
-      { taskOrder },
+      { taskOrder, idTeamName },
       2,
       { question_order: nextQuestionOrder },
       { limit: 1 }
@@ -290,7 +320,7 @@ export async function getQuestionsFromTaskStageByTaskId(
 }
 
 export async function getQuestionsFromTaskStage(
-  taskFilter: { idTask?: number; taskOrder?: number },
+  taskFilter: { idTask?: number; taskOrder?: number; idTeamName?: number },
   taskStageOrder?: number,
   where?: Partial<Question>,
   options?: FindOptions
@@ -342,7 +372,11 @@ function mapQuestions(questions: QuestionModel[]): QuestionDetailDto[] {
 }
 
 async function getQuestions(
-  { idTask, taskOrder }: { idTask?: number; taskOrder?: number },
+  {
+    idTask,
+    taskOrder,
+    idTeamName
+  }: { idTask?: number; taskOrder?: number; idTeamName?: number },
   taskStageOrder?: number,
   where?: Partial<Question>,
   options?: FindOptions
@@ -351,23 +385,33 @@ async function getQuestions(
     where,
     include: [
       {
-        model: TaskStageModel,
-        as: "taskStage",
-        attributes: ["task_stage_order"],
-        where:
-          taskStageOrder !== undefined
-            ? { task_stage_order: taskStageOrder }
-            : undefined,
+        model: QuestionGroupModel,
+        as: "questionGroup",
+        attributes: ["id_question_group"],
         required: true,
+        where:
+          idTeamName !== undefined ? { id_team_name: idTeamName } : undefined,
         include: [
           {
-            model: TaskModel,
-            as: "task",
-            attributes: [],
+            model: TaskStageModel,
+            as: "taskStage",
+            attributes: ["task_stage_order", "mechanics"],
             where:
-              idTask !== undefined
-                ? { id_task: idTask }
-                : { task_order: taskOrder }
+              taskStageOrder !== undefined
+                ? { task_stage_order: taskStageOrder }
+                : undefined,
+            required: true,
+            include: [
+              {
+                model: TaskModel,
+                as: "task",
+                attributes: [],
+                where:
+                  idTask !== undefined
+                    ? { id_task: idTask }
+                    : { task_order: taskOrder }
+              }
+            ]
           }
         ]
       },

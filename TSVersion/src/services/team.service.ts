@@ -261,17 +261,22 @@ export async function getAvailablePowers(idTeam: number) {
 
 export async function createTeam(
   name: string,
-  idCourse: number
+  idCourse: number,
+  idTeamName?: number
 ): Promise<Team> {
-  return await TeamModel.create({ name, id_course: idCourse }); // code is auto-generated; TODO: create again if code already exists?
+  return await TeamModel.create({
+    name,
+    id_course: idCourse,
+    id_team_name: idTeamName
+  }); // code is auto-generated; TODO: create again if code already exists?
 }
 
 export async function createTeams(
-  names: string[],
+  names: { name: string; idTeamName: number }[],
   idCourse: number
 ): Promise<Team[]> {
   const teams = await Promise.all(
-    names.map((name) => createTeam(name, idCourse))
+    names.map(({ idTeamName, name }) => createTeam(name, idCourse, idTeamName))
   );
   return teams;
 }
