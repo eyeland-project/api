@@ -3,7 +3,7 @@
 import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { TaskStage, TaskStageCreation } from "@interfaces/TaskStage.types";
-import { TaskModel, QuestionGroupModel } from "@models";
+import { TaskModel, QuestionModel } from "@models";
 import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
 import { ApiError } from "@middlewares/handleErrors";
 
@@ -17,7 +17,7 @@ class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
   declare mechanics?: TaskStageMechanics[] | null;
 
   declare task: NonAttribute<TaskModel>;
-  declare questionGroups: NonAttribute<QuestionGroupModel[]>;
+  declare questions: NonAttribute<QuestionModel[]>;
 }
 
 // model initialization

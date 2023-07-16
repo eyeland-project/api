@@ -26,17 +26,12 @@ import {
   QuestionsTaskDetailDto as QuestionsTaskDetailDtoTeacher
 } from "@dto/teacher/question.dto";
 import * as repositoryService from "@services/repository.service";
-import {
-  distributeOptions,
-  indexPower,
-  separateTranslations,
-  shuffle
-} from "@utils";
+import { indexPower, separateTranslations, shuffle } from "@utils";
 import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getMembersFromTeam } from "./team.service";
 import { QuestionType } from "@interfaces/enums/question.enum";
 import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
-import { Team } from "@interfaces/Team.types";
+import { getTaskStageMechanics } from "./taskStage.service";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -69,7 +64,7 @@ export async function getQuestionsFromTaskForTeacher(
   const postask: QuestionModel[] = [];
 
   questions.forEach(async (question) => {
-    const taskStageOrder = question.questionGroup.taskStage.task_stage_order;
+    const taskStageOrder = question.taskStage.task_stage_order;
     (taskStageOrder === 1
       ? pretask
       : taskStageOrder === 2
@@ -136,22 +131,41 @@ export async function getNextQuestionFromDuringtaskForStudent(
     throw new ApiError("No team or power found", 400);
   }
 
-  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
-    TaskStageModel,
-    { where: { task_stage_order: 2, id_task } }
+  // const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+  //   TaskStageModel,
+  //   { where: { task_stage_order: 2, id_task } }
+  // );
+
+  // let idTeamName: number | undefined;
+  // if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
+  //   idTeamName =
+  //     (
+  //       await repositoryService.findOne<TeamModel>(TeamModel, {
+  //         where: { id_team }
+  //       })
+  //     )?.id_team_name || undefined;
+  //   if (!idTeamName) {
+  //     throw new ApiError("No team name found", 400);
+  //   }
+  // }
+
+  const mechanics = await getTaskStageMechanics(
+    await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+      where: { task_stage_order: 2, id_task }
+    }),
+    { idTeam: id_team }
   );
 
-  let idTeamName: number | undefined;
-  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
-    idTeamName =
-      (
-        await repositoryService.findOne<TeamModel>(TeamModel, {
-          where: { id_team }
-        })
-      )?.id_team_name || undefined;
-    if (!idTeamName) {
-      throw new ApiError("No team name found", 400);
-    }
+  let idQuestionGroup: number | undefined;
+  if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+    idQuestionGroup = (
+      await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
+        where: {
+          id_team_name:
+            mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
+        }
+      })
+    ).id_question_group;
   }
 
   const members = await getMembersFromTeam({ idTeam: id_team });
@@ -176,22 +190,21 @@ export async function getNextQuestionFromDuringtaskForStudent(
             }
           ]
         },
-        {
-          model: QuestionGroupModel,
-          as: "questionGroup",
-          attributes: ["id_question_group"],
-          required: true,
-          where:
-            idTeamName !== undefined ? { id_team_name: idTeamName } : undefined,
-          include: [
-            {
-              model: TaskStageModel,
-              as: "taskStage",
+        idQuestionGroup
+          ? {
+              model: QuestionGroupModel,
+              as: "questionGroup",
               attributes: [],
-              where: { task_stage_order: 2, id_task },
-              required: true
+              required: true,
+              where: { id_question_group: idQuestionGroup }
             }
-          ]
+          : {},
+        {
+          model: TaskStageModel,
+          as: "taskStage",
+          attributes: [],
+          where: { task_stage_order: 2, id_task },
+          required: true
         }
       ]
     })
@@ -209,6 +222,11 @@ export async function getNextQuestionFromDuringtaskForStudent(
     // return answers.every(({ option }) => !option.correct);
     return !haveCorrectAnswer;
   });
+
+  console.log(
+    "Missing questions: ",
+    missingQuestions.map(({ question_order }) => question_order)
+  );
 
   // const questionLeft = maxIncorrectAnswers < maxAnswers;
 
@@ -237,7 +255,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
 
   const questions = (
     await getQuestionsFromTaskStage(
-      { taskOrder, idTeamName },
+      { taskOrder, idQuestionGroup },
       2,
       { question_order: nextQuestionOrder },
       { limit: 1 }
@@ -320,7 +338,7 @@ export async function getQuestionsFromTaskStageByTaskId(
 }
 
 export async function getQuestionsFromTaskStage(
-  taskFilter: { idTask?: number; taskOrder?: number; idTeamName?: number },
+  taskFilter: { idTask?: number; taskOrder?: number; idQuestionGroup?: number },
   taskStageOrder?: number,
   where?: Partial<Question>,
   options?: FindOptions
@@ -375,8 +393,8 @@ async function getQuestions(
   {
     idTask,
     taskOrder,
-    idTeamName
-  }: { idTask?: number; taskOrder?: number; idTeamName?: number },
+    idQuestionGroup
+  }: { idTask?: number; taskOrder?: number; idQuestionGroup?: number },
   taskStageOrder?: number,
   where?: Partial<Question>,
   options?: FindOptions
@@ -384,34 +402,33 @@ async function getQuestions(
   return await repositoryService.findAll<QuestionModel>(QuestionModel, {
     where,
     include: [
+      idQuestionGroup
+        ? {
+            model: QuestionGroupModel,
+            as: "questionGroup",
+            attributes: ["id_question_group"],
+            required: true,
+            where: { id_question_group: idQuestionGroup }
+          }
+        : {},
       {
-        model: QuestionGroupModel,
-        as: "questionGroup",
-        attributes: ["id_question_group"],
-        required: true,
+        model: TaskStageModel,
+        as: "taskStage",
+        attributes: ["task_stage_order", "mechanics"],
         where:
-          idTeamName !== undefined ? { id_team_name: idTeamName } : undefined,
+          taskStageOrder !== undefined
+            ? { task_stage_order: taskStageOrder }
+            : undefined,
+        required: true,
         include: [
           {
-            model: TaskStageModel,
-            as: "taskStage",
-            attributes: ["task_stage_order", "mechanics"],
+            model: TaskModel,
+            as: "task",
+            attributes: [],
             where:
-              taskStageOrder !== undefined
-                ? { task_stage_order: taskStageOrder }
-                : undefined,
-            required: true,
-            include: [
-              {
-                model: TaskModel,
-                as: "task",
-                attributes: [],
-                where:
-                  idTask !== undefined
-                    ? { id_task: idTask }
-                    : { task_order: taskOrder }
-              }
-            ]
+              idTask !== undefined
+                ? { id_task: idTask }
+                : { task_order: taskOrder }
           }
         ]
       },

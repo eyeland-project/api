@@ -5,6 +5,7 @@ import {
   AnswerModel,
   GradeAnswerModel,
   OptionModel,
+  QuestionGroupModel,
   QuestionModel,
   StudentModel,
   StudentTaskModel,
@@ -39,6 +40,8 @@ import {
 } from "@dto/teacher/answer.dto";
 import { separateTranslations } from "@utils";
 import { notifyCourseOfTeamUpdate } from "./course.service";
+import { getTaskStageMechanics } from "./taskStage.service";
+import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
 
 export async function answerPretask(
   idStudent: number,
@@ -168,19 +171,44 @@ export async function answerDuringtask(
     );
   }
 
+  const mechanics = await getTaskStageMechanics(
+    await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+      where: { task_stage_order: 2, id_task }
+    }),
+    { idTeam: taskAttempt.id_team }
+  );
+
+  let idQuestionGroup: number | undefined;
+  if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+    idQuestionGroup = (
+      await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
+        where: {
+          id_team_name:
+            mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
+        }
+      })
+    ).id_question_group;
+  }
+
   const questionsFromStage = await repositoryService.findAll<QuestionModel>(
     QuestionModel,
     {
       attributes: ["id_question", "question_order"],
       include: [
+        idQuestionGroup
+          ? {
+              model: QuestionGroupModel,
+              as: "questionGroup",
+              attributes: [],
+              required: true,
+              where: { id_question_group: idQuestionGroup }
+            }
+          : {},
         {
           model: TaskStageModel,
           attributes: ["id_task"],
           as: "taskStage",
-          where: {
-            task_stage_order: 2,
-            id_task: taskAttempt.id_task
-          }
+          where: { task_stage_order: 2, id_task: taskAttempt.id_task }
         },
         {
           model: AnswerModel,
@@ -202,6 +230,9 @@ export async function answerDuringtask(
 
   // - Check if option exists and is in the correct question
   const option = await getOptionById(idOption);
+  console.log("question.id_question", question.id_question);
+  console.log("option.id_question", option.id_question);
+
   if (question.id_question !== option.id_question) {
     throw new ApiError("Option does not belong to question", 400);
   }
@@ -597,18 +628,55 @@ async function getAnswersFromTaskStageForTeacher(
         {
           model: StudentModel,
           as: "student",
-          attributes: ["id_course"]
+          attributes: ["id_course"],
+          required: true
         }
       ]
     });
   if (idCourse !== student.id_course) {
     throw new ApiError("Student does not belong to course", 400);
   }
+
+  let idQuestionGroup: number | undefined;
+
+  if (id_team !== undefined && id_team !== null) {
+    const mechanics = await getTaskStageMechanics(
+      await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+        where: { task_stage_order: taskStageOrder, id_task }
+      }),
+      { idTeam: id_team }
+    );
+
+    if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+      idQuestionGroup = (
+        await repositoryService.findOne<QuestionGroupModel>(
+          QuestionGroupModel,
+          {
+            where: {
+              id_team_name:
+                mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]
+                  .idTeamName
+            }
+          }
+        )
+      ).id_question_group;
+    }
+  }
+
   const questions = await repositoryService.findAll<QuestionModel>(
     QuestionModel,
     {
       order: [["question_order", "ASC"]],
       include: [
+        idQuestionGroup
+          ? {
+              model: QuestionGroupModel,
+              as: "questionGroup",
+              attributes: ["id_question_group"],
+              required: true,
+              where: { id_question_group: idQuestionGroup }
+            }
+          : {},
         {
           model: TaskStageModel,
           as: "taskStage",
@@ -625,8 +693,8 @@ async function getAnswersFromTaskStageForTeacher(
           as: "answers",
           where: {
             [Op.or]: [
-              { id_task_attempt: idTaskAttempt },
-              { [Op.and]: [{ id_team }, { id_team: { [Op.ne]: null } }] }
+              { id_task_attempt: idTaskAttempt }, // answered by the student
+              { [Op.and]: [{ id_team }, { id_team: { [Op.ne]: null } }] } // answered by the team of the student
             ]
           },
           attributes: [

@@ -4,7 +4,8 @@ import {
   QuestionGroupModel,
   QuestionModel,
   TaskModel,
-  TaskStageModel
+  TaskStageModel,
+  TeamModel
 } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
@@ -15,6 +16,7 @@ import {
 import { TaskStageDetailDto as TaskStageDetailDtoStudent } from "@dto/student/taskStage.dto";
 import * as repositoryService from "@services/repository.service";
 import { TaskStage } from "@interfaces/TaskStage.types";
+import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
 
 export async function getPretaskForTeacher(
   idTask: number
@@ -48,18 +50,14 @@ export async function getTaskStagesForTeacher(
       keywords,
       task_stage_order,
       description,
-      questionGroups
+      questions
     } = taskStages[index];
     return {
       id: id_task_stage,
       keywords,
       taskStageOrder: task_stage_order,
       description,
-      numQuestions:
-        questionGroups?.reduce(
-          (acc: number, { questions }) => acc + questions.length,
-          0
-        ) || 0
+      numQuestions: questions?.length || 0
     };
   };
   return {
@@ -106,6 +104,34 @@ export async function getLastQuestionFromTaskStage(
   return questions[0];
 }
 
+export async function getTaskStageMechanics(
+  taskStage: TaskStageModel,
+  { idTeam }: { idTeam?: number }
+): Promise<{
+  [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
+}> {
+  const { mechanics } = taskStage;
+
+  const result: {
+    [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
+  } = {};
+
+  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
+    if (!idTeam) throw new ApiError("idTeam is required", 400);
+    const idTeamName =
+      (
+        await repositoryService.findOne<TeamModel>(TeamModel, {
+          where: { id_team: idTeam }
+        })
+      )?.id_team_name || undefined;
+    if (!idTeamName) {
+      throw new ApiError("No team name found", 400);
+    }
+    result[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME] = { idTeamName };
+  }
+  return result;
+}
+
 async function getTaskStageForTeacher(
   idTask: number,
   taskStageOrder: number
@@ -119,23 +145,14 @@ async function getTaskStageForTeacher(
   )[0];
   if (!taskStage) throw new ApiError("Task stage not found", 404);
 
-  const {
-    description,
-    keywords,
-    id_task_stage,
-    task_stage_order,
-    questionGroups
-  } = taskStage;
+  const { description, keywords, id_task_stage, task_stage_order, questions } =
+    taskStage;
   return {
     id: id_task_stage,
     taskStageOrder: task_stage_order,
     description,
     keywords,
-    numQuestions:
-      questionGroups?.reduce(
-        (acc: number, { questions }) => acc + questions.length,
-        0
-      ) || 0
+    numQuestions: questions?.length || 0
   };
 }
 
@@ -151,15 +168,11 @@ async function getTaskStageForStudent(
     )
   )[0];
   if (!taskStage) throw new ApiError("Task stage not found", 404);
-  const { description, keywords, questionGroups } = taskStage;
+  const { description, keywords, questions } = taskStage;
   return {
     description,
     keywords,
-    numQuestions:
-      questionGroups?.reduce(
-        (acc: number, { questions }) => acc + questions.length,
-        0
-      ) || 0
+    numQuestions: questions?.length || 0
   };
 }
 

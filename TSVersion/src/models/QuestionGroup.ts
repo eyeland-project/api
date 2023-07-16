@@ -4,15 +4,13 @@ import {
   QuestionGroup,
   QuestionGroupCreation
 } from "@interfaces/QuestionGroup.types";
-import { TeamNameModel, TaskStageModel, QuestionModel } from "@models";
+import { TeamNameModel, QuestionModel } from "@models";
 
 // model class definition
 class QuestionGroupModel extends Model<QuestionGroup, QuestionGroupCreation> {
   declare id_question_group: number;
-  declare id_task_stage: ForeignKey<number>;
   declare id_team_name?: ForeignKey<number> | null;
 
-  declare taskStage: NonAttribute<TaskStageModel>;
   declare teamName?: NonAttribute<TeamNameModel> | null;
   declare questions: NonAttribute<QuestionModel[]>;
 }
@@ -24,10 +22,6 @@ QuestionGroupModel.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
-    },
-    id_task_stage: {
-      type: DataTypes.SMALLINT,
-      allowNull: false
     },
     id_team_name: {
       type: DataTypes.SMALLINT,
@@ -44,13 +38,13 @@ QuestionGroupModel.init(
 
 // model associations
 // question group and task stage
-TaskStageModel.hasMany(QuestionGroupModel, {
-  foreignKey: "id_task_stage",
+TeamNameModel.hasMany(QuestionGroupModel, {
+  foreignKey: "id_team_name",
   as: "questionGroups"
 });
-QuestionGroupModel.belongsTo(TaskStageModel, {
-  foreignKey: "id_task_stage",
-  as: "taskStage"
+QuestionGroupModel.belongsTo(TeamNameModel, {
+  foreignKey: "id_team_name",
+  as: "teamName"
 });
 
 export default QuestionGroupModel;
