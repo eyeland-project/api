@@ -774,7 +774,6 @@ BEGIN
 
     -- postask 2
 
-    INSERT INTO question (id_task_stage, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (6, 2, '¡Bien hecho! Última pregunta: what''s your favorite animal from Isla Salamanca?', NULL, NULL, 'open', NULL, NULL, NULL, 'chucho', 'My favorite animal is _') RETURNING id_question INTO last_question_id;
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (6, NULL, 1, '!Hola! Soy el zorro Chucho y te haré unas preguntas. Can you present yourself in english?', NULL, NULL, 'open', NULL, NULL, NULL, 'chucho', 'My name is _, I''m _ years old, I''m from _ and I like _') RETURNING id_question INTO last_question_id;
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (6, NULL, 2, '¡Bien hecho! Última pregunta: what''s your favorite animal from Isla Salamanca?', NULL, NULL, 'open', NULL, NULL, NULL, 'chucho', 'My favorite animal is _') RETURNING id_question INTO last_question_id;
     

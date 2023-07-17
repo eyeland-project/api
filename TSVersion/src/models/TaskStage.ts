@@ -14,7 +14,7 @@ class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
   declare task_stage_order: number;
   declare description: string;
   declare keywords: string[];
-  declare mechanics?: TaskStageMechanics[] | null;
+  declare mechanics: TaskStageMechanics[];
 
   declare task: NonAttribute<TaskModel>;
   declare questions: NonAttribute<QuestionModel[]>;
@@ -50,8 +50,10 @@ TaskStageModel.init(
       //   DataTypes.ENUM(...Object.values(TaskStageMechanics))
       // ),
       type: DataTypes.ENUM(...Object.values(TaskStageMechanics)),
-      allowNull: true,
-      defaultValue: null
+      allowNull: false,
+      defaultValue: DataTypes.ARRAY(
+        DataTypes.ENUM(...Object.values(TaskStageMechanics))
+      )
     }
   },
   {

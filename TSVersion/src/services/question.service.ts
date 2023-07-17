@@ -33,6 +33,7 @@ import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getMembersFromTeam } from "./team.service";
 import { QuestionType } from "@interfaces/enums/question.enum";
 import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
+import { getQuestionGroupFromTeam } from "./questionGroup.service";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -132,51 +133,27 @@ export async function getNextQuestionFromDuringtaskForStudent(
     throw new ApiError("No team or power found", 400);
   }
 
-  const members = await getMembersFromTeam({ idTeam: id_team });
+  let idQuestionGroup: number | undefined;
 
   const { mechanics } = await repositoryService.findOne<TaskStageModel>(
     TaskStageModel,
     { where: { task_stage_order: 2, id_task } }
   );
 
-  let idQuestionGroup: number | undefined;
-
   if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
     idQuestionGroup = (
-      await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
-        include: [
-          {
-            model: TeamNameModel,
-            as: "teamName",
-            required: true,
-            include: [
-              {
-                model: TeamModel,
-                as: "teams",
-                required: true,
-                where: { id_team }
-              }
-            ]
-          }
-        ]
+      await getQuestionGroupFromTeam({
+        idTeam: id_team,
+        taskStageOrder: 2,
+        idTask: id_task
       })
     ).id_question_group;
   }
-  // let idQuestionGroup: number | undefined;
-  // if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
-  //   idQuestionGroup = (
-  //     await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
-  //       where: {
-  //         id_team_name:
-  //           mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
-  //       }
-  //     })
-  //   ).id_question_group;
-  // }
 
   //* auxiliar variables to check if there are questions left
   let maxAnswers = -1;
   // let maxIncorrectAnswers = -1;
+
   // * Get all questios that have been not answered or answered incorrectly
   const missingQuestions = (
     await repositoryService.findAll<QuestionModel>(QuestionModel, {
@@ -210,7 +187,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
           where: { task_stage_order: 2, id_task },
           required: true
         }
-      ]
+      ].filter((elem) => Object.keys(elem).length)
     })
   ).filter(({ answers }) => {
     const answersCount = answers.length;
@@ -326,67 +303,60 @@ export async function getQuestionsFromPostaskForStudent(
     where: { task_order: taskOrder }
   });
 
-  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
-    TaskStageModel,
-    { where: { task_stage_order: 2, id_task } }
-  );
-
   let idQuestionGroup: number | undefined;
 
-  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_DURINGTASK_BASED)) {
+  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+    TaskStageModel,
+    { where: { task_stage_order: 3, id_task } }
+  );
+
+  if (mechanics.includes(TaskStageMechanics.QUESTION_GROUP_DURINGTASK_BASED)) {
     let idTeam: number | undefined;
 
-    // use idTeam from current taskAttempt to know the questionGroup
+    // use idTeam from most recent taskAttempt to know the questionGroup
     try {
-      const taskAttempt = await getCurrTaskAttempt(idStudent);
-      if (taskAttempt.id_team !== undefined && taskAttempt.id_team !== null) {
-        idTeam = taskAttempt.id_team;
-      }
+      const recentTaskAttempt =
+        await repositoryService.findOne<TaskAttemptModel>(TaskAttemptModel, {
+          where: {
+            id_student: idStudent,
+            id_task,
+            id_team: { [Op.not]: null }
+          },
+          order: [
+            ["time_stamp", "DESC"],
+            ["id_task_attempt", "DESC"]
+          ]
+        });
+      idTeam = recentTaskAttempt.id_team!;
     } catch (err) {}
 
-    // use idTeam from most recent taskAttempt to know the questionGroup
-    if (idTeam === undefined) {
-      try {
-        const recentTaskAttempt =
-          await repositoryService.findOne<TaskAttemptModel>(TaskAttemptModel, {
-            where: { id_student: idStudent, id_team: { [Op.not]: null } },
-            order: [
-              ["time_stamp", "DESC"],
-              ["id_task_attempt", "DESC"]
-            ]
-          });
-        idTeam = recentTaskAttempt.id_team!;
-      } catch (err) {}
-    }
+    const idTaskStage = (
+      await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+        where: { task_stage_order: 3, id_task: id_task }
+      })
+    ).id_task_stage;
 
     if (idTeam !== undefined) {
       idQuestionGroup = (
-        await repositoryService.findOne<QuestionGroupModel>(
-          QuestionGroupModel,
-          {
-            include: [
-              {
-                model: TeamNameModel,
-                as: "teamName",
-                required: true,
-                include: [
-                  {
-                    model: TeamModel,
-                    as: "teams",
-                    required: true,
-                    where: { id_team: idTeam }
-                  }
-                ]
-              }
-            ]
-          }
-        )
+        await getQuestionGroupFromTeam({ idTeam, idTaskStage })
       ).id_question_group;
     } else {
       idQuestionGroup = (
         await repositoryService.findOne<QuestionGroupModel>(
           QuestionGroupModel,
-          { order: sequelize.random(), limit: 1 }
+          {
+            attributes: ["id_question_group"],
+            include: [
+              {
+                model: QuestionModel,
+                as: "questions",
+                required: true,
+                attributes: [],
+                where: { id_task_stage: idTaskStage }
+              }
+            ],
+            order: sequelize.random()
+          }
         )
       ).id_question_group;
     }
@@ -515,7 +485,7 @@ async function getQuestions(
         as: "options",
         required: false
       }
-    ],
+    ].filter((elem) => Object.keys(elem).length),
     order: [["question_order", "ASC"]],
     ...options
   });

@@ -83,7 +83,8 @@ function checkPower({ power }: TaskAttemptModel) {
 // model associations
 // task attempt and task
 TaskModel.hasMany(TaskAttemptModel, {
-  foreignKey: "id_task"
+  foreignKey: "id_task",
+  as: "taskAttempts"
 });
 TaskAttemptModel.belongsTo(TaskModel, {
   foreignKey: "id_task",

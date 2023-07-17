@@ -40,8 +40,8 @@ import {
 } from "@dto/teacher/answer.dto";
 import { separateTranslations } from "@utils";
 import { notifyCourseOfTeamUpdate } from "./course.service";
-import { getTaskStageMechanics } from "./taskStage.service";
 import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
+import { getQuestionGroupFromTeam } from "./questionGroup.service";
 
 export async function answerPretask(
   idStudent: number,
@@ -170,22 +170,20 @@ export async function answerDuringtask(
       403
     );
   }
+  let idQuestionGroup: number | undefined;
 
-  const mechanics = await getTaskStageMechanics(
-    await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
-      where: { task_stage_order: 2, id_task }
-    }),
-    { idTeam: taskAttempt.id_team }
+  
+  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+    TaskStageModel,
+    { where: { task_stage_order: 2, id_task } }
   );
 
-  let idQuestionGroup: number | undefined;
-  if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
     idQuestionGroup = (
-      await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
-        where: {
-          id_team_name:
-            mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
-        }
+      await getQuestionGroupFromTeam({
+        idTeam: taskAttempt.id_team,
+        taskStageOrder: 2,
+        idTask: id_task
       })
     ).id_question_group;
   }
@@ -217,7 +215,7 @@ export async function answerDuringtask(
           where: { id_team: taskAttempt.id_team },
           required: false
         }
-      ]
+      ].filter((elem) => Object.keys(elem).length)
     }
   );
 
@@ -640,25 +638,19 @@ async function getAnswersFromTaskStageForTeacher(
   let idQuestionGroup: number | undefined;
 
   if (id_team !== undefined && id_team !== null) {
-    const mechanics = await getTaskStageMechanics(
-      await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
-        where: { task_stage_order: taskStageOrder, id_task }
-      }),
-      { idTeam: id_team }
+    
+    const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+      TaskStageModel,
+      { where: { task_stage_order: 3, id_task } }
     );
 
-    if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+    if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
       idQuestionGroup = (
-        await repositoryService.findOne<QuestionGroupModel>(
-          QuestionGroupModel,
-          {
-            where: {
-              id_team_name:
-                mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]
-                  .idTeamName
-            }
-          }
-        )
+        await getQuestionGroupFromTeam({
+          idTeam: id_team,
+          taskStageOrder: 3,
+          idTask: id_task
+        })
       ).id_question_group;
     }
   }
@@ -720,7 +712,7 @@ async function getAnswersFromTaskStageForTeacher(
             }
           ]
         }
-      ]
+      ].filter((elem) => Object.keys(elem).length)
     }
   );
 

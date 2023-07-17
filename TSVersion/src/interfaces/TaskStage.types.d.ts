@@ -7,7 +7,7 @@ export interface TaskStage {
   task_stage_order: number;
   description: string;
   keywords: string[];
-  mechanics?: TaskStageMechanics[] | null;
+  mechanics: TaskStageMechanics[];
 }
 
 export type TaskStageCreation = Omit<TaskStage, "id_task_stage" | "mechanics">;

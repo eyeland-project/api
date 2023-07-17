@@ -99,62 +99,6 @@ export async function getLastQuestionFromTaskStage(
   return questions[0];
 }
 
-export async function getTaskStageMechanics(
-  taskStage: TaskStageModel,
-  { idTeam }: { idTeam?: number }
-): Promise<{
-  [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idQuestionGroup: number };
-  [TaskStageMechanics.QUESTION_GROUP_DURINGTASK_BASED]?: {
-    idQuestionGroup: number;
-  };
-}> {
-  const { mechanics } = taskStage;
-
-  const result: {
-    [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idQuestionGroup: number };
-    [TaskStageMechanics.QUESTION_GROUP_DURINGTASK_BASED]?: {
-      idQuestionGroup: number;
-    };
-  } = {};
-
-  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
-    if (!idTeam) throw new ApiError("idTeam is required", 400);
-    // const idQuestionGroup =
-    //   (
-    //     await repositoryService.findOne<TeamModel>(TeamModel, {
-    //       where: { id_team: idTeam }
-    //     })
-    //   )?.id_team_name || undefined;
-    const idQuestionGroup = (
-      await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
-        include: [
-          {
-            model: TeamNameModel,
-            as: "teamName",
-            required: true,
-            include: [
-              {
-                model: TeamModel,
-                as: "teams",
-                required: true,
-                where: { id_team: idTeam }
-              }
-            ]
-          }
-        ]
-      })
-    ).id_question_group;
-    if (!idQuestionGroup) {
-      throw new ApiError("No team name found", 400);
-    }
-    result[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME] = { idQuestionGroup };
-  }
-
-  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_DURINGTASK_BASED)) {
-  }
-  return result;
-}
-
 async function getTaskStageForTeacher(
   idTask: number,
   taskStageOrder: number

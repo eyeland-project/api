@@ -11,7 +11,7 @@ class QuestionGroupModel extends Model<QuestionGroup, QuestionGroupCreation> {
   declare id_question_group: number;
   declare id_team_name?: ForeignKey<number> | null;
 
-  declare teamName?: NonAttribute<TeamNameModel> | null;
+  declare teamName?: NonAttribute<TeamNameModel>;
   declare questions: NonAttribute<QuestionModel[]>;
 }
 
@@ -37,7 +37,7 @@ QuestionGroupModel.init(
 );
 
 // model associations
-// question group and task stage
+// question group and team name
 TeamNameModel.hasMany(QuestionGroupModel, {
   foreignKey: "id_team_name",
   as: "questionGroups"
