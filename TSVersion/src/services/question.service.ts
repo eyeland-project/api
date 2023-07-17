@@ -1,13 +1,15 @@
-import { FindOptions, Op, QueryTypes } from "sequelize";
+import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import {
   AnswerModel,
   BlindnessAcuityModel,
   OptionModel,
+  QuestionGroupModel,
   QuestionModel,
   StudentModel,
   TaskModel,
-  TaskStageModel
+  TaskStageModel,
+  TeamModel
 } from "@models";
 import { Question } from "@interfaces/Question.types";
 import { ApiError } from "@middlewares/handleErrors";
@@ -20,18 +22,16 @@ import {
 import {
   QuestionPretaskDetailDto as QuestionPretaskDetailDtoTeacher,
   QuestionDuringtaskDetailDto as QuestionDuringtaskDetailDtoTeacher,
-  QuestionPostaskDetailDto as QuestionPostaskDetailDtoTeacher
+  QuestionPostaskDetailDto as QuestionPostaskDetailDtoTeacher,
+  QuestionsTaskDetailDto as QuestionsTaskDetailDtoTeacher
 } from "@dto/teacher/question.dto";
 import * as repositoryService from "@services/repository.service";
-import {
-  distributeOptions,
-  indexPower,
-  separateTranslations,
-  shuffle
-} from "@utils";
+import { indexPower, separateTranslations, shuffle } from "@utils";
 import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getMembersFromTeam } from "./team.service";
 import { QuestionType } from "@interfaces/enums/question.enum";
+import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
+import { getTaskStageMechanics } from "./taskStage.service";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -43,20 +43,8 @@ export async function getQuestionsFromPretaskForTeacher(
 export async function getQuestionsFromDuringtaskForTeacher(
   idTask: number
 ): Promise<QuestionDuringtaskDetailDtoTeacher[]> {
-  return (await getQuestionsFromTaskStage({ idTask }, 2)).map(
-    ({ content, ...fields }) => {
-      const {
-        memoryPro: nouns,
-        superRadar: preps,
-        content: contentParsed
-      } = separateTranslations(content);
-      return {
-        ...fields,
-        content: contentParsed,
-        memoryPro: nouns,
-        superRadar: preps
-      };
-    }
+  return mapDuringtaskQuestionsForTeacher(
+    await getQuestionsFromTaskStage({ idTask }, 2)
   );
 }
 
@@ -66,18 +54,67 @@ export async function getQuestionsFromPostaskForTeacher(
   return await getQuestionsFromTaskStage({ idTask }, 3);
 }
 
+export async function getQuestionsFromTaskForTeacher(
+  idTask: number
+): Promise<QuestionsTaskDetailDtoTeacher> {
+  const questions = await getQuestions({ idTask });
+
+  const pretask: QuestionModel[] = [];
+  const duringtask: QuestionModel[] = [];
+  const postask: QuestionModel[] = [];
+
+  questions.forEach(async (question) => {
+    const taskStageOrder = question.taskStage.task_stage_order;
+    (taskStageOrder === 1
+      ? pretask
+      : taskStageOrder === 2
+      ? duringtask
+      : postask
+    ).push(question);
+  });
+
+  return {
+    pretask: mapQuestions(pretask),
+    duringtask: mapDuringtaskQuestionsForTeacher(mapQuestions(duringtask)),
+    postask: mapQuestions(postask)
+  };
+}
+
 // for students
 export async function getQuestionsFromPretaskForStudent(
+  idStudent: number,
   taskOrder: number
 ): Promise<QuestionPretaskDetailDtoStudent[]> {
-  return (
-    await getQuestionsFromTaskStage(
-      { taskOrder },
-      1,
-      {},
-      { order: [["question_order", "ASC"]] }
-    )
-  ).map(({ options, ...fields }) => ({
+  let blindAcuityLevel: number | undefined;
+  try {
+    blindAcuityLevel = (
+      await repositoryService.findOne<StudentModel>(StudentModel, {
+        where: { id_student: idStudent, deleted: false },
+        attributes: [],
+        include: [
+          {
+            model: BlindnessAcuityModel,
+            as: "blindnessAcuity",
+            attributes: ["level"]
+          }
+        ]
+      })
+    ).blindnessAcuity.level;
+  } catch (err) {
+    console.log(err);
+  }
+  let questions = await getQuestionsFromTaskStage({ taskOrder }, 1);
+
+  if (blindAcuityLevel !== undefined && blindAcuityLevel > 2) {
+    questions = questions.filter(
+      ({ type }) =>
+        type !== QuestionType.ORDER &&
+        type !== QuestionType.ORDERWORD &&
+        type !== QuestionType.AUDIO_ORDERWORD &&
+        type !== QuestionType.AUDIO_ORDER
+    );
+  }
+  return questions.map(({ options, ...fields }) => ({
     ...fields,
     options: shuffle(options)
   }));
@@ -92,6 +129,43 @@ export async function getNextQuestionFromDuringtaskForStudent(
   // * Validations
   if (!id_team || !power) {
     throw new ApiError("No team or power found", 400);
+  }
+
+  // const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+  //   TaskStageModel,
+  //   { where: { task_stage_order: 2, id_task } }
+  // );
+
+  // let idTeamName: number | undefined;
+  // if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
+  //   idTeamName =
+  //     (
+  //       await repositoryService.findOne<TeamModel>(TeamModel, {
+  //         where: { id_team }
+  //       })
+  //     )?.id_team_name || undefined;
+  //   if (!idTeamName) {
+  //     throw new ApiError("No team name found", 400);
+  //   }
+  // }
+
+  const mechanics = await getTaskStageMechanics(
+    await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+      where: { task_stage_order: 2, id_task }
+    }),
+    { idTeam: id_team }
+  );
+
+  let idQuestionGroup: number | undefined;
+  if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+    idQuestionGroup = (
+      await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
+        where: {
+          id_team_name:
+            mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
+        }
+      })
+    ).id_question_group;
   }
 
   const members = await getMembersFromTeam({ idTeam: id_team });
@@ -116,14 +190,20 @@ export async function getNextQuestionFromDuringtaskForStudent(
             }
           ]
         },
+        idQuestionGroup
+          ? {
+              model: QuestionGroupModel,
+              as: "questionGroup",
+              attributes: [],
+              required: true,
+              where: { id_question_group: idQuestionGroup }
+            }
+          : {},
         {
           model: TaskStageModel,
           as: "taskStage",
           attributes: [],
-          where: {
-            task_stage_order: 2,
-            id_task
-          },
+          where: { task_stage_order: 2, id_task },
           required: true
         }
       ]
@@ -143,8 +223,12 @@ export async function getNextQuestionFromDuringtaskForStudent(
     return !haveCorrectAnswer;
   });
 
+  console.log(
+    "Missing questions: ",
+    missingQuestions.map(({ question_order }) => question_order)
+  );
+
   // const questionLeft = maxIncorrectAnswers < maxAnswers;
-  console.log(missingQuestions.map(({ content }) => content));
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
   missingQuestions.sort((a, b) => {
@@ -167,10 +251,11 @@ export async function getNextQuestionFromDuringtaskForStudent(
   const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
   const powers = members.map(({ task_attempt: { power } }) => power);
   powers.sort((a, b) => indexPower(a) - indexPower(b));
+  console.log("nextQuestionOrder", nextQuestionOrder);
 
   const questions = (
     await getQuestionsFromTaskStage(
-      { taskOrder },
+      { taskOrder, idQuestionGroup },
       2,
       { question_order: nextQuestionOrder },
       { limit: 1 }
@@ -229,17 +314,12 @@ export async function getNextQuestionFromDuringtaskForStudent(
 export async function getQuestionsFromPostaskForStudent(
   taskOrder: number
 ): Promise<QuestionPostaskDetailDtoStudent[]> {
-  return (
-    await getQuestionsFromTaskStage(
-      { taskOrder },
-      3,
-      {},
-      { order: [["question_order", "ASC"]] }
-    )
-  ).map(({ options, ...fields }) => ({
-    ...fields,
-    options: shuffle(options)
-  }));
+  return (await getQuestionsFromTaskStage({ taskOrder }, 3)).map(
+    ({ options, ...fields }) => ({
+      ...fields,
+      options: shuffle(options)
+    })
+  );
 }
 
 export async function getQuestionsFromTaskStageByTaskId(
@@ -258,45 +338,21 @@ export async function getQuestionsFromTaskStageByTaskId(
 }
 
 export async function getQuestionsFromTaskStage(
-  { idTask, taskOrder }: { idTask?: number; taskOrder?: number },
-  taskStageOrder: number,
+  taskFilter: { idTask?: number; taskOrder?: number; idQuestionGroup?: number },
+  taskStageOrder?: number,
   where?: Partial<Question>,
   options?: FindOptions
 ): Promise<QuestionDetailDto[]> {
-  if (idTask === undefined && taskOrder === undefined)
+  const { idTask, taskOrder } = taskFilter;
+  if (idTask === undefined && taskOrder === undefined) {
     throw new ApiError("idTask or taskOrder is required", 400);
-  const questions = await repositoryService.findAll<QuestionModel>(
-    QuestionModel,
-    {
-      where,
-      include: [
-        {
-          model: TaskStageModel,
-          as: "taskStage",
-          attributes: [],
-          where: { task_stage_order: taskStageOrder },
-          include: [
-            {
-              model: TaskModel,
-              as: "task",
-              attributes: [],
-              where: {
-                ...(idTask !== undefined
-                  ? { id_task: idTask }
-                  : { task_order: taskOrder })
-              }
-            }
-          ]
-        },
-        {
-          model: OptionModel,
-          as: "options",
-          required: false
-        }
-      ],
-      ...options
-    }
+  }
+  return mapQuestions(
+    await getQuestions(taskFilter, taskStageOrder, where, options)
   );
+}
+
+function mapQuestions(questions: QuestionModel[]): QuestionDetailDto[] {
   return questions.map(
     ({
       id_question,
@@ -331,4 +387,76 @@ export async function getQuestionsFromTaskStage(
       }))
     })
   );
+}
+
+async function getQuestions(
+  {
+    idTask,
+    taskOrder,
+    idQuestionGroup
+  }: { idTask?: number; taskOrder?: number; idQuestionGroup?: number },
+  taskStageOrder?: number,
+  where?: Partial<Question>,
+  options?: FindOptions
+): Promise<QuestionModel[]> {
+  return await repositoryService.findAll<QuestionModel>(QuestionModel, {
+    where,
+    include: [
+      idQuestionGroup
+        ? {
+            model: QuestionGroupModel,
+            as: "questionGroup",
+            attributes: ["id_question_group"],
+            required: true,
+            where: { id_question_group: idQuestionGroup }
+          }
+        : {},
+      {
+        model: TaskStageModel,
+        as: "taskStage",
+        attributes: ["task_stage_order", "mechanics"],
+        where:
+          taskStageOrder !== undefined
+            ? { task_stage_order: taskStageOrder }
+            : undefined,
+        required: true,
+        include: [
+          {
+            model: TaskModel,
+            as: "task",
+            attributes: [],
+            where:
+              idTask !== undefined
+                ? { id_task: idTask }
+                : { task_order: taskOrder }
+          }
+        ]
+      },
+      {
+        model: OptionModel,
+        as: "options",
+        required: false
+      }
+    ],
+    order: [["question_order", "ASC"]],
+    ...options
+  });
+}
+
+function mapDuringtaskQuestionsForTeacher(
+  questions: QuestionDetailDto[]
+): QuestionDuringtaskDetailDtoTeacher[] {
+  return questions.map(({ content, ...fields }) => {
+    const {
+      memoryPro: nouns,
+      superRadar: preps,
+      content: contentParsed
+    } = separateTranslations(content);
+    return {
+      ...fields,
+      content: contentParsed,
+      memoryPro: nouns,
+      superRadar: preps
+    };
+  });
 }

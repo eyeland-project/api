@@ -1,5 +1,4 @@
-import { Model, ForeignKey } from "sequelize";
-import { Power } from "@interfaces/TaskAttempt.types";
+import { ForeignKey } from "sequelize";
 
 export interface Student {
   id_student: number;

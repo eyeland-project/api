@@ -10,11 +10,11 @@ interface Answer {
   answerSeconds: number | null;
   audioUrl: string | null;
   text: string | null;
-  gradeAnswers: {
+  gradeAnswer: {
     id: number;
     grade: number;
     comment?: string | null;
-  }[];
+  } | null;
   team: {
     id: number;
     name: string;

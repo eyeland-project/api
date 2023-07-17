@@ -1,4 +1,4 @@
-import { Model, ForeignKey } from "sequelize";
+import { ForeignKey } from "sequelize";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
 
 export interface TaskAttempt {

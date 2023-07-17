@@ -17,6 +17,12 @@ import { finishStudentTaskAttempts } from "@services/taskAttempt.service";
 export async function getTasksForStudent(
   idStudent: number
 ): Promise<TaskSummaryDtoStudent[]> {
+  try {
+    await finishStudentTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
+  } catch (err) {
+    console.error(err);
+  }
+
   interface TaskWithHighestStage extends Task {
     highest_stage: number;
   }
@@ -60,15 +66,8 @@ export async function getTasksForStudent(
 }
 
 export async function getTaskForStudent(
-  idStudent: number,
   taskOrder: number
 ): Promise<TaskDetailDtoStudent> {
-  // try {
-  //   await finishStudentTaskAttempts(idStudent); // Finish all previous task attempts (await may not be necessary)
-  // } catch (err) {
-  //   console.error(err);
-  // }
-
   const {
     id_task,
     name,

@@ -7,12 +7,18 @@ import {
   QuestionTopic,
   QuestionType
 } from "@interfaces/enums/question.enum";
-import { AnswerModel, OptionModel, TaskStageModel } from "@models";
+import {
+  AnswerModel,
+  OptionModel,
+  QuestionGroupModel,
+  TaskStageModel
+} from "@models";
 
 // model class definition
 class QuestionModel extends Model<Question, QuestionCreation> {
   declare id_question: number;
   declare id_task_stage: ForeignKey<number>;
+  declare id_question_group?: ForeignKey<number> | null;
   declare question_order: number;
   declare content: string;
   declare audio_url?: string | null;
@@ -26,6 +32,7 @@ class QuestionModel extends Model<Question, QuestionCreation> {
   declare deleted: boolean;
 
   declare taskStage: NonAttribute<TaskStageModel>;
+  declare questionGroup?: NonAttribute<QuestionGroupModel>;
   declare options: NonAttribute<OptionModel[]>;
   declare answers: NonAttribute<AnswerModel[]>;
 }
@@ -41,6 +48,9 @@ QuestionModel.init(
     id_task_stage: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    id_question_group: {
+      type: DataTypes.INTEGER
     },
     content: {
       type: DataTypes.STRING(400),
@@ -108,12 +118,6 @@ QuestionModel.init(
         }
       }
     }
-    // indexes: [
-    //     {
-    //         unique: true,
-    //         fields: ['id_task', 'question_order']
-    //     }
-    // ]
   }
 );
 
@@ -126,6 +130,16 @@ TaskStageModel.hasMany(QuestionModel, {
 QuestionModel.belongsTo(TaskStageModel, {
   foreignKey: "id_task_stage",
   as: "taskStage"
+});
+
+// question and question group
+QuestionGroupModel.hasMany(QuestionModel, {
+  foreignKey: "id_question_group",
+  as: "questions"
+});
+QuestionModel.belongsTo(QuestionGroupModel, {
+  foreignKey: "id_question_group",
+  as: "questionGroup"
 });
 
 export default QuestionModel;

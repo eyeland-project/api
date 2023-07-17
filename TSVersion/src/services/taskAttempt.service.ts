@@ -1,15 +1,75 @@
 import { FindOptions, QueryTypes, Transaction } from "sequelize";
 import { ApiError } from "@middlewares/handleErrors";
 import {
+  AnswerModel,
   CourseModel,
+  QuestionModel,
   StudentModel,
   TaskAttemptModel,
-  TaskModel
+  TaskModel,
+  TaskStageModel
 } from "@models";
 import { TaskAttempt } from "@interfaces/TaskAttempt.types";
 import sequelize from "@database/db";
 import { TaskAttemptSubmissionDetailDto } from "@dto/teacher/taskAttempt.dto";
 import * as repositoryService from "@services/repository.service";
+
+export async function getTaskAttemptSubmissionsFromCourse(
+  idTeacher: number,
+  idCourse: number
+): Promise<TaskAttemptSubmissionDetailDto[]> {
+  return mapTaskAttemptsToSubmissions(
+    await repositoryService.findAll<TaskAttemptModel>(TaskAttemptModel, {
+      attributes: ["id_task_attempt", "time_stamp"],
+      where: { active: false },
+      order: [["time_stamp", "DESC"]],
+      include: [
+        {
+          model: TaskModel,
+          attributes: ["id_task", "task_order", "name"],
+          as: "task"
+        },
+        {
+          model: StudentModel,
+          attributes: ["id_student", "first_name", "last_name", "username"],
+          as: "student",
+          where: { id_course: idCourse, deleted: false },
+          include: [
+            {
+              model: CourseModel,
+              attributes: [],
+              as: "course",
+              where: { id_teacher: idTeacher, deleted: false }
+            }
+          ]
+        },
+        {
+          model: AnswerModel,
+          attributes: ["id_answer"],
+          as: "answers",
+          required: true,
+          include: [
+            {
+              model: QuestionModel,
+              attributes: ["id_question"],
+              as: "question",
+              required: true,
+              include: [
+                {
+                  model: TaskStageModel,
+                  attributes: ["id_task_stage", "task_stage_order"],
+                  as: "taskStage",
+                  required: true,
+                  where: { task_stage_order: 3 } // only get answers from postask
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    })
+  );
+}
 
 export async function getTaskAttemptsFromCourseForTeacher(
   idTeacher: number,
@@ -98,8 +158,8 @@ async function getTaskAttemptsFromCourse(
   idCourse: number,
   where?: Partial<TaskAttempt>,
   options?: FindOptions
-) {
-  return (
+): Promise<TaskAttemptSubmissionDetailDto[]> {
+  return mapTaskAttemptsToSubmissions(
     await repositoryService.findAll<TaskAttemptModel>(TaskAttemptModel, {
       attributes: ["id_task_attempt", "time_stamp"],
       where: { active: false, ...where },
@@ -127,7 +187,13 @@ async function getTaskAttemptsFromCourse(
       ],
       ...options
     })
-  ).map(({ id_task_attempt, time_stamp, student, task }) => ({
+  );
+}
+
+async function mapTaskAttemptsToSubmissions(
+  taskAttempts: TaskAttemptModel[]
+): Promise<TaskAttemptSubmissionDetailDto[]> {
+  return taskAttempts.map(({ id_task_attempt, time_stamp, student, task }) => ({
     id: id_task_attempt,
     student: {
       id: student.id_student,

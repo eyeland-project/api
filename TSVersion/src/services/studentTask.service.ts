@@ -5,6 +5,7 @@ import { StudentTask } from "@interfaces/StudentTask.types";
 import { StudentTaskModel } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Task } from "@interfaces/Task.types";
+import { finishStudentTaskAttempts } from "./taskAttempt.service";
 
 export async function getStudentTaskByOrder(
   idStudent: number,
@@ -67,7 +68,10 @@ export async function completeDuringtask(taskOrder: number, idStudent: number) {
 }
 
 export async function completePostask(taskOrder: number, idStudent: number) {
-  return await upgradeStudentTaskProgress(taskOrder, idStudent, 3);
+  return await Promise.allSettled([
+    upgradeStudentTaskProgress(taskOrder, idStudent, 3),
+    finishStudentTaskAttempts(idStudent)
+  ]);
 }
 
 export async function upgradeStudentTaskProgress(

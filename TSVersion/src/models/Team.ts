@@ -7,13 +7,19 @@ import {
 } from "sequelize";
 import sequelize from "@database/db";
 import { Team, TeamCreation } from "@interfaces/Team.types";
-import { CourseModel, AnswerModel, TaskAttemptModel } from "@models";
+import {
+  CourseModel,
+  AnswerModel,
+  TaskAttemptModel,
+  TeamNameModel
+} from "@models";
 import { genTeamCode } from "@utils";
 
 // model class definition
 class TeamModel extends Model<Team, TeamCreation> {
   declare id_team: number;
   declare id_course: number;
+  declare id_team_name?: number | null;
   declare name: string;
   declare code?: string | null;
   declare active: boolean;
@@ -23,6 +29,7 @@ class TeamModel extends Model<Team, TeamCreation> {
   declare answers: NonAttribute<AnswerModel[]>;
   declare taskAttempts: NonAttribute<TaskAttemptModel[]>;
   declare course: NonAttribute<CourseModel>;
+  declare teamName: NonAttribute<TeamNameModel>;
 }
 
 // model initialization
@@ -40,6 +47,9 @@ TeamModel.init(
       //     model: 'course',
       //     key: 'id_course'
       // }
+    },
+    id_team_name: {
+      type: DataTypes.INTEGER
     },
     name: {
       type: DataTypes.STRING(50),
@@ -81,6 +91,14 @@ CourseModel.hasMany(TeamModel, {
 TeamModel.belongsTo(CourseModel, {
   foreignKey: "id_course",
   as: "course"
+});
+
+TeamNameModel.hasMany(TeamModel, {
+  foreignKey: "id_team_name"
+});
+TeamModel.belongsTo(TeamNameModel, {
+  foreignKey: "id_team_name",
+  as: "teamName"
 });
 
 export default TeamModel;

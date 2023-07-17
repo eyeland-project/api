@@ -1,4 +1,4 @@
-import { Model, ForeignKey } from "sequelize";
+import { ForeignKey } from "sequelize";
 import {
   QuestionCharacter,
   QuestionTopic,
@@ -8,6 +8,7 @@ import {
 export interface Question {
   id_question: number;
   id_task_stage: ForeignKey<number>;
+  id_question_group?: ForeignKey<number> | null;
   question_order: number;
   content: string;
   audio_url?: string | null;

@@ -3,7 +3,9 @@
 import { DataTypes, ForeignKey, Model, NonAttribute } from "sequelize";
 import sequelize from "@database/db";
 import { TaskStage, TaskStageCreation } from "@interfaces/TaskStage.types";
-import { QuestionModel, TaskModel } from "@models";
+import { TaskModel, QuestionModel } from "@models";
+import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
+import { ApiError } from "@middlewares/handleErrors";
 
 // model class definition
 class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
@@ -12,8 +14,9 @@ class TaskStageModel extends Model<TaskStage, TaskStageCreation> {
   declare task_stage_order: number;
   declare description: string;
   declare keywords: string[];
-  declare task: NonAttribute<TaskModel>;
+  declare mechanics?: TaskStageMechanics[] | null;
 
+  declare task: NonAttribute<TaskModel>;
   declare questions: NonAttribute<QuestionModel[]>;
 }
 
@@ -41,13 +44,36 @@ TaskStageModel.init(
       type: DataTypes.ARRAY(DataTypes.STRING(50)),
       allowNull: false,
       defaultValue: []
+    },
+    mechanics: {
+      // type: DataTypes.ARRAY(
+      //   DataTypes.ENUM(...Object.values(TaskStageMechanics))
+      // ),
+      type: DataTypes.ENUM(...Object.values(TaskStageMechanics)),
+      allowNull: true,
+      defaultValue: null
     }
   },
   {
     sequelize,
     modelName: "TaskStageModel",
     tableName: "task_stage",
-    timestamps: false
+    timestamps: false,
+    hooks: {
+      beforeCreate: async ({ mechanics }: TaskStageModel) => {
+        if (!mechanics) return;
+        const mechanicsValues = Object.values(TaskStageMechanics);
+        for (let i = 0; i < mechanicsValues.length; i++) {
+          if (mechanicsValues.indexOf(mechanics[i]) === -1) {
+            throw new ApiError(
+              "Type must be one of the following values: " +
+                mechanicsValues.join(", "),
+              400
+            );
+          }
+        }
+      }
+    }
   }
 );
 

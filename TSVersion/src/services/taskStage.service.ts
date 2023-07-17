@@ -1,9 +1,14 @@
 import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
-import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
+import {
+  QuestionGroupModel,
+  QuestionModel,
+  TaskModel,
+  TaskStageModel,
+  TeamModel
+} from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
-import { QuestionDetailDto } from "@dto/global/question.dto";
 import {
   TaskStageDetailDto as TaskStageDetailDtoTeacher,
   TaskStagesDetailDto as TaskStagesDetailDtoTeacher
@@ -11,6 +16,7 @@ import {
 import { TaskStageDetailDto as TaskStageDetailDtoStudent } from "@dto/student/taskStage.dto";
 import * as repositoryService from "@services/repository.service";
 import { TaskStage } from "@interfaces/TaskStage.types";
+import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
 
 export async function getPretaskForTeacher(
   idTask: number
@@ -51,7 +57,7 @@ export async function getTaskStagesForTeacher(
       keywords,
       taskStageOrder: task_stage_order,
       description,
-      numQuestions: questions.length
+      numQuestions: questions?.length || 0
     };
   };
   return {
@@ -98,6 +104,34 @@ export async function getLastQuestionFromTaskStage(
   return questions[0];
 }
 
+export async function getTaskStageMechanics(
+  taskStage: TaskStageModel,
+  { idTeam }: { idTeam?: number }
+): Promise<{
+  [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
+}> {
+  const { mechanics } = taskStage;
+
+  const result: {
+    [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
+  } = {};
+
+  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
+    if (!idTeam) throw new ApiError("idTeam is required", 400);
+    const idTeamName =
+      (
+        await repositoryService.findOne<TeamModel>(TeamModel, {
+          where: { id_team: idTeam }
+        })
+      )?.id_team_name || undefined;
+    if (!idTeamName) {
+      throw new ApiError("No team name found", 400);
+    }
+    result[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME] = { idTeamName };
+  }
+  return result;
+}
+
 async function getTaskStageForTeacher(
   idTask: number,
   taskStageOrder: number
@@ -118,7 +152,7 @@ async function getTaskStageForTeacher(
     taskStageOrder: task_stage_order,
     description,
     keywords,
-    numQuestions: questions.length
+    numQuestions: questions?.length || 0
   };
 }
 
@@ -138,7 +172,7 @@ async function getTaskStageForStudent(
   return {
     description,
     keywords,
-    numQuestions: questions.length
+    numQuestions: questions?.length || 0
   };
 }
 
@@ -155,10 +189,18 @@ async function getTaskStages(
     where,
     include: [
       {
-        model: QuestionModel,
-        as: "questions",
-        attributes: ["id_question"],
-        required: false
+        model: QuestionGroupModel,
+        as: "questionGroups",
+        attributes: ["id_question_group"],
+        required: false,
+        include: [
+          {
+            model: QuestionModel,
+            as: "questions",
+            attributes: ["id_question"],
+            required: false
+          }
+        ]
       },
       {
         model: TaskModel,

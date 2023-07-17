@@ -65,22 +65,42 @@ export async function answer(
       throw new ApiError("Invalid questionOrder", 400);
     }
 
-    let audio: Express.Multer.File | undefined;
+    await uploadFileToServer("audio")(req, res);
+    const audio = req.file;
 
-    // check if the question is select speaking
-    if ((<AnswerSelectSpeakingCreateDto>req.body).idOption !== undefined) {
-      // retrieve audio file from request
-      await uploadFileToServer("audio")(req, res);
-      audio = req.file;
-    } else if ((<AnswerOpenCreateDto>req.body).text === undefined) {
-      // check if the question is open
-      await uploadFileToServer("audio")(req, res);
-      audio = req.file;
-      if (!audio) {
-        // if the question is open, audio file is required (since text was not given)
-        throw new ApiError("Audio file is required", 400);
-      }
+    if (
+      req.body.answerSeconds !== undefined &&
+      typeof req.body.answerSeconds !== "number"
+    ) {
+      req.body.answerSeconds = parseInt(req.body.answerSeconds) || undefined;
     }
+
+    if (
+      req.body.newAttempt !== undefined &&
+      typeof req.body.newAttempt !== "boolean"
+    ) {
+      req.body.newAttempt = req.body.newAttempt === "true";
+    }
+
+    const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>req.body;
+    const answerOpen = <AnswerOpenCreateDto>req.body;
+
+    if (
+      answerSelectSpeaking.idOption !== undefined &&
+      typeof answerSelectSpeaking.idOption !== "number"
+    ) {
+      answerSelectSpeaking.idOption =
+        parseInt(answerSelectSpeaking.idOption) || undefined!;
+    }
+
+    if (
+      answerSelectSpeaking.idOption === undefined &&
+      answerOpen.text === undefined &&
+      !audio
+    ) {
+      throw new ApiError("Audio file is required", 400);
+    }
+
     const result = await answerPostask(
       idStudent,
       taskOrder,

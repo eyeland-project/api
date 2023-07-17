@@ -5,6 +5,7 @@ import {
   AnswerModel,
   GradeAnswerModel,
   OptionModel,
+  QuestionGroupModel,
   QuestionModel,
   StudentModel,
   StudentTaskModel,
@@ -18,15 +19,11 @@ import { updateLeaderBoard } from "@services/leaderBoard.service";
 import { getOptionById } from "@services/option.service";
 import { getQuestionsFromTaskStage } from "@services/question.service";
 import { getCourseFromStudent } from "@services/student.service";
-import {
-  getStudentTaskByOrder,
-  upgradeStudentTaskProgress
-} from "@services/studentTask.service";
+import { getStudentTaskByOrder } from "@services/studentTask.service";
 import {
   createTaskAttempt,
   finishStudentTaskAttempts,
-  getCurrTaskAttempt,
-  updateCurrTaskAttempt
+  getCurrTaskAttempt
 } from "@services/taskAttempt.service";
 import { getMembersFromTeam, updateTeam } from "@services/team.service";
 import * as repositoryService from "@services/repository.service";
@@ -36,13 +33,15 @@ import {
   AnswerOpenCreateDto,
   AnswerSelectSpeakingCreateDto
 } from "@dto/student/answer.dto";
-import { getLastQuestionFromTaskStage } from "./taskStage.service";
 import {
   QuestionSubmissionDetailDuringtaskDto,
   QuestionSubmissionDetailPostaskDto,
   QuestionSubmissionDetailPretaskDto
 } from "@dto/teacher/answer.dto";
 import { separateTranslations } from "@utils";
+import { notifyCourseOfTeamUpdate } from "./course.service";
+import { getTaskStageMechanics } from "./taskStage.service";
+import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
 
 export async function answerPretask(
   idStudent: number,
@@ -102,6 +101,10 @@ export async function answerPretask(
     } catch (err) {
       taskAttempt = await createTaskAttempt(idStudent, id_task, null);
     }
+    if (taskAttempt.id_task !== id_task) {
+      await finishStudentTaskAttempts(idStudent);
+      taskAttempt = await createTaskAttempt(idStudent, id_task, null);
+    }
   }
 
   if (taskAttempt.id_task !== id_task) {
@@ -140,7 +143,14 @@ export async function answerDuringtask(
   }
 
   // - get student's current task attempt and get student's team id from task attempt
-  const taskAttempt = await getCurrTaskAttempt(idStudent);
+  let taskAttempt = await getCurrTaskAttempt(idStudent);
+  const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: { task_order: taskOrder }
+  });
+  if (taskAttempt.id_task !== id_task) {
+    await finishStudentTaskAttempts(idStudent);
+    taskAttempt = await createTaskAttempt(idStudent, id_task, null);
+  }
 
   // - Check if team exists
   // await getTeamFromStudent(idStudent);
@@ -161,19 +171,44 @@ export async function answerDuringtask(
     );
   }
 
+  const mechanics = await getTaskStageMechanics(
+    await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+      where: { task_stage_order: 2, id_task }
+    }),
+    { idTeam: taskAttempt.id_team }
+  );
+
+  let idQuestionGroup: number | undefined;
+  if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+    idQuestionGroup = (
+      await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
+        where: {
+          id_team_name:
+            mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
+        }
+      })
+    ).id_question_group;
+  }
+
   const questionsFromStage = await repositoryService.findAll<QuestionModel>(
     QuestionModel,
     {
       attributes: ["id_question", "question_order"],
       include: [
+        idQuestionGroup
+          ? {
+              model: QuestionGroupModel,
+              as: "questionGroup",
+              attributes: [],
+              required: true,
+              where: { id_question_group: idQuestionGroup }
+            }
+          : {},
         {
           model: TaskStageModel,
           attributes: ["id_task"],
           as: "taskStage",
-          where: {
-            task_stage_order: 2,
-            id_task: taskAttempt.id_task
-          }
+          where: { task_stage_order: 2, id_task: taskAttempt.id_task }
         },
         {
           model: AnswerModel,
@@ -195,6 +230,9 @@ export async function answerDuringtask(
 
   // - Check if option exists and is in the correct question
   const option = await getOptionById(idOption);
+  console.log("question.id_question", question.id_question);
+  console.log("option.id_question", option.id_question);
+
   if (question.id_question !== option.id_question) {
     throw new ApiError("Option does not belong to question", 400);
   }
@@ -244,7 +282,7 @@ export async function answerDuringtask(
   }
 
   // additional logic to upgrade student's task progress and do socket stuff
-  new Promise(async () => {
+  new Promise(() => {
     socket.broadcast.to(`t${taskAttempt.id_team}`).emit(OutgoingEvents.ANSWER, {
       correct: option.correct
     });
@@ -288,7 +326,12 @@ export async function answerDuringtask(
       updateTeam(taskAttempt.id_team!, {
         active: false,
         playing: false
-      }).catch(console.log);
+      })
+        .catch(console.log)
+        .finally(() =>
+          notifyCourseOfTeamUpdate(id_course, taskAttempt.id_team!, idStudent)
+        )
+        .catch(console.log);
     }
   }).catch(console.log);
 
@@ -302,9 +345,7 @@ export async function answerPostask(
   body: AnswerSelectSpeakingCreateDto | AnswerOpenCreateDto,
   audio?: Express.Multer.File
 ): Promise<string | null> {
-  // const { answerSeconds, newAttempt } = body;
-  const answerSeconds = parseInt(String(body.answerSeconds));
-  const newAttempt = String(body.newAttempt) === "true";
+  const { answerSeconds, newAttempt } = body;
 
   const { session } = await getCourseFromStudent(idStudent);
   if (!session) {
@@ -348,14 +389,17 @@ export async function answerPostask(
     } catch (err) {
       taskAttempt = await createTaskAttempt(idStudent, id_task, null);
     }
+    if (taskAttempt.id_task !== id_task) {
+      await finishStudentTaskAttempts(idStudent);
+      taskAttempt = await createTaskAttempt(idStudent, id_task, null);
+    }
   }
 
   if (taskAttempt.id_task !== id_task) {
     throw new ApiError("Current Task attempt is from another task", 400);
   }
 
-  const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>body;
-  const idOption = parseInt(String(answerSelectSpeaking.idOption));
+  const idOption = (<AnswerSelectSpeakingCreateDto>body).idOption;
 
   let result;
   if (idOption !== undefined) {
@@ -378,14 +422,15 @@ export async function answerPostask(
     });
   }
 
-  new Promise(() => {
-    getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
-      if (lastQuestion.id_question === question.id) {
-        upgradeStudentTaskProgress(taskOrder, idStudent, 3);
-        updateCurrTaskAttempt(idStudent, { active: false });
-      }
-    });
-  }).catch(console.log);
+  // new Promise(() => {
+  //   getLastQuestionFromTaskStage(taskOrder, 3).then((lastQuestion) => {
+  //     if (lastQuestion.id_question === question.id) {
+  //       console.log("last question answered");
+  //       upgradeStudentTaskProgress(taskOrder, idStudent, 3).catch(console.log);
+  //       finishStudentTaskAttempts(idStudent).catch(console.log);
+  //     }
+  //   });
+  // }).catch(console.log);
 
   return result;
 }
@@ -583,17 +628,55 @@ async function getAnswersFromTaskStageForTeacher(
         {
           model: StudentModel,
           as: "student",
-          attributes: ["id_course"]
+          attributes: ["id_course"],
+          required: true
         }
       ]
     });
   if (idCourse !== student.id_course) {
     throw new ApiError("Student does not belong to course", 400);
   }
+
+  let idQuestionGroup: number | undefined;
+
+  if (id_team !== undefined && id_team !== null) {
+    const mechanics = await getTaskStageMechanics(
+      await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+        where: { task_stage_order: taskStageOrder, id_task }
+      }),
+      { idTeam: id_team }
+    );
+
+    if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+      idQuestionGroup = (
+        await repositoryService.findOne<QuestionGroupModel>(
+          QuestionGroupModel,
+          {
+            where: {
+              id_team_name:
+                mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]
+                  .idTeamName
+            }
+          }
+        )
+      ).id_question_group;
+    }
+  }
+
   const questions = await repositoryService.findAll<QuestionModel>(
     QuestionModel,
     {
+      order: [["question_order", "ASC"]],
       include: [
+        idQuestionGroup
+          ? {
+              model: QuestionGroupModel,
+              as: "questionGroup",
+              attributes: ["id_question_group"],
+              required: true,
+              where: { id_question_group: idQuestionGroup }
+            }
+          : {},
         {
           model: TaskStageModel,
           as: "taskStage",
@@ -608,7 +691,12 @@ async function getAnswersFromTaskStageForTeacher(
         {
           model: AnswerModel,
           as: "answers",
-          where: { [Op.or]: [{ id_team }, { id_task_attempt: idTaskAttempt }] },
+          where: {
+            [Op.or]: [
+              { id_task_attempt: idTaskAttempt }, // answered by the student
+              { [Op.and]: [{ id_team }, { id_team: { [Op.ne]: null } }] } // answered by the team of the student
+            ]
+          },
           attributes: [
             "id_answer",
             "id_option",
@@ -684,13 +772,12 @@ async function getAnswersFromTaskStageForTeacher(
           answerSeconds: answer_seconds || null,
           audioUrl: audio_url || null,
           text: text || null,
-          gradeAnswers: gradeAnswers.map(
-            ({ id_grade_answer, grade, comment }) => ({
+          gradeAnswer:
+            gradeAnswers.map(({ id_grade_answer, grade, comment }) => ({
               id: id_grade_answer,
               grade,
               comment: comment || null
-            })
-          ),
+            }))[0] || null,
           team: team
             ? {
                 id: team.id_team,
