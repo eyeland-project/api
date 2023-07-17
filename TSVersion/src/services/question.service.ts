@@ -1,4 +1,4 @@
-import { FindOptions, QueryTypes } from "sequelize";
+import { FindOptions, Op, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
 import {
   AnswerModel,
@@ -7,9 +7,11 @@ import {
   QuestionGroupModel,
   QuestionModel,
   StudentModel,
+  TaskAttemptModel,
   TaskModel,
   TaskStageModel,
-  TeamModel
+  TeamModel,
+  TeamNameModel
 } from "@models";
 import { Question } from "@interfaces/Question.types";
 import { ApiError } from "@middlewares/handleErrors";
@@ -31,7 +33,6 @@ import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getMembersFromTeam } from "./team.service";
 import { QuestionType } from "@interfaces/enums/question.enum";
 import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
-import { getTaskStageMechanics } from "./taskStage.service";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -131,44 +132,47 @@ export async function getNextQuestionFromDuringtaskForStudent(
     throw new ApiError("No team or power found", 400);
   }
 
-  // const { mechanics } = await repositoryService.findOne<TaskStageModel>(
-  //   TaskStageModel,
-  //   { where: { task_stage_order: 2, id_task } }
-  // );
+  const members = await getMembersFromTeam({ idTeam: id_team });
 
-  // let idTeamName: number | undefined;
-  // if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
-  //   idTeamName =
-  //     (
-  //       await repositoryService.findOne<TeamModel>(TeamModel, {
-  //         where: { id_team }
-  //       })
-  //     )?.id_team_name || undefined;
-  //   if (!idTeamName) {
-  //     throw new ApiError("No team name found", 400);
-  //   }
-  // }
-
-  const mechanics = await getTaskStageMechanics(
-    await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
-      where: { task_stage_order: 2, id_task }
-    }),
-    { idTeam: id_team }
+  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+    TaskStageModel,
+    { where: { task_stage_order: 2, id_task } }
   );
 
   let idQuestionGroup: number | undefined;
-  if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+
+  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
     idQuestionGroup = (
       await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
-        where: {
-          id_team_name:
-            mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
-        }
+        include: [
+          {
+            model: TeamNameModel,
+            as: "teamName",
+            required: true,
+            include: [
+              {
+                model: TeamModel,
+                as: "teams",
+                required: true,
+                where: { id_team }
+              }
+            ]
+          }
+        ]
       })
     ).id_question_group;
   }
-
-  const members = await getMembersFromTeam({ idTeam: id_team });
+  // let idQuestionGroup: number | undefined;
+  // if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+  //   idQuestionGroup = (
+  //     await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
+  //       where: {
+  //         id_team_name:
+  //           mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
+  //       }
+  //     })
+  //   ).id_question_group;
+  // }
 
   //* auxiliar variables to check if there are questions left
   let maxAnswers = -1;
@@ -248,9 +252,12 @@ export async function getNextQuestionFromDuringtaskForStudent(
       ? []
       : [missingQuestions[0]];
 
-  const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
-  const powers = members.map(({ task_attempt: { power } }) => power);
+  const powers = (await getMembersFromTeam({ idTeam: id_team })).map(
+    ({ task_attempt: { power } }) => power
+  );
   powers.sort((a, b) => indexPower(a) - indexPower(b));
+
+  const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
   console.log("nextQuestionOrder", nextQuestionOrder);
 
   const questions = (
@@ -312,14 +319,85 @@ export async function getNextQuestionFromDuringtaskForStudent(
 }
 
 export async function getQuestionsFromPostaskForStudent(
+  idStudent: number,
   taskOrder: number
 ): Promise<QuestionPostaskDetailDtoStudent[]> {
-  return (await getQuestionsFromTaskStage({ taskOrder }, 3)).map(
-    ({ options, ...fields }) => ({
-      ...fields,
-      options: shuffle(options)
-    })
+  const { id_task } = await repositoryService.findOne<TaskModel>(TaskModel, {
+    where: { task_order: taskOrder }
+  });
+
+  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+    TaskStageModel,
+    { where: { task_stage_order: 2, id_task } }
   );
+
+  let idQuestionGroup: number | undefined;
+
+  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_DURINGTASK_BASED)) {
+    let idTeam: number | undefined;
+
+    // use idTeam from current taskAttempt to know the questionGroup
+    try {
+      const taskAttempt = await getCurrTaskAttempt(idStudent);
+      if (taskAttempt.id_team !== undefined && taskAttempt.id_team !== null) {
+        idTeam = taskAttempt.id_team;
+      }
+    } catch (err) {}
+
+    // use idTeam from most recent taskAttempt to know the questionGroup
+    if (idTeam === undefined) {
+      try {
+        const recentTaskAttempt =
+          await repositoryService.findOne<TaskAttemptModel>(TaskAttemptModel, {
+            where: { id_student: idStudent, id_team: { [Op.not]: null } },
+            order: [
+              ["time_stamp", "DESC"],
+              ["id_task_attempt", "DESC"]
+            ]
+          });
+        idTeam = recentTaskAttempt.id_team!;
+      } catch (err) {}
+    }
+
+    if (idTeam !== undefined) {
+      idQuestionGroup = (
+        await repositoryService.findOne<QuestionGroupModel>(
+          QuestionGroupModel,
+          {
+            include: [
+              {
+                model: TeamNameModel,
+                as: "teamName",
+                required: true,
+                include: [
+                  {
+                    model: TeamModel,
+                    as: "teams",
+                    required: true,
+                    where: { id_team: idTeam }
+                  }
+                ]
+              }
+            ]
+          }
+        )
+      ).id_question_group;
+    } else {
+      idQuestionGroup = (
+        await repositoryService.findOne<QuestionGroupModel>(
+          QuestionGroupModel,
+          { order: sequelize.random(), limit: 1 }
+        )
+      ).id_question_group;
+    }
+  }
+
+  return (
+    await getQuestionsFromTaskStage({ taskOrder, idQuestionGroup }, 3)
+  ).map(({ options, ...fields }) => ({
+    ...fields,
+    options: shuffle(options)
+  }));
 }
 
 export async function getQuestionsFromTaskStageByTaskId(
