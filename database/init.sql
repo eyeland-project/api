@@ -57,7 +57,7 @@ CREATE TABLE task (
     CONSTRAINT uk_task_task_order UNIQUE (task_order)
 );
 
-CREATE TYPE valid_task_stage_mechanic AS ENUM ('question_group-team_name');
+CREATE TYPE valid_task_stage_mechanic AS ENUM ('question_group-team_name', 'hidden_question');
 
 -- CREATING TABLE task_stage
 CREATE TABLE task_stage (

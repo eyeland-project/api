@@ -149,12 +149,15 @@ export async function getNextQuestionFromDuringtaskForStudent(
   //   }
   // }
 
+  // * Get the mechanics of the task stage
   const mechanics = await getTaskStageMechanics(
     await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
       where: { task_stage_order: 2, id_task }
     }),
     { idTeam: id_team }
   );
+
+  const hidden = mechanics.hidden_question || false;
 
   let idQuestionGroup: number | undefined;
   if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
@@ -272,13 +275,37 @@ export async function getNextQuestionFromDuringtaskForStudent(
     options = shuffle(options, seed);
 
     // * select the number of options based on the powers length (the correct option is always chosen)
+    // options = shuffle(
+    //   [
+    //     options.filter(({ correct }) => correct)[0],
+    //     ...options
+    //       .filter(({ correct }) => !correct)
+    //       .slice(0, powers.length * 2 - 1)
+    //   ],
+    //   seed
+    // );
     options = shuffle(
-      [
-        options.filter(({ correct }) => correct)[0],
-        ...options
-          .filter(({ correct }) => !correct)
-          .slice(0, powers.length * 2 - 1)
-      ],
+      options.reduce(
+        (acc: { cont: number; options: typeof options }, curr, i) => {
+          /* 
+            * An option is selected if:
+            - It is correct
+            - It is the hidden option and the hidden option is enabled
+            - It is not the correct option and there are still options to be selected
+          */
+          if (curr.correct) {
+            acc.options.push(curr);
+          } else if (hidden && curr.content == "/HIDDEN QUESTION/") {
+            acc.options.push(curr);
+          } else if (acc.cont < powers.length * 2 - 1 - +hidden) {
+            acc.options.push(curr);
+            acc.cont++;
+          }
+
+          return acc;
+        },
+        { cont: 0, options: [] }
+      ).options,
       seed
     );
 
@@ -308,6 +335,18 @@ export async function getNextQuestionFromDuringtaskForStudent(
     };
   });
   if (!questions.length) throw new ApiError("Question not found", 404);
+
+  if (hidden) {
+    if (
+      questions[0].options.some(({ content }) => content == "/HIDDEN QUESTION/")
+    ) {
+      questions[0].options = questions[0].options = [];
+    } else {
+      questions[0].content = "/HIDDEN QUESTION/";
+      questions[0].hint = "Ask a teammate for the hidden question";
+    }
+  }
+
   return questions[0];
 }
 

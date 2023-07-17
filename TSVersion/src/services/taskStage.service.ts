@@ -104,17 +104,18 @@ export async function getLastQuestionFromTaskStage(
   return questions[0];
 }
 
+type mechanics = {
+  [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
+  [TaskStageMechanics.HIDDEN_QUESTION]?: true;
+};
+
 export async function getTaskStageMechanics(
   taskStage: TaskStageModel,
   { idTeam }: { idTeam?: number }
-): Promise<{
-  [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
-}> {
+): Promise<mechanics> {
   const { mechanics } = taskStage;
 
-  const result: {
-    [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
-  } = {};
+  const result: mechanics = {};
 
   if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
     if (!idTeam) throw new ApiError("idTeam is required", 400);
@@ -129,6 +130,11 @@ export async function getTaskStageMechanics(
     }
     result[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME] = { idTeamName };
   }
+
+  if (mechanics?.includes(TaskStageMechanics.HIDDEN_QUESTION)) {
+    result[TaskStageMechanics.HIDDEN_QUESTION] = true;
+  }
+
   return result;
 }
 
