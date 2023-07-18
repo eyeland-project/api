@@ -142,7 +142,8 @@ StudentModel.belongsTo(CourseModel, {
 
 // student and blindness_acuity
 BlindnessAcuityModel.hasMany(StudentModel, {
-  foreignKey: "id_blindness_acuity"
+  foreignKey: "id_blindness_acuity",
+  as: "students"
 });
 StudentModel.belongsTo(BlindnessAcuityModel, {
   foreignKey: "id_blindness_acuity",
@@ -151,7 +152,8 @@ StudentModel.belongsTo(BlindnessAcuityModel, {
 
 // student and visual_field_defect
 VisualFieldDefectModel.hasMany(StudentModel, {
-  foreignKey: "id_visual_field_defect"
+  foreignKey: "id_visual_field_defect",
+  as: "students"
 });
 StudentModel.belongsTo(VisualFieldDefectModel, {
   foreignKey: "id_visual_field_defect",
@@ -160,7 +162,8 @@ StudentModel.belongsTo(VisualFieldDefectModel, {
 
 // student and color_deficiency
 ColorDeficiencyModel.hasMany(StudentModel, {
-  foreignKey: "id_color_deficiency"
+  foreignKey: "id_color_deficiency",
+  as: "students"
 });
 StudentModel.belongsTo(ColorDeficiencyModel, {
   foreignKey: "id_color_deficiency",

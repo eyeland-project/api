@@ -92,7 +92,8 @@ TeacherModel.init(
 // model associations
 // teacher and institution
 InstitutionModel.hasMany(TeacherModel, {
-  foreignKey: "id_institution"
+  foreignKey: "id_institution",
+  as: "teachers"
 });
 TeacherModel.belongsTo(InstitutionModel, {
   foreignKey: "id_institution",

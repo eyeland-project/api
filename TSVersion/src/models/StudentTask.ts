@@ -58,18 +58,22 @@ function checkHighestStage({ highest_stage }: StudentTask) {
 // model associations
 // student task and student
 StudentModel.hasMany(StudentTaskModel, {
-  foreignKey: "id_student"
+  foreignKey: "id_student",
+  as: "studentTasks"
 });
 StudentTaskModel.belongsTo(StudentModel, {
-  foreignKey: "id_student"
+  foreignKey: "id_student",
+  as: "student"
 });
 
 // student task and task
 TaskModel.hasMany(StudentTaskModel, {
-  foreignKey: "id_task"
+  foreignKey: "id_task",
+  as: "studentTasks"
 });
 StudentTaskModel.belongsTo(TaskModel, {
-  foreignKey: "id_task"
+  foreignKey: "id_task",
+  as: "task"
 });
 
 export default StudentTaskModel;

@@ -86,15 +86,18 @@ TeamModel.init(
 // associations
 // team and course
 CourseModel.hasMany(TeamModel, {
-  foreignKey: "id_course"
+  foreignKey: "id_course",
+  as: "teams"
 });
 TeamModel.belongsTo(CourseModel, {
   foreignKey: "id_course",
   as: "course"
 });
 
+// team and team name
 TeamNameModel.hasMany(TeamModel, {
-  foreignKey: "id_team_name"
+  foreignKey: "id_team_name",
+  as: "teams"
 });
 TeamModel.belongsTo(TeamNameModel, {
   foreignKey: "id_team_name",

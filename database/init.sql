@@ -57,7 +57,7 @@ CREATE TABLE task (
     CONSTRAINT uk_task_task_order UNIQUE (task_order)
 );
 
-CREATE TYPE valid_task_stage_mechanic AS ENUM ('question_group-team_name', 'hidden_question');
+CREATE TYPE valid_task_stage_mechanic AS ENUM ('question_group-team_name', 'question_group-duringtask_based', 'hidden_question');
 
 -- CREATING TABLE task_stage
 CREATE TABLE task_stage (
@@ -778,7 +778,6 @@ BEGIN
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (6, NULL, 2, '¡Bien hecho! Última pregunta: what''s your favorite animal from Isla Salamanca?', NULL, NULL, 'open', NULL, NULL, NULL, 'chucho', 'My favorite animal is _') RETURNING id_question INTO last_question_id;
     
     -- questions from task 3
-    UPDATE task_stage SET mechanics = '{"question_group-team_name"}';
     
     -- pretask 3
 
@@ -813,6 +812,8 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Herbivorous', '¡Uy!, no es correcto. La imagen muestra una dieta carnívora, no herbívora.', FALSE);
 
     -- duringtask 3
+    UPDATE task_stage SET mechanics = '{"question_group-team_name"}' WHERE id_task_stage = 8;
+
     INSERT INTO question_group (id_team_name) VALUES (1) RETURNING id_question_group INTO last_question_group_id;
 
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (8, last_question_group_id, 1, 'Where do ospreys live?', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/audio/osprey_1.mp3', NULL, 'select', 'Imagen de un águila pescadora en un manglar', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/osprey_mangrove_1.jpg', NULL, NULL, 'La imagen muestra un águila pescadora en un manglar.') RETURNING id_question INTO last_question_id;
@@ -1038,18 +1039,72 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Omnivorous', '¡Uy!, no es correcto. El manatí es herbívoro, no omnívoro.', FALSE);
     
     -- postask 3
+    UPDATE task_stage SET mechanics = '{"question_group-duringtask_based"}' WHERE id_task_stage = 9;
 
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, NULL, 1, 'Missing Osprey. An Osprey is lost. His _ is Otto', NULL, NULL, 'fill', 'Imagen de águila pescadora perdida', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/osprey_lost_1.jpg', NULL, NULL, 'La imagen muestra un águila pescadora perdida.') RETURNING id_question INTO last_question_id;
+    INSERT INTO question_group (id_team_name) VALUES (1) RETURNING id_question_group INTO last_question_group_id;
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 1, 'Missing osprey. An osprey is lost. His _ is Otto', NULL, NULL, 'fill', 'Imagen de un águila pescadora perdida', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/osprey_lost_1.jpg', NULL, NULL, 'La imagen muestra un águila pescadora perdida.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'name', '¡Excelente!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'habitat', 'Incorrecto.".', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'food', 'Incorrecto.', FALSE);
     
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, NULL, 2, 'He is 7 years old. He lives in a _', NULL, NULL, 'fill', 'Imagen de águila pescadora en un manglar', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/osprey_lost_1.jpg', NULL, NULL, 'La imagen muestra un águila pescadora en un manglar.') RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 2, 'He is 7 years old. He lives in a _', NULL, NULL, 'fill', 'Imagen de un águila pescadora en un manglar', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/osprey_lost_1.jpg', NULL, NULL, 'La imagen muestra un águila pescadora en un manglar.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove', '¡Excelente!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swamp', 'Incorrecto.".', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean', 'Incorrecto.', FALSE);
     
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, NULL, 3, 'He has brown and white wings, so he can _ and hunt fish. Is he carnivourous? Yes!', NULL, NULL, 'fill', 'Imagen de águila pescadora', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/osprey_lost_1.jpg', NULL, NULL, 'La imagen muestra un águila pescadora.') RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 3, 'He has brown and white wings, so he can _ and hunt fish. Is he carnivourous? Yes!', NULL, NULL, 'fill', 'Imagen de un águila pescadora', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/osprey_lost_1.jpg', NULL, NULL, 'La imagen muestra un águila pescadora.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Fly', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swim', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Run', 'Incorrecto.', FALSE);
+
+    INSERT INTO question_group (id_team_name) VALUES (2) RETURNING id_question_group INTO last_question_group_id;
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 4, 'Missing lizard. A lizard is lost. Her _ is Lina', NULL, NULL, 'fill', 'Imagen de una lagarto perdida', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/lizard_lost_1.jpg', NULL, NULL, 'La imagen muestra una lagarto perdida.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'name', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'habitat', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'food', 'Incorrecto.', FALSE);
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 5, 'She is 11 years old. She lives in a _', NULL, NULL, 'fill', 'Imagen de una lagarto en un manglar', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/lizard_lost_1.jpg', NULL, NULL, 'La imagen muestra una lagarto en un manglar.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swamp', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean', 'Incorrecto.', FALSE);
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 6, 'She has brown and white wings, so he can _ and hunt fish. Is she carnivourous? Yes!', NULL, NULL, 'fill', 'Imagen de una lagarto', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/lizard_lost_1.jpg', NULL, NULL, 'La imagen muestra un lagarto.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Fly', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swim', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Run', 'Incorrecto.', FALSE);
+
+    INSERT INTO question_group (id_team_name) VALUES (3) RETURNING id_question_group INTO last_question_group_id;
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 7, 'Missing alligator. An alligator is lost. His _ is Aldo', NULL, NULL, 'fill', 'Imagen de un caimán perdido', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/alligator_lost_1.jpg', NULL, NULL, 'La imagen muestra un caimán perdido.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'name', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'habitat', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'food', 'Incorrecto.', FALSE);
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 8, 'He is 5 years old. He lives in a _', NULL, NULL, 'fill', 'Imagen de caimán en un manglar', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/alligator_lost_1.jpg', NULL, NULL, 'La imagen muestra un caimán en un manglar.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swamp', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean', 'Incorrecto.', FALSE);
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 9, 'He has brown and white wings, so he can _ and hunt fish. Is he carnivourous? Yes!', NULL, NULL, 'fill', 'Imagen de un caimán', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/alligator_lost_1.jpg', NULL, NULL, 'La imagen muestra un caimán.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Fly', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swim', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Run', 'Incorrecto.', FALSE);
+
+    INSERT INTO question_group (id_team_name) VALUES (4) RETURNING id_question_group INTO last_question_group_id;
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 10, 'Missing manatee. An manatee is lost. His _ is Molly', NULL, NULL, 'fill', 'Imagen de una manatí perdida', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí perdida.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'name', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'habitat', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'food', 'Incorrecto.', FALSE);
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 11, 'He is 15 years old. He lives in a _', NULL, NULL, 'fill', 'Imagen de una manatí en un manglar', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí en un manglar.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swamp', 'Incorrecto.".', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean', 'Incorrecto.', FALSE);
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (9, last_question_group_id, 12, 'He has brown and white wings, so he can _ and hunt fish. Is he carnivourous? Yes!', NULL, NULL, 'fill', 'Imagen de una manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Fly', '¡Excelente!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swim', 'Incorrecto.".', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Run', 'Incorrecto.', FALSE);

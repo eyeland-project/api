@@ -56,18 +56,22 @@ CourseModel.init(
 // model associations
 // course and teacher
 TeacherModel.hasMany(CourseModel, {
-  foreignKey: "id_teacher"
+  foreignKey: "id_teacher",
+  as: "courses"
 });
 CourseModel.belongsTo(TeacherModel, {
-  foreignKey: "id_teacher"
+  foreignKey: "id_teacher",
+  as: "teacher"
 });
 
 // course and institution
 InstitutionModel.hasMany(CourseModel, {
-  foreignKey: "id_institution"
+  foreignKey: "id_institution",
+  as: "courses"
 });
 CourseModel.belongsTo(InstitutionModel, {
-  foreignKey: "id_institution"
+  foreignKey: "id_institution",
+  as: "institution"
 });
 
 export default CourseModel;

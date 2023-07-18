@@ -82,7 +82,8 @@ AnswerModel.belongsTo(QuestionModel, {
 
 // answer and option
 OptionModel.hasMany(AnswerModel, {
-  foreignKey: "id_option"
+  foreignKey: "id_option",
+  as: "answers"
 });
 AnswerModel.belongsTo(OptionModel, {
   foreignKey: "id_option",

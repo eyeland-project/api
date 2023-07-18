@@ -1,12 +1,7 @@
 import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
-import {
-  QuestionGroupModel,
-  QuestionModel,
-  TaskModel,
-  TaskStageModel,
-  TeamModel
-} from "@models";
+import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
+import { QuestionGroupModel, TeamModel, TeamNameModel } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
 import {
@@ -102,40 +97,6 @@ export async function getLastQuestionFromTaskStage(
   )) as Question[];
   if (!questions.length) throw new ApiError("Question not found", 404);
   return questions[0];
-}
-
-type mechanics = {
-  [TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]?: { idTeamName: number };
-  [TaskStageMechanics.HIDDEN_QUESTION]?: true;
-};
-
-export async function getTaskStageMechanics(
-  taskStage: TaskStageModel,
-  { idTeam }: { idTeam?: number }
-): Promise<mechanics> {
-  const { mechanics } = taskStage;
-
-  const result: mechanics = {};
-
-  if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
-    if (!idTeam) throw new ApiError("idTeam is required", 400);
-    const idTeamName =
-      (
-        await repositoryService.findOne<TeamModel>(TeamModel, {
-          where: { id_team: idTeam }
-        })
-      )?.id_team_name || undefined;
-    if (!idTeamName) {
-      throw new ApiError("No team name found", 400);
-    }
-    result[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME] = { idTeamName };
-  }
-
-  if (mechanics?.includes(TaskStageMechanics.HIDDEN_QUESTION)) {
-    result[TaskStageMechanics.HIDDEN_QUESTION] = true;
-  }
-
-  return result;
 }
 
 async function getTaskStageForTeacher(

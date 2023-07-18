@@ -23,7 +23,7 @@ class BlindnessAcuityModel extends Model<
 BlindnessAcuityModel.init(
   {
     id_blindness_acuity: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.SMALLINT,
       primaryKey: true,
       autoIncrement: true
     },
