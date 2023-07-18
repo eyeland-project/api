@@ -150,22 +150,28 @@ export async function getNextQuestionFromDuringtaskForStudent(
   // }
 
   // * Get the mechanics of the task stage
-  const mechanics = await getTaskStageMechanics(
+  const mechanicss = await getTaskStageMechanics(
     await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
       where: { task_stage_order: 2, id_task }
     }),
     { idTeam: id_team }
   );
 
-  const hidden = mechanics.hidden_question || false;
+  const { mechanics } = await repositoryService.findOne<TaskStageModel>(
+    TaskStageModel,
+    { where: { task_stage_order: 2, id_task } }
+  );
+
+  const hidden =
+    mechanics?.includes(TaskStageMechanics.HIDDEN_QUESTION) || false;
 
   let idQuestionGroup: number | undefined;
-  if (mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
+  if (mechanicss[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME]) {
     idQuestionGroup = (
       await repositoryService.findOne<QuestionGroupModel>(QuestionGroupModel, {
         where: {
           id_team_name:
-            mechanics[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
+            mechanicss[TaskStageMechanics.QUESTION_GROUP_TEAM_NAME].idTeamName
         }
       })
     ).id_question_group;
