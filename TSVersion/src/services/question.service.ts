@@ -249,6 +249,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
       { limit: 1 }
     )
   ).map(({ content, options, id, ...fields }) => {
+    // TODO remove map and use only one question
     const {
       memoryPro: nouns,
       superRadar: preps,
@@ -295,14 +296,14 @@ export async function getNextQuestionFromDuringtaskForStudent(
     );
 
     // * group options in groups of 2
-    options = options.reduce((acc, curr, i) => {
+    const optionGroups = options.reduce((acc, curr, i) => {
       if (i % 2 === 0) {
         acc.push([curr]);
       } else {
         acc[acc.length - 1].push(curr);
       }
       return acc;
-    }, [] as (typeof options)[])[powers.indexOf(power)];
+    }, [] as (typeof options)[]);
 
     //// // * distribute options based on power
     //// options = distributeOptions(
@@ -310,6 +311,43 @@ export async function getNextQuestionFromDuringtaskForStudent(
     ////   powers.indexOf(power) + 1,
     ////   powers.length
     //// );
+
+    //* when hidden is enabled,
+    //* check if some group has both the hidden option and the correct option
+    //* and if so, separate them in different groups
+    if (hiddenEnabled) {
+      //- get the group with hidden and correct option index
+      const hiddenCorrectGroupIndex = optionGroups.findIndex((group) =>
+        group.every(
+          ({ correct, content }) => correct || content == "/HIDDEN QUESTION/"
+        )
+      );
+      if (hiddenCorrectGroupIndex !== -1) {
+        //- get the group with hidden and correct option and the list of other groups
+        const [hiddenCorrectGroup, otherGroups] = optionGroups.reduce(
+          (acc, curr, i) => {
+            if (i === hiddenCorrectGroupIndex) {
+              acc[0] = curr;
+            } else {
+              acc[1].push(curr);
+            }
+            return acc;
+          },
+          [[], []] as [typeof options, (typeof options)[]]
+        );
+
+        //- select a random group from the list of other groups
+        const otherGroup = shuffle(otherGroups, seed)[0];
+
+        //- swap one option from each group
+        const aux = hiddenCorrectGroup[0];
+        hiddenCorrectGroup[0] = otherGroup[0];
+        otherGroup[0] = aux;
+      }
+    }
+
+    options = optionGroups[powers.indexOf(power)];
+
     return {
       id,
       content: contentParsed,
