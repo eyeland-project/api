@@ -1112,12 +1112,15 @@ BEGIN
     -- questions from task 4
     UPDATE task_stage SET mechanics = '{"hidden_question"}' where id_task_stage = 11;
     
-    -- pretask 4
+    -- duringtask 4
 
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (7, NULL, 1, 'Select the habitat', NULL, NULL, 'select', 'Imagen de un pantano', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/swamp_1.jpg', 'vocabulary', NULL, 'La imagen muestra un pantano.') RETURNING id_question INTO last_question_id;
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (11, NULL, 1, 'Titulo ocultisimo uuuu', NULL, NULL, 'select', 'Imagen de un pantano', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/swamp_1.jpg', NULL, NULL, 'La imagen muestra un pantano.') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swamp', '¡Muy bien! La imagen muestra un patano.', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean', '¡Uy!, no es correcto. La imagen muestra un pantano, no un océano.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove', '¡Uy!, no es correcto. La imagen muestra un patano, no un manglar.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, '/HIDDEN QUESTION/', '¡Muy bien! La imagen muestra un patano.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean2', '¡Uy!, no es correcto. La imagen muestra un pantano, no un océano.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove2', '¡Uy!, no es correcto. La imagen muestra un patano, no un manglar.', FALSE);
     
 END $$;
 

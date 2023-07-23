@@ -236,6 +236,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
     ({ task_attempt: { power } }) => power
   );
   powers.sort((a, b) => indexPower(a) - indexPower(b));
+  const hiddenEnabled = hidden && powers.length > 1;
 
   const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
   console.log("nextQuestionOrder", nextQuestionOrder);
@@ -280,8 +281,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
           if (curr.correct) {
             acc.options.push(curr);
           } else if (hidden && curr.content == "/HIDDEN QUESTION/") {
-            acc.options.push(curr);
-          } else if (acc.cont < powers.length * 2 - 1 - +hidden) {
+            if (hiddenEnabled) acc.options.push(curr);
+          } else if (acc.cont < powers.length * 2 - 1 - +hiddenEnabled) {
             acc.options.push(curr);
             acc.cont++;
           }
@@ -320,7 +321,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
   });
   if (!questions.length) throw new ApiError("Question not found", 404);
 
-  if (hidden) {
+  if (hiddenEnabled) {
     if (
       questions[0].options.some(({ content }) => content == "/HIDDEN QUESTION/")
     ) {
