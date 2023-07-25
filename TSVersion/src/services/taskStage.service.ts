@@ -156,30 +156,18 @@ async function getTaskStages(
     where,
     include: [
       {
-        model: QuestionGroupModel,
-        as: "questionGroups",
-        attributes: ["id_question_group"],
-        required: false,
-        include: [
-          {
-            model: QuestionModel,
-            as: "questions",
-            attributes: ["id_question"],
-            required: false
-          }
-        ]
+        model: QuestionModel,
+        as: "questions",
+        attributes: ["id_question"],
+        required: false
       },
       {
         model: TaskModel,
         as: "task",
         where: {
           ...(idTask !== undefined
-            ? {
-                id_task: idTask
-              }
-            : {
-                task_order: taskOrder
-              })
+            ? { id_task: idTask }
+            : { task_order: taskOrder })
         }
       }
     ],
