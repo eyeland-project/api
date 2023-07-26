@@ -140,6 +140,9 @@ export async function getNextQuestionFromDuringtaskForStudent(
     { where: { task_stage_order: 2, id_task } }
   );
 
+  const hidden =
+    mechanics?.includes(TaskStageMechanics.HIDDEN_QUESTION) || false;
+
   if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
     idQuestionGroup = (
       await getQuestionGroupFromTeam({
@@ -233,6 +236,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
     ({ task_attempt: { power } }) => power
   );
   powers.sort((a, b) => indexPower(a) - indexPower(b));
+  const hiddenEnabled = hidden && powers.length > 1;
 
   const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
   console.log("nextQuestionOrder", nextQuestionOrder);
@@ -245,6 +249,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
       { limit: 1 }
     )
   ).map(({ content, options, id, ...fields }) => {
+    // TODO remove map and use only one question
     const {
       memoryPro: nouns,
       superRadar: preps,
@@ -256,25 +261,49 @@ export async function getNextQuestionFromDuringtaskForStudent(
     options = shuffle(options, seed);
 
     // * select the number of options based on the powers length (the correct option is always chosen)
+    // options = shuffle(
+    //   [
+    //     options.filter(({ correct }) => correct)[0],
+    //     ...options
+    //       .filter(({ correct }) => !correct)
+    //       .slice(0, powers.length * 2 - 1)
+    //   ],
+    //   seed
+    // );
     options = shuffle(
-      [
-        options.filter(({ correct }) => correct)[0],
-        ...options
-          .filter(({ correct }) => !correct)
-          .slice(0, powers.length * 2 - 1)
-      ],
+      options.reduce(
+        (acc: { cont: number; options: typeof options }, curr, i) => {
+          /* 
+            * An option is selected if:
+            - It is correct
+            - It is the hidden option and the hidden option is enabled
+            - It is not the correct option and there are still options to be selected
+          */
+          if (curr.correct) {
+            acc.options.push(curr);
+          } else if (hidden && curr.content == "/HIDDEN QUESTION/") {
+            if (hiddenEnabled) acc.options.push(curr);
+          } else if (acc.cont < powers.length * 2 - 1 - +hiddenEnabled) {
+            acc.options.push(curr);
+            acc.cont++;
+          }
+
+          return acc;
+        },
+        { cont: 0, options: [] }
+      ).options,
       seed
     );
 
     // * group options in groups of 2
-    options = options.reduce((acc, curr, i) => {
+    const optionGroups = options.reduce((acc, curr, i) => {
       if (i % 2 === 0) {
         acc.push([curr]);
       } else {
         acc[acc.length - 1].push(curr);
       }
       return acc;
-    }, [] as (typeof options)[])[powers.indexOf(power)];
+    }, [] as (typeof options)[]);
 
     //// // * distribute options based on power
     //// options = distributeOptions(
@@ -282,6 +311,43 @@ export async function getNextQuestionFromDuringtaskForStudent(
     ////   powers.indexOf(power) + 1,
     ////   powers.length
     //// );
+
+    //* when hidden is enabled,
+    //* check if some group has both the hidden option and the correct option
+    //* and if so, separate them in different groups
+    if (hiddenEnabled) {
+      //- get the group with hidden and correct option index
+      const hiddenCorrectGroupIndex = optionGroups.findIndex((group) =>
+        group.every(
+          ({ correct, content }) => correct || content == "/HIDDEN QUESTION/"
+        )
+      );
+      if (hiddenCorrectGroupIndex !== -1) {
+        //- get the group with hidden and correct option and the list of other groups
+        const [hiddenCorrectGroup, otherGroups] = optionGroups.reduce(
+          (acc, curr, i) => {
+            if (i === hiddenCorrectGroupIndex) {
+              acc[0] = curr;
+            } else {
+              acc[1].push(curr);
+            }
+            return acc;
+          },
+          [[], []] as [typeof options, (typeof options)[]]
+        );
+
+        //- select a random group from the list of other groups
+        const otherGroup = shuffle(otherGroups, seed)[0];
+
+        //- swap one option from each group
+        const aux = hiddenCorrectGroup[0];
+        hiddenCorrectGroup[0] = otherGroup[0];
+        otherGroup[0] = aux;
+      }
+    }
+
+    options = optionGroups[powers.indexOf(power)];
+
     return {
       id,
       content: contentParsed,
@@ -292,6 +358,18 @@ export async function getNextQuestionFromDuringtaskForStudent(
     };
   });
   if (!questions.length) throw new ApiError("Question not found", 404);
+
+  if (hiddenEnabled) {
+    if (
+      questions[0].options.some(({ content }) => content == "/HIDDEN QUESTION/")
+    ) {
+      questions[0].options = questions[0].options = [];
+    } else {
+      questions[0].content = "/HIDDEN QUESTION/";
+      questions[0].hint = "Ask a teammate for the hidden question";
+    }
+  }
+
   return questions[0];
 }
 
