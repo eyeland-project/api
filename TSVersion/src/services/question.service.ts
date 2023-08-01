@@ -143,6 +143,9 @@ export async function getNextQuestionFromDuringtaskForStudent(
   const hidden =
     mechanics?.includes(TaskStageMechanics.HIDDEN_QUESTION) || false;
 
+  const picturePuzzle =
+    mechanics?.includes(TaskStageMechanics.PICTURE_OPTION_PUZZLE) || false;
+
   if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
     idQuestionGroup = (
       await getQuestionGroupFromTeam({
@@ -297,6 +300,10 @@ export async function getNextQuestionFromDuringtaskForStudent(
 
     // * group options in groups of 2
     const optionGroups = options.reduce((acc, curr, i) => {
+      if (!picturePuzzle) {
+        delete curr.pictureUrl;
+      }
+
       if (i % 2 === 0) {
         acc.push([curr]);
       } else {
