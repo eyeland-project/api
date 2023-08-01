@@ -5,6 +5,7 @@ export interface Option {
   id_question: ForeignKey<number>;
   feedback?: string | null;
   content: string;
+  picture_url?: string;
   correct: boolean;
   deleted: boolean;
 }

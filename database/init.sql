@@ -128,6 +128,7 @@ CREATE TABLE option (
     feedback VARCHAR(200),
     correct BOOLEAN NOT NULL,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    picture_url VARCHAR(2048),
     -- CONSTRAINTS
     CONSTRAINT pk_option PRIMARY KEY (id_option),
     CONSTRAINT fk_option_question FOREIGN KEY (id_question) REFERENCES question(id_question)

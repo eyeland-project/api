@@ -21,6 +21,7 @@ export interface QuestionDetailDto {
     content: string;
     correct: boolean;
     feedback: string;
+    pictureUrl?: string;
   }[];
 }
 

@@ -13,6 +13,7 @@ class OptionModel extends Model<Option, OptionCreation> {
   declare content: string;
   declare correct: boolean;
   declare deleted: boolean;
+  declare picture_url?: string;
 }
 
 // model initialization
@@ -37,6 +38,9 @@ OptionModel.init(
     correct: {
       type: DataTypes.BOOLEAN,
       allowNull: false
+    },
+    picture_url: {
+      type: DataTypes.STRING(2048)
     },
     deleted: {
       type: DataTypes.BOOLEAN,
