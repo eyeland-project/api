@@ -1122,6 +1122,19 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, '/HIDDEN QUESTION/', '¡Muy bien! La imagen muestra un patano.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean2', '¡Uy!, no es correcto. La imagen muestra un pantano, no un océano.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove2', '¡Uy!, no es correcto. La imagen muestra un patano, no un manglar.', FALSE);
+
+    -- questions from task 5
+    UPDATE task_stage SET mechanics = '{"picture_option_puzzle"}' where id_task_stage = 14;
+    
+    -- duringtask 5
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (14, NULL, 1, 'opciones con pict', NULL, NULL, 'select', 'Imagen de un pantano', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/swamp_1.jpg', NULL, NULL, 'La imagen muestra un pantano.') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct, picture_url) VALUES (last_question_id, 'Swamp', '¡Muy bien! La imagen muestra un patano.', TRUE, 'url_de_prueba_jeje');
+    INSERT INTO option (id_question, content, feedback, correct, picture_url) VALUES (last_question_id, 'Ocean', '¡Uy!, no es correcto. La imagen muestra un pantano, no un océano.', FALSE, 'url_de_prueba_jeje');
+    INSERT INTO option (id_question, content, feedback, correct, picture_url) VALUES (last_question_id, 'Mangrove', '¡Uy!, no es correcto. La imagen muestra un patano, no un manglar.', FALSE, 'url_de_prueba_jeje');
+    INSERT INTO option (id_question, content, feedback, correct, picture_url) VALUES (last_question_id, 'iokhese', '¡Muy bien! La imagen muestra un patano.', FALSE, 'url_de_prueba_jeje');
+    INSERT INTO option (id_question, content, feedback, correct, picture_url) VALUES (last_question_id, 'Ocean2', '¡Uy!, no es correcto. La imagen muestra un pantano, no un océano.', FALSE, 'url_de_prueba_jeje');
+    INSERT INTO option (id_question, content, feedback, correct, picture_url) VALUES (last_question_id, 'Mangrove2', '¡Uy!, no es correcto. La imagen muestra un patano, no un manglar.', FALSE, 'url_de_prueba_jeje');
     
 END $$;
 
