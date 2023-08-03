@@ -241,136 +241,137 @@ export async function getNextQuestionFromDuringtaskForStudent(
   const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
   console.log("nextQuestionOrder", nextQuestionOrder);
 
-  const questions = (
-    await getQuestionsFromTaskStage(
-      { taskOrder, idQuestionGroup },
-      2,
-      { question_order: nextQuestionOrder },
-      { limit: 1 }
-    )
-  ).map(({ content, options, id, ...fields }) => {
-    // TODO remove map and use only one question
-    const {
-      memoryPro: nouns,
-      superRadar: preps,
-      content: contentParsed
-    } = separateTranslations(content);
+  const questions = await getQuestionsFromTaskStage(
+    { taskOrder, idQuestionGroup },
+    2,
+    { question_order: nextQuestionOrder },
+    { limit: 1 }
+  );
 
-    // * shuffle options
-    const seed = (id_team + 1) * (id + 2);
-    options = shuffle(options, seed);
+  if (!questions.length) throw new ApiError("Question not found", 404);
 
-    // * select the number of options based on the powers length (the correct option is always chosen)
-    // options = shuffle(
-    //   [
-    //     options.filter(({ correct }) => correct)[0],
-    //     ...options
-    //       .filter(({ correct }) => !correct)
-    //       .slice(0, powers.length * 2 - 1)
-    //   ],
-    //   seed
-    // );
-    options = shuffle(
-      options.reduce(
-        (acc: { cont: number; options: typeof options }, curr, i) => {
-          /* 
+  let { content, options, id, ...fields } = questions[0];
+
+  // TODO remove map and use only one question
+  const {
+    memoryPro: nouns,
+    superRadar: preps,
+    content: contentParsed
+  } = separateTranslations(content);
+
+  // * shuffle options
+  const seed = (id_team + 1) * (id + 2);
+  options = shuffle(options, seed);
+
+  // * select the number of options based on the powers length (the correct option is always chosen)
+  // options = shuffle(
+  //   [
+  //     options.filter(({ correct }) => correct)[0],
+  //     ...options
+  //       .filter(({ correct }) => !correct)
+  //       .slice(0, powers.length * 2 - 1)
+  //   ],
+  //   seed
+  // );
+  options = shuffle(
+    options.reduce(
+      (acc: { cont: number; options: typeof options }, curr, i) => {
+        /* 
             * An option is selected if:
             - It is correct
             - It is the hidden option and the hidden option is enabled
             - It is not the correct option and there are still options to be selected
           */
-          if (curr.correct) {
-            acc.options.push(curr);
-          } else if (hidden && curr.content == "/HIDDEN QUESTION/") {
-            if (hiddenEnabled) acc.options.push(curr);
-          } else if (acc.cont < powers.length * 2 - 1 - +hiddenEnabled) {
-            acc.options.push(curr);
-            acc.cont++;
-          }
+        if (curr.correct) {
+          acc.options.push(curr);
+        } else if (hidden && curr.content == "/HIDDEN QUESTION/") {
+          if (hiddenEnabled) acc.options.push(curr);
+        } else if (acc.cont < powers.length * 2 - 1 - +hiddenEnabled) {
+          acc.options.push(curr);
+          acc.cont++;
+        }
 
+        return acc;
+      },
+      { cont: 0, options: [] }
+    ).options,
+    seed
+  );
+
+  // * group options in groups of 2
+  const optionGroups = options.reduce((acc, curr, i) => {
+    if (i % 2 === 0) {
+      acc.push([curr]);
+    } else {
+      acc[acc.length - 1].push(curr);
+    }
+    return acc;
+  }, [] as (typeof options)[]);
+
+  //// // * distribute options based on power
+  //// options = distributeOptions(
+  ////   options,
+  ////   powers.indexOf(power) + 1,
+  ////   powers.length
+  //// );
+
+  //* when hidden is enabled,
+  //* check if some group has both the hidden option and the correct option
+  //* and if so, separate them in different groups
+  if (hiddenEnabled) {
+    //- get the group with hidden and correct option index
+    const hiddenCorrectGroupIndex = optionGroups.findIndex((group) =>
+      group.every(
+        ({ correct, content }) => correct || content == "/HIDDEN QUESTION/"
+      )
+    );
+    if (hiddenCorrectGroupIndex !== -1) {
+      //- get the group with hidden and correct option and the list of other groups
+      const [hiddenCorrectGroup, otherGroups] = optionGroups.reduce(
+        (acc, curr, i) => {
+          if (i === hiddenCorrectGroupIndex) {
+            acc[0] = curr;
+          } else {
+            acc[1].push(curr);
+          }
           return acc;
         },
-        { cont: 0, options: [] }
-      ).options,
-      seed
-    );
-
-    // * group options in groups of 2
-    const optionGroups = options.reduce((acc, curr, i) => {
-      if (i % 2 === 0) {
-        acc.push([curr]);
-      } else {
-        acc[acc.length - 1].push(curr);
-      }
-      return acc;
-    }, [] as (typeof options)[]);
-
-    //// // * distribute options based on power
-    //// options = distributeOptions(
-    ////   options,
-    ////   powers.indexOf(power) + 1,
-    ////   powers.length
-    //// );
-
-    //* when hidden is enabled,
-    //* check if some group has both the hidden option and the correct option
-    //* and if so, separate them in different groups
-    if (hiddenEnabled) {
-      //- get the group with hidden and correct option index
-      const hiddenCorrectGroupIndex = optionGroups.findIndex((group) =>
-        group.every(
-          ({ correct, content }) => correct || content == "/HIDDEN QUESTION/"
-        )
+        [[], []] as [typeof options, (typeof options)[]]
       );
-      if (hiddenCorrectGroupIndex !== -1) {
-        //- get the group with hidden and correct option and the list of other groups
-        const [hiddenCorrectGroup, otherGroups] = optionGroups.reduce(
-          (acc, curr, i) => {
-            if (i === hiddenCorrectGroupIndex) {
-              acc[0] = curr;
-            } else {
-              acc[1].push(curr);
-            }
-            return acc;
-          },
-          [[], []] as [typeof options, (typeof options)[]]
-        );
 
-        //- select a random group from the list of other groups
-        const otherGroup = shuffle(otherGroups, seed)[0];
+      //- select a random group from the list of other groups
+      const otherGroup = shuffle(otherGroups, seed)[0];
 
-        //- swap one option from each group
-        const aux = hiddenCorrectGroup[0];
-        hiddenCorrectGroup[0] = otherGroup[0];
-        otherGroup[0] = aux;
-      }
-    }
-
-    options = optionGroups[powers.indexOf(power)];
-
-    return {
-      id,
-      content: contentParsed,
-      ...fields,
-      memoryPro: nouns,
-      superRadar: preps,
-      options
-    };
-  });
-  if (!questions.length) throw new ApiError("Question not found", 404);
-
-  if (hiddenEnabled) {
-    if (
-      questions[0].options.some(({ content }) => content == "/HIDDEN QUESTION/")
-    ) {
-      questions[0].options = questions[0].options = [];
-    } else {
-      questions[0].content = "/HIDDEN QUESTION/";
-      questions[0].hint = "Ask a teammate for the hidden question";
+      //- swap one option from each group
+      const aux = hiddenCorrectGroup[0];
+      hiddenCorrectGroup[0] = otherGroup[0];
+      otherGroup[0] = aux;
     }
   }
 
-  return questions[0];
+  options = optionGroups[powers.indexOf(power)];
+
+  const question = {
+    id,
+    content: contentParsed,
+    ...fields,
+    memoryPro: nouns,
+    superRadar: preps,
+    options
+  };
+
+  if (hiddenEnabled) {
+    if (
+      question.options.some(({ content }) => content == "/HIDDEN QUESTION/")
+    ) {
+      question.options = questions[0].options = [];
+    } else {
+      question.content = "/HIDDEN QUESTION/";
+      question.hint = "Ask a teammate for the hidden question";
+    }
+  }
+
+  return question;
 }
 
 export async function getQuestionsFromPostaskForStudent(
