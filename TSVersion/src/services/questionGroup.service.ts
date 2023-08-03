@@ -1,3 +1,4 @@
+import sequelize from "@database/db";
 import { ApiError } from "@middlewares/handleErrors";
 import {
   QuestionGroupModel,
@@ -61,6 +62,27 @@ export async function getQuestionGroupFromTeam({
           where: { id_task_stage: idTaskStage }
         }
       ]
+    }
+  );
+}
+
+export async function getRandomQuestionGroup(
+  idTaskStage: number
+): Promise<QuestionGroupModel> {
+  return await repositoryService.findOne<QuestionGroupModel>(
+    QuestionGroupModel,
+    {
+      attributes: ["id_question_group"],
+      include: [
+        {
+          model: QuestionModel,
+          as: "questions",
+          required: true,
+          attributes: [],
+          where: { id_task_stage: idTaskStage }
+        }
+      ],
+      order: sequelize.random()
     }
   );
 }

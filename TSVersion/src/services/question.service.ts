@@ -33,7 +33,10 @@ import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { getMembersFromTeam } from "./team.service";
 import { QuestionType } from "@interfaces/enums/question.enum";
 import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
-import { getQuestionGroupFromTeam } from "./questionGroup.service";
+import {
+  getQuestionGroupFromTeam,
+  getRandomQuestionGroup
+} from "./questionGroup.service";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -420,25 +423,20 @@ export async function getQuestionsFromPostaskForStudent(
         await getQuestionGroupFromTeam({ idTeam, idTaskStage })
       ).id_question_group;
     } else {
-      idQuestionGroup = (
-        await repositoryService.findOne<QuestionGroupModel>(
-          QuestionGroupModel,
-          {
-            attributes: ["id_question_group"],
-            include: [
-              {
-                model: QuestionModel,
-                as: "questions",
-                required: true,
-                attributes: [],
-                where: { id_task_stage: idTaskStage }
-              }
-            ],
-            order: sequelize.random()
-          }
-        )
-      ).id_question_group;
+      idQuestionGroup = (await getRandomQuestionGroup(idTaskStage))
+        .id_question_group;
     }
+  }
+
+  if (mechanics.includes(TaskStageMechanics.QUESTION_GROUP_RANDOM)) {
+    const idTaskStage = (
+      await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+        where: { task_stage_order: 3, id_task: id_task }
+      })
+    ).id_task_stage;
+
+    idQuestionGroup = (await getRandomQuestionGroup(idTaskStage))
+      .id_question_group;
   }
 
   return (
