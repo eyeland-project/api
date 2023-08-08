@@ -375,10 +375,10 @@ export async function getNextQuestionFromDuringtaskForStudent(
           question.content = "{Hidden Question|Pregunta Oculta}";
           break;
         case Power.SUPER_RADAR:
-          question.content = "[Hidden Question|Pregunta oculta]";
+          question.content = "[Hidden Question|Pregunta Oculta]";
           break;
         default:
-          question.content = "Hidden question";
+          question.content = "Hidden Question";
       }
       // question.content = "/HIDDEN QUESTION/";
       question.hint = "Ask a teammate for the hidden question";
