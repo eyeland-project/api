@@ -379,6 +379,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
           break;
         default:
           question.content = "Hidden Question";
+          question.imgAlt = "Un compañero sabe la pregunta oculta";
       }
       // question.content = "/HIDDEN QUESTION/";
       question.hint = "Ask a teammate for the hidden question";
