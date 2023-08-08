@@ -37,6 +37,7 @@ import {
   getQuestionGroupFromTeam,
   getRandomQuestionGroup
 } from "./questionGroup.service";
+import { Power } from "@interfaces/enums/taskAttempt.enum";
 
 // for teachers
 export async function getQuestionsFromPretaskForTeacher(
@@ -369,8 +370,19 @@ export async function getNextQuestionFromDuringtaskForStudent(
     ) {
       question.options = questions[0].options = [];
     } else {
-      question.content = "/HIDDEN QUESTION/";
+      switch (power) {
+        case Power.MEMORY_PRO:
+          question.content = "{Hidden Question|Pregunta Oculta}";
+          break;
+        case Power.SUPER_RADAR:
+          question.content = "[Hidden Question|Pregunta oculta]";
+          break;
+        default:
+          question.content = "Hidden question";
+      }
+      // question.content = "/HIDDEN QUESTION/";
       question.hint = "Ask a teammate for the hidden question";
+      // question.hint = "Un compañero sabe la pregunta oculta";// - Uncomment this line to use spanish hint
     }
   }
 
