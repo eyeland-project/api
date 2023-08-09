@@ -41,7 +41,7 @@ export function separateTranslations(content: string): {
     (match[0] === "{" ? memoryPro : superRadar).push(transl);
     content = content.replace(
       match,
-      match.replace(/\|.*/, "") + match.at(match.length - 1)
+      match.replace(/\|.*/, "") + match[match.length - 1]
     );
   });
 

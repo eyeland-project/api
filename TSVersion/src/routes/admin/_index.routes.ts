@@ -31,7 +31,7 @@ function loadRoutes() {
       .then((controllers) => {
         const entity = file.split(".")[0];
         const resource =
-          entity.at(entity.length - 1)! === "y"
+          entity[entity.length - 1]! === "y"
             ? entity.slice(0, -1) + "ies"
             : entity + "s";
 
