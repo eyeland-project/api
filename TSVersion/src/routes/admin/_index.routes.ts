@@ -31,7 +31,9 @@ function loadRoutes() {
       .then((controllers) => {
         const entity = file.split(".")[0];
         const resource =
-          entity.at(-1)! === "y" ? entity.slice(0, -1) + "ies" : entity + "s";
+          entity.at(entity.length - 1)! === "y"
+            ? entity.slice(0, -1) + "ies"
+            : entity + "s";
 
         routerDyn.get(`/${resource}/:id`, controllers["getElement"]);
         routerDyn.get(`/${resource}/`, controllers["getElements"]);

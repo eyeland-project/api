@@ -39,7 +39,10 @@ export function separateTranslations(content: string): {
   matches.forEach((match) => {
     const transl = match.slice(1, match.length - 1).split("|")[1];
     (match[0] === "{" ? memoryPro : superRadar).push(transl);
-    content = content.replace(match, match.replace(/\|.*/, "") + match.at(-1));
+    content = content.replace(
+      match,
+      match.replace(/\|.*/, "") + match.at(match.length - 1)
+    );
   });
 
   return { content, memoryPro, superRadar };
