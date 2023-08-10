@@ -372,13 +372,15 @@ export async function getNextQuestionFromDuringtaskForStudent(
     } else {
       switch (power) {
         case Power.MEMORY_PRO:
-          question.content = "{Hidden Question|Pregunta Oculta}";
+          question.content = "{Hidden question}";
+          question.memoryPro = ["Pregunta oculta"];
           break;
         case Power.SUPER_RADAR:
-          question.content = "[Hidden Question|Pregunta Oculta]";
+          question.content = "[Hidden question]";
+          question.superRadar = ["Pregunta oculta"];
           break;
         default:
-          question.content = "Hidden Question";
+          question.content = "Hidden question";
           question.imgAlt = "Un compañero sabe la pregunta oculta";
       }
       // question.content = "/HIDDEN QUESTION/";
