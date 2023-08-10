@@ -632,8 +632,8 @@ BEGIN
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'A hotel', 'Incorrect', FALSE);
 
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (3, NULL, 3, 'What was part of the road?', NULL, NULL, 'select&speaking', NULL, NULL, NULL, 'beto', NULL) RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'The toll', 'Correct', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'The tunnel', 'Incorrect', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'A toll', 'Correct', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'A tunnel', 'Incorrect', FALSE);
 
     -- questions from task 2
     
