@@ -3,7 +3,8 @@ import { getQuestionsFromPostaskForStudent } from "@services/question.service";
 import { answerPostask } from "@services/answer.service";
 import {
   AnswerSelectSpeakingCreateDto,
-  AnswerOpenCreateDto
+  AnswerOpenCreateDto,
+  AnswerSelectCreateDto
 } from "@dto/student/answer.dto";
 import { getPostaskForStudent } from "@services/taskStage.service";
 import { QuestionPostaskDetailDto } from "@dto/student/question.dto";
@@ -85,19 +86,20 @@ export async function answer(
       req.body.newAttempt = req.body.newAttempt === "true";
     }
 
-    const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>req.body;
+    const answerSelect = <AnswerSelectCreateDto>req.body;
+    // const answerSelectSpeaking = <AnswerSelectSpeakingCreateDto>req.body;
     const answerOpen = <AnswerOpenCreateDto>req.body;
 
     if (
-      answerSelectSpeaking.idOption !== undefined &&
-      typeof answerSelectSpeaking.idOption !== "number"
+      answerSelect.idOption !== undefined &&
+      typeof answerSelect.idOption !== "number"
     ) {
-      answerSelectSpeaking.idOption =
-        parseInt(answerSelectSpeaking.idOption) || undefined!;
+      answerSelect.idOption =
+        parseInt(answerSelect.idOption) || undefined!;
     }
 
     if (
-      answerSelectSpeaking.idOption === undefined &&
+      answerSelect.idOption === undefined &&
       answerOpen.text === undefined &&
       !audio
     ) {

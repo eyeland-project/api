@@ -31,6 +31,7 @@ import { getStorageBucket } from "@config/storage";
 import { format } from "util";
 import {
   AnswerOpenCreateDto,
+  AnswerSelectCreateDto,
   AnswerSelectSpeakingCreateDto
 } from "@dto/student/answer.dto";
 import {
@@ -172,7 +173,6 @@ export async function answerDuringtask(
   }
   let idQuestionGroup: number | undefined;
 
-  
   const { mechanics } = await repositoryService.findOne<TaskStageModel>(
     TaskStageModel,
     { where: { task_stage_order: 2, id_task } }
@@ -340,7 +340,10 @@ export async function answerPostask(
   idStudent: number,
   taskOrder: number,
   questionOrder: number,
-  body: AnswerSelectSpeakingCreateDto | AnswerOpenCreateDto,
+  body:
+    | AnswerSelectCreateDto
+    | AnswerSelectSpeakingCreateDto
+    | AnswerOpenCreateDto,
   audio?: Express.Multer.File
 ): Promise<string | null> {
   const { answerSeconds, newAttempt } = body;
@@ -397,11 +400,11 @@ export async function answerPostask(
     throw new ApiError("Current Task attempt is from another task", 400);
   }
 
-  const idOption = (<AnswerSelectSpeakingCreateDto>body).idOption;
+  const idOption = (<{ idOption: number }>body).idOption;
 
   let result;
   if (idOption !== undefined) {
-    result = await answerPostaskSelectSpeaking({
+    result = await answerPostaskSelect({
       idQuestion: question.id,
       options: question.options,
       idOption,
@@ -433,7 +436,7 @@ export async function answerPostask(
   return result;
 }
 
-export async function answerPostaskSelectSpeaking({
+export async function answerPostaskSelect({
   idQuestion,
   options,
   idOption,
@@ -447,7 +450,7 @@ export async function answerPostaskSelectSpeaking({
   idTaskAttempt: number;
   answerSeconds?: number;
   audio?: Express.Multer.File;
-}) {
+}): Promise<string | null> {
   if (idOption === undefined && audio === undefined) {
     throw new ApiError("Must provide an answer", 400);
   }
@@ -638,7 +641,6 @@ async function getAnswersFromTaskStageForTeacher(
   let idQuestionGroup: number | undefined;
 
   if (id_team !== undefined && id_team !== null) {
-    
     const { mechanics } = await repositoryService.findOne<TaskStageModel>(
       TaskStageModel,
       { where: { task_stage_order: 3, id_task } }
