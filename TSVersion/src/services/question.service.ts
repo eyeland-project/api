@@ -600,3 +600,25 @@ function mapDuringtaskQuestionsForTeacher(
     };
   });
 }
+
+async function getGroupLastQuestionAnswerd(
+  idTeam: number
+): Promise<QuestionDetailDto | null> {
+  const answer = await AnswerModel.findOne({
+    where: { id_team: idTeam },
+    include: [
+      {
+        model: QuestionModel,
+        as: "question",
+        required: true
+      }
+    ],
+    order: [["id_answer", "DESC"]]
+  });
+
+  if (!answer) return null;
+  0;
+  const question = mapQuestions([answer.question])[0];
+
+  return question;
+}
