@@ -519,12 +519,23 @@ function mapQuestions(questions: QuestionModel[]): QuestionDetailDto[] {
       videoUrl: video_url || null,
       hint: hint || null,
       character: character || null,
-      options: options.map(({ id_option, content, correct, feedback }) => ({
-        id: id_option,
-        content,
-        correct,
-        feedback: feedback || ""
-      }))
+      options: options.map(
+        ({
+          id_option,
+          content,
+          correct,
+          feedback,
+          main_img_alt,
+          main_img_url
+        }) => ({
+          id: id_option,
+          content,
+          correct,
+          feedback: feedback || "",
+          mainImgAlt: main_img_alt || null,
+          mainImgUrl: main_img_url || null
+        })
+      )
     })
   );
 }

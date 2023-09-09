@@ -12,6 +12,8 @@ class OptionModel extends Model<Option, OptionCreation> {
   declare feedback?: string | null;
   declare content: string;
   declare correct: boolean;
+  declare main_img_url?: string | null;
+  declare main_img_alt?: string | null;
   declare deleted: boolean;
 }
 
@@ -37,6 +39,12 @@ OptionModel.init(
     correct: {
       type: DataTypes.BOOLEAN,
       allowNull: false
+    },
+    main_img_alt: {
+      type: DataTypes.STRING(200)
+    },
+    main_img_url: {
+      type: DataTypes.STRING(2048)
     },
     deleted: {
       type: DataTypes.BOOLEAN,

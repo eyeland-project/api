@@ -57,7 +57,13 @@ CREATE TABLE task (
     CONSTRAINT uk_task_task_order UNIQUE (task_order)
 );
 
-CREATE TYPE valid_task_stage_mechanic AS ENUM ('question_group-team_name', 'question_group-duringtask_based', 'hidden_question', 'question_group-random');
+CREATE TYPE valid_task_stage_mechanic AS ENUM (
+    'question_group-team_name',
+    'question_group-duringtask_based',
+    'hidden_question',
+    'question_group-random',
+    'form_image'
+);
 
 -- CREATING TABLE task_stage
 CREATE TABLE task_stage (
@@ -92,9 +98,32 @@ CREATE TABLE question_group (
     CONSTRAINT fk_question_group_team_name FOREIGN KEY (id_team_name) REFERENCES team_name(id_team_name)
 );
 
-CREATE TYPE valid_question_character AS ENUM ('beto', 'valery', 'alex', 'chucho');
-CREATE TYPE valid_question_type AS ENUM ('flashcard', 'fill', 'order', 'select', 'audio_select', 'audio_order', 'audio_speaking', 'select_speaking', 'select&speaking', 'open', 'order-word', 'audio_order-word');
-CREATE TYPE valid_question_topic AS ENUM ('vocabulary', 'prepositions', 'personal_presentation');
+CREATE TYPE valid_question_character AS ENUM (
+    'beto',
+    'valery',
+    'alex',
+    'chucho'
+);
+CREATE TYPE valid_question_type AS ENUM (
+    'flashcard',
+    'fill',
+    'order',
+    'select',
+    'audio_select',
+    'audio_order',
+    'audio_speaking',
+    'select_speaking',
+    'select&speaking',
+    'open',
+    'order-word',
+    'audio_order-word',
+    'form-image'
+);
+CREATE TYPE valid_question_topic AS ENUM (
+    'vocabulary',
+    'prepositions',
+    'personal_presentation'
+);
 
 -- CREATING TABLE question
 CREATE TABLE question (
@@ -127,6 +156,10 @@ CREATE TABLE option (
     content VARCHAR(1000) NOT NULL,
     feedback VARCHAR(200),
     correct BOOLEAN NOT NULL,
+    -- preview_img_url VARCHAR(2048),
+    -- preview_img_alt VARCHAR(200),
+    main_img_url VARCHAR(2048),
+    main_img_alt VARCHAR(200),
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     -- CONSTRAINTS
     CONSTRAINT pk_option PRIMARY KEY (id_option),
@@ -252,7 +285,11 @@ CREATE TABLE student_task (
     CONSTRAINT check_student_task_highest_stage CHECK (highest_stage >= 0 AND highest_stage <= 3)
 );
 
-CREATE TYPE valid_power AS ENUM ('super_hearing', 'memory_pro', 'super_radar');
+CREATE TYPE valid_power AS ENUM (
+    'super_hearing',
+    'memory_pro',
+    'super_radar'
+);
 
 -- CREATING TABLE task_attempt
 CREATE TABLE task_attempt (
@@ -319,9 +356,6 @@ CREATE TABLE release (
     CONSTRAINT uk_release_url UNIQUE (url),
     CONSTRAINT uk_release_version UNIQUE(version)
 );
-
--- TODO: create table Animal
--- TODO: create table Historial
 
 -- FUNCTIONS
 -- INSERT INTO student_task when a new student is inserted
@@ -481,7 +515,7 @@ INSERT INTO task (task_order, name, description, long_description, keywords, thu
 -- Foto de icon0.com: https://www.pexels.com/es-es/foto/madera-paisaje-naturaleza-verano-726298/
 INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (4, 'Local Culture', 'Descubre la cultura local y las tradiciones de las comunidades que rodean el Parque Isla Salamanca, aprendiendo sobre comida, música, danza y artesanía.', '¡Descubramos la cultura local y las tradiciones de las comunidades que rodean el Parque Isla Salamanca! Aprenderemos a decir hola y cómo estás en inglés, y también aprenderemos sobre la deliciosa comida, la música divertida, el baile colorido y las hermosas artesanías que hacen que este lugar sea especial. ¡Incluso podrás practicar algunas expresiones en inglés y tener una conversación virtual con un amigo local!', '{ "local culture", "traditions", "food", "music", "dance", "crafts", "greetings", "expressions", "social interaction" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_4/thumbnail_1.jpg', 'Imagen de la task', FALSE);
 -- Foto de Marcel Kodama: https://www.pexels.com/es-es/foto/bosque-de-bambu-con-hilera-de-arboles-en-un-dia-soleado-3632689/
-INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (5, 'The Great Challenge', 'Usa todo tu dominio del inglés para resolver un misterio o completar un rompecabezas relacionado con los manglares, consolidando tu aprendizaje y divirtiéndote.', '¿Estás listo para el último desafío? En esta tarea final, deberás usar todas tus habilidades en inglés para resolver un misterio o completar un rompecabezas relacionado con la historia, geografía y ecología de los manglares. Te divertirás y aprenderás al mismo tiempo, mientras consolidas todos los conocimientos adquiridos durante las tareas anteriores. ¿Tienes lo que se necesita para ser un gran estudiante de inglés?', '{ "English skills", "mystery", "puzzle", "mangroves", "learning", "fun" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_5/thumbnail_1.jpg', 'Imagen de la task', TRUE);
+INSERT INTO task (task_order, name, description, long_description, keywords, thumbnail_url, thumbnail_alt, coming_soon) VALUES (5, 'The Great Challenge', 'Usa todo tu dominio del inglés para resolver un misterio o completar un rompecabezas relacionado con los manglares, consolidando tu aprendizaje y divirtiéndote.', '¿Estás listo para el último desafío? En esta tarea final, deberás usar todas tus habilidades en inglés para resolver un misterio o completar un rompecabezas relacionado con la historia, geografía y ecología de los manglares. Te divertirás y aprenderás al mismo tiempo, mientras consolidas todos los conocimientos adquiridos durante las tareas anteriores. ¿Tienes lo que se necesita para ser un gran estudiante de inglés?', '{ "English skills", "mystery", "puzzle", "mangroves", "learning", "fun" }', 'https://storage.googleapis.com/eyeland-0/app/content/task_5/thumbnail_1.jpg', 'Imagen de la task', FALSE);
 
 -- INSERT INTO team_name
 INSERT INTO team_name (id_team_name, name) VALUES (1, 'Ospreys');
@@ -1333,6 +1367,16 @@ BEGIN
 
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint) VALUES (12, last_question_group_id, 4, 'Tell us information about the manaatee', 'https://storage.googleapis.com/eyeland-0/app/content/task_2/audio/manatee_1.mp3', NULL, 'open', NULL, NULL, NULL, 'chucho', 'The manatee lives in _. It''s name is _. It eats _.') RETURNING id_question INTO last_question_id;
 
+    -- questions from task 5
+    
+    -- pretask 5
+    
+    -- duringtask 5
+
+    UPDATE task_stage SET mechanics = '{"form_image"}' WHERE id_task_stage = 14;
+    
+    -- postask 5
+    
 END $$;
 
 -- *INSERTANDO USUARIOS E INSTITUCIONES DE PRUEBA

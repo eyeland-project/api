@@ -9,7 +9,8 @@ export enum QuestionType {
   SELECT_AND_SPEAKING = "select&speaking",
   OPEN = "open",
   ORDERWORD = "order-word",
-  AUDIO_ORDERWORD = "audio_order-word"
+  AUDIO_ORDERWORD = "audio_order-word",
+  FORM_IMAGE = "form-image"
 }
 
 export enum QuestionTopic {

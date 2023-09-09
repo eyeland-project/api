@@ -1,7 +1,6 @@
 import { FindOptions, QueryTypes } from "sequelize";
 import sequelize from "@database/db";
-import { OptionModel, QuestionModel, TaskModel, TaskStageModel } from "@models";
-import { QuestionGroupModel, TeamModel, TeamNameModel } from "@models";
+import { QuestionModel, TaskModel, TaskStageModel } from "@models";
 import { ApiError } from "@middlewares/handleErrors";
 import { Question } from "@interfaces/Question.types";
 import {
@@ -11,7 +10,6 @@ import {
 import { TaskStageDetailDto as TaskStageDetailDtoStudent } from "@dto/student/taskStage.dto";
 import * as repositoryService from "@services/repository.service";
 import { TaskStage } from "@interfaces/TaskStage.types";
-import { TaskStageMechanics } from "@interfaces/enums/taskStage.enum";
 
 export async function getPretaskForTeacher(
   idTask: number
@@ -135,11 +133,12 @@ async function getTaskStageForStudent(
     )
   )[0];
   if (!taskStage) throw new ApiError("Task stage not found", 404);
-  const { description, keywords, questions } = taskStage;
+  const { description, keywords, questions, mechanics } = taskStage;
   return {
     description,
     keywords,
-    numQuestions: questions?.length || 0
+    numQuestions: questions?.length || 0,
+    mechanics
   };
 }
 

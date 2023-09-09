@@ -10,11 +10,3 @@ export async function getQuestionOptions(
   });
   return options;
 }
-
-export async function getOptionById(idOption: number): Promise<Option> {
-  const option = await OptionModel.findOne({
-    where: { id_option: idOption }
-  });
-  if (!option) throw new ApiError("Option not found", 404);
-  return option;
-}

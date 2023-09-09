@@ -6,6 +6,8 @@ export interface Option {
   feedback?: string | null;
   content: string;
   correct: boolean;
+  main_img_url?: string | null;
+  main_img_alt?: string | null;
   deleted: boolean;
 }
 
