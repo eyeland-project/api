@@ -389,6 +389,14 @@ export async function getNextQuestionFromDuringtaskForStudent(
     }
   }
 
+  if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
+    const lastOptionAnswered = await getGroupLastOptionAnswerd(id_team);
+    if (lastOptionAnswered) {
+      question.imgUrl = lastOptionAnswered.main_img_url || question.imgUrl;
+      question.imgAlt = lastOptionAnswered.main_img_alt || question.imgAlt;
+    }
+  }
+
   return question;
 }
 
