@@ -67,8 +67,18 @@ export async function getQuestionGroupFromTeam({
 }
 
 export async function getRandomQuestionGroup(
-  idTaskStage: number
+  idTaskStage?: number,
+  idTask?: number,
+  taskStageOrder?: number
 ): Promise<QuestionGroupModel> {
+  if (!idTaskStage) {
+    idTaskStage = (
+      await repositoryService.findOne<TaskStageModel>(TaskStageModel, {
+        where: { task_stage_order: taskStageOrder, id_task: idTask }
+      })
+    ).id_task_stage;
+  }
+
   return await repositoryService.findOne<QuestionGroupModel>(
     QuestionGroupModel,
     {
