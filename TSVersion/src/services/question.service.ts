@@ -611,3 +611,25 @@ function mapDuringtaskQuestionsForTeacher(
     };
   });
 }
+
+async function getGroupLastOptionAnswerd(
+  idTeam: number
+): Promise<OptionModel | null> {
+  const answer = await AnswerModel.findOne({
+    where: { id_team: idTeam },
+    include: [
+      {
+        model: OptionModel,
+        as: "option",
+        required: true
+      }
+    ],
+    order: [["id_answer", "DESC"]]
+  });
+
+  if (!answer) return null;
+
+  const option = answer.option!;
+
+  return option;
+}
