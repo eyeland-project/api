@@ -166,8 +166,14 @@ export async function getNextQuestionFromDuringtaskForStudent(
 
       idQuestionGroup = answered.question.id_question_group ?? undefined;
     } else {
-      idQuestionGroup = (await getRandomQuestionGroup(undefined, id_task, 2))
-        .id_question_group;
+      idQuestionGroup = (
+        await getRandomQuestionGroup(
+          undefined,
+          id_task,
+          2,
+          (id_team + 5) * 15 + id_task * 2
+        )
+      ).id_question_group;
     }
   }
 

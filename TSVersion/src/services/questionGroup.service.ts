@@ -8,6 +8,7 @@ import {
   TeamNameModel
 } from "@models";
 import * as repositoryService from "@services/repository.service";
+import { shuffle } from "@utils";
 
 export async function getQuestionGroupFromTeam({
   idTeam,
@@ -69,7 +70,8 @@ export async function getQuestionGroupFromTeam({
 export async function getRandomQuestionGroup(
   idTaskStage?: number,
   idTask?: number,
-  taskStageOrder?: number
+  taskStageOrder?: number,
+  seed?: number
 ): Promise<QuestionGroupModel> {
   if (!idTaskStage) {
     idTaskStage = (
@@ -79,6 +81,23 @@ export async function getRandomQuestionGroup(
     ).id_task_stage;
   }
 
+  if (seed) {
+    return shuffle(
+      await repositoryService.findAll<QuestionGroupModel>(QuestionGroupModel, {
+        attributes: ["id_question_group"],
+        include: [
+          {
+            model: QuestionModel,
+            as: "questions",
+            required: true,
+            attributes: [],
+            where: { id_task_stage: idTaskStage }
+          }
+        ]
+      }),
+      seed
+    )[0];
+  }
   return await repositoryService.findOne<QuestionGroupModel>(
     QuestionGroupModel,
     {
