@@ -3,5 +3,5 @@ export enum TaskStageMechanics {
   HIDDEN_QUESTION = "hidden_question",
   QUESTION_GROUP_DURINGTASK_BASED = "question_group-duringtask_based",
   QUESTION_GROUP_RANDOM = "question_group-random",
-  FORM_IMAGE = "form-image"
+  FORM_IMAGE = "form_image"
 }

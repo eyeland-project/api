@@ -147,6 +147,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
   const hidden =
     mechanics?.includes(TaskStageMechanics.HIDDEN_QUESTION) || false;
 
+  let lastOptionAnswered: OptionModel | null = null;
+
   if (mechanics?.includes(TaskStageMechanics.QUESTION_GROUP_TEAM_NAME)) {
     idQuestionGroup = (
       await getQuestionGroupFromTeam({
@@ -155,6 +157,24 @@ export async function getNextQuestionFromDuringtaskForStudent(
         idTask: id_task
       })
     ).id_question_group;
+  }
+
+  if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
+    let answered = await getGroupLastOptionAnswerd(id_team);
+    if (answered) {
+      lastOptionAnswered = answered.option;
+
+      idQuestionGroup = answered.question.id_question_group ?? undefined;
+    } else {
+      idQuestionGroup = (
+        await getRandomQuestionGroup(
+          undefined,
+          id_task,
+          2,
+          (id_team + 5) * 15 + id_task * 2
+        )
+      ).id_question_group;
+    }
   }
 
   //* auxiliar variables to check if there are questions left
@@ -389,6 +409,13 @@ export async function getNextQuestionFromDuringtaskForStudent(
     }
   }
 
+  if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
+    if (lastOptionAnswered && lastOptionAnswered.correct) {
+      question.imgUrl = lastOptionAnswered.main_img_url || question.imgUrl;
+      question.imgAlt = lastOptionAnswered.main_img_alt || question.imgAlt;
+    }
+  }
+
   return question;
 }
 
@@ -610,4 +637,32 @@ function mapDuringtaskQuestionsForTeacher(
       superRadar: preps
     };
   });
+}
+
+async function getGroupLastOptionAnswerd(
+  idTeam: number
+): Promise<{ option: OptionModel; question: QuestionModel } | null> {
+  const answer = await AnswerModel.findOne({
+    where: { id_team: idTeam },
+    include: [
+      {
+        model: OptionModel,
+        as: "option",
+        required: true
+      },
+      {
+        model: QuestionModel,
+        as: "question",
+        required: true
+      }
+    ],
+    order: [["id_answer", "DESC"]]
+  });
+
+  if (!answer) return null;
+
+  const option = answer.option!;
+  const question = answer.question!;
+
+  return { option, question };
 }
