@@ -248,13 +248,18 @@ export async function getNextQuestionFromDuringtaskForStudent(
     return a.question_order - b.question_order;
   });
 
-  const nextQuestion =
-    missingQuestions.length === 0 || //* If all questions have been answered
-    (missingQuestions.length === 1 &&
-      missingQuestions[0].answers?.length > 0 &&
-      missingQuestions[0].answers.length >= maxAnswers) //* or there is only one question and it has been answered before (it is a retry)
-      ? []
-      : [missingQuestions[0]];
+  let nextQuestion: QuestionModel | null;
+  if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
+    nextQuestion = missingQuestions[0] || null;
+  } else {
+    nextQuestion =
+      missingQuestions.length === 0 || //* If all questions have been answered
+      (missingQuestions.length === 1 &&
+        missingQuestions[0].answers?.length > 0 &&
+        missingQuestions[0].answers.length >= maxAnswers) //* or there is only one question and it has been answered before (it is a retry)
+        ? null
+        : missingQuestions[0];
+  }
 
   const powers = (await getMembersFromTeam({ idTeam: id_team })).map(
     ({ task_attempt: { power } }) => power
@@ -262,7 +267,7 @@ export async function getNextQuestionFromDuringtaskForStudent(
   powers.sort((a, b) => indexPower(a) - indexPower(b));
   const hiddenEnabled = hidden && powers.length > 1;
 
-  const nextQuestionOrder = nextQuestion[0]?.question_order ?? -1;
+  const nextQuestionOrder = nextQuestion?.question_order ?? -1;
   console.log("nextQuestionOrder", nextQuestionOrder);
 
   const questions = await getQuestionsFromTaskStage(
