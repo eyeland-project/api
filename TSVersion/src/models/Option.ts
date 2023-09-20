@@ -14,6 +14,8 @@ class OptionModel extends Model<Option, OptionCreation> {
   declare correct: boolean;
   declare main_img_url?: string | null;
   declare main_img_alt?: string | null;
+  declare preview_img_url?: string | null;
+  declare preview_img_alt?: string | null;
   declare deleted: boolean;
 }
 
@@ -44,6 +46,12 @@ OptionModel.init(
       type: DataTypes.STRING(200)
     },
     main_img_url: {
+      type: DataTypes.STRING(2048)
+    },
+    preview_img_alt: {
+      type: DataTypes.STRING(200)
+    },
+    preview_img_url: {
       type: DataTypes.STRING(2048)
     },
     deleted: {

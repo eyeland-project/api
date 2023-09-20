@@ -8,6 +8,8 @@ export interface Option {
   correct: boolean;
   main_img_url?: string | null;
   main_img_alt?: string | null;
+  preview_img_url?: string | null;
+  preview_img_alt?: string | null;
   deleted: boolean;
 }
 

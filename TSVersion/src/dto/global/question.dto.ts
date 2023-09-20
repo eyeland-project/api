@@ -21,8 +21,8 @@ export interface QuestionDetailDto {
     content: string;
     correct: boolean;
     feedback: string;
-    mainImgUrl: string | null;
-    mainImgAlt: string | null;
+    previewImgUrl: string | null;
+    previewImgAlt: string | null;
   }[];
 }
 
