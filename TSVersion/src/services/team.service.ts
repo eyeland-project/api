@@ -40,6 +40,8 @@ import * as repositoryService from "@services/repository.service";
 import { getHighestTaskCompletedFromStudent } from "@services/studentTask.service";
 import { TeamDetailDto as TeamDetailDtoStudent } from "@dto/student/team.dto";
 import { TeamDetailDto as TeamDetailDtoTeacher } from "@dto/teacher/team.dto";
+import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
+import { getDuringtaskForStudent } from "./taskStage.service";
 
 export async function getTeamsForStudent(
   idStudent: number
@@ -80,7 +82,7 @@ export async function joinTeam(
   idStudent: number,
   code: string,
   taskOrder: number
-) {
+): Promise<TaskStageDetailDto> {
   const socket = directoryStudents.get(idStudent);
   if (!socket) {
     throw new ApiError("Student is not connected", 400);
@@ -165,6 +167,8 @@ export async function joinTeam(
     currTaskAttempt = await createTaskAttempt(idStudent, id_task, team.id_team);
   }
 
+  const taskStage = await getDuringtaskForStudent(taskOrder);
+
   new Promise(() => {
     socket.join("t" + team.id_team); // join student to team socket room
 
@@ -191,6 +195,8 @@ export async function joinTeam(
       );
     }
   }).catch(console.log);
+
+  return taskStage;
 }
 
 export async function getMembersFromTeam(teamInfo: {

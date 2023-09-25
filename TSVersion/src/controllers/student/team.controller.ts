@@ -10,9 +10,9 @@ import {
 } from "@services/team.service";
 import { JoinTeamDto } from "@dto/student/team.dto";
 import { TeamDetailDto } from "@dto/student/team.dto";
-import { getCurrTaskAttempt } from "@services/taskAttempt.service";
 import { Power } from "@interfaces/enums/taskAttempt.enum";
 import { ApiError } from "@middlewares/handleErrors";
+import { TaskStageDetailDto } from "@dto/student/taskStage.dto";
 
 export async function getTeams(
   req: Request,
@@ -42,7 +42,7 @@ export async function getCurrentTeam(
 
 export async function joinTeam(
   req: Request<any, any, JoinTeamDto>,
-  res: Response,
+  res: Response<TaskStageDetailDto>,
   next: NextFunction
 ) {
   const { id: idStudent } = req.user!;
@@ -51,8 +51,7 @@ export async function joinTeam(
     if (!code || !taskOrder) {
       throw new ApiError("Wrong body", 400);
     }
-    await joinTeamService(idStudent, code, taskOrder);
-    res.status(200).json({ message: "Done" });
+    res.status(200).json(await joinTeamService(idStudent, code, taskOrder));
   } catch (err) {
     next(err);
   }

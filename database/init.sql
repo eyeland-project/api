@@ -1012,11 +1012,11 @@ BEGIN
     INSERT INTO question_group (id_team_name) VALUES (4) RETURNING id_question_group INTO last_question_group_id;
     
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (8, last_question_group_id, 19, 'Where do manatees live?', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'select', 'Imagen de un manatí en un océano', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_ocean_1.jpg', NULL, NULL, 'La imagen muestra un manatí en un océano.', 'en') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'River', '¡Muy bien! La imagen muestra un manatí en un océano.', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean', '¡Muy bien! La imagen muestra un manatí en un océano.', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Mangrove', '¡Uy!, no es correcto. La imagen muestra un manatí en un océano, no en un manglar.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Swamp', '¡Uy!, no es correcto. La imagen muestra un manatí en un océano, no en un pantano.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Lake', '¡Uy!, no es correcto. La imagen muestra un manatí en un océano, no en un lago.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Ocean', '¡Uy!, no es correcto. La imagen muestra un manatí en un océano, no en un océano.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'River', '¡Uy!, no es correcto. La imagen muestra un manatí en un océano, no en un río.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'Coast', '¡Uy!, no es correcto. La imagen muestra un manatí en un océano, no en una costa.', FALSE);
     
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (8, last_question_group_id, 20, 'What''s the manatee''s name?', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'select', 'Imagen de una manatí llamada Molly', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_1.jpg', NULL, NULL, 'La imagen muestra una manatí llamada Molly.', 'en') RETURNING id_question INTO last_question_id;
@@ -1691,3 +1691,6 @@ INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Br
 
 -- INSERT INTO release
 INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/application-alpha-3.5.11.apk', '3.5.11');
+
+-- Unlock all tasks for everybody (development)
+UPDATE student_task SET highest_stage = 3;
