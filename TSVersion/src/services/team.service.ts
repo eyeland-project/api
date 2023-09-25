@@ -69,9 +69,7 @@ export async function getTeamForTeacher(
 ): Promise<TeamDetailDtoTeacher> {
   const teams = await getTeamsFromCourseWithStudents(
     idCourse,
-    {
-      id_team: idTeam
-    },
+    { id_team: idTeam },
     { limit: 1 }
   );
   if (teams.length === 0) throw new ApiError("Team not found", 404);
@@ -183,7 +181,7 @@ export async function joinTeam(
           team.id_team,
           idStudent
         ).catch(console.log);
-        if (yaper) notifyStudentOfTeamUpdate(yaper);
+        if (yaper) notifyStudentOfTeamUpdate(yaper).catch(console.log);
       })
       .catch(console.log);
 

@@ -24,3 +24,8 @@ export enum QuestionCharacter {
   CHUCHO = "chucho",
   ALEX = "alex"
 }
+
+export enum QuestionLang {
+  EN = "en",
+  ES = "es"
+}

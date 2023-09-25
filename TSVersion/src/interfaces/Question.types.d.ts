@@ -1,6 +1,7 @@
 import { ForeignKey } from "sequelize";
 import {
   QuestionCharacter,
+  QuestionLang,
   QuestionTopic,
   QuestionType
 } from "@interfaces/enums/question.enum";
@@ -18,6 +19,7 @@ export interface Question {
   img_url?: string | null;
   topic?: QuestionTopic | null;
   hint?: string | null;
+  lang: QuestionLang;
   character?: QuestionCharacter;
   deleted: boolean;
 }

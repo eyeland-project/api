@@ -4,6 +4,7 @@ import { Question, QuestionCreation } from "@interfaces/Question.types";
 import { ApiError } from "@middlewares/handleErrors";
 import {
   QuestionCharacter,
+  QuestionLang,
   QuestionTopic,
   QuestionType
 } from "@interfaces/enums/question.enum";
@@ -28,6 +29,7 @@ class QuestionModel extends Model<Question, QuestionCreation> {
   declare img_url?: string | null;
   declare topic?: QuestionTopic | null;
   declare hint?: string | null;
+  declare lang: QuestionLang;
   declare character?: QuestionCharacter | null;
   declare deleted: boolean;
 
@@ -84,6 +86,10 @@ QuestionModel.init(
     },
     hint: {
       type: DataTypes.STRING(200)
+    },
+    lang: {
+      type: DataTypes.ENUM(...Object.values(QuestionLang)),
+      defaultValue: QuestionLang.EN
     },
     deleted: {
       type: DataTypes.BOOLEAN,
