@@ -1129,38 +1129,6 @@ BEGIN
 
     INSERT INTO question_group (id_team_name) VALUES (3) RETURNING id_question_group INTO last_question_group_id;
     
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 13, 'A manatee is lost. Her _ is Molly.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí.', 'en') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'name', '¡Excelente!', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'age', 'Incorrecto.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'color', 'Incorrecto.', FALSE);
-
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 14, 'A manatee is lost. Her name is Molly. She _ 15 years old.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí.', 'en') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'is', '¡Excelente!', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'are', 'Incorrecto.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'am', 'Incorrecto.', FALSE);
-
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 15, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the _.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí en el océano', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí en el océano.', 'en') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'ocean', '¡Excelente!', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'river', 'Incorrecto.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'lake', 'Incorrecto.', FALSE);
-    
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 16, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the ocean. She has big _.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí con dientes grandes', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí con dientes grandes.', 'en') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'teeth', '¡Excelente!', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'eyes', 'Incorrecto.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'ears', 'Incorrecto.', FALSE);
-
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 17, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the ocean. She has big teeth and she can _.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí nadando', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí nadando.', 'en') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'swim', '¡Excelente!', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'fly', 'Incorrecto.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'walk', 'Incorrecto.', FALSE);
-
-    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 18, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the ocean. She has big teeth and she can swim. Is she _? Yes!', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí.', 'en') RETURNING id_question INTO last_question_id;
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'herbivorous', '¡Excelente!', TRUE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'carnivorous', 'Incorrecto.', FALSE);
-    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'omnivorous', 'Incorrecto.', FALSE);
-
-    INSERT INTO question_group (id_team_name) VALUES (4) RETURNING id_question_group INTO last_question_group_id;
-    
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 19, 'An alligator is lost. His _ is Aldo.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/alligator_1.mp3', NULL, 'fill', 'Imagen de un caimán', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/alligator_lost_1.jpg', NULL, NULL, 'La imagen muestra un caimán.', 'en') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'name', '¡Excelente!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'age', 'Incorrecto.', FALSE);
@@ -1189,6 +1157,38 @@ BEGIN
     INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 25, 'An alligator is lost. His name is Aldo. He is 5 years old. He lives in a river. He has sharp claws, so he can _ and jump. Is he _? Yes!', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/alligator_1.mp3', NULL, 'fill', 'Imagen de un caimán', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/alligator_lost_1.jpg', NULL, NULL, 'La imagen muestra un caimán.', 'en') RETURNING id_question INTO last_question_id;
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'carnivorous', '¡Excelente!', TRUE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'herbivorous', 'Incorrecto.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'omnivorous', 'Incorrecto.', FALSE);
+
+    INSERT INTO question_group (id_team_name) VALUES (4) RETURNING id_question_group INTO last_question_group_id;
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 13, 'A manatee is lost. Her _ is Molly.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí.', 'en') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'name', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'age', 'Incorrecto.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'color', 'Incorrecto.', FALSE);
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 14, 'A manatee is lost. Her name is Molly. She _ 15 years old.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí.', 'en') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'is', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'are', 'Incorrecto.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'am', 'Incorrecto.', FALSE);
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 15, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the _.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí en el océano', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí en el océano.', 'en') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'ocean', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'river', 'Incorrecto.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'lake', 'Incorrecto.', FALSE);
+    
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 16, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the ocean. She has big _.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí con dientes grandes', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí con dientes grandes.', 'en') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'teeth', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'eyes', 'Incorrecto.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'ears', 'Incorrecto.', FALSE);
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 17, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the ocean. She has big teeth and she can _.', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí nadando', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí nadando.', 'en') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'swim', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'fly', 'Incorrecto.', FALSE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'walk', 'Incorrecto.', FALSE);
+
+    INSERT INTO question (id_task_stage, id_question_group, question_order, content, audio_url, video_url, type, img_alt, img_url, topic, character, hint, lang) VALUES (9, last_question_group_id, 18, 'A manatee is lost. Her name is Molly. She is 15 years old. She lives in the ocean. She has big teeth and she can swim. Is she _? Yes!', 'https://storage.googleapis.com/eyeland-0/app/content/shared/audio/manatee_1.mp3', NULL, 'fill', 'Imagen de una manatí', 'https://storage.googleapis.com/eyeland-0/app/content/task_3/manatee_lost_1.jpg', NULL, NULL, 'La imagen muestra una manatí.', 'en') RETURNING id_question INTO last_question_id;
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'herbivorous', '¡Excelente!', TRUE);
+    INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'carnivorous', 'Incorrecto.', FALSE);
     INSERT INTO option (id_question, content, feedback, correct) VALUES (last_question_id, 'omnivorous', 'Incorrecto.', FALSE);
 
     -- questions from task 4
@@ -1690,7 +1690,7 @@ INSERT INTO student (id_course, first_name, last_name, username, password, email
 INSERT INTO admin (first_name, last_name, email, username, password) VALUES ('Brunner', 'Hurtador', 'carlbrunner@hurtador.com', 'hurtador', 'cocacola');
 
 -- INSERT INTO release
-INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/application-alpha-3.5.11.apk', '3.5.11');
+INSERT INTO release (url, version) VALUES ('https://storage.googleapis.com/eyeland-0/app/dist/v/eyeland-3.5.11.apk', '3.5.11');
 
 -- Unlock all tasks for everybody (development)
 UPDATE student_task SET highest_stage = 3;
