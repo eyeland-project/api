@@ -557,6 +557,8 @@ function mapQuestions(questions: QuestionModel[]): QuestionDetailDto[] {
           content,
           correct,
           feedback,
+          main_img_alt,
+          main_img_url,
           preview_img_alt,
           preview_img_url
         }) => ({
@@ -564,6 +566,8 @@ function mapQuestions(questions: QuestionModel[]): QuestionDetailDto[] {
           content,
           correct,
           feedback: feedback || "",
+          mainImgAlt: main_img_alt || null,
+          mainImgUrl: main_img_url || null,
           previewImgAlt: preview_img_alt || null,
           previewImgUrl: preview_img_url || null
         })
