@@ -160,21 +160,19 @@ export async function getNextQuestionFromDuringtaskForStudent(
   }
 
   if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
-    let answered = await getGroupLastOptionAnswerd(id_team);
-    if (answered) {
-      lastOptionAnswered = answered.option;
-
-      idQuestionGroup = answered.question.id_question_group ?? undefined;
-    } else {
-      idQuestionGroup = (
-        await getRandomQuestionGroup(
-          undefined,
-          id_task,
-          2,
-          (id_team + 5) * 15 + id_task * 2
-        )
-      ).id_question_group;
-    }
+    // let answered = await getGroupLastOptionAnswerd(id_team);
+    // if (answered) {
+    //   lastOptionAnswered = answered.option;
+    //   // idQuestionGroup = answered.question.id_question_group ?? undefined;
+    // }
+    idQuestionGroup = (
+      await getRandomQuestionGroup(
+        undefined,
+        id_task,
+        2,
+        (id_team + 5) * 15 + id_task * 2
+      )
+    ).id_question_group;
   }
 
   //* auxiliar variables to check if there are questions left
@@ -414,12 +412,12 @@ export async function getNextQuestionFromDuringtaskForStudent(
     }
   }
 
-  if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
-    if (lastOptionAnswered && lastOptionAnswered.correct) {
-      question.imgUrl = lastOptionAnswered.main_img_url || question.imgUrl;
-      question.imgAlt = lastOptionAnswered.main_img_alt || question.imgAlt;
-    }
-  }
+  // if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
+  //   if (lastOptionAnswered && lastOptionAnswered.correct) {
+  //     question.imgUrl = lastOptionAnswered.main_img_url || question.imgUrl;
+  //     question.imgAlt = lastOptionAnswered.main_img_alt || question.imgAlt;
+  //   }
+  // }
 
   return question;
 }
