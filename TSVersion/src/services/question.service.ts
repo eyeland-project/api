@@ -169,8 +169,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
       await getRandomQuestionGroup(
         undefined,
         id_task,
-        2,
-        (id_team + 5) * 15 + id_task * 2
+        2
+        // (id_team + 5) * 15 + id_task * 2
       )
     ).id_question_group;
   }
