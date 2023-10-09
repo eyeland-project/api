@@ -160,19 +160,28 @@ export async function getNextQuestionFromDuringtaskForStudent(
   }
 
   if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
-    // let answered = await getGroupLastOptionAnswerd(id_team);
-    // if (answered) {
-    //   lastOptionAnswered = answered.option;
-    //   // idQuestionGroup = answered.question.id_question_group ?? undefined;
-    // }
-    idQuestionGroup = (
-      await getRandomQuestionGroup(
-        undefined,
-        id_task,
-        2
-        // (id_team + 5) * 15 + id_task * 2
-      )
-    ).id_question_group;
+    let answered = await getGroupLastOptionAnswerd(id_team);
+    if (answered) {
+      lastOptionAnswered = answered.option;
+      idQuestionGroup = answered.question.id_question_group ?? undefined;
+    } else {
+      idQuestionGroup = (
+        await getRandomQuestionGroup(
+          undefined,
+          id_task,
+          2
+          // (id_team + 5) * 15 + id_task * 2
+        )
+      ).id_question_group;
+    }
+    // idQuestionGroup = (
+    //   await getRandomQuestionGroup(
+    //     undefined,
+    //     id_task,
+    //     2
+    //     // (id_team + 5) * 15 + id_task * 2
+    //   )
+    // ).id_question_group;
   }
 
   //* auxiliar variables to check if there are questions left
@@ -212,7 +221,8 @@ export async function getNextQuestionFromDuringtaskForStudent(
           where: { task_stage_order: 2, id_task },
           required: true
         }
-      ].filter((elem) => Object.keys(elem).length)
+      ].filter((elem) => Object.keys(elem).length),
+      order: [["question_order", "ASC"]]
     })
   ).filter(({ answers }) => {
     const answersCount = answers.length;
@@ -237,19 +247,20 @@ export async function getNextQuestionFromDuringtaskForStudent(
   // const questionLeft = maxIncorrectAnswers < maxAnswers;
 
   // * Sort from the less answered to the most answered and from the lowest order to the highest order
-  missingQuestions.sort((a, b) => {
-    const aAnswers = a.answers.length;
-    const bAnswers = b.answers.length;
-    if (aAnswers !== bAnswers) {
-      return aAnswers - bAnswers;
-    }
-    return a.question_order - b.question_order;
-  });
 
   let nextQuestion: QuestionModel | null;
   if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
     nextQuestion = missingQuestions[0] || null;
   } else {
+    missingQuestions.sort((a, b) => {
+      const aAnswers = a.answers.length;
+      const bAnswers = b.answers.length;
+      if (aAnswers !== bAnswers) {
+        return aAnswers - bAnswers;
+      }
+      return a.question_order - b.question_order;
+    });
+
     nextQuestion =
       missingQuestions.length === 0 || //* If all questions have been answered
       (missingQuestions.length === 1 &&
@@ -412,12 +423,12 @@ export async function getNextQuestionFromDuringtaskForStudent(
     }
   }
 
-  // if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
-  //   if (lastOptionAnswered && lastOptionAnswered.correct) {
-  //     question.imgUrl = lastOptionAnswered.main_img_url || question.imgUrl;
-  //     question.imgAlt = lastOptionAnswered.main_img_alt || question.imgAlt;
-  //   }
-  // }
+  if (mechanics?.includes(TaskStageMechanics.FORM_IMAGE)) {
+    if (lastOptionAnswered && lastOptionAnswered.correct) {
+      question.imgUrl = lastOptionAnswered.main_img_url || question.imgUrl;
+      question.imgAlt = lastOptionAnswered.main_img_alt || question.imgAlt;
+    }
+  }
 
   return question;
 }
