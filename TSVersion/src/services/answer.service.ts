@@ -732,6 +732,7 @@ async function getAnswersFromTaskStageForTeacher(
       video_url,
       hint,
       character,
+      lang,
       options,
       answers
     }) => ({
@@ -746,6 +747,7 @@ async function getAnswersFromTaskStageForTeacher(
       videoUrl: video_url || null,
       hint: hint || null,
       character: character || null,
+      lang,
       options: options.map(
         ({
           id_option,

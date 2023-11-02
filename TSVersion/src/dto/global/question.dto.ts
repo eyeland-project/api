@@ -1,5 +1,6 @@
 import {
   QuestionCharacter,
+  QuestionLang,
   QuestionTopic,
   QuestionType
 } from "@interfaces/enums/question.enum";
@@ -16,6 +17,7 @@ export interface QuestionDetailDto {
   videoUrl: string | null;
   hint: string | null;
   character: QuestionCharacter | null;
+  lang: QuestionLang;
   options: {
     id: number;
     content: string;

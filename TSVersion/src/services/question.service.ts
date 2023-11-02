@@ -547,6 +547,7 @@ function mapQuestions(questions: QuestionModel[]): QuestionDetailDto[] {
       video_url,
       hint,
       character,
+      lang,
       options
     }) => ({
       id: id_question,
@@ -560,6 +561,7 @@ function mapQuestions(questions: QuestionModel[]): QuestionDetailDto[] {
       videoUrl: video_url || null,
       hint: hint || null,
       character: character || null,
+      lang,
       options: options.map(
         ({
           id_option,
