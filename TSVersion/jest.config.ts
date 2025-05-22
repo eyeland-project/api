@@ -1,17 +1,18 @@
 import type { Config } from '@jest/types';
-// Sync object
+
 const config: Config.InitialOptions = {
   verbose: true,
+  preset: 'ts-jest',
+  testEnvironment: 'node',
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
-  }, 
-  // globals: {
-  //   "ts-jest": {
-  //     "tsConfigFile": "tsconfig.json",
-  //   }
-  // },
-  // testMatch: [
-  //   "**/__tests__/*.+(ts|tsx|js)"
-  // ]
+  },
+  moduleNameMapper: {
+    '^@utils(.*)$': '<rootDir>/src/utils$1',
+  },
+  testMatch: [
+    '**/tests/**/*.test.ts',
+  ],
 };
+
 export default config;
