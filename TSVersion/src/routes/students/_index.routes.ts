@@ -8,7 +8,7 @@ const router = Router();
 router.get("/", (_, res) => {
   res.status(200).json({ message: "Welcome to the Students API" });
 });
-router.post("/login", login);
+router.post("/login", login); 
 router.get(
   "/whoami",
   passport.authenticate("jwt-student", { session: false }),
