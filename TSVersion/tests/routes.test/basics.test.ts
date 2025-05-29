@@ -10,15 +10,15 @@ describe('GET /', () => {
     });
 });
 
-describe('GET /ping', () => {
+describe('GET /api/ping', () => {
     it('should return 200 OK', (done) => {
-        api.get('/ping')
+        api.get('/api/ping')
             .expect(200, done);
     });
 
     it('should return pong', async () => {
-        const response = await api.get('/ping');
+        const response = await api.get('/api/ping');
         
-        expect(response.text).toEqual('pong');
+        expect(response.body.message).toEqual("pong");
     });
 });
