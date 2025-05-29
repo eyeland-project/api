@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - eyeland-api
+name: Build and deploy Node.js app to Azure Web App - eyeland-backend
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -28,17 +28,16 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-        working-directory: ./TSVersion
+        working-directory: TSVersion
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip .
-        working-directory: ./TSVersion
+        run: zip -r release.zip TSVersion/build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: ./TSVersion/release.zip
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,8 +46,8 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
@@ -58,18 +57,19 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A6A23FD57A4C4D338BE4E74A4C55CA62 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_30179F58D69944B89362D3C063D1E71E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F956888BD33B427498ADBA55A547391B }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_834424D3694748DCB3B2802F7099C4E5 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_385308650E3640629CC2EFE757692C48 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BBDEE0DCEBE7444CB3FEA9BF389FABC2 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'eyeland-api'
+          app-name: 'eyeland-backend'
           slot-name: 'Production'
           package: .
+          
