@@ -28,12 +28,15 @@ function chargeRoutes(dir: string = ""): void {
         // using dynamic imports to charge every subRouter in the router
         import(rel(dir, file))
           .then(({ default: subRouter }: { default: Router }) => {
-            let route = `${dir}/${file.replace(/\.?routes\.[jt]s/, "")}`;
+            let route = `${dir}/${file.replace(/\.routes\.[jt]s$/, "")}`;
 
-            // ignore files that start with _
-            route = route.replace(/\/_[^\/]+/g, "");
+            // Si el archivo es _index.routes.ts, monta en la ruta padre (por ejemplo, /admin)
+            route = route.replace(/\/_index$/, "");
+
+            // ignore files that start with _ (except _index)
+            // route = route.replace(/\/_([^/]+)/g, "");
             // replace {param} with :param
-            route = route.replace(/\/\{([^\/]+)\}/g, "/:$1");
+            route = route.replace(/\/\{([^/]+)\}/g, "/:$1");
             // console.log('route:', route);
 
             router.use(route, subRouter);
