@@ -33,7 +33,18 @@ const docsTeachers = require("../openapi-teachers.json");
 //* Express configuration and middlewares
 app.set("port", process.env.PORT || 3000);
 app.set("json spaces", 2);
-app.use(cors());
+
+// Configuración CORS explícita
+const allowedOrigins = [
+  "http://localhost:5173", // Permite el acceso desde el frontend en desarrollo
+  // Agrega aquí la URL de tu Static Web App de Azure cuando la tengas, por ejemplo:
+  // "https://NOMBRE.azurestaticapps.net"
+];
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
