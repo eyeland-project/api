@@ -38,7 +38,7 @@ function chargeRoutes(dir: string = ""): void {
             // replace {param} with :param
             route = route.replace(/\/\{([^/]+)\}/g, "/:$1");
             // console.log('route:', route);
-
+            console.log("MONTANDO RUTA:", route);
             router.use(route, subRouter);
           })
           .catch((err) => {
